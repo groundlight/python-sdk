@@ -1,0 +1,386 @@
+openapi: 3.0.3
+info:
+  title: Groundlight API
+  version: 0.1.0
+  description: Ask visual queries and get answers.
+  contact:
+    name: Questions?
+    email: support@groundlight.ai
+paths:
+  /v1/detectors:
+    get:
+      operationId: Retrieve detectors
+      description: Retrieve a list of detectors.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDetectorList'
+          description: ''
+    post:
+      operationId: Create a detector
+      description: Create a new detector.
+      tags:
+      - detectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorCreationInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorCreationInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorCreationInput'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detector'
+          description: ''
+  /v1/detectors/{id}:
+    get:
+      operationId: Retrieve a detector
+      description: Retrieve a detector by its ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detector'
+          description: ''
+  /v1/image-queries:
+    get:
+      operationId: Retrieve image queries
+      description: Retrieve a list of image-queries.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - image-queries
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImageQueryList'
+          description: ''
+    post:
+      operationId: Submit an image query
+      description: |2+
+
+        Submit an image query against a detector.
+
+        You must use `"Content-Type: image/jpeg"` for the image data. For example:
+
+        ```Bash
+        $ curl https://api.groundlight.ai/v1/image-queries?detector_id=det_abc123 \
+            --header "Content-Type: image/jpeg" \
+            --data-binary @path/to/filename.jpeg
+        ```
+
+      parameters:
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
+      tags:
+      - image-queries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageQuery'
+            examples:
+              JPEGBinaryImageData:
+                value: '@path/to/image.jpeg'
+                summary: JPEG binary image data
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageQuery'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageQuery'
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageQuery'
+          description: ''
+  /v1/image-queries/{id}:
+    get:
+      operationId: Retrieve an image query
+      description: Retrieve an image-query by its ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose an image query by its ID.
+        required: true
+      tags:
+      - image-queries
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageQuery'
+          description: ''
+components:
+  schemas:
+    ClassificationResult:
+      type: object
+      description: Our classification result. This result can come from the detector,
+        or a human reviewer.
+      properties:
+        confidence:
+          type: number
+          format: double
+          maximum: 1
+          minimum: 0
+          description: On a scale of 0 to 1, how confident are we in the predicted
+            label?
+        label:
+          type: string
+          description: What is the predicted label?
+      required:
+      - label
+      x-internal: true
+    Detector:
+      type: object
+      description: Spec for serializing a detector object in the public API.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: A unique ID for this object.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/DetectorTypeEnum'
+          readOnly: true
+          description: The type of this object.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When was this detector created?
+        name:
+          type: string
+          description: A short, descriptive name for the detector.
+          maxLength: 200
+        query:
+          type: string
+          readOnly: true
+          description: A question about the image.
+        group_name:
+          type: string
+          readOnly: true
+          description: Which group should this detector be part of?
+        confidence_threshold:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+          default: 0.9
+          description: If our detector's prediction is below this confidence threshold,
+            send the image query for human review.
+      required:
+      - created_at
+      - group_name
+      - id
+      - name
+      - query
+      - type
+      x-internal: true
+    DetectorCreationInput:
+      type: object
+      description: Helper serializer for validating POST /detectors input.
+      properties:
+        name:
+          type: string
+          description: A short, descriptive name for the detector.
+          maxLength: 200
+        query:
+          type: string
+          description: A question about the image.
+          maxLength: 300
+        group_name:
+          type: string
+          description: Which group should this detector be part of?
+          maxLength: 100
+        confidence_threshold:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+          default: 0.9
+          description: If our detector's prediction is below this confidence threshold,
+            send the image query for human review.
+      required:
+      - name
+      - query
+      x-internal: true
+    DetectorTypeEnum:
+      enum:
+      - detector
+      type: string
+    ImageQuery:
+      type: object
+      description: Spec for serializing a image-query object in the public API.
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: A unique ID for this object.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/ImageQueryTypeEnum'
+          readOnly: true
+          description: The type of this object.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When was this detector created?
+        query:
+          type: string
+          readOnly: true
+          description: A question about the image.
+        detector_id:
+          type: string
+          readOnly: true
+          description: Which detector was used on this image query?
+        result_type:
+          allOf:
+          - $ref: '#/components/schemas/ResultTypeEnum'
+          readOnly: true
+          description: What type of result are we returning?
+        result:
+          allOf:
+          - $ref: '#/components/schemas/ClassificationResult'
+          readOnly: true
+      required:
+      - created_at
+      - detector_id
+      - id
+      - query
+      - result
+      - result_type
+      - type
+      x-internal: true
+    ImageQueryTypeEnum:
+      enum:
+      - image_query
+      type: string
+    PaginatedDetectorList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Detector'
+    PaginatedImageQueryList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageQuery'
+    ResultTypeEnum:
+      enum:
+      - binary_classification
+      type: string
+  securitySchemes:
+    ApiToken:
+      name: x-api-token
+      type: apiKey
+      in: header
+servers:
+- url: https://device.positronix.ai/device-api
+  description: Device Prod
+- url: https://device.integ.positronix.ai/device-api
+  description: Device Integ
+- url: https://api.groundlight.ai
+  description: Prod
+- url: https://api.integ.groundlight.ai
+  description: Integ
