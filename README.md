@@ -68,7 +68,7 @@ except ApiException as e:
 
 ## Development
 
-To re-generate the client code:
+The auto-generated SDK code is in the `generated/` directory. To re-generate the client code:
 
 ```Bash
 $ make generate
@@ -77,8 +77,6 @@ $ make generate
 ## TODOs
 
 - Tests
-- Publish package (so we can do `pip install groundlight` or `poetry add groundlight` outside this repo)
-  - Do it through github actions on tag, for example
 - Improve wrappers around API functions (e.g., so you don't have to call `.body` on a response, or add auto-pagination managers, etc.)
 - `with` context manager
 - Better auto-generated code docs

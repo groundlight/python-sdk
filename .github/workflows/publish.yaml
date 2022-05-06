@@ -1,0 +1,36 @@
+# When a release is created on github, publish the groundlight package to our internal pypi repository
+# (Similar to https://github.com/positronix-ai/predictors/blob/main/.github/workflows/publish.yaml)
+name: publish package
+on:
+  release:
+    types: [created]
+jobs:
+  publish-python-package:
+    runs-on: ubuntu-latest
+    env:
+      INTERNAL_REPO_URL: https://positronix-723181461334.d.codeartifact.us-west-2.amazonaws.com/pypi/internal/
+    steps:
+      - name: install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: install poetry
+        run: |
+          pip install -U pip
+          pip install poetry
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - name: get code
+        uses: actions/checkout@v2
+      - name: build package
+        run: poetry build
+      - name: configure poetry and publish
+        run: |
+          export POETRY_HTTP_BASIC_INTERNAL_USERNAME=aws
+          export POETRY_HTTP_BASIC_INTERNAL_PASSWORD=$(aws codeartifact get-authorization-token --domain positronix --query authorizationToken --output text)
+          poetry config repositories.internal $INTERNAL_REPO_URL
+          poetry publish -r internal
