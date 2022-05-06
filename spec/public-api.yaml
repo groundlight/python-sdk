@@ -2,14 +2,14 @@ openapi: 3.0.3
 info:
   title: Groundlight API
   version: 0.1.0
-  description: Ask visual queries and get answers.
+  description: Ask visual queries.
   contact:
     name: Questions?
     email: support@groundlight.ai
 paths:
   /v1/detectors:
     get:
-      operationId: Retrieve detectors
+      operationId: List detectors
       description: Retrieve a list of detectors.
       parameters:
       - name: page
@@ -27,7 +27,7 @@ paths:
       tags:
       - detectors
       security:
-      - ApiToken: []
+      - Api Token: []
       responses:
         '200':
           content:
@@ -36,7 +36,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedDetectorList'
           description: ''
     post:
-      operationId: Create a detector
+      operationId: Create detector
       description: Create a new detector.
       tags:
       - detectors
@@ -53,7 +53,7 @@ paths:
               $ref: '#/components/schemas/DetectorCreationInput'
         required: true
       security:
-      - ApiToken: []
+      - Api Token: []
       responses:
         '201':
           content:
@@ -63,7 +63,7 @@ paths:
           description: ''
   /v1/detectors/{id}:
     get:
-      operationId: Retrieve a detector
+      operationId: Get detector
       description: Retrieve a detector by its ID.
       parameters:
       - in: path
@@ -75,7 +75,7 @@ paths:
       tags:
       - detectors
       security:
-      - ApiToken: []
+      - Api Token: []
       responses:
         '200':
           content:
@@ -85,7 +85,7 @@ paths:
           description: ''
   /v1/image-queries:
     get:
-      operationId: Retrieve image queries
+      operationId: List image queries
       description: Retrieve a list of image-queries.
       parameters:
       - name: page
@@ -103,7 +103,7 @@ paths:
       tags:
       - image-queries
       security:
-      - ApiToken: []
+      - Api Token: []
       responses:
         '200':
           content:
@@ -112,7 +112,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedImageQueryList'
           description: ''
     post:
-      operationId: Submit an image query
+      operationId: Submit image query
       description: |2+
 
         Submit an image query against a detector.
@@ -150,7 +150,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ImageQuery'
       security:
-      - ApiToken: []
+      - Api Token: []
       responses:
         '201':
           content:
@@ -160,7 +160,7 @@ paths:
           description: ''
   /v1/image-queries/{id}:
     get:
-      operationId: Retrieve an image query
+      operationId: Get image query
       description: Retrieve an image-query by its ID.
       parameters:
       - in: path
@@ -172,7 +172,7 @@ paths:
       tags:
       - image-queries
       security:
-      - ApiToken: []
+      - Api Token: []
       responses:
         '200':
           content:
@@ -217,7 +217,7 @@ components:
           type: string
           format: date-time
           readOnly: true
-          description: When was this detector created?
+          description: When this detector was created.
         name:
           type: string
           description: A short, descriptive name for the detector.
@@ -236,7 +236,7 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description: If our detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
       required:
       - created_at
@@ -268,7 +268,7 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description: If our detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
       required:
       - name
@@ -371,7 +371,7 @@ components:
       - binary_classification
       type: string
   securitySchemes:
-    ApiToken:
+    Api Token:
       name: x-api-token
       type: apiKey
       in: header
