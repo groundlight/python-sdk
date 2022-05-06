@@ -24,7 +24,7 @@ class Groundlight(DetectorsApi, ImageQueriesApi):
     ```
     """
 
-    def __init__(self, host: str = "https://device.positronix.api/device-api"):
+    def __init__(self, host: str = "https://device.positronix.ai/device-api"):
         """
         :param host: optionally specify a different endpoint
         """
