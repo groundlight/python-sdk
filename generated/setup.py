@@ -3,7 +3,7 @@
 """
     Groundlight API
 
-    Ask visual queries and get answers.  # noqa: E501
+    Ask visual queries.  # noqa: E501
 
     The version of the OpenAPI document: 0.1.0
     Contact: support@groundlight.ai
@@ -41,6 +41,6 @@ setup(
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
     long_description="""\
-    Ask visual queries and get answers.  # noqa: E501
+    Ask visual queries.  # noqa: E501
     """
 )

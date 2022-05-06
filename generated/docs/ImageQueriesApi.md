@@ -4,12 +4,12 @@ All URIs are relative to *https://device.positronix.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**retrieve_an_image_query**](ImageQueriesApi.md#retrieve_an_image_query) | **GET** /v1/image-queries/{id} | 
-[**retrieve_image_queries**](ImageQueriesApi.md#retrieve_image_queries) | **GET** /v1/image-queries | 
-[**submit_an_image_query**](ImageQueriesApi.md#submit_an_image_query) | **POST** /v1/image-queries | 
+[**get_image_query**](ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
+[**list_image_queries**](ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
+[**submit_image_query**](ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
 
-# **retrieve_an_image_query**
-> ImageQuery retrieve_an_image_query(id)
+# **get_image_query**
+> ImageQuery get_image_query(id)
 
 
 
@@ -49,12 +49,12 @@ with openapi_client.ApiClient(configuration) as api_client:
         'id': "id_example",
     }
     try:
-        api_response = api_instance.retrieve_an_image_query(
+        api_response = api_instance.get_image_query(
             path_params=path_params,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling ImageQueriesApi->retrieve_an_image_query: %s\n" % e)
+        print("Exception when calling ImageQueriesApi->get_image_query: %s\n" % e)
 ```
 ### Parameters
 
@@ -108,8 +108,8 @@ Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **retrieve_image_queries**
-> PaginatedImageQueryList retrieve_image_queries()
+# **list_image_queries**
+> PaginatedImageQueryList list_image_queries()
 
 
 
@@ -150,12 +150,12 @@ with openapi_client.ApiClient(configuration) as api_client:
         'page_size': 1,
     }
     try:
-        api_response = api_instance.retrieve_image_queries(
+        api_response = api_instance.list_image_queries(
             query_params=query_params,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling ImageQueriesApi->retrieve_image_queries: %s\n" % e)
+        print("Exception when calling ImageQueriesApi->list_image_queries: %s\n" % e)
 ```
 ### Parameters
 
@@ -217,8 +217,8 @@ Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **submit_an_image_query**
-> ImageQuery submit_an_image_query(detector_id)
+# **submit_image_query**
+> ImageQuery submit_image_query(detector_id)
 
 
 
@@ -258,12 +258,12 @@ with openapi_client.ApiClient(configuration) as api_client:
         'detector_id': "detector_id_example",
     }
     try:
-        api_response = api_instance.submit_an_image_query(
+        api_response = api_instance.submit_image_query(
             query_params=query_params,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling ImageQueriesApi->submit_an_image_query: %s\n" % e)
+        print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
 
     # example passing only optional values
     query_params = {
@@ -279,13 +279,13 @@ with openapi_client.ApiClient(configuration) as api_client:
         result=,
     )
     try:
-        api_response = api_instance.submit_an_image_query(
+        api_response = api_instance.submit_image_query(
             query_params=query_params,
             body=body,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling ImageQueriesApi->submit_an_image_query: %s\n" % e)
+        print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
 ```
 ### Parameters
 
