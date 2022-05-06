@@ -90,6 +90,7 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
 
 ## TODOs
 
+- `groundlight.submit_image_query()` doesn't work yet! We need to fix it!
 - Tests
 - Improve wrappers around API functions (e.g., so you don't have to call `.body` on a response, or add auto-pagination managers, etc.)
 - `with` context manager
