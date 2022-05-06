@@ -27,7 +27,8 @@ Now you can use the python SDK!
 ```Python
 from groundlight import Groundlight
 
-# Load the API client
+# Load the API client. This defaults to the prod endpoint, but you can specify a different
+# endpoint like so: gl = Groundlight(endpoint="https://device.integ.positronix.ai/device-api")
 gl = Groundlight()
 
 # Call an API method (e.g., retrieve a list of detectors)
