@@ -26,7 +26,7 @@ gl = Groundlight()
 
 # Call an API method (e.g., retrieve a list of detectors)
 # The response will be an API response object
-response = gl.retrieve_detectors()
+response = gl.list_detectors()
 
 # You can extract the body data using .body - in this case, a paginated list of detectors.
 detectors = response.body
@@ -50,7 +50,7 @@ from groundlight import ApiException, Groundlight
 
 gl = Groundlight()
 try:
-    detectors = gl.retrieve_detectors()
+    detectors = gl.list_detectors()
 except ApiException as e:
     print(e)
     print(e.args)

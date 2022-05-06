@@ -20,7 +20,7 @@ class Groundlight(DetectorsApi, ImageQueriesApi):
     Example usage:
     ```
     gl = Groundlight()
-    detectors = gl.retrieve_detectors().body
+    detectors = gl.list_detectors().body
     ```
     """
 
