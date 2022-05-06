@@ -1,0 +1,7 @@
+{
+    "python.formatting.blackArgs": ["--line-length", "120"],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+    },
+}
