@@ -98,4 +98,5 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
 - Better way of managing dependency on OpenAPI spec (right now, we just copy the file over manually)
 - Update the web links (links to website, link to API endpoint, etc.)
 - Add an image query long polling helper method (calls POST, then several GETs)
+- Add jpeg function helpers
 - ...

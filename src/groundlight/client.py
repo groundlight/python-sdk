@@ -26,7 +26,10 @@ class Groundlight(DetectorsApi, ImageQueriesApi):
 
     def __init__(self, host: str = "https://device.positronix.ai/device-api"):
         """
-        :param host: optionally specify a different endpoint
+        :param host: optionally specify a different endpoint. E.g.
+            - Prod (default): https://device.positronix.ai/device-api
+            - Integ: https://device.integ.positronix.ai/device-api
+            - Localhost tunnel to a GPU instance: http://localhost:8000/device-api
         """
         # Specify the endpoint
         configuration = Configuration(host=host)
