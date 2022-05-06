@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "groundlight-python-sdk"
+version = "0.1.0"
+description = "Call the Groundlight API from python"
+authors = ["Groundlight AI <support@groundlight.ai>"]
+packages = [
+    { include = "**/*.py", from = "src" },
+    { include = "**/*.py", from = "generated" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-dateutil = "^2.8.2"
+urllib3 = "^1.26.9"
+frozendict = "^2.3.2"
+certifi = "^2021.10.8"
+
+[tool.poetry.dev-dependencies]
+pytest-cov = "^3.0.0"
+pylint = "^2.13.8"
+black = "^22.3.0"
+flake8 = "^4.0.1"
+mypy = "^0.950"
+pytest = "^7.1.2"
+isort = "^5.10.1"
+autoflake = "^1.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
