@@ -74,6 +74,20 @@ The auto-generated SDK code is in the `generated/` directory. To re-generate the
 $ make generate
 ```
 
+## Releases
+
+To publish a new package version to our [internal pypi repository](https://github.com/positronix-ai/packaging/tree/main/aws), you need to create a release on github.
+
+```Bash
+# Create a git tag locally. Use semver "vX.Y.Z" format.
+$ git tag -a v0.1.2 -m "Short description"
+
+# Push the tag to the github repo
+$ git push origin --tags
+```
+
+Then, go to the [github repo](https://github.com/positronix-ai/groundlight-python-sdk/tags) -> choose your tag -> create a release -> type in some description -> release. A [github action](https://github.com/positronix-ai/groundlight-python-sdk/actions/workflows/publish.yaml) will trigger a release, and then `groundlight-X.Y.Z` will be available for consumers.
+
 ## TODOs
 
 - Tests
