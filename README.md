@@ -68,7 +68,7 @@ except ApiException as e:
 
 ## Development
 
-The auto-generated SDK code is in the `generated/` directory. To re-generate the client code:
+The auto-generated SDK code is in the `generated/` directory. To re-generate the client code, you'll need to install [openapi-generator](https://openapi-generator.tech/docs/installation#homebrew) (I recommend homebrew if you're on a mac). Then you can run it with:
 
 ```Bash
 $ make generate
@@ -76,7 +76,7 @@ $ make generate
 
 ## Releases
 
-To publish a new package version to our [internal pypi repository](https://github.com/positronix-ai/packaging/tree/main/aws), you need to create a release on github.
+To publish a new package version to our [internal pypi repository](https://github.com/positronix-ai/packaging/tree/main/aws), you create a release on github.
 
 ```Bash
 # Create a git tag locally. Use semver "vX.Y.Z" format.
@@ -86,7 +86,7 @@ $ git tag -a v0.1.2 -m "Short description"
 $ git push origin --tags
 ```
 
-Then, go to the [github repo](https://github.com/positronix-ai/groundlight-python-sdk/tags) -> choose your tag -> create a release -> type in some description -> release. A [github action](https://github.com/positronix-ai/groundlight-python-sdk/actions/workflows/publish.yaml) will trigger a release, and then `groundlight-X.Y.Z` will be available for consumers.
+Then, go to the [github repo](https://github.com/positronix-ai/groundlight-python-sdk/tags) -> choose your tag -> create a release from this tag -> type in some description -> release. A [github action](https://github.com/positronix-ai/groundlight-python-sdk/actions/workflows/publish.yaml) will trigger a release, and then `groundlight-X.Y.Z` will be available for consumers.
 
 ## TODOs
 
