@@ -92,6 +92,7 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
 ## TODOs
 
 - `groundlight.submit_image_query()` doesn't work yet! We need to fix it!
+- It would be nice to ahve a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
 - Tests
 - Improve wrappers around API functions (e.g., so you don't have to call `.body` on a response, or add auto-pagination managers, etc.)
 - `with` context manager
@@ -100,5 +101,5 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
 - Better way of managing dependency on OpenAPI spec (right now, we just copy the file over manually)
 - Update the web links (links to website, link to API endpoint, etc.)
 - Add an image query long polling helper method (calls POST, then several GETs)
-- Add jpeg function helpers
+- Add image/jpeg utilities
 - ...
