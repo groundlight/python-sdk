@@ -4,12 +4,12 @@ All URIs are relative to *https://device.positronix.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create_a_detector**](DetectorsApi.md#create_a_detector) | **POST** /v1/detectors | 
-[**retrieve_a_detector**](DetectorsApi.md#retrieve_a_detector) | **GET** /v1/detectors/{id} | 
-[**retrieve_detectors**](DetectorsApi.md#retrieve_detectors) | **GET** /v1/detectors | 
+[**create_detector**](DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
+[**get_detector**](DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
+[**list_detectors**](DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 
-# **create_a_detector**
-> Detector create_a_detector(detector_creation_input)
+# **create_detector**
+> Detector create_detector(detector_creation_input)
 
 
 
@@ -53,12 +53,12 @@ with openapi_client.ApiClient(configuration) as api_client:
         confidence_threshold=0.9,
     )
     try:
-        api_response = api_instance.create_a_detector(
+        api_response = api_instance.create_detector(
             body=body,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling DetectorsApi->create_a_detector: %s\n" % e)
+        print("Exception when calling DetectorsApi->create_detector: %s\n" % e)
 ```
 ### Parameters
 
@@ -120,8 +120,8 @@ Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **retrieve_a_detector**
-> Detector retrieve_a_detector(id)
+# **get_detector**
+> Detector get_detector(id)
 
 
 
@@ -161,12 +161,12 @@ with openapi_client.ApiClient(configuration) as api_client:
         'id': "id_example",
     }
     try:
-        api_response = api_instance.retrieve_a_detector(
+        api_response = api_instance.get_detector(
             path_params=path_params,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling DetectorsApi->retrieve_a_detector: %s\n" % e)
+        print("Exception when calling DetectorsApi->get_detector: %s\n" % e)
 ```
 ### Parameters
 
@@ -220,8 +220,8 @@ Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **retrieve_detectors**
-> PaginatedDetectorList retrieve_detectors()
+# **list_detectors**
+> PaginatedDetectorList list_detectors()
 
 
 
@@ -262,12 +262,12 @@ with openapi_client.ApiClient(configuration) as api_client:
         'page_size': 1,
     }
     try:
-        api_response = api_instance.retrieve_detectors(
+        api_response = api_instance.list_detectors(
             query_params=query_params,
         )
         pprint(api_response)
     except openapi_client.ApiException as e:
-        print("Exception when calling DetectorsApi->retrieve_detectors: %s\n" % e)
+        print("Exception when calling DetectorsApi->list_detectors: %s\n" % e)
 ```
 ### Parameters
 
