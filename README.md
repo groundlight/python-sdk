@@ -4,8 +4,14 @@ This package holds an SDK for accessing the Groundlight public API.
 
 ### Installation
 
+The package is published to our [internal pypi repository](https://github.com/positronix-ai/packaging/tree/main/aws), so you can install it with tools like `pip` or `poetry`.
+
 ```Bash
-$ poetry install
+# pip
+$ pip install groundlight
+
+# poetry
+$ poetry add groundlight
 ```
 
 ### Basic Usage
