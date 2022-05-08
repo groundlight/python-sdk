@@ -136,19 +136,14 @@ paths:
       - image-queries
       requestBody:
         content:
-          application/json:
+          image/jpeg:
             schema:
-              $ref: '#/components/schemas/ImageQuery'
+              type: string
+              format: binary
             examples:
               JPEGBinaryImageData:
                 value: '@path/to/image.jpeg'
                 summary: JPEG binary image data
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ImageQuery'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ImageQuery'
       security:
       - ApiToken: []
       responses:
@@ -189,9 +184,9 @@ components:
       properties:
         confidence:
           type: number
-          format: double
           maximum: 1
           minimum: 0
+          nullable: true
           description: On a scale of 0 to 1, how confident are we in the predicted
             label?
         label:

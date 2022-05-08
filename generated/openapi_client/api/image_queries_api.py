@@ -156,7 +156,7 @@ class ImageQueriesApi(object):
             params_map={
                 'all': [
                     'detector_id',
-                    'image_query',
+                    'body',
                 ],
                 'required': [
                     'detector_id',
@@ -176,15 +176,15 @@ class ImageQueriesApi(object):
                 'openapi_types': {
                     'detector_id':
                         (str,),
-                    'image_query':
-                        (ImageQuery,),
+                    'body':
+                        (file_type,),
                 },
                 'attribute_map': {
                     'detector_id': 'detector_id',
                 },
                 'location_map': {
                     'detector_id': 'query',
-                    'image_query': 'body',
+                    'body': 'body',
                 },
                 'collection_format_map': {
                 }
@@ -194,9 +194,7 @@ class ImageQueriesApi(object):
                     'application/json'
                 ],
                 'content_type': [
-                    'application/json',
-                    'application/x-www-form-urlencoded',
-                    'multipart/form-data'
+                    'image/jpeg'
                 ]
             },
             api_client=api_client
@@ -373,7 +371,7 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
-            image_query (ImageQuery): [optional]
+            body (file_type): [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object

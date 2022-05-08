@@ -87,7 +87,7 @@ class ClassificationResult(ModelNormal):
         """
         return {
             'label': (str,),  # noqa: E501
-            'confidence': (float,),  # noqa: E501
+            'confidence': (float, none_type,),  # noqa: E501
         }
 
     @cached_property
@@ -144,7 +144,7 @@ class ClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): On a scale of 0 to 1, how confident are we in the predicted label?. [optional]  # noqa: E501
+            confidence (float, none_type): On a scale of 0 to 1, how confident are we in the predicted label?. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop('_check_type', True)
@@ -230,7 +230,7 @@ class ClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): On a scale of 0 to 1, how confident are we in the predicted label?. [optional]  # noqa: E501
+            confidence (float, none_type): On a scale of 0 to 1, how confident are we in the predicted label?. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop('_check_type', True)
