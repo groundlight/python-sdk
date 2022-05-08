@@ -205,8 +205,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
-    image_query = ImageQuery(
-    ) # ImageQuery |  (optional)
+    body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
     # example passing only required values which don't have defaults set
     try:
@@ -218,7 +217,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.submit_image_query(detector_id, image_query=image_query)
+        api_response = api_instance.submit_image_query(detector_id, body=body)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
@@ -230,7 +229,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
- **image_query** | [**ImageQuery**](ImageQuery.md)|  | [optional]
+ **body** | **file_type**|  | [optional]
 
 ### Return type
 
@@ -242,7 +241,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
+ - **Content-Type**: image/jpeg
  - **Accept**: application/json
 
 

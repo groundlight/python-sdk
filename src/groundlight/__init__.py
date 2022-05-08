@@ -5,6 +5,3 @@ from openapi_client.apis import *
 
 # Imports from our code
 from .client import Groundlight
-
-# This import applies the patches
-from .patches import *
