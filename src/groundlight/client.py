@@ -88,6 +88,10 @@ class Groundlight:
         elif isinstance(image, BytesIO):
             # Already in the right format
             image_bytesio = image
+        else:
+            raise TypeError(
+                "Unsupported type for image. We only support JPEG images specified through a filename, bytes, or BytesIO object."
+            )
 
         obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
         return ImageQuery.parse_obj(obj.to_dict())
