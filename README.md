@@ -73,6 +73,38 @@ The auto-generated SDK code is in the `generated/` directory. To re-generate the
 $ make generate
 ```
 
+## Testing
+
+Most tests need an API endpoint to run.
+
+### Local API endpoint
+
+1. Set up a local [janzu API endpoint](https://github.com/positronix-ai/zuuul/blob/main/deploy/README.md#development-using-local-microk8s) running (e.g., on an AWS GPU instance).
+
+1. Set up an ssh tunnel to your laptop. That way, you can access the endpoint at http://localhost:8000/device-api (and the web UI at http://localhost:8000/reef):
+
+    ```Bash
+    $ ssh instance-name -L 8000:localhost:80
+    ```
+
+1. Run the tests (with an API token)
+
+    ```Bash
+    $ export GROUNDLIGHT_API_TOKEN=tok_abc123
+    $ make test-local
+    ```
+
+(Note: in theory, it's possible to run the janzu API server on your laptop without microk8s - but some API methods don't work because of the dependence on GPUs)
+
+### Integ API endpoint
+
+1. Run the tests (with an API token)
+
+    ```Bash
+    $ export GROUNDLIGHT_API_TOKEN=tok_abc123
+    $ make test-integ
+    ```
+
 ## Releases
 
 To publish a new package version to our [internal pypi repository](https://github.com/positronix-ai/packaging/tree/main/aws), you create a release on github.

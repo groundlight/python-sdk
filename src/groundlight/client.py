@@ -1,11 +1,14 @@
 import os
 from io import BytesIO
+from typing import Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import ApiClient, Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
+
+from groundlight.images import bytesio_from_jpeg_file
 
 API_TOKEN_WEB_URL = "https://app.positronix.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
@@ -75,6 +78,16 @@ class Groundlight:
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         return PaginatedImageQueryList.parse_obj(obj.to_dict())
 
-    def submit_image_query(self, detector_id: str, image_bytesio: BytesIO) -> ImageQuery:
+    def submit_image_query(self, detector_id: str, image: Union[str, bytes, BytesIO]) -> ImageQuery:
+        if isinstance(image, str):
+            # Assume it is a filename
+            image_bytesio = bytesio_from_jpeg_file(image)
+        elif isinstance(image, bytes):
+            # Create a BytesIO object
+            image_bytesio = BytesIO(image)
+        elif isinstance(image, BytesIO):
+            # Already in the right format
+            image_bytesio = image
+
         obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
         return ImageQuery.parse_obj(obj.to_dict())

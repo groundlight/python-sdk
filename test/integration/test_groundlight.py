@@ -1,14 +1,15 @@
+import os
 from datetime import datetime
 
 import pytest
 from groundlight import Groundlight
-from groundlight.images import jpeg_from_file
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
 @pytest.fixture
 def gl() -> Groundlight:
-    return Groundlight(endpoint="http://localhost:8000/device-api")
+    endpoint = os.environ.get("GROUNDLIGHT_TEST_API_ENDPOINT", "http://localhost:8000/device-api")
+    return Groundlight(endpoint=endpoint)
 
 
 @pytest.fixture
@@ -20,8 +21,7 @@ def detector(gl: Groundlight) -> Detector:
 
 @pytest.fixture
 def image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
-    image_bytesio = jpeg_from_file("test/assets/dog.jpeg")
-    return gl.submit_image_query(detector_id=detector.id, image_bytesio=image_bytesio)
+    return gl.submit_image_query(detector_id=detector.id, image="test/assets/dog.jpeg")
 
 
 @pytest.mark.skip(reason="We don't want to create a million detectors")
@@ -48,8 +48,7 @@ def test_get_detector(gl: Groundlight, detector: Detector):
 
 @pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
 def test_submit_image_query(gl: Groundlight, detector: Detector):
-    image_bytesio = jpeg_from_file("test/assets/dog.jpeg")
-    _image_query = gl.submit_image_query(detector_id=detector.id, image_bytesio=image_bytesio)
+    _image_query = gl.submit_image_query(detector_id=detector.id, image="test/assets/dog.jpeg")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
 

@@ -43,10 +43,7 @@ detectors = gl.list_detectors(page=3, page_size=25)
 #### Submit an image query
 
 ```Python
-from groundlight.images import jpeg_from_file # utility function for convenience
-
-image_bytesio = jpeg_from_file("test/assets/dog.jpeg")
-image_query = gl.submit_image_query(detector_id="YOUR_DETECTOR_ID", image_bytesio=image_bytesio)
+image_query = gl.submit_image_query(detector_id="YOUR_DETECTOR_ID", image="path/to/filename.jpeg")
 ```
 
 #### Retrieve an image query

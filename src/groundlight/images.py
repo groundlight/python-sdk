@@ -3,7 +3,7 @@ import io
 from PIL import Image
 
 
-def jpeg_from_file(image_filename) -> io.BytesIO:
+def bytesio_from_jpeg_file(image_filename) -> io.BytesIO:
     """
     Get a BytesIO object from a JPEG filename.
     """
