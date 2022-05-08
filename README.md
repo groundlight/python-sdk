@@ -89,14 +89,16 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
 
 ## TODOs
 
-- It would be nice to have a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
 - Figure out how we want to handle tests (since almost everything is an integration test). And, running the stateful (creation) tests can lead to a bunch of objects in the DB.
 - Improve wrappers around API functions (e.g., simplify the responses even further, add auto-pagination managers, etc.)
-  - The SDK should allow you to work with the most natural interface, rather than trying to mirror the REST API.
-- `with` context manager
-- Better auto-generated code docs
+  - The SDK should allow you to work with the most natural interface, rather than trying to exactly mirror the REST API.
+  - E.g.
+    - Add an image query long polling helper method (calls POST, then several GETs)
+    - It would be nice to have a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
+- Better auto-generated code docs (e.g. [sphinx](https://www.sphinx-doc.org/en/master/))
+  - Model types (e.g., [autodoc_pydantic](https://github.com/mansenfranzen/autodoc_pydantic))
 - Better versioning strategy
 - Better way of managing dependency on `public-ai.yaml` OpenAPI spec (right now, we just copy the file over manually)
 - Update the web links (links to website, link to API endpoint, etc.)
-- Add an image query long polling helper method (calls POST, then several GETs)
+- `with` context manager (auto cleanup the client object)
 - ...
