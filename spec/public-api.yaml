@@ -189,9 +189,9 @@ components:
       properties:
         confidence:
           type: number
-          format: double
           maximum: 1
           minimum: 0
+          nullable: true
           description: On a scale of 0 to 1, how confident are we in the predicted
             label?
         label:

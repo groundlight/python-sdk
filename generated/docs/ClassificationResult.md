@@ -5,7 +5,7 @@ Our classification result. This result can come from the detector, or a human re
 #### Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**confidence** | **int, float** | On a scale of 0 to 1, how confident are we in the predicted label? | [optional] 
+**confidence** | **int, float, none_type** | On a scale of 0 to 1, how confident are we in the predicted label? | [optional] 
 **label** | **str** | What is the predicted label? | 
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 

@@ -80,9 +80,22 @@ class ClassificationResult(
             inclusive_maximum=1,
             inclusive_minimum=0,
         ),
-        Float64Schema
+        _SchemaTypeChecker(typing.Union[none_type, decimal.Decimal, ]),
+        NumberBase,
+        NoneBase,
+        Schema
     ):
-        pass
+    
+        def __new__(
+            cls,
+            *args: typing.Union[float, None, ],
+            _instantiation_metadata: typing.Optional[InstantiationMetadata] = None,
+        ) -> 'confidence':
+            return super().__new__(
+                cls,
+                *args,
+                _instantiation_metadata=_instantiation_metadata,
+            )
     label = StrSchema
 
 
