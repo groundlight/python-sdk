@@ -23,7 +23,7 @@ class Groundlight:
     Example usage:
     ```
     gl = Groundlight()
-    detectors = gl.list_detectors().body
+    detectors = gl.list_detectors()
     ```
     """
 
@@ -55,26 +55,26 @@ class Groundlight:
         self.detectors_api = DetectorsApi(ApiClient(configuration))
         self.image_queries_api = ImageQueriesApi(ApiClient(configuration))
 
-    def get_detector(self, *args, **kwargs):
-        obj = self.detectors_api.get_detector(*args, **kwargs)
+    def get_detector(self, id: str) -> Detector:
+        obj = self.detectors_api.get_detector(id=id)
         return Detector.parse_obj(obj.to_dict())
 
-    def list_detectors(self, *args, **kwargs):
-        obj = self.detectors_api.list_detectors(*args, **kwargs)
+    def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
+        obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(self, *args, **kwargs):
-        obj = self.detectors_api.create_detector(DetectorCreationInput(*args, **kwargs))
+    def create_detector(self, name: str, query: str) -> Detector:
+        obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query))
         return Detector.parse_obj(obj.to_dict())
 
-    def get_image_query(self, *args, **kwargs):
-        obj = self.image_queries_api.get_image_query(*args, **kwargs)
+    def get_image_query(self, id: str) -> ImageQuery:
+        obj = self.image_queries_api.get_image_query(id=id)
         return ImageQuery.parse_obj(obj.to_dict())
 
-    def list_image_queries(self, *args, **kwargs):
-        obj = self.image_queries_api.list_image_queries(*args, **kwargs)
+    def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
+        obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         return PaginatedImageQueryList.parse_obj(obj.to_dict())
 
-    def submit_image_query(self, detector_id: str, image_bytesio: BytesIO):
+    def submit_image_query(self, detector_id: str, image_bytesio: BytesIO) -> ImageQuery:
         obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
         return ImageQuery.parse_obj(obj.to_dict())

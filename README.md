@@ -32,11 +32,7 @@ from groundlight import Groundlight
 gl = Groundlight()
 
 # Call an API method (e.g., retrieve a list of detectors)
-# The response will be an API response object
-response = gl.list_detectors()
-
-# You can extract the body data using .body - in this case, a paginated list of detectors.
-detectors = response.body
+detectors = gl.list_detectors()
 
 # You can access the fields, too! Your IDE should show type hints / autocomplete
 # with these objects.
@@ -46,7 +42,9 @@ print(f"Found {detectors.count} detectors!")
 
 ### What API methods are available?
 
-All the auto-generated methods are listed [here](generated/README.md#documentation-for-api-endpoints) - you can access these methods directly through the `Groundlight` API object. This SDK closely follows the methods in our [API Docs](https://app.positronix.ai/reef/admin/api-docs).
+Check out the [Examples](Examples.md)!
+
+For more details, see the [Groundlight](src/groundlight/client.py) class. This SDK closely follows the methods in our [API Docs](https://app.positronix.ai/reef/admin/api-docs).
 
 ### Handling HTTP errors
 
@@ -91,15 +89,14 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
 
 ## TODOs
 
-- `groundlight.submit_image_query()` doesn't work yet! We need to fix it!
-- It would be nice to ahve a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
-- Tests
-- Improve wrappers around API functions (e.g., so you don't have to call `.body` on a response, or add auto-pagination managers, etc.)
+- It would be nice to have a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
+- Figure out how we want to handle tests (since almost everything is an integration test). And, running the stateful (creation) tests can lead to a bunch of objects in the DB.
+- Improve wrappers around API functions (e.g., simplify the responses even further, add auto-pagination managers, etc.)
+  - The SDK should allow you to work with the most natural interface, rather than trying to mirror the REST API.
 - `with` context manager
 - Better auto-generated code docs
 - Better versioning strategy
-- Better way of managing dependency on OpenAPI spec (right now, we just copy the file over manually)
+- Better way of managing dependency on `public-ai.yaml` OpenAPI spec (right now, we just copy the file over manually)
 - Update the web links (links to website, link to API endpoint, etc.)
 - Add an image query long polling helper method (calls POST, then several GETs)
-- Add image/jpeg utilities
 - ...

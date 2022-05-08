@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from groundlight import Groundlight
 from groundlight.images import jpeg_from_file
-from openapi_client.model.detector import Detector
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
 @pytest.fixture
@@ -18,36 +18,50 @@ def detector(gl: Groundlight) -> Detector:
     return gl.create_detector(name=name, query=query)
 
 
+@pytest.fixture
+def image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
+    image_bytesio = jpeg_from_file("test/assets/dog.jpeg")
+    return gl.submit_image_query(detector_id=detector.id, image_bytesio=image_bytesio)
+
+
 @pytest.mark.skip(reason="We don't want to create a million detectors")
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Test query?"
-    detector = gl.create_detector(name=name, query=query)
-    assert str(detector)
+    _detector = gl.create_detector(name=name, query=query)
+    assert str(_detector)
+    assert isinstance(_detector, Detector)
 
 
 def test_list_detectors(gl: Groundlight):
     detectors = gl.list_detectors()
     assert str(detectors)
+    assert isinstance(detectors, PaginatedDetectorList)
 
 
 @pytest.mark.skip(reason="We don't want to create a million detectors")
 def test_get_detector(gl: Groundlight, detector: Detector):
-    detector = gl.get_detector(id=detector.id)
-    assert str(detector)
+    _detector = gl.get_detector(id=detector.id)
+    assert str(_detector)
+    assert isinstance(_detector, Detector)
 
 
-def test_submit_image_query(gl: Groundlight):
+@pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
+def test_submit_image_query(gl: Groundlight, detector: Detector):
     image_bytesio = jpeg_from_file("test/assets/dog.jpeg")
-    image_query = gl.submit_image_query(detector_id="det_28oN8XiaZOdhXd8uZPgosivDbvl", image_bytesio=image_bytesio)
-    assert str(image_query)
+    _image_query = gl.submit_image_query(detector_id=detector.id, image_bytesio=image_bytesio)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
 
 
 def test_list_image_queries(gl: Groundlight):
     image_queries = gl.list_image_queries()
     assert str(image_queries)
+    assert isinstance(image_queries, PaginatedImageQueryList)
 
 
-def test_get_image_query(gl: Groundlight):
-    image_query = gl.get_image_query(id="chk_28rFntQZjhQ7a1przsPMConQ6XL")
-    assert str(image_query)
+@pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
+def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
+    _image_query = gl.get_image_query(id=image_query.id)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
