@@ -1,8 +1,11 @@
 import os
+from io import BytesIO
 
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import ApiClient, Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 API_TOKEN_WEB_URL = "https://app.positronix.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
@@ -12,7 +15,7 @@ class ApiTokenError(Exception):
     pass
 
 
-class Groundlight(DetectorsApi, ImageQueriesApi):
+class Groundlight:
     """
     A convenience wrapper around the generated API classes.
     The API token (auth) is specified through the GROUNDLIGHT_API_TOKEN environment variable by default.
@@ -48,4 +51,30 @@ class Groundlight(DetectorsApi, ImageQueriesApi):
                 ) from e
 
         configuration.api_key["ApiToken"] = api_token
-        super().__init__(ApiClient(configuration))
+
+        self.detectors_api = DetectorsApi(ApiClient(configuration))
+        self.image_queries_api = ImageQueriesApi(ApiClient(configuration))
+
+    def get_detector(self, *args, **kwargs):
+        obj = self.detectors_api.get_detector(*args, **kwargs)
+        return Detector.parse_obj(obj.to_dict())
+
+    def list_detectors(self, *args, **kwargs):
+        obj = self.detectors_api.list_detectors(*args, **kwargs)
+        return PaginatedDetectorList.parse_obj(obj.to_dict())
+
+    def create_detector(self, *args, **kwargs):
+        obj = self.detectors_api.create_detector(DetectorCreationInput(*args, **kwargs))
+        return Detector.parse_obj(obj.to_dict())
+
+    def get_image_query(self, *args, **kwargs):
+        obj = self.image_queries_api.get_image_query(*args, **kwargs)
+        return ImageQuery.parse_obj(obj.to_dict())
+
+    def list_image_queries(self, *args, **kwargs):
+        obj = self.image_queries_api.list_image_queries(*args, **kwargs)
+        return PaginatedImageQueryList.parse_obj(obj.to_dict())
+
+    def submit_image_query(self, detector_id: str, image_bytesio: BytesIO):
+        obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        return ImageQuery.parse_obj(obj.to_dict())
