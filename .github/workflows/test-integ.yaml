@@ -1,0 +1,22 @@
+# Run integration tests against the integ API endpoint
+name: test integ
+on: [push]
+jobs:
+  run-pytest:
+    runs-on: ubuntu-latest
+    env:
+      GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
+    steps:
+      - name: get code
+        uses: actions/checkout@v2
+      - name: install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: install poetry
+        run: |
+          pip install -U pip
+          pip install poetry
+          poetry install
+      - name: run tests
+        run: make test-integ
