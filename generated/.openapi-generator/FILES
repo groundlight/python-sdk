@@ -1,6 +1,5 @@
 .gitignore
 .gitlab-ci.yml
-.openapi-generator-ignore
 .travis.yml
 README.md
 docs/ClassificationResult.md
@@ -41,15 +40,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_classification_result.py
-test/test_detector.py
-test/test_detector_creation_input.py
-test/test_detector_type_enum.py
-test/test_detectors_api.py
-test/test_image_queries_api.py
-test/test_image_query.py
-test/test_image_query_type_enum.py
-test/test_paginated_detector_list.py
-test/test_paginated_image_query_list.py
-test/test_result_type_enum.py
 tox.ini
