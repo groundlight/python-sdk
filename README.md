@@ -4,7 +4,7 @@ This package holds an SDK for accessing the Groundlight public API.
 
 ### Installation
 
-The package is published to our [internal pypi repository](https://github.com/positronix-ai/packaging/tree/main/aws), so you can install it with tools like `pip` or `poetry`.
+[Make sure you have internal pypi credentials set up](https://github.com/positronix-ai/tools/blob/main/internal-pip-login.sh), and then install with `pip` or `poetry`.
 
 ```Bash
 # pip
@@ -27,43 +27,21 @@ Now you can use the python SDK!
 ```Python
 from groundlight import Groundlight
 
-# Load the API client. This defaults to the prod endpoint, but you can specify a different
-# endpoint like so: gl = Groundlight(endpoint="https://device.integ.positronix.ai/device-api")
+# Load the API client. This defaults to the prod endpoint,
+# but you can specify a different endpoint like so:
+# gl = Groundlight(endpoint="https://device.integ.positronix.ai/device-api")
 gl = Groundlight()
 
 # Call an API method (e.g., retrieve a list of detectors)
 detectors = gl.list_detectors()
-
-# You can access the fields, too! Your IDE should show type hints / autocomplete
-# with these objects.
-# See more details on the API docs (https://app.positronix.ai/reef/admin/api-docs).
-print(f"Found {detectors.count} detectors!")
 ```
 
 ### What API methods are available?
 
-Check out the [Examples](Examples.md)!
+Check out the [User Guide](UserGuide.md)!
 
 For more details, see the [Groundlight](src/groundlight/client.py) class. This SDK closely follows the methods in our [API Docs](https://app.positronix.ai/reef/admin/api-docs).
 
-### Handling HTTP errors
-
-If there is an HTTP error during an API call, it will raise an `ApiException`. You can access different metadata from that exception:
-
-```Python
-from groundlight import ApiException, Groundlight
-
-gl = Groundlight()
-try:
-    detectors = gl.list_detectors()
-except ApiException as e:
-    print(e)
-    print(e.args)
-    print(e.body)
-    print(e.headers)
-    print(e.reason)
-    print(e.status)
-```
 
 ## Development
 
@@ -129,8 +107,11 @@ Then, go to the [github repo](https://github.com/positronix-ai/groundlight-pytho
     - It would be nice to have a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
 - Better auto-generated code docs (e.g. [sphinx](https://www.sphinx-doc.org/en/master/))
   - Model types (e.g., [autodoc_pydantic](https://github.com/mansenfranzen/autodoc_pydantic))
-- Better versioning strategy
-- Better way of managing dependency on `public-ai.yaml` OpenAPI spec (right now, we just copy the file over manually)
+  - Cleaner auto-generated model names (e.g., `PaginatedDetectorList` is a little ugly)
+- Better versioning strategy. On the one hand, this package will closely follow the versioning in the HTTP API. On the other hand, we may add features in the client (like image utils, shortcuts, etc.) that are not in the REST API.
+- Better way of managing dependency on `public-api.yaml` OpenAPI spec (right now, we just copy the file over manually)
 - Update the web links (links to website, link to API endpoint, etc.)
 - `with` context manager (auto cleanup the client object)
+- It would be great to add notebooks with interactive examples that can actually run out of the box
+- Have a cleaner distinction between dev docs and user guide docs
 - ...

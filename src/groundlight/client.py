@@ -1,5 +1,5 @@
 import os
-from io import BytesIO
+from io import BufferedReader, BytesIO
 from typing import Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
@@ -8,7 +8,7 @@ from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.images import bytesio_from_jpeg_file
+from groundlight.images import buffer_from_jpeg_file
 
 API_TOKEN_WEB_URL = "https://app.positronix.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
@@ -79,18 +79,19 @@ class Groundlight:
         return PaginatedImageQueryList.parse_obj(obj.to_dict())
 
     def submit_image_query(self, detector_id: str, image: Union[str, bytes, BytesIO]) -> ImageQuery:
+        image_bytesio: Union[BytesIO, BufferedReader]
         if isinstance(image, str):
             # Assume it is a filename
-            image_bytesio = bytesio_from_jpeg_file(image)
+            image_bytesio = buffer_from_jpeg_file(image)
         elif isinstance(image, bytes):
             # Create a BytesIO object
             image_bytesio = BytesIO(image)
-        elif isinstance(image, BytesIO):
+        elif isinstance(image, BytesIO) or isinstance(image, BufferedReader):
             # Already in the right format
             image_bytesio = image
         else:
             raise TypeError(
-                "Unsupported type for image. We only support JPEG images specified through a filename, bytes, or BytesIO object."
+                "Unsupported type for image. We only support JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
             )
 
         obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)

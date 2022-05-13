@@ -1,14 +1,14 @@
+import imghdr
 import io
 
-from PIL import Image
 
+def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
+    """
+    Get a buffer from an jpeg image file.
 
-def bytesio_from_jpeg_file(image_filename) -> io.BytesIO:
+    For now, we only support JPEG files, and raise an ValueError otherwise.
     """
-    Get a BytesIO object from a JPEG filename.
-    """
-    img = Image.open(image_filename)
-    with io.BytesIO() as buf:
-        img.save(buf, "jpeg")
-        _bytes = buf.getvalue()
-    return io.BytesIO(_bytes)
+    if imghdr.what(image_filename) == "jpeg":
+        return open(image_filename, "rb")
+    else:
+        raise ValueError("We only support JPEG files, for now.")
