@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "groundlight"
-version = "0.1.5"
+version = "0.1.6"
 description = "Call the Groundlight API from python"
 authors = ["Groundlight AI <support@groundlight.ai>"]
 packages = [
@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 python-dateutil = "^2.8.2"
 urllib3 = "^1.26.9"
 frozendict = "^2.3.2"
