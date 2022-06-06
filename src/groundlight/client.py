@@ -32,10 +32,7 @@ class Groundlight:
 
     def __init__(self, endpoint: str = "https://device.positronix.ai/device-api", api_token: str = None):
         """
-        :param endpoint: optionally specify a different endpoint. E.g.
-            - Prod (default): https://device.positronix.ai/device-api
-            - Integ: https://device.integ.positronix.ai/device-api
-            - Localhost tunnel to a GPU instance: http://localhost:8000/device-api
+        :param endpoint: optionally specify a different endpoint
         :param api_token: use this API token for your API calls. If unset, fallback to the
             environment variable "GROUNDLIGHT_API_TOKEN".
         """

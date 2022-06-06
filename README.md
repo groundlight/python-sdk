@@ -4,7 +4,7 @@ This package holds an SDK for accessing the Groundlight public API.
 
 ### Installation
 
-[Make sure you have internal pypi credentials set up](https://github.com/positronix-ai/tools/blob/main/internal-pip-login.sh), and then install with `pip` or `poetry`.
+Install with `pip` or `poetry`.
 
 ```Bash
 # pip

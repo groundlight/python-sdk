@@ -4,7 +4,7 @@
 
 For all the examples, there are 3 pre-reqs:
 
-1. [Make sure you have internal pypi credentials set up](https://github.com/positronix-ai/tools/blob/main/internal-pip-login.sh), and then install with `pip` or `poetry`.
+1. Install with `pip` or `poetry`.
 
     ```Bash
     # pip
@@ -14,7 +14,7 @@ For all the examples, there are 3 pre-reqs:
     $ poetry add groundlight
     ```
 
-1. To access the API, you need an API token. You can create one at [app.groundlight.ai](https://app.positronix.ai/reef/my-account/api-tokens). Then, add it as an environment variable called `GROUNDLIGHT_API_TOKEN`:
+1. To access the API, you need an API token. You can create one in the [groundlight app](https://app.positronix.ai/reef/my-account/api-tokens). Then, add it as an environment variable called `GROUNDLIGHT_API_TOKEN`:
 
     ```Bash
     $ export GROUNDLIGHT_API_TOKEN=tok_abc123
@@ -75,24 +75,6 @@ image_queries = gl.list_image_queries(page=3, page_size=25)
 ```
 
 ## Advanced
-
-#### Use a different API endpoint
-
-```Python
-from groundlight import Groundlight
-
-# Integ
-integ_gl = Groundlight(endpoint="https://device.integ.positronix.ai/device-api")
-
-# Local
-local_gl = Groundlight(endpoint="http://localhost:8000/device-api")
-```
-
-#### Do more with the object models
-
-You can see the different model types [here](generated/model.py). (TODO: Use something like [autodoc_pydantic](https://github.com/mansenfranzen/autodoc_pydantic) to create docs).
-
-All of the `Groundlight` methods return [pydantic](https://pydantic-docs.helpmanual.io/) models - `Detector`, `ImageQuery`, `PaginatedDetectorList`, etc. This provides several benefits: you can access model fields with dot notation, get auto-complete in your IDE, have `model.dict()`, `model.json()`, `model.pickle()` serializers, etc. See more on the [pydantic docs](https://pydantic-docs.helpmanual.io/usage/models/).
 
 ### Handling HTTP errors
 
