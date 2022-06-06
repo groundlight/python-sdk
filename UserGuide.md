@@ -1,17 +1,15 @@
 # User Guide
 
+`groundlight` is a python SDK for working with the Groundlight API. You can send image queries and receive predictions powered by a mixture of machine learning models and human labelers in-the-loop.
+
+*Note: The SDK is currently in "alpha" phase.*
+
 ## Pre-reqs
 
-For all the examples, there are 3 pre-reqs:
-
-1. Install with `pip` or `poetry`.
+1. Install the `groundlight` sdk.
 
     ```Bash
-    # pip
     $ pip install groundlight
-
-    # poetry
-    $ poetry add groundlight
     ```
 
 1. To access the API, you need an API token. You can create one in the [groundlight app](https://app.positronix.ai/reef/my-account/api-tokens). Then, add it as an environment variable called `GROUNDLIGHT_API_TOKEN`:
