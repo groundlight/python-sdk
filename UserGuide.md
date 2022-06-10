@@ -12,18 +12,17 @@
     $ pip install groundlight
     ```
 
-1. To access the API, you need an API token. You can create one in the [groundlight app](https://app.positronix.ai/reef/my-account/api-tokens). Then, add it as an environment variable called `GROUNDLIGHT_API_TOKEN`:
+1. To access the API, you need an API token. You can create one on the [groundlight website](https://app.positronix.ai/reef/my-account/api-tokens).
 
-    ```Bash
-    $ export GROUNDLIGHT_API_TOKEN=tok_abc123
-    ```
-
-1. Create the `Groundlight` API client. We usually use `gl` as a shorthand name, but you are free to name it what you like!
+1. Use the `Groundlight` client!
    
     ```Python
     from groundlight import Groundlight
-    gl = Groundlight()
+    gl = Groundlight(api_token="<YOUR_API_TOKEN>")
     ```
+
+    The API token should be stored securely - do not commit it to version control! Alternatively, you can use the token by setting the `GROUNDLIGHT_API_TOKEN` environment variable.
+
 ## Basics
 
 #### Create a new detector
