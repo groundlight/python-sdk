@@ -4,7 +4,7 @@ This package holds an SDK for accessing the Groundlight public API.
 
 ### Installation
 
-[Make sure you have internal pypi credentials set up](https://github.com/positronix-ai/tools/blob/main/internal-pip-login.sh), and then install with `pip` or `poetry`.
+Install with `pip` or `poetry`.
 
 ```Bash
 # pip
@@ -16,13 +16,7 @@ $ poetry add groundlight
 
 ### Basic Usage
 
-To access the API, you need an API token. You can create one at [app.groundlight.ai](https://app.positronix.ai/reef/my-account/api-tokens). Then, add it as an environment variable called `GROUNDLIGHT_API_TOKEN`:
-
-```Bash
-$ export GROUNDLIGHT_API_TOKEN=tok_abc123
-```
-
-Now you can use the python SDK!
+To access the API, you need an API token. You can create one on the [groundlight website](https://app.positronix.ai/reef/my-account/api-tokens). Then, you're ready to use the SDK!
 
 ```Python
 from groundlight import Groundlight
@@ -30,11 +24,13 @@ from groundlight import Groundlight
 # Load the API client. This defaults to the prod endpoint,
 # but you can specify a different endpoint like so:
 # gl = Groundlight(endpoint="https://device.integ.positronix.ai/device-api")
-gl = Groundlight()
+gl = Groundlight(api_token="<YOUR_API_TOKEN>")
 
 # Call an API method (e.g., retrieve a list of detectors)
 detectors = gl.list_detectors()
 ```
+
+(Alternatively, you can use the token by setting the `GROUNDLIGHT_API_TOKEN` environment variable.)
 
 ### What API methods are available?
 

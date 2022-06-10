@@ -1,6 +1,9 @@
 [tool.poetry]
 name = "groundlight"
-version = "0.1.7"
+version = "0.2.0"
+license = "MIT"
+readme = "UserGuide.md"
+homepage = "https://app.positronix.ai"
 description = "Call the Groundlight API from python"
 authors = ["Groundlight AI <support@groundlight.ai>"]
 packages = [
