@@ -371,11 +371,11 @@ components:
       type: apiKey
       in: header
 servers:
-- url: https://device.positronix.ai/device-api
-  description: Device Prod
-- url: https://device.integ.positronix.ai/device-api
-  description: Device Integ
 - url: https://api.groundlight.ai
   description: Prod
 - url: https://api.integ.groundlight.ai
   description: Integ
+- url: https://device.positronix.ai/device-api
+  description: Device Prod
+- url: https://device.integ.positronix.ai/device-api
+  description: Device Integ
