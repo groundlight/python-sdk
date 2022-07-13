@@ -12,10 +12,11 @@
     $ pip install groundlight
     ```
 
-1. To access the API, you need an API token. You can create one on the [groundlight website](https://app.positronix.ai/reef/my-account/api-tokens).
+1. To access the API, you need an API token. You can create one on the
+   [groundlight website](https://app.groundlight.ai/reef/my-account/api-tokens).
 
 1. Use the `Groundlight` client!
-   
+
     ```Python
     from groundlight import Groundlight
     gl = Groundlight(api_token="<YOUR_API_TOKEN>")
