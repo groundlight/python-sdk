@@ -30,7 +30,7 @@ class Groundlight:
     ```
     """
 
-    def __init__(self, endpoint: str = "https://api.groundlight.ai", api_token: str = None):
+    def __init__(self, endpoint: str = "https://api.groundlight.ai/device-api", api_token: str = None):
         """
         :param endpoint: optionally specify a different endpoint
         :param api_token: use this API token for your API calls. If unset, fallback to the
