@@ -4,9 +4,9 @@ All URIs are relative to *https://device.positronix.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**get_image_query**](ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
-[**list_image_queries**](ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
-[**submit_image_query**](ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
+[**get_image_query**](ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} |
+[**list_image_queries**](ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries |
+[**submit_image_query**](ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries |
 
 
 # **get_image_query**
@@ -171,7 +171,7 @@ Name | Type | Description  | Notes
 
 
 
- Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```  
+ Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```
 
 ### Example
 
@@ -252,4 +252,3 @@ Name | Type | Description  | Notes
 **201** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

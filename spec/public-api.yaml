@@ -120,7 +120,7 @@ paths:
         You must use `"Content-Type: image/jpeg"` for the image data. For example:
 
         ```Bash
-        $ curl https://api.groundlight.ai/v1/image-queries?detector_id=det_abc123 \
+        $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \
             --header "Content-Type: image/jpeg" \
             --data-binary @path/to/filename.jpeg
         ```
@@ -371,11 +371,11 @@ components:
       type: apiKey
       in: header
 servers:
+- url: https://api.groundlight.ai/device-api
+  description: Prod
+- url: https://api.integ.groundlight.ai/device-api
+  description: Integ
 - url: https://device.positronix.ai/device-api
   description: Device Prod
 - url: https://device.integ.positronix.ai/device-api
   description: Device Integ
-- url: https://api.groundlight.ai
-  description: Prod
-- url: https://api.integ.groundlight.ai
-  description: Integ

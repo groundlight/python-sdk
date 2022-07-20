@@ -17,4 +17,4 @@ test-local: install  ## Run integration tests against an API server running at h
 
 
 test-integ: install  ## Run integration tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_TEST_API_ENDPOINT="https://device.integ.positronix.ai/device-api" poetry run pytest --cov=src test --log-cli-level INFO
+	GROUNDLIGHT_TEST_API_ENDPOINT="https://api.integ.groundlight.ai/device-api" poetry run pytest --cov=src test --log-cli-level INFO

@@ -10,7 +10,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.images import buffer_from_jpeg_file
 
-API_TOKEN_WEB_URL = "https://app.positronix.ai/reef/my-account/api-tokens"
+API_TOKEN_WEB_URL = "https://app.groundlight.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
 
 
@@ -30,7 +30,7 @@ class Groundlight:
     ```
     """
 
-    def __init__(self, endpoint: str = "https://device.positronix.ai/device-api", api_token: str = None):
+    def __init__(self, endpoint: str = "https://api.groundlight.ai/device-api", api_token: str = None):
         """
         :param endpoint: optionally specify a different endpoint
         :param api_token: use this API token for your API calls. If unset, fallback to the
