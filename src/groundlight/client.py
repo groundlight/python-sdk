@@ -13,6 +13,8 @@ from groundlight.images import buffer_from_jpeg_file
 API_TOKEN_WEB_URL = "https://app.groundlight.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
 
+GROUNDLIGHT_ENDPOINT = os.environ.get("GROUNDLIGHT_ENDPOINT", "https://api.groundlight.ai/device-api")
+
 
 class ApiTokenError(Exception):
     pass
@@ -30,7 +32,7 @@ class Groundlight:
     ```
     """
 
-    def __init__(self, endpoint: str = "https://api.groundlight.ai/device-api", api_token: str = None):
+    def __init__(self, endpoint: str = GROUNDLIGHT_ENDPOINT, api_token: str = None):
         """
         :param endpoint: optionally specify a different endpoint
         :param api_token: use this API token for your API calls. If unset, fallback to the
@@ -63,8 +65,8 @@ class Groundlight:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(self, name: str, query: str) -> Detector:
-        obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query))
+    def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
+        obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
         return Detector.parse_obj(obj.to_dict())
 
     def get_image_query(self, id: str) -> ImageQuery:

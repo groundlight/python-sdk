@@ -161,3 +161,5 @@ cython_debug/
 
 # This is a library, so we want clients to have more flexible dependencies. So we don't include a lockfile.
 poetry.lock
+
+node_modules/

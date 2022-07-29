@@ -1,12 +1,12 @@
 # openapi_client.ImageQueriesApi
 
-All URIs are relative to *https://device.positronix.ai/device-api*
+All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**get_image_query**](ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} |
-[**list_image_queries**](ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries |
-[**submit_image_query**](ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries |
+[**get_image_query**](ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
+[**list_image_queries**](ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
+[**submit_image_query**](ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
 
 
 # **get_image_query**
@@ -26,10 +26,10 @@ import openapi_client
 from openapi_client.api import image_queries_api
 from openapi_client.model.image_query import ImageQuery
 from pprint import pprint
-# Defining the host is optional and defaults to https://device.positronix.ai/device-api
+# Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "https://device.positronix.ai/device-api"
+    host = "https://api.groundlight.ai/device-api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -103,10 +103,10 @@ import openapi_client
 from openapi_client.api import image_queries_api
 from openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from pprint import pprint
-# Defining the host is optional and defaults to https://device.positronix.ai/device-api
+# Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "https://device.positronix.ai/device-api"
+    host = "https://api.groundlight.ai/device-api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -171,7 +171,7 @@ Name | Type | Description  | Notes
 
 
 
- Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```
+ Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```  
 
 ### Example
 
@@ -183,10 +183,10 @@ import openapi_client
 from openapi_client.api import image_queries_api
 from openapi_client.model.image_query import ImageQuery
 from pprint import pprint
-# Defining the host is optional and defaults to https://device.positronix.ai/device-api
+# Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "https://device.positronix.ai/device-api"
+    host = "https://api.groundlight.ai/device-api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -252,3 +252,4 @@ Name | Type | Description  | Notes
 **201** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
