@@ -24,6 +24,12 @@ from groundlight import Groundlight
 # gl = Groundlight(endpoint="https://device.integ.groundlight.ai/device-api")
 gl = Groundlight(api_token="<YOUR_API_TOKEN>")
 
+# Create a detector
+detector = gl.create_detector(name="Dog", query="Is it a dog?")
+
+# (Or, create a detector with a specific named ML config from https://github.com/positronix-ai/zuuul/blob/main/pysrc/predictor_config/binary_classification_predictors.yaml)
+# detector = gl.create_detector(name="Dog", query="Is it a dog?", config_name="b4mu11-mlp")
+
 # Call an API method (e.g., retrieve a list of detectors)
 detectors = gl.list_detectors()
 ```
