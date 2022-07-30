@@ -65,8 +65,17 @@ class Groundlight:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
-        obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
+    def create_detector(
+        self, name: str, query: str, config_name: str = None, confidence_threshold: float = None
+    ) -> Detector:
+        obj = self.detectors_api.create_detector(
+            DetectorCreationInput(
+                name=name,
+                query=query,
+                config_name=config_name,
+                confidence_threshold=confidence_threshold,
+            )
+        )
         return Detector.parse_obj(obj.to_dict())
 
     def get_image_query(self, id: str) -> ImageQuery:
