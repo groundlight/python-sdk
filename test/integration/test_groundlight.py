@@ -24,7 +24,7 @@ def image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
     return gl.submit_image_query(detector_id=detector.id, image="test/assets/dog.jpeg")
 
 
-@pytest.mark.skip(reason="We don't want to create a million detectors")
+# @pytest.mark.skip(reason="We don't want to create a million detectors")
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Test query?"
@@ -39,14 +39,14 @@ def test_list_detectors(gl: Groundlight):
     assert isinstance(detectors, PaginatedDetectorList)
 
 
-@pytest.mark.skip(reason="We don't want to create a million detectors")
+# @pytest.mark.skip(reason="We don't want to create a million detectors")
 def test_get_detector(gl: Groundlight, detector: Detector):
     _detector = gl.get_detector(id=detector.id)
     assert str(_detector)
     assert isinstance(_detector, Detector)
 
 
-@pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
+# @pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
 def test_submit_image_query(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector_id=detector.id, image="test/assets/dog.jpeg")
     assert str(_image_query)
@@ -59,7 +59,7 @@ def test_list_image_queries(gl: Groundlight):
     assert isinstance(image_queries, PaginatedImageQueryList)
 
 
-@pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
+# @pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
 def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
     assert str(_image_query)
