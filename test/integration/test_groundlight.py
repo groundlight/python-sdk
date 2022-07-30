@@ -33,6 +33,16 @@ def test_create_detector(gl: Groundlight):
     assert isinstance(_detector, Detector)
 
 
+# @pytest.mark.skip(reason="We don't want to create a million detectors")
+def test_create_detector_with_config_name(gl: Groundlight):
+    name = f"Test b4mu11-mlp {datetime.utcnow()}"  # Need a unique name
+    query = "Test query with b4mu11-mlp?"
+    config_name = "b4mu11-mlp"
+    _detector = gl.create_detector(name=name, query=query, config_name=config_name)
+    assert str(_detector)
+    assert isinstance(_detector, Detector)
+
+
 def test_list_detectors(gl: Groundlight):
     detectors = gl.list_detectors()
     assert str(detectors)

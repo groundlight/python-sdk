@@ -267,7 +267,10 @@ components:
             send the image query for human review.
         config_name:
           type: string
-          description: (Advanced usage) If your account has multiple named ML configuration options enabled, you can use this field to specify which one you would like to use.
+          nullable: true
+          description: (Advanced usage) If your account has multiple named ML configuration
+            options enabled, you can use this field to specify which one you would
+            like to use.
           maxLength: 100
       required:
       - name
