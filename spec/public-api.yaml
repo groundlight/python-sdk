@@ -265,6 +265,13 @@ components:
           default: 0.9
           description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
+        config_name:
+          type: string
+          nullable: true
+          description: (Advanced usage) If your account has multiple named ML configuration
+            options enabled, you can use this field to specify which one you would
+            like to use.
+          maxLength: 100
       required:
       - name
       - query

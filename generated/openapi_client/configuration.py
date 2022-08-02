@@ -113,7 +113,7 @@ conf = openapi_client.Configuration(
                  ):
         """Constructor
         """
-        self._base_path = "https://device.positronix.ai/device-api" if host is None else host
+        self._base_path = "https://api.groundlight.ai/device-api" if host is None else host
         """Default Base url
         """
         self.server_index = 0 if server_index is None and host is None else server_index
@@ -420,20 +420,20 @@ conf = openapi_client.Configuration(
         """
         return [
             {
+                'url': "https://api.groundlight.ai/device-api",
+                'description': "Prod",
+            },
+            {
+                'url': "https://api.integ.groundlight.ai/device-api",
+                'description': "Integ",
+            },
+            {
                 'url': "https://device.positronix.ai/device-api",
                 'description': "Device Prod",
             },
             {
                 'url': "https://device.integ.positronix.ai/device-api",
                 'description': "Device Integ",
-            },
-            {
-                'url': "https://api.groundlight.ai",
-                'description': "Prod",
-            },
-            {
-                'url': "https://api.integ.groundlight.ai",
-                'description': "Integ",
             }
         ]
 

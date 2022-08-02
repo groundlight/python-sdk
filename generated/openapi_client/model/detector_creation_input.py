@@ -72,6 +72,9 @@ class DetectorCreationInput(ModelNormal):
             'inclusive_maximum': 1.0,
             'inclusive_minimum': 0.0,
         },
+        ('config_name',): {
+            'max_length': 100,
+        },
     }
 
     @cached_property
@@ -99,6 +102,7 @@ class DetectorCreationInput(ModelNormal):
             'query': (str,),  # noqa: E501
             'group_name': (str,),  # noqa: E501
             'confidence_threshold': (float,),  # noqa: E501
+            'config_name': (str, none_type,),  # noqa: E501
         }
 
     @cached_property
@@ -111,6 +115,7 @@ class DetectorCreationInput(ModelNormal):
         'query': 'query',  # noqa: E501
         'group_name': 'group_name',  # noqa: E501
         'confidence_threshold': 'confidence_threshold',  # noqa: E501
+        'config_name': 'config_name',  # noqa: E501
     }
 
     read_only_vars = {
@@ -160,6 +165,7 @@ class DetectorCreationInput(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             group_name (str): Which group should this detector be part of?. [optional]  # noqa: E501
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
+            config_name (str, none_type): (Advanced usage) If your account has multiple named ML configuration options enabled, you can use this field to specify which one you would like to use.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop('_check_type', True)
@@ -249,6 +255,7 @@ class DetectorCreationInput(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             group_name (str): Which group should this detector be part of?. [optional]  # noqa: E501
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
+            config_name (str, none_type): (Advanced usage) If your account has multiple named ML configuration options enabled, you can use this field to specify which one you would like to use.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop('_check_type', True)

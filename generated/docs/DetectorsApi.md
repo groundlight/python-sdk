@@ -1,6 +1,6 @@
 # openapi_client.DetectorsApi
 
-All URIs are relative to *https://device.positronix.ai/device-api*
+All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -27,10 +27,10 @@ from openapi_client.api import detectors_api
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from openapi_client.model.detector import Detector
 from pprint import pprint
-# Defining the host is optional and defaults to https://device.positronix.ai/device-api
+# Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "https://device.positronix.ai/device-api"
+    host = "https://api.groundlight.ai/device-api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -53,6 +53,7 @@ with openapi_client.ApiClient(configuration) as api_client:
         query="query_example",
         group_name="group_name_example",
         confidence_threshold=0.9,
+        config_name="config_name_example",
     ) # DetectorCreationInput | 
 
     # example passing only required values which don't have defaults set
@@ -109,10 +110,10 @@ import openapi_client
 from openapi_client.api import detectors_api
 from openapi_client.model.detector import Detector
 from pprint import pprint
-# Defining the host is optional and defaults to https://device.positronix.ai/device-api
+# Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "https://device.positronix.ai/device-api"
+    host = "https://api.groundlight.ai/device-api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -186,10 +187,10 @@ import openapi_client
 from openapi_client.api import detectors_api
 from openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from pprint import pprint
-# Defining the host is optional and defaults to https://device.positronix.ai/device-api
+# Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "https://device.positronix.ai/device-api"
+    host = "https://api.groundlight.ai/device-api"
 )
 
 # The client must configure the authentication and authorization parameters
