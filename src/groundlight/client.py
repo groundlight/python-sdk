@@ -1,6 +1,6 @@
 import os
 from io import BufferedReader, BytesIO
-from typing import Union
+from typing import Optional, Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import ApiClient, Configuration
@@ -61,6 +61,15 @@ class Groundlight:
         obj = self.detectors_api.get_detector(id=id)
         return Detector.parse_obj(obj.to_dict())
 
+    def get_detector_by_name(self, name: str) -> Optional[Detector]:
+        #TODO: Do this on server.
+        detector_list = self.list_detectors(page_size=100)
+        for d in detector_list.results:
+            #TODO: Paginate
+            if d.name == name:
+                return d
+        return None
+
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
@@ -68,6 +77,12 @@ class Groundlight:
     def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
         obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
         return Detector.parse_obj(obj.to_dict())
+
+    def get_or_create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
+        d = self.get_detector_by_name(name)
+        if d:
+            return d
+        return self.create_detector(name, query, config_name)
 
     def get_image_query(self, id: str) -> ImageQuery:
         obj = self.image_queries_api.get_image_query(id=id)
