@@ -15,27 +15,25 @@ Groundlight makes it simple to understand images.  You can send image queries an
 1. To access the API, you need an API token. You can create one on the
    [groundlight web app](https://app.groundlight.ai/reef/my-account/api-tokens).
 
-1. Set up the `Groundlight` client
+The API token should be stored securely.  Some of the code samples demonstrate including the API token in your source code, which is NOT a best practice.  Do not commit your API Token to version control!  Instead we recommend setting the `GROUNDLIGHT_API_TOKEN` environment variable.
 
-    ```Python
-    from groundlight import Groundlight
-    gl = Groundlight(api_token="<YOUR_API_TOKEN>")
-    ```
-
-    The API token should be stored securely - do not commit it to version control! Alternatively, you can use the token by setting the `GROUNDLIGHT_API_TOKEN` environment variable.
 
 ## Basic Usage
 
-#### Create a new detector
+How to build a simple computer vision system in 5 lines of python:
 
 ```Python
-detector = gl.get_or_create_detector(name="door", query="Is the door open?")
-```
+from groundlight import Groundlight
+gl = Groundlight()
 
-#### Send an image to the detector
+# Create a new detector: use natural language to describe what you want to understand
+detector = gl.create_detector(name="door", query="Is the door open?")
 
-```Python
+# Send an image to the detector
 image_query = gl.submit_image_query(detector=detector, image="path/to/filename.jpeg")
+
+# Show the results
+print(f"The answer is {image_query.result}")
 ```
 
 ## Using Groundlight on the edge
