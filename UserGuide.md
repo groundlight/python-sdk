@@ -2,7 +2,8 @@
 
 Groundlight makes it simple to understand images.  You can send image queries and receive predictions powered by a mixture of advanced machine learning models backed up by real people.
 
-*Note: The SDK is currently in "beta" phase.  Interfaces are subject to change.*
+*Note: The SDK is currently in "beta" phase.  Interfaces are subject to change in future versions.*
+
 
 ## Getting Started
 
@@ -40,10 +41,10 @@ print(f"The answer is {image_query.result}")
 
 OFten it is impractical to send every image to the cloud for analysis.  Setting up a Groundlight edge environment can help you achieve lower latency and reduce costs.  Once you have downloaded and installed your edge model, configure your Groundlight SDK client to use the edge environment by configuring the `endpoint` as such:
 
-    ```Python
-    from groundlight import Groundlight
-    gl = Groundlight(endpoint="http://localhost:5717")
-    ```
+```Python
+from groundlight import Groundlight
+gl = Groundlight(endpoint="http://localhost:5717")
+```
 
 ## Advanced
 
