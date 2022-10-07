@@ -65,9 +65,11 @@ class Groundlight:
         #TODO: Do this on server.
         detector_list = self.list_detectors(page_size=100)
         for d in detector_list.results:
-            #TODO: Paginate
             if d.name == name:
                 return d
+        if detector_list.next:
+            #TODO: paginate
+            raise RuntimeError("You have too many detectors to use get_detector_by_name")
         return None
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
@@ -79,6 +81,9 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
+        """Tries to look up the detector by name.  If a detector with that name exists, return it.
+        Otherwise, create a detector with the specified query and config.
+        """
         d = self.get_detector_by_name(name)
         if d:
             return d
