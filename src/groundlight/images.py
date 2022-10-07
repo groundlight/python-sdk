@@ -1,6 +1,10 @@
 import imghdr
 import io
 
+from PIL import Image
+
+from groundlight.numpy_optional import np
+
 
 def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
     """
@@ -12,3 +16,12 @@ def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
         return open(image_filename, "rb")
     else:
         raise ValueError("We only support JPEG files, for now.")
+
+def jpeg_from_numpy(img:np.ndarray, jpeg_quality: int = 95) -> bytes:
+    """Converts a numpy array to jpeg bytes
+    """
+    pilim = Image.fromarray(image.astype('uint8'), 'RGB')
+    with io.BytesIO() as buf:
+        pilim.save(buf, "jpeg", quality=jpeg_quality)
+        out = buf.getvalue()
+        return out
