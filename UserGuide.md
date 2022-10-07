@@ -1,10 +1,10 @@
-# User Guide
+# Groundlight User Guide
 
-`groundlight` is a python SDK for working with the Groundlight API. You can send image queries and receive predictions powered by a mixture of machine learning models and human labelers in-the-loop.
+Groundlight makes it simple to understand images.  You can send image queries and receive predictions powered by a mixture of advanced machine learning models backed up by real people.
 
-*Note: The SDK is currently in "alpha" phase.*
+*Note: The SDK is currently in "beta" phase.  Interfaces are subject to change.*
 
-## Pre-reqs
+## Getting Started
 
 1. Install the `groundlight` sdk.
 
@@ -13,9 +13,9 @@
     ```
 
 1. To access the API, you need an API token. You can create one on the
-   [groundlight website](https://app.groundlight.ai/reef/my-account/api-tokens).
+   [groundlight web app](https://app.groundlight.ai/reef/my-account/api-tokens).
 
-1. Use the `Groundlight` client!
+1. Set up the `Groundlight` client
 
     ```Python
     from groundlight import Groundlight
@@ -24,53 +24,23 @@
 
     The API token should be stored securely - do not commit it to version control! Alternatively, you can use the token by setting the `GROUNDLIGHT_API_TOKEN` environment variable.
 
-## Basics
+## Basic Usage
 
 #### Create a new detector
 
 ```Python
-detector = gl.create_detector(name="Dog", query="Is it a dog?")
+detector = gl.create_detector(name="door", query="Is the door open?")
 ```
 
-#### Retrieve a detector
 
-```Python
-detector = gl.get_detector(id="YOUR_DETECTOR_ID")
-```
+## Using Groundlight on the edge
 
-#### List your detectors
+OFten it is impractical to send every image to the cloud for analysis.  Setting up a Groundlight edge environment can help you achieve lower latency and reduce costs.  Once you have downloaded and installed your edge model, configure your Groundlight SDK client to use the edge environment by configuring the `endpoint` as such:
 
-```Python
-# Defaults to 10 results per page
-detectors = gl.list_detectors()
-
-# Pagination: 3rd page of 25 results per page
-detectors = gl.list_detectors(page=3, page_size=25)
-```
-
-#### Submit an image query
-
-```Python
-image_query = gl.submit_image_query(detector_id="YOUR_DETECTOR_ID", image="path/to/filename.jpeg")
-```
-
-#### Retrieve an image query
-
-In practice, you may want to check for a new result on your query. For example, after a cloud reviewer labels your query. For example, you can use the `image_query.id` after the above `submit_image_query()` call.
-
-```Python
-image_query = gl.get_image_query(id="YOUR_IMAGE_QUERY_ID")
-```
-
-#### List your previous image queries
-
-```Python
-# Defaults to 10 results per page
-image_queries = gl.list_image_queries()
-
-# Pagination: 3rd page of 25 results per page
-image_queries = gl.list_image_queries(page=3, page_size=25)
-```
+    ```Python
+    from groundlight import Groundlight
+    gl = Groundlight(endpoint="http://localhost:5717")
+    ```
 
 ## Advanced
 
@@ -91,4 +61,44 @@ except ApiException as e:
     print(e.headers)
     print(e.reason)
     print(e.status)
+```
+
+### Retrieve an existing detector
+
+```Python
+detector = gl.get_detector(id="YOUR_DETECTOR_ID")
+```
+
+### List your detectors
+
+```Python
+# Defaults to 10 results per page
+detectors = gl.list_detectors()
+
+# Pagination: 3rd page of 25 results per page
+detectors = gl.list_detectors(page=3, page_size=25)
+```
+
+### Submit an image query
+
+```Python
+image_query = gl.submit_image_query(detector_id="YOUR_DETECTOR_ID", image="path/to/filename.jpeg")
+```
+
+### Retrieve an image query
+
+In practice, you may want to check for a new result on your query. For example, after a cloud reviewer labels your query. For example, you can use the `image_query.id` after the above `submit_image_query()` call.
+
+```Python
+image_query = gl.get_image_query(id="YOUR_IMAGE_QUERY_ID")
+```
+
+### List your previous image queries
+
+```Python
+# Defaults to 10 results per page
+image_queries = gl.list_image_queries()
+
+# Pagination: 3rd page of 25 results per page
+image_queries = gl.list_image_queries(page=3, page_size=25)
 ```
