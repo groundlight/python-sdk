@@ -29,9 +29,14 @@ Groundlight makes it simple to understand images.  You can send image queries an
 #### Create a new detector
 
 ```Python
-detector = gl.create_detector(name="door", query="Is the door open?")
+detector = gl.get_or_create_detector(name="door", query="Is the door open?")
 ```
 
+#### Send an image to the detector
+
+```Python
+image_query = gl.submit_image_query(detector=detector, image="path/to/filename.jpeg")
+```
 
 ## Using Groundlight on the edge
 

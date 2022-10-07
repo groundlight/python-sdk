@@ -97,7 +97,16 @@ class Groundlight:
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         return PaginatedImageQueryList.parse_obj(obj.to_dict())
 
-    def submit_image_query(self, detector_id: str, image: Union[str, bytes, BytesIO]) -> ImageQuery:
+    def submit_image_query(self, 
+            image: Union[str, bytes, BytesIO],
+            detector: Optional[Detector] = None, 
+            detector_id: Optional[str] = None, 
+        ) -> ImageQuery:
+        if (detector is not None) and (detector_id):
+            if detector.id != detector_id:
+                raise ValueError("You cannot specify both a detector and a different detector_id")
+        elif (detector is not None):
+            detector_id = detector.id
         image_bytesio: Union[BytesIO, BufferedReader]
         if isinstance(image, str):
             # Assume it is a filename
