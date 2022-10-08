@@ -64,25 +64,6 @@ gl = Groundlight(endpoint="http://localhost:6717")
 
 ## Advanced
 
-### Handling HTTP errors
-
-If there is an HTTP error during an API call, it will raise an `ApiException`. You can access different metadata from that exception:
-
-```Python
-from groundlight import ApiException, Groundlight
-
-gl = Groundlight()
-try:
-    detectors = gl.list_detectors()
-except ApiException as e:
-    print(e)
-    print(e.args)
-    print(e.body)
-    print(e.headers)
-    print(e.reason)
-    print(e.status)
-```
-
 ### Retrieve an existing detector
 
 ```Python
@@ -116,3 +97,23 @@ image_queries = gl.list_image_queries()
 # Pagination: 3rd page of 25 results per page
 image_queries = gl.list_image_queries(page=3, page_size=25)
 ```
+
+### Handling HTTP errors
+
+If there is an HTTP error during an API call, it will raise an `ApiException`. You can access different metadata from that exception:
+
+```Python
+from groundlight import ApiException, Groundlight
+
+gl = Groundlight()
+try:
+    detectors = gl.list_detectors()
+except ApiException as e:
+    print(e)
+    print(e.args)
+    print(e.body)
+    print(e.headers)
+    print(e.reason)
+    print(e.status)
+```
+
