@@ -17,11 +17,11 @@ def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
     else:
         raise ValueError("We only support JPEG files, for now.")
 
-def jpeg_from_numpy(img:np.ndarray, jpeg_quality: int = 95) -> bytes:
-    """Converts a numpy array to jpeg bytes
+def jpeg_from_numpy(img:np.ndarray, jpeg_quality: int = 95) -> io.BytesIO:
+    """Converts a numpy array to BytesIO
     """
-    pilim = Image.fromarray(image.astype('uint8'), 'RGB')
+    pilim = Image.fromarray(img.astype('uint8'), 'RGB')
     with io.BytesIO() as buf:
         pilim.save(buf, "jpeg", quality=jpeg_quality)
-        out = buf.getvalue()
+        #out = buf.getvalue()
         return out

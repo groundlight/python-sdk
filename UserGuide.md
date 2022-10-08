@@ -57,8 +57,10 @@ Starting your model evaluations at the edge reduces latency, cost, network bandw
 
 ```Python
 from groundlight import Groundlight
-gl = Groundlight(endpoint="http://localhost:5717")
+gl = Groundlight(endpoint="http://localhost:6717")
 ```
+
+(Edge model download is not yet generally available.)
 
 ## Advanced
 

@@ -12,37 +12,13 @@ $ pip install groundlight
 $ poetry add groundlight
 ```
 
-### Basic Usage
+### Usage
 
-To access the API, you need an API token. You can create one on the [groundlight website](https://app.groundlight.ai/reef/my-account/api-tokens). Then, you're ready to use the SDK!
-
-```Python
-from groundlight import Groundlight
-
-# Load the API client. This defaults to the prod endpoint,
-# but you can specify a different endpoint like so:
-# gl = Groundlight(endpoint="https://device.integ.groundlight.ai/device-api")
-gl = Groundlight(api_token="<YOUR_API_TOKEN>")
-
-# Create a detector
-detector = gl.create_detector(name="Dog", query="Is it a dog?")
-
-# (Or, create a detector with a specific named ML config from https://github.com/positronix-ai/zuuul/blob/main/pysrc/predictor_config/binary_classification_predictors.yaml)
-# detector = gl.create_detector(name="Dog", query="Is it a dog?", config_name="b4mu11-mlp")
-
-# Call an API method (e.g., retrieve a list of detectors)
-detectors = gl.list_detectors()
-```
-
-(Alternatively, you can use the token by setting the `GROUNDLIGHT_API_TOKEN` environment variable.)
-
-### What API methods are available?
-
-Check out the [User Guide](UserGuide.md)!
+For instructions on using the SDK see the public [User Guide](UserGuide.md).
 
 For more details, see the [Groundlight](src/groundlight/client.py)
-class. This SDK closely follows the methods in our [API
-Docs](https://app.groundlight.ai/reef/admin/api-docs).
+class. This SDK closely follows the methods in our [API 
+Docs](https://app.groundlight.ai/reef/admin/public-api-docs/).
 
 ## Development
 
