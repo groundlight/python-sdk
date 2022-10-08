@@ -81,12 +81,16 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
-        """Tries to look up the detector by name.  If a detector with that name exists, return it.
+        """Tries to look up the detector by name.  If a detector with that name and query exists, return it.
         Otherwise, create a detector with the specified query and config.
         """
-        d = self.get_detector_by_name(name)
-        if d:
-            return d
+        existing_detector = self.get_detector_by_name(name)
+        if existing_detector:
+            if existing_detector.query == query:
+                return existing_detector
+            else:
+                raise ValueError(f"Found existing detector with {name=} (id={existing_detector.id}) but the queries don't match")
+                
         return self.create_detector(name, query, config_name)
 
     def get_image_query(self, id: str) -> ImageQuery:
@@ -98,15 +102,20 @@ class Groundlight:
         return PaginatedImageQueryList.parse_obj(obj.to_dict())
 
     def submit_image_query(self, 
-            image: Union[str, bytes, BytesIO],
-            detector: Optional[Detector] = None, 
-            detector_id: Optional[str] = None, 
+            image: Union[str, bytes, BytesIO, BufferedReader],
+            detector: Union[Detector, str],
         ) -> ImageQuery:
-        if (detector is not None) and (detector_id):
-            if detector.id != detector_id:
-                raise ValueError("You cannot specify both a detector and a different detector_id")
-        elif (detector is not None):
+        """Evaluates an image with Groundlight.
+        :param image: The image, in several possible formats:
+            - a filename (string) of a jpeg file
+            - a byte array or BytesIO with jpeg bytes
+            - a numpy array in the 0-255 range (gets converted to jpeg)
+        :param detector: the Detector object, or string id of a detector like `det_12345`
+        """
+        if isinstance(detector, Detector):
             detector_id = detector.id
+        else:
+            detector_id = detector
         image_bytesio: Union[BytesIO, BufferedReader]
         if isinstance(image, str):
             # Assume it is a filename

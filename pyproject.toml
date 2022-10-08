@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "groundlight"
-version = "0.4.0"
+version = "0.5.0"
 license = "MIT"
 readme = "UserGuide.md"
 homepage = "https://groundlight.ai"
-description = "Call the Groundlight API from python"
+description = "Build computer vision systems from natural language with Groundlight"
 authors = ["Groundlight AI <support@groundlight.ai>"]
 packages = [
     { include = "**/*.py", from = "src" },
