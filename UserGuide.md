@@ -2,7 +2,7 @@
 
 Groundlight makes it simple to understand images.  You can easily create computer vision detectors just by describing what you want to know using natural language.
 
-How does it work?  Your images are first analyzed by machine learning (ML) models which are automatically trained on your data.  If those models have high enough confidence, that's your answer.  But if the models are unsure, then the images are progressively escalated to more resource-intensive analysis methods up to real-time human review.  So what you get is a computer vision system that starts working right away without even needing to first gather and label a dataset.  At first it will operate with high latency, because people need to review the image queries.  But over time, the ML systems will learn and improve so queries come back faster with higher confidence.
+**How does it work?**  Your images are first analyzed by machine learning (ML) models which are automatically trained on your data.  If those models have high enough confidence, that's your answer.  But if the models are unsure, then the images are progressively escalated to more resource-intensive analysis methods up to real-time human review.  So what you get is a computer vision system that starts working right away without even needing to first gather and label a dataset.  At first it will operate with high latency, because people need to review the image queries.  But over time, the ML systems will learn and improve so queries come back faster with higher confidence.
 
 *Note: The SDK is currently in "beta" phase.  Interfaces are subject to change in future versions.*
 
@@ -14,8 +14,8 @@ How to build a computer vision system in 5 lines of python code:
 ```Python
 from groundlight import Groundlight
 gl = Groundlight()
-detector = gl.create_detector(name="door", query="Is the door open?")  # Define your detector using natural language
-image_query = gl.submit_image_query(detector=detector, image="path/to/filename.jpeg")  # send an image
+d = gl.create_detector("door", query="Is the door open?")  # define with natural language
+image_query = gl.submit_image_query(detector=d, image="path/filename.jpeg")  # send an image
 print(f"The answer is {image_query.result}")  # get the result
 ```
 
@@ -40,7 +40,7 @@ gl = Groundlight(api_token="<YOUR_API_TOKEN>")
 which is an easy way to get started, but is NOT a best practice.  Please do not commit your API Token to version control!  Instead we recommend setting the `GROUNDLIGHT_API_TOKEN` environment variable outside your code so that the SDK can find it automatically.
 
 ```bash
-$ export GROUNDLIGHT_API_TOKEN=api_2asdfkjEXAMPLE
+$ export GROUNDLIGHT_API_TOKEN=api_2GdXMflhJi6L_example
 $ python3 glapp.py
 ```
 
