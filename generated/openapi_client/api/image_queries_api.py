@@ -20,7 +20,7 @@ from openapi_client.model_utils import (  # noqa: F401
     datetime,
     file_type,
     none_type,
-    validate_and_convert_types
+    validate_and_convert_types,
 )
 from openapi_client.model.image_query import ImageQuery
 from openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
@@ -39,172 +39,128 @@ class ImageQueriesApi(object):
         self.api_client = api_client
         self.get_image_query_endpoint = _Endpoint(
             settings={
-                'response_type': (ImageQuery,),
-                'auth': [
-                    'ApiToken'
-                ],
-                'endpoint_path': '/v1/image-queries/{id}',
-                'operation_id': 'get_image_query',
-                'http_method': 'GET',
-                'servers': None,
+                "response_type": (ImageQuery,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/image-queries/{id}",
+                "operation_id": "get_image_query",
+                "http_method": "GET",
+                "servers": None,
             },
             params_map={
-                'all': [
-                    'id',
+                "all": [
+                    "id",
                 ],
-                'required': [
-                    'id',
+                "required": [
+                    "id",
                 ],
-                'nullable': [
-                ],
-                'enum': [
-                ],
-                'validation': [
-                ]
+                "nullable": [],
+                "enum": [],
+                "validation": [],
             },
             root_map={
-                'validations': {
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "id": (str,),
                 },
-                'allowed_values': {
+                "attribute_map": {
+                    "id": "id",
                 },
-                'openapi_types': {
-                    'id':
-                        (str,),
+                "location_map": {
+                    "id": "path",
                 },
-                'attribute_map': {
-                    'id': 'id',
-                },
-                'location_map': {
-                    'id': 'path',
-                },
-                'collection_format_map': {
-                }
+                "collection_format_map": {},
             },
             headers_map={
-                'accept': [
-                    'application/json'
-                ],
-                'content_type': [],
+                "accept": ["application/json"],
+                "content_type": [],
             },
-            api_client=api_client
+            api_client=api_client,
         )
         self.list_image_queries_endpoint = _Endpoint(
             settings={
-                'response_type': (PaginatedImageQueryList,),
-                'auth': [
-                    'ApiToken'
-                ],
-                'endpoint_path': '/v1/image-queries',
-                'operation_id': 'list_image_queries',
-                'http_method': 'GET',
-                'servers': None,
+                "response_type": (PaginatedImageQueryList,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/image-queries",
+                "operation_id": "list_image_queries",
+                "http_method": "GET",
+                "servers": None,
             },
             params_map={
-                'all': [
-                    'page',
-                    'page_size',
+                "all": [
+                    "page",
+                    "page_size",
                 ],
-                'required': [],
-                'nullable': [
-                ],
-                'enum': [
-                ],
-                'validation': [
-                ]
+                "required": [],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
             },
             root_map={
-                'validations': {
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "page": (int,),
+                    "page_size": (int,),
                 },
-                'allowed_values': {
+                "attribute_map": {
+                    "page": "page",
+                    "page_size": "page_size",
                 },
-                'openapi_types': {
-                    'page':
-                        (int,),
-                    'page_size':
-                        (int,),
+                "location_map": {
+                    "page": "query",
+                    "page_size": "query",
                 },
-                'attribute_map': {
-                    'page': 'page',
-                    'page_size': 'page_size',
-                },
-                'location_map': {
-                    'page': 'query',
-                    'page_size': 'query',
-                },
-                'collection_format_map': {
-                }
+                "collection_format_map": {},
             },
             headers_map={
-                'accept': [
-                    'application/json'
-                ],
-                'content_type': [],
+                "accept": ["application/json"],
+                "content_type": [],
             },
-            api_client=api_client
+            api_client=api_client,
         )
         self.submit_image_query_endpoint = _Endpoint(
             settings={
-                'response_type': (ImageQuery,),
-                'auth': [
-                    'ApiToken'
-                ],
-                'endpoint_path': '/v1/image-queries',
-                'operation_id': 'submit_image_query',
-                'http_method': 'POST',
-                'servers': None,
+                "response_type": (ImageQuery,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/image-queries",
+                "operation_id": "submit_image_query",
+                "http_method": "POST",
+                "servers": None,
             },
             params_map={
-                'all': [
-                    'detector_id',
-                    'body',
+                "all": [
+                    "detector_id",
+                    "body",
                 ],
-                'required': [
-                    'detector_id',
+                "required": [
+                    "detector_id",
                 ],
-                'nullable': [
-                ],
-                'enum': [
-                ],
-                'validation': [
-                ]
+                "nullable": [],
+                "enum": [],
+                "validation": [],
             },
             root_map={
-                'validations': {
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                    "body": (file_type,),
                 },
-                'allowed_values': {
+                "attribute_map": {
+                    "detector_id": "detector_id",
                 },
-                'openapi_types': {
-                    'detector_id':
-                        (str,),
-                    'body':
-                        (file_type,),
+                "location_map": {
+                    "detector_id": "query",
+                    "body": "body",
                 },
-                'attribute_map': {
-                    'detector_id': 'detector_id',
-                },
-                'location_map': {
-                    'detector_id': 'query',
-                    'body': 'body',
-                },
-                'collection_format_map': {
-                }
+                "collection_format_map": {},
             },
-            headers_map={
-                'accept': [
-                    'application/json'
-                ],
-                'content_type': [
-                    'image/jpeg'
-                ]
-            },
-            api_client=api_client
+            headers_map={"accept": ["application/json"], "content_type": ["image/jpeg"]},
+            api_client=api_client,
         )
 
-    def get_image_query(
-        self,
-        id,
-        **kwargs
-    ):
+    def get_image_query(self, id, **kwargs):
         """get_image_query  # noqa: E501
 
         Retrieve an image-query by its ID.  # noqa: E501
@@ -250,38 +206,19 @@ class ImageQueriesApi(object):
                 If the method is called asynchronously, returns the request
                 thread.
         """
-        kwargs['async_req'] = kwargs.get(
-            'async_req', False
-        )
-        kwargs['_return_http_data_only'] = kwargs.get(
-            '_return_http_data_only', True
-        )
-        kwargs['_preload_content'] = kwargs.get(
-            '_preload_content', True
-        )
-        kwargs['_request_timeout'] = kwargs.get(
-            '_request_timeout', None
-        )
-        kwargs['_check_input_type'] = kwargs.get(
-            '_check_input_type', True
-        )
-        kwargs['_check_return_type'] = kwargs.get(
-            '_check_return_type', True
-        )
-        kwargs['_spec_property_naming'] = kwargs.get(
-            '_spec_property_naming', False
-        )
-        kwargs['_content_type'] = kwargs.get(
-            '_content_type')
-        kwargs['_host_index'] = kwargs.get('_host_index')
-        kwargs['id'] = \
-            id
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["id"] = id
         return self.get_image_query_endpoint.call_with_http_info(**kwargs)
 
-    def list_image_queries(
-        self,
-        **kwargs
-    ):
+    def list_image_queries(self, **kwargs):
         """list_image_queries  # noqa: E501
 
         Retrieve a list of image-queries.  # noqa: E501
@@ -327,37 +264,18 @@ class ImageQueriesApi(object):
                 If the method is called asynchronously, returns the request
                 thread.
         """
-        kwargs['async_req'] = kwargs.get(
-            'async_req', False
-        )
-        kwargs['_return_http_data_only'] = kwargs.get(
-            '_return_http_data_only', True
-        )
-        kwargs['_preload_content'] = kwargs.get(
-            '_preload_content', True
-        )
-        kwargs['_request_timeout'] = kwargs.get(
-            '_request_timeout', None
-        )
-        kwargs['_check_input_type'] = kwargs.get(
-            '_check_input_type', True
-        )
-        kwargs['_check_return_type'] = kwargs.get(
-            '_check_return_type', True
-        )
-        kwargs['_spec_property_naming'] = kwargs.get(
-            '_spec_property_naming', False
-        )
-        kwargs['_content_type'] = kwargs.get(
-            '_content_type')
-        kwargs['_host_index'] = kwargs.get('_host_index')
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
         return self.list_image_queries_endpoint.call_with_http_info(**kwargs)
 
-    def submit_image_query(
-        self,
-        detector_id,
-        **kwargs
-    ):
+    def submit_image_query(self, detector_id, **kwargs):
         """submit_image_query  # noqa: E501
 
          Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```    # noqa: E501
@@ -404,31 +322,14 @@ class ImageQueriesApi(object):
                 If the method is called asynchronously, returns the request
                 thread.
         """
-        kwargs['async_req'] = kwargs.get(
-            'async_req', False
-        )
-        kwargs['_return_http_data_only'] = kwargs.get(
-            '_return_http_data_only', True
-        )
-        kwargs['_preload_content'] = kwargs.get(
-            '_preload_content', True
-        )
-        kwargs['_request_timeout'] = kwargs.get(
-            '_request_timeout', None
-        )
-        kwargs['_check_input_type'] = kwargs.get(
-            '_check_input_type', True
-        )
-        kwargs['_check_return_type'] = kwargs.get(
-            '_check_return_type', True
-        )
-        kwargs['_spec_property_naming'] = kwargs.get(
-            '_spec_property_naming', False
-        )
-        kwargs['_content_type'] = kwargs.get(
-            '_content_type')
-        kwargs['_host_index'] = kwargs.get('_host_index')
-        kwargs['detector_id'] = \
-            detector_id
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
         return self.submit_image_query_endpoint.call_with_http_info(**kwargs)
-

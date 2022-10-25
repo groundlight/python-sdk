@@ -25,23 +25,17 @@ class TestDetectorsApi(unittest.TestCase):
         pass
 
     def test_create_detector(self):
-        """Test case for create_detector
-
-        """
+        """Test case for create_detector"""
         pass
 
     def test_get_detector(self):
-        """Test case for get_detector
-
-        """
+        """Test case for get_detector"""
         pass
 
     def test_list_detectors(self):
-        """Test case for list_detectors
-
-        """
+        """Test case for list_detectors"""
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

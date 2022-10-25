@@ -21,8 +21,8 @@ VERSION = "1.0.0"
 # http://pypi.python.org/pypi/setuptools
 
 REQUIRES = [
-  "urllib3 >= 1.25.3",
-  "python-dateutil",
+    "urllib3 >= 1.25.3",
+    "python-dateutil",
 ]
 
 setup(
@@ -39,5 +39,5 @@ setup(
     include_package_data=True,
     long_description="""\
     Ask visual queries.  # noqa: E501
-    """
+    """,
 )

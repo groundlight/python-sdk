@@ -16,9 +16,10 @@ import openapi_client
 from openapi_client.model.classification_result import ClassificationResult
 from openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
 from openapi_client.model.result_type_enum import ResultTypeEnum
-globals()['ClassificationResult'] = ClassificationResult
-globals()['ImageQueryTypeEnum'] = ImageQueryTypeEnum
-globals()['ResultTypeEnum'] = ResultTypeEnum
+
+globals()["ClassificationResult"] = ClassificationResult
+globals()["ImageQueryTypeEnum"] = ImageQueryTypeEnum
+globals()["ResultTypeEnum"] = ResultTypeEnum
 from openapi_client.model.image_query import ImageQuery
 
 
@@ -38,5 +39,5 @@ class TestImageQuery(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -20,7 +20,7 @@ from openapi_client.model_utils import (  # noqa: F401
     datetime,
     file_type,
     none_type,
-    validate_and_convert_types
+    validate_and_convert_types,
 )
 from openapi_client.model.detector import Detector
 from openapi_client.model.detector_creation_input import DetectorCreationInput
@@ -40,169 +40,126 @@ class DetectorsApi(object):
         self.api_client = api_client
         self.create_detector_endpoint = _Endpoint(
             settings={
-                'response_type': (Detector,),
-                'auth': [
-                    'ApiToken'
-                ],
-                'endpoint_path': '/v1/detectors',
-                'operation_id': 'create_detector',
-                'http_method': 'POST',
-                'servers': None,
+                "response_type": (Detector,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/detectors",
+                "operation_id": "create_detector",
+                "http_method": "POST",
+                "servers": None,
             },
             params_map={
-                'all': [
-                    'detector_creation_input',
+                "all": [
+                    "detector_creation_input",
                 ],
-                'required': [
-                    'detector_creation_input',
+                "required": [
+                    "detector_creation_input",
                 ],
-                'nullable': [
-                ],
-                'enum': [
-                ],
-                'validation': [
-                ]
+                "nullable": [],
+                "enum": [],
+                "validation": [],
             },
             root_map={
-                'validations': {
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_creation_input": (DetectorCreationInput,),
                 },
-                'allowed_values': {
+                "attribute_map": {},
+                "location_map": {
+                    "detector_creation_input": "body",
                 },
-                'openapi_types': {
-                    'detector_creation_input':
-                        (DetectorCreationInput,),
-                },
-                'attribute_map': {
-                },
-                'location_map': {
-                    'detector_creation_input': 'body',
-                },
-                'collection_format_map': {
-                }
+                "collection_format_map": {},
             },
             headers_map={
-                'accept': [
-                    'application/json'
-                ],
-                'content_type': [
-                    'application/json',
-                    'application/x-www-form-urlencoded',
-                    'multipart/form-data'
-                ]
+                "accept": ["application/json"],
+                "content_type": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data"],
             },
-            api_client=api_client
+            api_client=api_client,
         )
         self.get_detector_endpoint = _Endpoint(
             settings={
-                'response_type': (Detector,),
-                'auth': [
-                    'ApiToken'
-                ],
-                'endpoint_path': '/v1/detectors/{id}',
-                'operation_id': 'get_detector',
-                'http_method': 'GET',
-                'servers': None,
+                "response_type": (Detector,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/detectors/{id}",
+                "operation_id": "get_detector",
+                "http_method": "GET",
+                "servers": None,
             },
             params_map={
-                'all': [
-                    'id',
+                "all": [
+                    "id",
                 ],
-                'required': [
-                    'id',
+                "required": [
+                    "id",
                 ],
-                'nullable': [
-                ],
-                'enum': [
-                ],
-                'validation': [
-                ]
+                "nullable": [],
+                "enum": [],
+                "validation": [],
             },
             root_map={
-                'validations': {
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "id": (str,),
                 },
-                'allowed_values': {
+                "attribute_map": {
+                    "id": "id",
                 },
-                'openapi_types': {
-                    'id':
-                        (str,),
+                "location_map": {
+                    "id": "path",
                 },
-                'attribute_map': {
-                    'id': 'id',
-                },
-                'location_map': {
-                    'id': 'path',
-                },
-                'collection_format_map': {
-                }
+                "collection_format_map": {},
             },
             headers_map={
-                'accept': [
-                    'application/json'
-                ],
-                'content_type': [],
+                "accept": ["application/json"],
+                "content_type": [],
             },
-            api_client=api_client
+            api_client=api_client,
         )
         self.list_detectors_endpoint = _Endpoint(
             settings={
-                'response_type': (PaginatedDetectorList,),
-                'auth': [
-                    'ApiToken'
-                ],
-                'endpoint_path': '/v1/detectors',
-                'operation_id': 'list_detectors',
-                'http_method': 'GET',
-                'servers': None,
+                "response_type": (PaginatedDetectorList,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/detectors",
+                "operation_id": "list_detectors",
+                "http_method": "GET",
+                "servers": None,
             },
             params_map={
-                'all': [
-                    'page',
-                    'page_size',
+                "all": [
+                    "page",
+                    "page_size",
                 ],
-                'required': [],
-                'nullable': [
-                ],
-                'enum': [
-                ],
-                'validation': [
-                ]
+                "required": [],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
             },
             root_map={
-                'validations': {
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "page": (int,),
+                    "page_size": (int,),
                 },
-                'allowed_values': {
+                "attribute_map": {
+                    "page": "page",
+                    "page_size": "page_size",
                 },
-                'openapi_types': {
-                    'page':
-                        (int,),
-                    'page_size':
-                        (int,),
+                "location_map": {
+                    "page": "query",
+                    "page_size": "query",
                 },
-                'attribute_map': {
-                    'page': 'page',
-                    'page_size': 'page_size',
-                },
-                'location_map': {
-                    'page': 'query',
-                    'page_size': 'query',
-                },
-                'collection_format_map': {
-                }
+                "collection_format_map": {},
             },
             headers_map={
-                'accept': [
-                    'application/json'
-                ],
-                'content_type': [],
+                "accept": ["application/json"],
+                "content_type": [],
             },
-            api_client=api_client
+            api_client=api_client,
         )
 
-    def create_detector(
-        self,
-        detector_creation_input,
-        **kwargs
-    ):
+    def create_detector(self, detector_creation_input, **kwargs):
         """create_detector  # noqa: E501
 
         Create a new detector.  # noqa: E501
@@ -248,39 +205,19 @@ class DetectorsApi(object):
                 If the method is called asynchronously, returns the request
                 thread.
         """
-        kwargs['async_req'] = kwargs.get(
-            'async_req', False
-        )
-        kwargs['_return_http_data_only'] = kwargs.get(
-            '_return_http_data_only', True
-        )
-        kwargs['_preload_content'] = kwargs.get(
-            '_preload_content', True
-        )
-        kwargs['_request_timeout'] = kwargs.get(
-            '_request_timeout', None
-        )
-        kwargs['_check_input_type'] = kwargs.get(
-            '_check_input_type', True
-        )
-        kwargs['_check_return_type'] = kwargs.get(
-            '_check_return_type', True
-        )
-        kwargs['_spec_property_naming'] = kwargs.get(
-            '_spec_property_naming', False
-        )
-        kwargs['_content_type'] = kwargs.get(
-            '_content_type')
-        kwargs['_host_index'] = kwargs.get('_host_index')
-        kwargs['detector_creation_input'] = \
-            detector_creation_input
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_creation_input"] = detector_creation_input
         return self.create_detector_endpoint.call_with_http_info(**kwargs)
 
-    def get_detector(
-        self,
-        id,
-        **kwargs
-    ):
+    def get_detector(self, id, **kwargs):
         """get_detector  # noqa: E501
 
         Retrieve a detector by its ID.  # noqa: E501
@@ -326,38 +263,19 @@ class DetectorsApi(object):
                 If the method is called asynchronously, returns the request
                 thread.
         """
-        kwargs['async_req'] = kwargs.get(
-            'async_req', False
-        )
-        kwargs['_return_http_data_only'] = kwargs.get(
-            '_return_http_data_only', True
-        )
-        kwargs['_preload_content'] = kwargs.get(
-            '_preload_content', True
-        )
-        kwargs['_request_timeout'] = kwargs.get(
-            '_request_timeout', None
-        )
-        kwargs['_check_input_type'] = kwargs.get(
-            '_check_input_type', True
-        )
-        kwargs['_check_return_type'] = kwargs.get(
-            '_check_return_type', True
-        )
-        kwargs['_spec_property_naming'] = kwargs.get(
-            '_spec_property_naming', False
-        )
-        kwargs['_content_type'] = kwargs.get(
-            '_content_type')
-        kwargs['_host_index'] = kwargs.get('_host_index')
-        kwargs['id'] = \
-            id
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["id"] = id
         return self.get_detector_endpoint.call_with_http_info(**kwargs)
 
-    def list_detectors(
-        self,
-        **kwargs
-    ):
+    def list_detectors(self, **kwargs):
         """list_detectors  # noqa: E501
 
         Retrieve a list of detectors.  # noqa: E501
@@ -403,29 +321,13 @@ class DetectorsApi(object):
                 If the method is called asynchronously, returns the request
                 thread.
         """
-        kwargs['async_req'] = kwargs.get(
-            'async_req', False
-        )
-        kwargs['_return_http_data_only'] = kwargs.get(
-            '_return_http_data_only', True
-        )
-        kwargs['_preload_content'] = kwargs.get(
-            '_preload_content', True
-        )
-        kwargs['_request_timeout'] = kwargs.get(
-            '_request_timeout', None
-        )
-        kwargs['_check_input_type'] = kwargs.get(
-            '_check_input_type', True
-        )
-        kwargs['_check_return_type'] = kwargs.get(
-            '_check_return_type', True
-        )
-        kwargs['_spec_property_naming'] = kwargs.get(
-            '_spec_property_naming', False
-        )
-        kwargs['_content_type'] = kwargs.get(
-            '_content_type')
-        kwargs['_host_index'] = kwargs.get('_host_index')
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
         return self.list_detectors_endpoint.call_with_http_info(**kwargs)
-
