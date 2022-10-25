@@ -3,18 +3,31 @@ name: test integ
 on: [push]
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [
+            #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
+            "3.7", 
+            "3.8", 
+            "3.9", 
+            "3.10", 
+            #"3.11",  # Not passing tests. No useful error messages.
+        ]
     env:
       # This is associated with the "sdk-integ-test" user, credentials on 1password
       GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
     steps:
       - name: get code
-        uses: actions/checkout@v2
-      - name: install python
-        uses: actions/setup-python@v2
+        uses: actions/checkout@v3
+      - name: install python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
-      - name: install poetry
+          python-version: ${{ matrix.python-version }}
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: install poetry and build poetry environment
         run: |
           pip install -U pip
           pip install poetry

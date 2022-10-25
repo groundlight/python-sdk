@@ -14,24 +14,18 @@ How to build a computer vision system in 5 lines of python code:
 ```Python
 from groundlight import Groundlight
 gl = Groundlight()
-
-# Create a new detector: use natural language to describe what you want to understand
-detector = gl.create_detector(name="door", query="Is the door open?")
-
-# Send an image to the detector
-image_query = gl.submit_image_query(detector=detector, image="path/to/filename.jpeg")
-
-# Show the results
-print(f"The answer is {image_query.result}")
+detector = gl.create_detector(name="door", query="Is the door open?")  # Define your detector using natural language
+image_query = gl.submit_image_query(detector=detector, image="path/to/filename.jpeg")  # send an image
+print(f"The answer is {image_query.result}")  # get the result
 ```
 
 
 ## Getting Started
 
-1. Install the `groundlight` sdk.
+1. Install the `groundlight` SDK.  Requires python version 3.7 or higher.  See [prerequisites](#Prerequisites).
 
     ```Bash
-    $ pip install groundlight
+    $ pip3 install groundlight
     ```
 
 1. To access the API, you need an API token. You can create one on the
@@ -47,9 +41,31 @@ which is an easy way to get started, but is NOT a best practice.  Please do not 
 
 ```bash
 $ export GROUNDLIGHT_API_TOKEN=api_2asdfkjEXAMPLE
-$ python glapp.py
+$ python3 glapp.py
 ```
 
+
+## Prerequisites
+
+### Using Groundlight SDK on Ubuntu 18.04
+
+Ubuntu 18.04 still uses python 3.6 by default, which is end-of-life.  We recommend setting up python 3.8 as follows:
+
+```
+# Prepare Ubuntu to install things
+sudo apt-get update
+# Install the basics
+sudo apt-get install -y python3.8 python3.8-distutils curl
+# Configure `python3` to run python3.8 by default
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
+# Download and install pip3.8
+curl https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py
+sudo python3.8 /tmp/get-pip.py
+# Configure `pip3` to run pip3.8
+sudo update-alternatives --install /usr/bin/pip3 pip3 $(which pip3.8) 10
+# Now we can install Groundlight!
+pip3 install groundlight
+```
 
 ## Using Groundlight on the edge
 
