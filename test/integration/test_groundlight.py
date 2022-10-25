@@ -21,7 +21,7 @@ def detector(gl: Groundlight) -> Detector:
 
 @pytest.fixture
 def image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
-    return gl.submit_image_query(detector_id=detector.id, image="test/assets/dog.jpeg")
+    return gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
 
 
 # @pytest.mark.skip(reason="We don't want to create a million detectors")
@@ -58,7 +58,7 @@ def test_get_detector(gl: Groundlight, detector: Detector):
 
 # @pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
 def test_submit_image_query(gl: Groundlight, detector: Detector):
-    _image_query = gl.submit_image_query(detector_id=detector.id, image="test/assets/dog.jpeg")
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
 
