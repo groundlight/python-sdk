@@ -59,10 +59,11 @@ python3.8 get-pip.py
 python3.8 -m pip install groundlight
 ```
 
-This will require you to run your commands with `python3.8` explicitly.  To configure `python3` to use v3.8 automatically you can run this command:
+This will require you to run your commands with `python3.8` explicitly (and `pip3.8`).  To configure `python3` to use v3.8 automatically you can run this command:
 
 ```
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
+sudo update-alternatives --install /usr/bin/pip3 pip3 /usr/local/bin/pip3.8 10
 ```
 
 ## Using Groundlight on the edge
