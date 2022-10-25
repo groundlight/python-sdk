@@ -91,6 +91,7 @@ class Groundlight:
             else:
                 raise ValueError(
                     f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match"
+                    f"Found existing detector with {name=} (id={existing_detector.id}) but the queries don't match"
                 )
 
         return self.create_detector(name, query, config_name)

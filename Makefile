@@ -9,6 +9,8 @@ generate: install  ## Generate the SDK from our public openapi spec
 		-g python \
 		-o ./generated
 	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py
+	poetry run black .
+
 
 test-local: install  ## Run integration tests against an API server running at http://localhost:8000/device-api (needs GROUNDLIGHT_API_TOKEN)
 	GROUNDLIGHT_TEST_API_ENDPOINT="http://localhost:8000/device-api" poetry run pytest --cov=src test --log-cli-level INFO
