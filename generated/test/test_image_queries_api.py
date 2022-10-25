@@ -25,23 +25,17 @@ class TestImageQueriesApi(unittest.TestCase):
         pass
 
     def test_get_image_query(self):
-        """Test case for get_image_query
-
-        """
+        """Test case for get_image_query"""
         pass
 
     def test_list_image_queries(self):
-        """Test case for list_image_queries
-
-        """
+        """Test case for list_image_queries"""
         pass
 
     def test_submit_image_query(self):
-        """Test case for submit_image_query
-
-        """
+        """Test case for submit_image_query"""
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

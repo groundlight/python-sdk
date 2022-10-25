@@ -14,7 +14,8 @@ import unittest
 
 import openapi_client
 from openapi_client.model.detector import Detector
-globals()['Detector'] = Detector
+
+globals()["Detector"] = Detector
 from openapi_client.model.paginated_detector_list import PaginatedDetectorList
 
 
@@ -34,5 +35,5 @@ class TestPaginatedDetectorList(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

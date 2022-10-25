@@ -14,7 +14,8 @@ import unittest
 
 import openapi_client
 from openapi_client.model.detector_type_enum import DetectorTypeEnum
-globals()['DetectorTypeEnum'] = DetectorTypeEnum
+
+globals()["DetectorTypeEnum"] = DetectorTypeEnum
 from openapi_client.model.detector import Detector
 
 
@@ -34,5 +35,5 @@ class TestDetector(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

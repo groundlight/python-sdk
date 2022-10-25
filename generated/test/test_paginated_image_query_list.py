@@ -14,7 +14,8 @@ import unittest
 
 import openapi_client
 from openapi_client.model.image_query import ImageQuery
-globals()['ImageQuery'] = ImageQuery
+
+globals()["ImageQuery"] = ImageQuery
 from openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 
 
@@ -34,5 +35,5 @@ class TestPaginatedImageQueryList(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
