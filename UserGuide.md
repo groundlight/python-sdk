@@ -7,7 +7,7 @@ Groundlight makes it simple to understand images.  You can easily create compute
 *Note: The SDK is currently in "beta" phase.  Interfaces are subject to change in future versions.*
 
 
-## Simple Example
+## Computer vision made simple
 
 How to build a computer vision system in 5 lines of python code:
 
@@ -15,7 +15,7 @@ How to build a computer vision system in 5 lines of python code:
 from groundlight import Groundlight
 gl = Groundlight()
 d = gl.create_detector("door", query="Is the door open?")  # define with natural language
-image_query = gl.submit_image_query(detector=d, image="path/filename.jpeg")  # send an image
+image_query = gl.submit_image_query(detector=d, image=jpeg_img)  # bytes or filename
 print(f"The answer is {image_query.result}")  # get the result
 ```
 
