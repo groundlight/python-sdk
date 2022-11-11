@@ -5,7 +5,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-20.04
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
@@ -13,7 +13,7 @@ jobs:
             "3.8", 
             "3.9", 
             "3.10", 
-            #"3.11",  # Not passing tests. No useful error messages.
+            "3.11",
         ]
     env:
       # This is associated with the "sdk-integ-test" user, credentials on 1password
