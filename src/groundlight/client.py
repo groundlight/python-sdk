@@ -107,6 +107,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, BytesIO, BufferedReader],
+        wait: float = 0,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -114,12 +115,14 @@ class Groundlight:
             - a filename (string) of a jpeg file
             - a byte array or BytesIO with jpeg bytes
             - a numpy array in the 0-255 range (gets converted to jpeg)
+        :param wait: How long to wait (in seconds) for a confident answer
         """
         if isinstance(detector, Detector):
             detector_id = detector.id
         else:
             detector_id = detector
         image_bytesio: Union[BytesIO, BufferedReader]
+        #TODO: support PIL Images
         if isinstance(image, str):
             # Assume it is a filename
             image_bytesio = buffer_from_jpeg_file(image)
@@ -134,5 +137,14 @@ class Groundlight:
                 "Unsupported type for image. We only support JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
             )
 
-        obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
-        return ImageQuery.parse_obj(obj.to_dict())
+        img_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        if wait:
+            threshold = confidence_threshold_for_detector(detector)
+            img_query = self._poll_for_confident_result(img_query, threshold)
+        return ImageQuery.parse_obj(img_query.to_dict())
+
+    def _poll_for_confident_result(self, img_query:"ImageQuery", wait: float, threshold: float) -> "ImageQuery":
+        start_time = time.time()
+        while time.time() - start_time < wait:
+            pass
+        return img_query
