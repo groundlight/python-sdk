@@ -34,6 +34,32 @@ $ make generate
 ## Testing
 Most tests need an API endpoint to run.
 
+### Getting the tests to use your current code.
+
+You kinda want to do a `pip install -e .` equivalent but I don't know how to do that with poetry.  The ugly version is this...
+
+Find the directory where `groundlight` is installed:
+
+```
+$  python
+Python 3.7.4 (default, Aug 13 2019, 20:35:49)
+[GCC 7.3.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import groundlight
+>>> groundlight
+<module 'groundlight' from '/home/leo/anaconda3/lib/python3.7/site-packages/groundlight/__init__.py'>
+```
+
+Then blow this away and set up a symlink from that directory to your source.
+
+```
+cd /home/leo/anaconda3/lib/python3.7/site-packages/
+rm -rf groundlight
+ln -s ~/ptdev/groundlight-python-sdk/src/groundlight groundlight
+```
+
+TODO: something better.
+
 ### Local API endpoint
 
 1. Set up a local [janzu API
