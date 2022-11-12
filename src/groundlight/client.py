@@ -63,13 +63,13 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Optional[Detector]:
-        #TODO: Do this on server.
+        # TODO: Do this on server.
         detector_list = self.list_detectors(page_size=100)
         for d in detector_list.results:
             if d.name == name:
                 return d
         if detector_list.next:
-            #TODO: paginate
+            # TODO: paginate
             raise RuntimeError("You have too many detectors to use get_detector_by_name")
         return None
 
@@ -90,8 +90,10 @@ class Groundlight:
             if existing_detector.query == query:
                 return existing_detector
             else:
-                raise ValueError(f"Found existing detector with {name=} (id={existing_detector.id}) but the queries don't match")
-                
+                raise ValueError(
+                    f"Found existing detector with {name=} (id={existing_detector.id}) but the queries don't match"
+                )
+
         return self.create_detector(name, query, config_name)
 
     def get_image_query(self, id: str) -> ImageQuery:
@@ -102,10 +104,11 @@ class Groundlight:
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         return PaginatedImageQueryList.parse_obj(obj.to_dict())
 
-    def submit_image_query(self, 
-            image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
-            detector: Union[Detector, str],
-        ) -> ImageQuery:
+    def submit_image_query(
+        self,
+        image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
+        detector: Union[Detector, str],
+    ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param image: The image, in several possible formats:
             - a filename (string) of a jpeg file
