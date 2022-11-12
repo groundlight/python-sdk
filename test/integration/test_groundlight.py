@@ -77,7 +77,7 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(_image_query, ImageQuery)
 
 
-@pytest.mark.skipif(NUMPY_MISSING or PIL_MISSING, reason="Needs numpy and pillow")
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert False, "Need to see this fail so we know we're not always skipping"
     np_img = np.random.uniform(0, 255, (600, 800, 3))
