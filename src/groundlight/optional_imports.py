@@ -23,6 +23,7 @@ class UnavailableModule(type):
         return out
 
     def __getattr__(self, key):
+        # TODO: This isn't getting called for some reason.
         raise RuntimeError("attempt to use module that failed to load") from self.exc
 
 
