@@ -13,7 +13,7 @@ jobs:
             "3.8", 
             "3.9", 
             "3.10", 
-            #"3.11",  # Not passing tests. No useful error messages.
+            "3.11",
         ]
     env:
       # This is associated with the "sdk-integ-test" user, credentials on 1password
