@@ -19,7 +19,8 @@ def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
 def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> io.BytesIO:
     """Converts a numpy array to BytesIO"""
     pilim = Image.fromarray(img.astype("uint8"), "RGB")
-    with io.BytesIO() as buf:
-        pilim.save(buf, "jpeg", quality=jpeg_quality)
-        # out = buf.getvalue()  # this gets bytes - not what we want
-        return buf
+    # don't use "with ... as buf:" because that closes it and makes it unreadable
+    buf = io.BytesIO()
+    pilim.save(buf, "jpeg", quality=jpeg_quality)
+    # out = buf.getvalue()  # this gets bytes - not what we want
+    return buf
