@@ -58,6 +58,13 @@ def test_get_detector(gl: Groundlight, detector: Detector):
     assert isinstance(_detector, Detector)
 
 
+def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
+    # Ask for a trivially small wait so it never has time to update, but uses the code path
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=0.001)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+
+
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
     assert str(_image_query)
