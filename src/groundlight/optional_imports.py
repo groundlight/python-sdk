@@ -9,14 +9,18 @@ look readable.
 """
 
 
-class UnavailableModule(object):
+class UnavailableModule(type):
     """Represents a module that is not installed or otherwise unavailable at runtime.
     Attempting to access anything in this object raises the original exception
     (ImportError or similar) which happened when the optional library failed to import.
+
+    Needs to subclass type so that it works for type-hinting.
     """
 
-    def __init__(self, exc: Exception):
-        self.exc = exc
+    def __new__(cls, exc):
+        out = type("UnavailableModule", (), {})
+        out.exc = exc
+        return out
 
     def __getattr__(self, key):
         raise RuntimeError("attempt to use module that failed to load") from self.exc
@@ -31,8 +35,7 @@ except ImportError as e:
 
 try:
     import PIL
-
-    Image = PIL.Image
+    from PIL import Image
 except ImportError as e:
     PIL = UnavailableModule(e)
     Image = PIL
