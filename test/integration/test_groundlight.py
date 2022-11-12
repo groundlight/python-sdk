@@ -96,7 +96,7 @@ def test_submit_image_query_bad_filename(gl: Groundlight, detector: Detector):
 def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     with pytest.raises(ValueError) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/blankfile.jpeg")
-    assert "jpeg" in str(exc_info).lowe()
+    assert "jpeg" in str(exc_info).lower()
 
 
 def test_list_image_queries(gl: Groundlight):
