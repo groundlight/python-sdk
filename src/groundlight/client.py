@@ -157,7 +157,11 @@ class Groundlight:
         delay = 0.1
         while time.time() - start_time < wait:
             current_confidence = img_query.result.confidence
+            if current_confidence is None:
+                logging.debug(f"Image query with None confidence implies human label (for now)")
+                break
             if current_confidence >= threshold:
+                logging.debug(f"Image query confidence {current_confidence:.3f} above {threshold:.3f}")
                 break
             logger.debug(
                 f"Polling for updated image_query because confidence {current_confidence:.3f} < {threshold:.3f}"
