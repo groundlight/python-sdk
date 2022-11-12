@@ -1,6 +1,7 @@
 """Example of how to wait for a confident result
 """
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 
 from groundlight import Groundlight
