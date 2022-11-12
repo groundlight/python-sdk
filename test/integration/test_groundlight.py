@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytest
 from groundlight import Groundlight
-from groundlight.optional_imports import MISSING_NUMPY, MISSING_PIL
+from groundlight.optional_imports import *
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
