@@ -1,9 +1,7 @@
 import imghdr
 import io
 
-from PIL import Image
-
-from groundlight.numpy_optional import np
+from groundlight.optional_imports import np, Image
 
 
 def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:

@@ -9,7 +9,7 @@ from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy
-from groundlight.numpy_optional import np
+from groundlight.optional_imports import np
 
 API_TOKEN_WEB_URL = "https://app.groundlight.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
