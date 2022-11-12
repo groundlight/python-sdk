@@ -91,7 +91,7 @@ class Groundlight:
                 return existing_detector
             else:
                 raise ValueError(
-                    f"Found existing detector with {name=} (id={existing_detector.id}) but the queries don't match"
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match"
                 )
 
         return self.create_detector(name, query, config_name)
@@ -106,15 +106,15 @@ class Groundlight:
 
     def submit_image_query(
         self,
-        image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
         detector: Union[Detector, str],
+        image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
+        :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
             - a filename (string) of a jpeg file
             - a byte array or BytesIO with jpeg bytes
             - a numpy array in the 0-255 range (gets converted to jpeg)
-        :param detector: the Detector object, or string id of a detector like `det_12345`
         """
         if isinstance(detector, Detector):
             detector_id = detector.id
