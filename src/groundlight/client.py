@@ -61,7 +61,7 @@ class Groundlight:
         self.detectors_api = DetectorsApi(ApiClient(configuration))
         self.image_queries_api = ImageQueriesApi(ApiClient(configuration))
 
-    def get_detector(self, id:Union[str, Detector]) -> Detector:
+    def get_detector(self, id: Union[str, Detector]) -> Detector:
         if isinstance(id, Detector):
             # Short-circuit
             return id
@@ -152,15 +152,16 @@ class Groundlight:
         return img_query
 
     def _poll_for_confident_result(self, img_query: ImageQuery, wait: float, threshold: float) -> ImageQuery:
-        """Polls on an image query waiting for the result to reach the specified confidence.
-        """
+        """Polls on an image query waiting for the result to reach the specified confidence."""
         start_time = time.time()
         delay = 0.1
         while time.time() - start_time < wait:
             current_confidence = img_query.result.confidence
             if current_confidence >= threshold:
                 break
-            logger.debug(f"Polling for updated image_query because confidence {current_confidence:.3f} < {threshold:.3f}")
+            logger.debug(
+                f"Polling for updated image_query because confidence {current_confidence:.3f} < {threshold:.3f}"
+            )
             time.sleep(delay)
             delay *= 1.4  # slow exponential backoff
             img_query = self.get_image_query(img_query.id)
