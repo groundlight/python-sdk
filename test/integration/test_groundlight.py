@@ -7,18 +7,17 @@ import pytest
 from groundlight import Groundlight
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
+
 @pytest.fixture
 def gl() -> Groundlight:
-    """Creates a Groundlight client object for testing.
-    """
+    """Creates a Groundlight client object for testing."""
     endpoint = os.environ.get("GROUNDLIGHT_TEST_API_ENDPOINT", "http://localhost:8000/device-api")
     return Groundlight(endpoint=endpoint)
 
 
 @pytest.fixture
 def detector(gl: Groundlight) -> Detector:
-    """Creates a new Test detector.
-    """
+    """Creates a new Test detector."""
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Test query?"
     return gl.create_detector(name=name, query=query)
@@ -80,7 +79,7 @@ def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     jpeg = open("test/assets/dog.jpeg", "rb").read()
-    jpeg_truncated = jpeg[:-500]   # Cut off the last 500 bytes
+    jpeg_truncated = jpeg[:-500]  # Cut off the last 500 bytes
     # This is an extra difficult test because the header is valid.
     with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated)
@@ -97,7 +96,6 @@ def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     with pytest.raises(ValueError) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/blankfile.jpeg")
     assert "jpeg" in str(exc_info).lowe()
-
 
 
 def test_list_image_queries(gl: Groundlight):

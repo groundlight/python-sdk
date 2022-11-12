@@ -122,7 +122,7 @@ class Groundlight:
         else:
             detector_id = detector
         image_bytesio: Union[BytesIO, BufferedReader]
-        #TODO: support PIL Images
+        # TODO: support PIL Images
         if isinstance(image, str):
             # Assume it is a filename
             image_bytesio = buffer_from_jpeg_file(image)
@@ -143,7 +143,7 @@ class Groundlight:
             img_query = self._poll_for_confident_result(img_query, threshold)
         return ImageQuery.parse_obj(img_query.to_dict())
 
-    def _poll_for_confident_result(self, img_query:"ImageQuery", wait: float, threshold: float) -> "ImageQuery":
+    def _poll_for_confident_result(self, img_query: "ImageQuery", wait: float, threshold: float) -> "ImageQuery":
         start_time = time.time()
         while time.time() - start_time < wait:
             pass
