@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 from groundlight import Groundlight
+from groundlight.optional_imports import MISSING_NUMPY, MISSING_PIL
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
@@ -74,21 +75,6 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-
-
-try:
-    import numpy as np
-
-    NUMPY_MISSING = False
-except ImportError:
-    NUMPY_MISSING = True
-
-try:
-    import PIL
-
-    PIL_MISSING = False
-except ImportError:
-    PIL_MISSING = True
 
 
 # @pytest.mark.skipif(NUMPY_MISSING or PIL_MISSING, reason="Needs numpy and pillow")

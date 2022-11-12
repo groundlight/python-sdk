@@ -21,5 +21,5 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> io.BytesIO:
     pilim = Image.fromarray(img.astype("uint8"), "RGB")
     with io.BytesIO() as buf:
         pilim.save(buf, "jpeg", quality=jpeg_quality)
-        out = buf.getvalue()
-        return out
+        # out = buf.getvalue()  # this gets bytes - not what we want
+        return buf

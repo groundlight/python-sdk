@@ -29,17 +29,21 @@ class UnavailableModule(type):
 
 try:
     import numpy as np
+    MISSING_NUMPY = False
 except ImportError as e:
     np = UnavailableModule(e)
     # Expose np.ndarray so type-hinting looks normal
     np.ndarray = np
+    MISSING_NUMPY = True
 
 try:
     import PIL
     from PIL import Image
+    MISSING_PIL = False
 except ImportError as e:
     PIL = UnavailableModule(e)
     Image = PIL
+    MISSING_PIL = True
 
 
-__all__ = ["np", "PIL", "Image"]
+__all__ = ["np", "PIL", "Image", "MISSING_NUMPY", "MISSING_PIL"]
