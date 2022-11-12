@@ -5,6 +5,13 @@ jobs:
   run-tests:
     runs-on: ubuntu-20.04
     strategy:
+      # It's totally debatable which is better here: fail-fast or not.
+      # Failing fast will use fewer cloud resources, in theory.
+      #    But if the tests are slightly flaky (fail to pip install something)
+      #    Then one flaky install kills lots of jobs that need to be redone.
+      #    So the efficiency argument has its limits
+      # Failing slow is clearer about what's going on.
+      #    This is pretty unambiguous, so we're going with it for now.
       fail-fast: false
       matrix:
         python-version: [
