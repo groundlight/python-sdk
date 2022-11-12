@@ -131,7 +131,7 @@ class Groundlight:
             # Already in the right format
             image_bytesio = image
         elif isinstance(image, np.ndarray):
-            image_bytesio = jpeg_from_numpy(image)
+            image_bytesio = BytesIO(jpeg_from_numpy(image))
         else:
             raise TypeError(
                 "Unsupported type for image. We only support numpy arrays (3,W,H) or JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
