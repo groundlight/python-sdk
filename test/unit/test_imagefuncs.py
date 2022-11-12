@@ -1,8 +1,9 @@
 import pytest
 
 from groundlight.images import *
+from groundlight.optional_imports import *
 
-
+@pytest.mark.skipif(MISSING_NUMPY, reason="Needs numpy")
 def test_jpeg_from_numpy():
     np_img = np.random.uniform(0, 255, (480, 640, 3))
     jpeg1 = jpeg_from_numpy(np_img)
