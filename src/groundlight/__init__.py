@@ -7,6 +7,7 @@ from .client import Groundlight
 
 try:
     import importlib.metadata
+
     # Copy the version number from where it's set in pyproject.toml
     __version__ = importlib.metadata.version("groundlight")
 except ModuleNotFoundError:
