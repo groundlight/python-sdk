@@ -3,6 +3,7 @@ import pytest
 from groundlight.images import *
 from groundlight.optional_imports import *
 
+
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
 def test_jpeg_from_numpy():
     np_img = np.random.uniform(0, 255, (480, 640, 3))
