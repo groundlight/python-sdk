@@ -39,10 +39,10 @@ jobs:
       - name: install numpy
         if: matrix.install_numpy
         run: |
-          pip install numpy
+          poetry run pip install numpy
       - name: install pillow
         if: matrix.install_pillow
         run: |
-          pip install pillow
+          poetry run pip install pillow
       - name: run tests
         run: make test-integ
