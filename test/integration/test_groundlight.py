@@ -56,7 +56,6 @@ def test_get_detector(gl: Groundlight, detector: Detector):
     assert isinstance(_detector, Detector)
 
 
-
 # @pytest.mark.skip(reason="We don't want to create a million detectors and image_queries")
 def test_submit_image_query(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
@@ -77,18 +76,20 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(_image_query, ImageQuery)
 
 
-
 try:
     import numpy as np
+
     NUMPY_MISSING = False
 except ImportError:
     NUMPY_MISSING = True
 
 try:
     import PIL
+
     PIL_MISSING = False
 except ImportError:
     PIL_MISSING = True
+
 
 @pytest.mark.skipif(NUMPY_MISSING or PIL_MISSING, reason="Needs numpy and pillow")
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
@@ -96,5 +97,3 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-
-
