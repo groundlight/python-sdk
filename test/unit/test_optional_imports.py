@@ -21,5 +21,9 @@ def test_type_hints(failed_import):
 
 @pytest.mark.skip("Would be nice if this works, but it doesn't")
 def test_raises_exception(failed_import):
+    # We'd like the UnavailableModule object to raise an exception
+    # anytime you access it, where the exception is a RuntimeError
+    # but builds on the original ImportError so you can see what went wrong.
+    # The old version had this, but didn't work with modern type-hinting.
     with pytest.raises(RuntimeError):
         failed_import.foo
