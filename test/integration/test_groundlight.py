@@ -91,7 +91,7 @@ except ImportError:
     PIL_MISSING = True
 
 
-#@pytest.mark.skipif(NUMPY_MISSING or PIL_MISSING, reason="Needs numpy and pillow")
+# @pytest.mark.skipif(NUMPY_MISSING or PIL_MISSING, reason="Needs numpy and pillow")
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     np_img = np.random.uniform(0, 255, (600, 800, 3))
     _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
