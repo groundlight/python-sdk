@@ -59,7 +59,7 @@ def test_get_detector(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     # Ask for a trivially small wait so it never has time to update, but uses the code path
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=0.001)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=5)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
 
@@ -81,6 +81,7 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     jpeg = open("test/assets/dog.jpeg", "rb").read()
     jpeg_truncated = jpeg[:-500]  # Cut off the last 500 bytes
     # This is an extra difficult test because the header is valid.
+    # So a casual check of the image will appear valid.
     with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated)
     e = exc_info.value
