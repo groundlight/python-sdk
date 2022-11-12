@@ -29,6 +29,7 @@ class UnavailableModule(type):
 
 try:
     import numpy as np
+
     MISSING_NUMPY = False
 except ImportError as e:
     np = UnavailableModule(e)
@@ -39,6 +40,7 @@ except ImportError as e:
 try:
     import PIL
     from PIL import Image
+
     MISSING_PIL = False
 except ImportError as e:
     PIL = UnavailableModule(e)
