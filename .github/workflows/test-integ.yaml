@@ -5,7 +5,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-20.04
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
