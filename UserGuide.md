@@ -10,7 +10,7 @@ How to build a working computer vision system in just 5 lines of python code:
 from groundlight import Groundlight
 gl = Groundlight()
 d = gl.create_detector("door", query="Is the door open?")  # define with natural language
-image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=10)
+image_query = gl.submit_image_query(detector=d, image=jpeg_img)  # send in an image
 print(f"The answer is {image_query.result}")  # get the result
 ```
 
@@ -18,6 +18,33 @@ print(f"The answer is {image_query.result}")  # get the result
 
 *Note: The SDK is currently in "beta" phase.  Interfaces are subject to change in future versions.*
 
+
+## Managing confidence levels and latency
+
+Groundlight gives you a simple way to control the trade-off of latency against accuracy.  The longer you can wait for an answer to your image query, the better accuracy you will get.  In particular, if the ML models are unsure of the best response, they will escalate the image query to a real-time human monitor to review them.  Your code can easily wait for this delayed response.
+
+The desired confidence level is set as the escalation threshold on your detector.  This determines what is the minimum confidence score for the ML system to provide before the image query is escalated to a human monitor.
+
+For example, say you want to set your desired confidence level to 0.95 and that you're willing to wait up to 30 seconds to get a response.  
+
+```Python
+d = gl.create_detector("lights", query="Are the lights on?", confidence=0.95)
+image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=30)
+# This will wait until either 30 seconds have passed or the confidence reaches 0.95
+print(f"The answer is {image_query.result}")
+```
+
+Or if you want to run as fast as possible, set `wait=0`.  This way you will only get the ML results, without waiting for human review.  Image queries which are below the desired confidence level still get escalated to human review, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
+
+```Python
+image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=0)
+```
+
+You can see the confidence score returned for the image query:
+
+```Python
+print(f"The confidence is {image_query.result.confidence}")
+```
 
 ## Getting Started
 
@@ -42,6 +69,7 @@ which is an easy way to get started, but is NOT a best practice.  Please do not 
 $ export GROUNDLIGHT_API_TOKEN=api_2GdXMflhJi6L_example
 $ python3 glapp.py
 ```
+
 
 
 ## Prerequisites
@@ -124,6 +152,7 @@ gl = Groundlight()
 try:
     detectors = gl.list_detectors()
 except ApiException as e:
+    # Many fields available to describe the error
     print(e)
     print(e.args)
     print(e.body)
