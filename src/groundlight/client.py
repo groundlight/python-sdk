@@ -1,5 +1,7 @@
-import os
 from io import BufferedReader, BytesIO
+import logging
+import os
+import time
 from typing import Optional, Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
@@ -14,6 +16,8 @@ API_TOKEN_WEB_URL = "https://app.groundlight.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
 
 GROUNDLIGHT_ENDPOINT = os.environ.get("GROUNDLIGHT_ENDPOINT", "https://api.groundlight.ai/device-api")
+
+logger = logging.getLogger("groundlight")
 
 
 class ApiTokenError(Exception):
@@ -57,7 +61,10 @@ class Groundlight:
         self.detectors_api = DetectorsApi(ApiClient(configuration))
         self.image_queries_api = ImageQueriesApi(ApiClient(configuration))
 
-    def get_detector(self, id: str) -> Detector:
+    def get_detector(self, id: Union[str, Detector]) -> Detector:
+        if isinstance(id, Detector):
+            # Short-circuit
+            return id
         obj = self.detectors_api.get_detector(id=id)
         return Detector.parse_obj(obj.to_dict())
 
@@ -107,6 +114,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, BytesIO, BufferedReader],
+        wait: float = 0,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -114,12 +122,14 @@ class Groundlight:
             - a filename (string) of a jpeg file
             - a byte array or BytesIO with jpeg bytes
             - a numpy array in the 0-255 range (gets converted to jpeg)
+        :param wait: How long to wait (in seconds) for a confident answer
         """
         if isinstance(detector, Detector):
             detector_id = detector.id
         else:
             detector_id = detector
         image_bytesio: Union[BytesIO, BufferedReader]
+        # TODO: support PIL Images
         if isinstance(image, str):
             # Assume it is a filename
             image_bytesio = buffer_from_jpeg_file(image)
@@ -134,5 +144,29 @@ class Groundlight:
                 "Unsupported type for image. We only support JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
             )
 
-        obj = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
-        return ImageQuery.parse_obj(obj.to_dict())
+        raw_img_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        img_query = ImageQuery.parse_obj(raw_img_query.to_dict())
+        if wait:
+            threshold = self.get_detector(detector).confidence_threshold
+            img_query = self._poll_for_confident_result(img_query, wait, threshold)
+        return img_query
+
+    def _poll_for_confident_result(self, img_query: ImageQuery, wait: float, threshold: float) -> ImageQuery:
+        """Polls on an image query waiting for the result to reach the specified confidence."""
+        start_time = time.time()
+        delay = 0.1
+        while time.time() - start_time < wait:
+            current_confidence = img_query.result.confidence
+            if current_confidence is None:
+                logging.debug(f"Image query with None confidence implies human label (for now)")
+                break
+            if current_confidence >= threshold:
+                logging.debug(f"Image query confidence {current_confidence:.3f} above {threshold:.3f}")
+                break
+            logger.debug(
+                f"Polling for updated image_query because confidence {current_confidence:.3f} < {threshold:.3f}"
+            )
+            time.sleep(delay)
+            delay *= 1.4  # slow exponential backoff
+            img_query = self.get_image_query(img_query.id)
+        return img_query
