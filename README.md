@@ -1,16 +1,11 @@
-# Groundlight Python SDK
-This package holds an SDK for accessing the Groundlight public API.
+# Python SDK Internal README
+# (See [UserGuide](UserGuide.md) for the public README)
 
-### Installation
-Install with `pip` or `poetry`.
+This package builds the SDK which is an easier-to-use wrapper around the public API.  
+The raw API is generated using an OpenAPI spec.  But then we add functionality here in the SDK
+for things like blocking submit and configuration of tokens and endpoints.
 
-```Bash
-# pip
-$ pip install groundlight
-
-# poetry
-$ poetry add groundlight
-```
+The SDK is published through github actions to pypi at [https://pypi.org/project/groundlight/](https://pypi.org/project/groundlight/).
 
 ### Usage
 
@@ -118,12 +113,8 @@ for consumers.
 
 ## TODOs
 
-- Figure out how we want to handle tests (since almost everything is an integration test). And, running the stateful (creation) tests can lead to a bunch of objects in the DB.
 - Improve wrappers around API functions (e.g., simplify the responses even further, add auto-pagination managers, etc.)
   - The SDK should allow you to work with the most natural interface, rather than trying to exactly mirror the REST API.
-  - E.g.
-    - Add an image query long polling helper method (calls POST, then several GETs)
-    - It would be nice to have a `get_or_create_detector()` function (even better if it's supported in the API directly). That way, "submit image query" code examples will be simpler.
 - Better auto-generated code docs (e.g. [sphinx](https://www.sphinx-doc.org/en/master/))
   - Model types (e.g., [autodoc_pydantic](https://github.com/mansenfranzen/autodoc_pydantic))
   - Cleaner auto-generated model names (e.g., `PaginatedDetectorList` is a little ugly)
@@ -133,4 +124,3 @@ for consumers.
 - `with` context manager (auto cleanup the client object)
 - It would be great to add notebooks with interactive examples that can actually run out of the box
 - Have a cleaner distinction between dev docs and user guide docs
-- ...
