@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "groundlight"
-version = "0.5.4"
+version = "0.6.1"
 license = "MIT"
 readme = "UserGuide.md"
 homepage = "https://groundlight.ai"
