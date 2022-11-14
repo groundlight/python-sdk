@@ -148,25 +148,29 @@ class Groundlight:
         img_query = ImageQuery.parse_obj(raw_img_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
-            img_query = self._poll_for_confident_result(img_query, wait, threshold)
+            img_query = self.poll_image_query(img_query, wait, threshold)
         return img_query
 
-    def _poll_for_confident_result(self, img_query: ImageQuery, wait: float, threshold: float) -> ImageQuery:
-        """Polls on an image query waiting for the result to reach the specified confidence."""
-        start_time = time.time()
+    def poll_image_query(self, img_query: ImageQuery, timeout_sec: float, confidence_threshold: float) -> ImageQuery:
+        """Polls on an image query waiting for the result's confidence  to reach the specified amount.i
+        :param img_query: An ImageQuery object to poll
+        :param timeout_sec: The maximum number of seconds to wait.
+        :param confidence_threshold: The minimum confidence level required to return before the timeout."""
+        timeout_time = time.time() + timeout_sec
         delay = 0.1
-        while time.time() - start_time < wait:
+        while time.time() < timeout_time:
             current_confidence = img_query.result.confidence
             if current_confidence is None:
                 logging.debug(f"Image query with None confidence implies human label (for now)")
                 break
-            if current_confidence >= threshold:
-                logging.debug(f"Image query confidence {current_confidence:.3f} above {threshold:.3f}")
+            if current_confidence >= confidence_threshold:
+                logging.debug(f"Image query confidence {current_confidence:.3f} above {confidence_threshold:.3f}")
                 break
             logger.debug(
-                f"Polling for updated image_query because confidence {current_confidence:.3f} < {threshold:.3f}"
+                f"Polling for updated image_query because confidence {current_confidence:.3f} < {confidence_threshold:.3f}"
             )
-            time.sleep(delay)
+            time_left = max(0, time.time() - timeout_time)
+            time.sleep(min(delay, time_left))
             delay *= 1.4  # slow exponential backoff
             img_query = self.get_image_query(img_query.id)
         return img_query
