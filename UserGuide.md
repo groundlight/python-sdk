@@ -2,23 +2,49 @@
 
 Groundlight makes it simple to understand images.  You can easily create computer vision detectors just by describing what you want to know using natural language.
 
-**How does it work?**  Your images are first analyzed by machine learning (ML) models which are automatically trained on your data.  If those models have high enough confidence, that's your answer.  But if the models are unsure, then the images are progressively escalated to more resource-intensive analysis methods up to real-time human review.  So what you get is a computer vision system that starts working right away without even needing to first gather and label a dataset.  At first it will operate with high latency, because people need to review the image queries.  But over time, the ML systems will learn and improve so queries come back faster with higher confidence.
+## Computer vision made simple
 
-*Note: The SDK is currently in "beta" phase.  Interfaces are subject to change in future versions.*
-
-
-## Simple Example
-
-How to build a computer vision system in 5 lines of python code:
+How to build a working computer vision system in just 5 lines of python code:
 
 ```Python
 from groundlight import Groundlight
 gl = Groundlight()
 d = gl.create_detector("door", query="Is the door open?")  # define with natural language
-image_query = gl.submit_image_query(detector=d, image="path/filename.jpeg")  # send an image
+image_query = gl.submit_image_query(detector=d, image=jpeg_img)  # send in an image
 print(f"The answer is {image_query.result}")  # get the result
 ```
 
+**How does it work?**  Your images are first analyzed by machine learning (ML) models which are automatically trained on your data.  If those models have high enough confidence, that's your answer.  But if the models are unsure, then the images are progressively escalated to more resource-intensive analysis methods up to real-time human review.  So what you get is a computer vision system that starts working right away without even needing to first gather and label a dataset.  At first it will operate with high latency, because people need to review the image queries.  But over time, the ML systems will learn and improve so queries come back faster with higher confidence.
+
+*Note: The SDK is currently in "beta" phase.  Interfaces are subject to change in future versions.*
+
+
+## Managing confidence levels and latency
+
+Groundlight gives you a simple way to control the trade-off of latency against accuracy.  The longer you can wait for an answer to your image query, the better accuracy you can get.  In particular, if the ML models are unsure of the best response, they will escalate the image query to more intensive analysis with more complex models and real-time human monitors as needed.  Your code can easily wait for this delayed response.  Either way, these new results are automatically trained into your models so your next queries will get better results faster.
+
+The desired confidence level is set as the escalation threshold on your detector.  This determines what is the minimum confidence score for the ML system to provide before the image query is escalated.
+
+For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.  
+
+```Python
+d = gl.create_detector("trash", query="Is the trash can full?", confidence=0.95)
+image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
+# This will wait until either 30 seconds have passed or the confidence reaches 0.95
+print(f"The answer is {image_query.result}")
+```
+
+Or if you want to run as fast as possible, set `wait=0`.  This way you will only get the ML results, without waiting for escalation.  Image queries which are below the desired confidence level still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
+
+```Python
+image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=0)
+```
+
+You can see the confidence score returned for the image query:
+
+```Python
+print(f"The confidence is {image_query.result.confidence}")
+```
 
 ## Getting Started
 
@@ -43,6 +69,7 @@ which is an easy way to get started, but is NOT a best practice.  Please do not 
 $ export GROUNDLIGHT_API_TOKEN=api_2GdXMflhJi6L_example
 $ python3 glapp.py
 ```
+
 
 
 ## Prerequisites
@@ -125,6 +152,7 @@ gl = Groundlight()
 try:
     detectors = gl.list_detectors()
 except ApiException as e:
+    # Many fields available to describe the error
     print(e)
     print(e.args)
     print(e.body)

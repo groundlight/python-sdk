@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: Groundlight API
-  version: 0.1.0
-  description: Ask visual queries.
+  version: 0.6.0
+  description: Easy Computer Vision powered by Natural Language
   contact:
     name: Questions?
     email: support@groundlight.ai
@@ -273,6 +273,7 @@ components:
             like to use.
           maxLength: 100
       required:
+      # TODO: make name optional - that's how the web version is going.
       - name
       - query
       x-internal: true
