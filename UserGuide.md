@@ -25,11 +25,11 @@ Groundlight gives you a simple way to control the trade-off of latency against a
 
 The desired confidence level is set as the escalation threshold on your detector.  This determines what is the minimum confidence score for the ML system to provide before the image query is escalated to a human monitor.
 
-For example, say you want to set your desired confidence level to 0.95 and that you're willing to wait up to 30 seconds to get a response.  
+For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.  
 
 ```Python
-d = gl.create_detector("lights", query="Are the lights on?", confidence=0.95)
-image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=30)
+d = gl.create_detector("trash", query="Is the trash can full?", confidence=0.95)
+image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
 # This will wait until either 30 seconds have passed or the confidence reaches 0.95
 print(f"The answer is {image_query.result}")
 ```
