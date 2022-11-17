@@ -10,7 +10,8 @@ from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.images import buffer_from_jpeg_file
+from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy
+from groundlight.optional_imports import np
 
 API_TOKEN_WEB_URL = "https://app.groundlight.ai/reef/my-account/api-tokens"
 API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
@@ -113,7 +114,7 @@ class Groundlight:
     def submit_image_query(
         self,
         detector: Union[Detector, str],
-        image: Union[str, bytes, BytesIO, BufferedReader],
+        image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
         wait: float = 0,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
@@ -139,9 +140,11 @@ class Groundlight:
         elif isinstance(image, BytesIO) or isinstance(image, BufferedReader):
             # Already in the right format
             image_bytesio = image
+        elif isinstance(image, np.ndarray):
+            image_bytesio = BytesIO(jpeg_from_numpy(image))
         else:
             raise TypeError(
-                "Unsupported type for image. We only support JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
+                "Unsupported type for image. We only support numpy arrays (3,W,H) or JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
             )
 
         raw_img_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)

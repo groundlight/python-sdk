@@ -5,6 +5,7 @@ import openapi_client
 import pytest
 
 from groundlight import Groundlight
+from groundlight.optional_imports import *
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
@@ -107,5 +108,13 @@ def test_list_image_queries(gl: Groundlight):
 
 def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+
+
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
+def test_submit_numpy_image(gl: Groundlight, detector: Detector):
+    np_img = np.random.uniform(0, 255, (600, 800, 3))
+    _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
