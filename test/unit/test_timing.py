@@ -13,5 +13,3 @@ def test_mocked_image_query(mocker):
 def test_blocking_submit():
     # TODO: call the blocking API, and verify that the service gets called a bunch of times.
     pass
-
-    
