@@ -43,7 +43,7 @@ class GroundlightApiClient(ApiClient):
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
-    def call_api(self, *args, **kwargs):
+    def dont_call_api(self, *args, **kwargs):
         """Adds a request-id header to each API call."""
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
@@ -55,7 +55,7 @@ class GroundlightApiClient(ApiClient):
             if not header_param.get(self.REQUEST_ID_HEADER, None):
                 header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
                 # Note that we have updated the actual dict in args, so we don't have to put it back in
-        return super().call_api(*args)
+        return super().call_api(*args, **kwargs)
 
 
 class ImageQuery(model.ImageQuery):
