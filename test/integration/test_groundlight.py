@@ -6,6 +6,7 @@ import pytest
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 from groundlight import Groundlight
+from groundlight.optional_imports import *
 
 
 @pytest.fixture
@@ -122,3 +123,11 @@ def test_add_label2(gl: Groundlight, image_query: ImageQuery):
     assert iqid.startswith("chk_")  # someday we'll probably change this to iq_
     gl.add_label(iqid, "FAIL")
     gl.add_label(iqid, "PASS")
+
+
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
+def test_submit_numpy_image(gl: Groundlight, detector: Detector):
+    np_img = np.random.uniform(0, 255, (600, 800, 3))
+    _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
