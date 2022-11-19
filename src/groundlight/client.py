@@ -1,23 +1,20 @@
-from io import BufferedReader, BytesIO
 import logging
 import os
 import time
+from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import (Detector, ImageQuery, PaginatedDetectorList,
+                   PaginatedImageQueryList)
 from openapi_client import ApiClient, Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
+from groundlight.config import *
 from groundlight.images import buffer_from_jpeg_file
 
-API_TOKEN_WEB_URL = "https://app.groundlight.ai/reef/my-account/api-tokens"
-API_TOKEN_VARIABLE_NAME = "GROUNDLIGHT_API_TOKEN"
-
-GROUNDLIGHT_ENDPOINT = os.environ.get("GROUNDLIGHT_ENDPOINT", "https://api.groundlight.ai/device-api")
-
-logger = logging.getLogger("groundlight")
+logger = logging.getLogger("groundlight.sdk")
 
 
 class ApiTokenError(Exception):
@@ -156,6 +153,7 @@ class Groundlight:
         :param img_query: An ImageQuery object to poll
         :param timeout_sec: The maximum number of seconds to wait.
         :param confidence_threshold: The minimum confidence level required to return before the timeout."""
+        # TODO: Add support for ImageQuery id instead of object.
         timeout_time = time.time() + timeout_sec
         delay = 0.1
         while time.time() < timeout_time:
@@ -174,3 +172,11 @@ class Groundlight:
             delay *= 1.4  # slow exponential backoff
             img_query = self.get_image_query(img_query.id)
         return img_query
+
+    def add_label(self, img_query: Union[ImageQuery, str], label: str):
+        """Adds a label to an image query.
+        :param img_query: Either an ImageQuery object (returned from `submit_image_query`) or
+        an image_query id as a string.
+        :param label: The string "Yes" or the string "No" in answer to the query.
+        """
+        
