@@ -58,25 +58,24 @@ class GroundlightApiClient(ApiClient):
         return super().call_api(*args, **kwargs)
 
 
-class ImageQuery(model.ImageQuery):
-    def add_label(self, label: str) -> Dict:
-        image_query_id = self.id
-        start_time = time.time()
-        url = f"{GROUNDLIGHT_ENDPOINT}/labels"
+def add_label(image_query, label: str) -> Dict:
+    image_query_id = self.id
+    start_time = time.time()
+    url = f"{GROUNDLIGHT_ENDPOINT}/labels"
 
-        data = {
-            "label": label,
-            "posicheck_id": image_query_id,
-        }
+    data = {
+        "label": label,
+        "posicheck_id": image_query_id,
+    }
 
-        logger.info(f"Posting {label=} to {image_query_id=} ...")
-        response = requests.request("POST", url, json=data, headers=_headers())
-        elapsed = 1000 * (time.time() - start_time)
-        logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms {response.text=}")
+    logger.info(f"Posting {label=} to {image_query_id=} ...")
+    response = requests.request("POST", url, json=data, headers=_headers())
+    elapsed = 1000 * (time.time() - start_time)
+    logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms {response.text=}")
 
-        if response.status_code != 200:
-            raise InternalSdkException(
-                f"Error adding label to {image_query_id=} status={response.status_code} {response.text}"
-            )
+    if response.status_code != 200:
+        raise InternalSdkException(
+            f"Error adding label to {image_query_id=} status={response.status_code} {response.text}"
+        )
 
-        return response.json()
+    return response.json()
