@@ -8,8 +8,6 @@ import model
 import requests
 from openapi_client.api_client import ApiClient
 
-from groundlight.config import GROUNDLIGHT_ENDPOINT
-
 logger = logging.getLogger("groundlight.sdk")
 
 
