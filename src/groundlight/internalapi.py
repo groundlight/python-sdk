@@ -12,6 +12,7 @@ from groundlight.config import GROUNDLIGHT_ENDPOINT
 
 logger = logging.getLogger("groundlight.sdk")
 
+
 def _generate_request_id():
     # TODO: use a ksuid instead of a uuid
     return "req_uu" + uuid.uuid4().hex
@@ -34,36 +35,34 @@ class InternalSdkException(RuntimeError):
     pass
 
 
-
 class GroundlightApiClient(ApiClient):
     """Subclassing the OpenAPI-generated ApiClient to add a bit of custom functionality.
     Not crazy about using polymorphism, but this is simpler than modifying the moustache
-    templates in the generator to add the functionality. 
+    templates in the generator to add the functionality.
     """
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
-    def call_api(self, *args):
-        """Adds a request-id header to each API call.
-        """
-        # Note we don't handle kwargs here, because this method is only called in one place 
+    def call_api(self, *args, **kwargs):
+        """Adds a request-id header to each API call."""
+        # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
         if not header_param:
-            header_param = {}
-        if not header_param.get(self.REQUEST_ID_HEADER, None):
-            header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
-        args[4] = header_param
+            # This will never happen in normal useage.
+            logger.warning("Can't set request-id because headers not set")
+        else:
+            if not header_param.get(self.REQUEST_ID_HEADER, None):
+                header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
+                # Note that we have updated the actual dict in args, so we don't have to put it back in
         return super().call_api(*args)
 
-        
-class ImageQuery(model.ImageQuery):
 
+class ImageQuery(model.ImageQuery):
     def add_label(self, label: str) -> Dict:
         image_query_id = self.id
         start_time = time.time()
         url = f"{GROUNDLIGHT_ENDPOINT}/labels"
-
 
         data = {
             "label": label,
@@ -76,6 +75,8 @@ class ImageQuery(model.ImageQuery):
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms {response.text=}")
 
         if response.status_code != 200:
-            raise InternalSdkException(f"Error adding label to {image_query_id=} status={response.status_code} {response.text}")
+            raise InternalSdkException(
+                f"Error adding label to {image_query_id=} status={response.status_code} {response.text}"
+            )
 
         return response.json()

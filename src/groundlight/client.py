@@ -4,8 +4,7 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from model import (Detector, ImageQuery, PaginatedDetectorList,
-                   PaginatedImageQueryList)
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import ApiClient, Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
@@ -20,7 +19,6 @@ logger = logging.getLogger("groundlight.sdk")
 
 class ApiTokenError(Exception):
     pass
-
 
 
 class Groundlight:
@@ -42,6 +40,7 @@ class Groundlight:
             environment variable "GROUNDLIGHT_API_TOKEN".
         """
         # Specify the endpoint
+        self.endpoint = endpoint
         configuration = Configuration(host=endpoint)
 
         if api_token is None:
@@ -80,7 +79,7 @@ class Groundlight:
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
-        return PaginatedDetectorList.parse_obj(obj.to/_dict())
+        return PaginatedDetectorList.parse_obj(obj.to / _dict())
 
     def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
         obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
@@ -181,4 +180,3 @@ class Groundlight:
         an image_query id as a string.
         :param label: The string "Yes" or the string "No" in answer to the query.
         """
-        
