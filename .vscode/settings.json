@@ -4,4 +4,7 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true,
     },
+    "python.analysis.extraPaths": [
+        "./generated"
+    ],
 }
