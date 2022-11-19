@@ -79,7 +79,7 @@ class Groundlight:
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
-        return PaginatedDetectorList.parse_obj(obj.to / _dict())
+        return PaginatedDetectorList.parse_obj(obj.to_dict())
 
     def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
         obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
