@@ -112,17 +112,25 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(_image_query, ImageQuery)
 
 
-def test_add_label1(gl: Groundlight, image_query: ImageQuery):
+def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(image_query, ImageQuery)
-    gl.add_label(image_query, "PASS")
-    gl.add_label(image_query, "FAIL")
+    gl.add_label(image_query, "Yes")
 
 
-def test_add_label2(gl: Groundlight, image_query: ImageQuery):
+def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
     assert iqid.startswith("chk_")  # someday we'll probably change this to iq_
+    gl.add_label(iqid, "No")
+
+
+def test_add_label_names(gl: Groundlight, image_query: ImageQuery):
+    iqid = image_query.id
     gl.add_label(iqid, "FAIL")
     gl.add_label(iqid, "PASS")
+    gl.add_label(iqid, "Yes")
+    gl.add_label(iqid, "No")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "sorta")
 
 
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")

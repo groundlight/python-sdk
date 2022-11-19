@@ -10,6 +10,7 @@ from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
+from groundlight.binary_labels import convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DEFAULT_ENDPOINT
 from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy
 from groundlight.internalapi import GroundlightApiClient
@@ -192,5 +193,6 @@ class Groundlight:
             image_query_id = str(img_query)
             if not (image_query_id.startswith("chk_") or image_query_id.startswith("iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
+        api_label = convert_display_label_to_internal(image_query_id, label)
 
-        return self.api_client._add_label(image_query_id, label)
+        return self.api_client._add_label(image_query_id, api_label)
