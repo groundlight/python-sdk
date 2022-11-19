@@ -13,12 +13,14 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.config import *
 from groundlight.images import buffer_from_jpeg_file
+from groundlight.internalapi import GroundlightApiClient
 
 logger = logging.getLogger("groundlight.sdk")
 
 
 class ApiTokenError(Exception):
     pass
+
 
 
 class Groundlight:
@@ -55,8 +57,8 @@ class Groundlight:
 
         configuration.api_key["ApiToken"] = api_token
 
-        self.detectors_api = DetectorsApi(ApiClient(configuration))
-        self.image_queries_api = ImageQueriesApi(ApiClient(configuration))
+        self.detectors_api = DetectorsApi(GroundlightApiClient(configuration))
+        self.image_queries_api = ImageQueriesApi(GroundlightApiClient(configuration))
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:
         if isinstance(id, Detector):
@@ -78,7 +80,7 @@ class Groundlight:
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
-        return PaginatedDetectorList.parse_obj(obj.to_dict())
+        return PaginatedDetectorList.parse_obj(obj.to/_dict())
 
     def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
         obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
