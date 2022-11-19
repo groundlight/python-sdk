@@ -14,23 +14,12 @@ logger = logging.getLogger("groundlight.sdk")
 
 
 def _generate_request_id():
-    # TODO: use a ksuid instead of a uuid
+    # TODO: use a ksuid instead of a uuid.  Most of our API uses ksuids for lots of reasons.
+    # But we don't want to just import ksuid because we want to avoid dependency bloat
     return "req_uu" + uuid.uuid4().hex
 
 
-def _headers() -> dict:
-    request_id = _generate_request_id()
-    logger.debug(f"Setting {request_id=}")
-    return {
-        "Content-Type": "application/json",
-        # TODO: token needs to come from the Groundlight client.
-        # First instinct is to make it a thread-local singleton
-        "x-api-token": os.environ["GROUNDLIGHT_API_TOKEN"],
-        "X-Request-Id": request_id,
-    }
-
-
-class InternalSdkException(RuntimeError):
+class InternalApiException(RuntimeError):
     # TODO: We need a better exception hierarchy
     pass
 
@@ -43,7 +32,7 @@ class GroundlightApiClient(ApiClient):
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
-    def dont_call_api(self, *args, **kwargs):
+    def call_api(self, *args, **kwargs):
         """Adds a request-id header to each API call."""
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
@@ -57,25 +46,40 @@ class GroundlightApiClient(ApiClient):
                 # Note that we have updated the actual dict in args, so we don't have to put it back in
         return super().call_api(*args, **kwargs)
 
+    #
+    # The methods below will eventually go away when we move to properly model
+    # these methods with OpenAPI
+    #
 
-def add_label(image_query, label: str) -> Dict:
-    image_query_id = self.id
-    start_time = time.time()
-    url = f"{GROUNDLIGHT_ENDPOINT}/labels"
+    def _headers(self) -> dict:
+        request_id = _generate_request_id()
+        return {
+            "Content-Type": "application/json",
+            "x-api-token": self.configuration.api_key["ApiToken"],
+            "X-Request-Id": request_id,
+        }
 
-    data = {
-        "label": label,
-        "posicheck_id": image_query_id,
-    }
+    def _add_label(self, image_query_id: str, label: str) -> dict:
+        """Temporary internal call to add a label to an image query.  Not supported."""
+        # TODO: Properly model this with OpenApi spec.
+        start_time = time.time()
+        url = f"{self.configuration.host}/labels"
 
-    logger.info(f"Posting {label=} to {image_query_id=} ...")
-    response = requests.request("POST", url, json=data, headers=_headers())
-    elapsed = 1000 * (time.time() - start_time)
-    logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms {response.text=}")
+        data = {
+            "label": label,
+            "posicheck_id": image_query_id,
+        }
 
-    if response.status_code != 200:
-        raise InternalSdkException(
-            f"Error adding label to {image_query_id=} status={response.status_code} {response.text}"
-        )
+        headers = self._headers()
 
-    return response.json()
+        logger.info(f"Posting label={label} to image_query {image_query_id} ...")
+        response = requests.request("POST", url, json=data, headers=headers)
+        elapsed = 1000 * (time.time() - start_time)
+        logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
+
+        if response.status_code != 200:
+            raise InternalApiException(
+                f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}"
+            )
+
+        return response.json()

@@ -56,8 +56,9 @@ class Groundlight:
 
         configuration.api_key["ApiToken"] = api_token
 
-        self.detectors_api = DetectorsApi(GroundlightApiClient(configuration))
-        self.image_queries_api = ImageQueriesApi(GroundlightApiClient(configuration))
+        self.api_client = GroundlightApiClient(configuration)
+        self.detectors_api = DetectorsApi(self.api_client)
+        self.image_queries_api = ImageQueriesApi(self.api_client)
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:
         if isinstance(id, Detector):
@@ -170,13 +171,23 @@ class Groundlight:
             )
             time_left = max(0, time.time() - timeout_time)
             time.sleep(min(delay, time_left))
-            delay *= 1.4  # slow exponential backoff
+            delay *= 1.3  # slow exponential backoff
+            # This still has the nice backoff property that the max number of requests is O(log(time))
+            # But with 1.3 the guarantee is that the call will return no more than 30% late
             img_query = self.get_image_query(img_query.id)
         return img_query
 
     def add_label(self, img_query: Union[ImageQuery, str], label: str):
-        """Adds a label to an image query.
+        """a new label to an image query.  This answers the detector's question.
         :param img_query: Either an ImageQuery object (returned from `submit_image_query`) or
         an image_query id as a string.
         :param label: The string "Yes" or the string "No" in answer to the query.
         """
+        if isinstance(img_query, ImageQuery):
+            image_query_id = img_query.id
+        else:
+            image_query_id = str(img_query)
+            if not (image_query_id.startswith("chk_") or image_query_id.startswith("iq_")):
+                raise ValueError(f"Invalid image query id {image_query_id}")
+
+        return self.api_client._add_label(image_query_id, label)

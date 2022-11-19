@@ -3,9 +3,9 @@ from datetime import datetime
 
 import openapi_client
 import pytest
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 from groundlight import Groundlight
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
 @pytest.fixture
@@ -109,3 +109,16 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+
+
+def test_add_label1(gl: Groundlight, image_query: ImageQuery):
+    assert isinstance(image_query, ImageQuery)
+    gl.add_label(image_query, "PASS")
+    gl.add_label(image_query, "FAIL")
+
+
+def test_add_label2(gl: Groundlight, image_query: ImageQuery):
+    iqid = image_query.id
+    assert iqid.startswith("chk_")  # someday we'll probably change this to iq_
+    gl.add_label(iqid, "FAIL")
+    gl.add_label(iqid, "PASS")
