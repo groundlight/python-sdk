@@ -1,5 +1,8 @@
 {
-    "python.formatting.blackArgs": ["--line-length", "120"],
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "120"
+    ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": true,
@@ -7,4 +10,5 @@
     "python.analysis.extraPaths": [
         "./generated"
     ],
+    "python.formatting.provider": "black",
 }
