@@ -35,6 +35,11 @@ class Groundlight:
     ```
     """
 
+    BEFORE_POLLING_DELAY = 3.0  # Expected minimum time for a label to post
+    POLLING_INITIAL_DELAY = 0.5
+    POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
+    # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
+
     def __init__(self, endpoint: str = DEFAULT_ENDPOINT, api_token: str = None):
         """
         :param endpoint: optionally specify a different endpoint
@@ -151,17 +156,21 @@ class Groundlight:
         img_query = ImageQuery.parse_obj(raw_img_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
-            img_query = self.poll_image_query(img_query, wait, threshold)
+            img_query = self.wait_for_confident_result(img_query, confidence_threshold=threshold, timeout_sec=wait)
         return img_query
 
-    def poll_image_query(self, img_query: ImageQuery, timeout_sec: float, confidence_threshold: float) -> ImageQuery:
-        """Polls on an image query waiting for the result's confidence  to reach the specified amount.i
+    def wait_for_confident_result(
+        self, img_query: ImageQuery, confidence_threshold: float, timeout_sec: float = 30.0
+    ) -> ImageQuery:
+        """Waits for an image query result's confidence level to reach the specified value.
+        Currently this is done by polling with an exponential back-off.
         :param img_query: An ImageQuery object to poll
-        :param timeout_sec: The maximum number of seconds to wait.
-        :param confidence_threshold: The minimum confidence level required to return before the timeout."""
+        :param confidence_threshold: The minimum confidence level required to return before the timeout.
+        :param timeout_sec: The maximum number of seconds to wait."""
         # TODO: Add support for ImageQuery id instead of object.
         timeout_time = time.time() + timeout_sec
-        delay = 0.1
+        time.sleep(self.BEFORE_POLLING_DELAY)
+        delay = self.POLLING_INITIAL_DELAY
         while time.time() < timeout_time:
             current_confidence = img_query.result.confidence
             if current_confidence is None:
@@ -175,9 +184,7 @@ class Groundlight:
             )
             time_left = max(0, time.time() - timeout_time)
             time.sleep(min(delay, time_left))
-            delay *= 1.3  # slow exponential backoff
-            # This still has the nice backoff property that the max number of requests is O(log(time))
-            # But with 1.3 the guarantee is that the call will return no more than 30% late
+            delay *= self.POLLING_EXPONENTIAL_BACKOFF
             img_query = self.get_image_query(img_query.id)
         return img_query
 

@@ -21,12 +21,12 @@ def internal_labels_for_detector(context: Union[ImageQuery, Detector, str]) -> L
 
 def convert_internal_label_to_display(context: Union[ImageQuery, Detector, str], label: str) -> str:
     # TODO: Someday we probably do nothing here.
-    lower = label.lower()
-    if lower == "pass":
-        return "Yes"
-    if lower == "fail":
-        return "No"
-    if lower in ["yes", "no"]:
+    upper = label.upper()
+    if upper == "PASS":
+        return "YES"
+    if upper == "FAIL":
+        return "NO"
+    if upper in ["YES", "NO"]:
         return label
     logger.warning(f"Unrecognized internal label {label} - leaving alone.")
     return label
@@ -34,9 +34,9 @@ def convert_internal_label_to_display(context: Union[ImageQuery, Detector, str],
 
 def convert_display_label_to_internal(context: Union[ImageQuery, Detector, str], label: str) -> str:
     # TODO: Validate against actually supported labels for the detector
-    lower = label.lower()
-    if lower == "pass" or lower == "yes":
+    upper = label.upper()
+    if upper == "PASS" or upper == "YES":
         return "PASS"
-    if lower == "fail" or lower == "no":
+    if upper == "FAIL" or upper == "NO":
         return "FAIL"
-    raise ValueError(f'Invalid label string "{label}".  Must be one of Yes,No,PASS,FAIL')
+    raise ValueError(f'Invalid label string "{label}".  Must be one of YES,NO,PASS,FAIL')
