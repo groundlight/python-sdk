@@ -107,7 +107,7 @@ gl = Groundlight(endpoint="http://localhost:6717")
 
 ## Advanced
 
-### Force creation of a new detector
+### Explicitly create a new detector
 
 Typically you'll use the ```get_or_create_detector(name: str, query: str)``` method to find an existing detector you've already created with the same name, or create a new one if it doesn't exists.  But if you'd like to force creating a new detector you can also use the ```create_detector(name: str, query: str)``` method
 
