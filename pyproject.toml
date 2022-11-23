@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "groundlight"
-version = "0.6.1"
+version = "0.6.2"
 license = "MIT"
 readme = "UserGuide.md"
 homepage = "https://groundlight.ai"
@@ -29,6 +29,7 @@ pytest = "^7.0.1"
 isort = "^5.10.1"
 autoflake = "^1.4"
 datamodel-code-generator = "^0.12.1"
+pytest-mock = "^3.10.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

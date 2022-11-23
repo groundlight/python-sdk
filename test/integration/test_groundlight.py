@@ -3,10 +3,10 @@ from datetime import datetime
 
 import openapi_client
 import pytest
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 from groundlight import Groundlight
 from groundlight.optional_imports import *
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
 @pytest.fixture
@@ -60,7 +60,7 @@ def test_get_detector(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     # Ask for a trivially small wait so it never has time to update, but uses the code path
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=5)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=2)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
 
@@ -110,6 +110,27 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+
+
+def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
+    assert isinstance(image_query, ImageQuery)
+    gl.add_label(image_query, "Yes")
+
+
+def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
+    iqid = image_query.id
+    assert iqid.startswith("chk_")  # someday we'll probably change this to iq_
+    gl.add_label(iqid, "No")
+
+
+def test_add_label_names(gl: Groundlight, image_query: ImageQuery):
+    iqid = image_query.id
+    gl.add_label(iqid, "FAIL")
+    gl.add_label(iqid, "PASS")
+    gl.add_label(iqid, "Yes")
+    gl.add_label(iqid, "No")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "sorta")
 
 
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
