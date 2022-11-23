@@ -149,6 +149,17 @@ image_queries = gl.list_image_queries()
 image_queries = gl.list_image_queries(page=3, page_size=25)
 ```
 
+### Adding labels to existing image queries
+
+Groundlight lets you start using models by making queries against your very first image, but there are a few situations where you might either have an existing dataset, or you'd like to handle the escalation response programatically in your own code but still include the label to get better responses in the future.  With your ```image_query``` from either ```submit_image_query()``` or ```get_image_query()``` you can add the label directly.  Note that if the query is already in the escalation queue due to low ML confidence or audit thresholds, it may also receive labels from another source.
+
+```Python
+add_label(image_query, 'YES').   # or 'NO'
+```
+
+The only valid labels at this time are ```'YES'``` and ```'NO'```
+
+
 ### Handling HTTP errors
 
 If there is an HTTP error during an API call, it will raise an `ApiException`. You can access different metadata from that exception:
