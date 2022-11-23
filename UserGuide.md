@@ -40,7 +40,7 @@ Or if you want to run as fast as possible, set `wait=0`.  This way you will only
 image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=0)
 ```
 
-You can see the confidence score returned for the image query:
+If the returned result was generated from an ML model, you can see the confidence score returned for the image query:
 
 ```Python
 print(f"The confidence is {image_query.result.confidence}")
