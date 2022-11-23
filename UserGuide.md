@@ -9,7 +9,7 @@ How to build a working computer vision system in just 5 lines of python code:
 ```Python
 from groundlight import Groundlight
 gl = Groundlight()
-d = gl.create_detector("door", query="Is the door open?")  # define with natural language
+d = gl.get_or_create_detector(name="door", query="Is the door open?")  # define with natural language
 image_query = gl.submit_image_query(detector=d, image=jpeg_img)  # send in an image
 print(f"The answer is {image_query.result}")  # get the result
 ```
@@ -28,7 +28,7 @@ The desired confidence level is set as the escalation threshold on your detector
 For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.  
 
 ```Python
-d = gl.create_detector("trash", query="Is the trash can full?", confidence=0.95)
+d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence=0.95)
 image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
 # This will wait until either 30 seconds have passed or the confidence reaches 0.95
 print(f"The answer is {image_query.result}")
@@ -40,7 +40,7 @@ Or if you want to run as fast as possible, set `wait=0`.  This way you will only
 image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=0)
 ```
 
-You can see the confidence score returned for the image query:
+If the returned result was generated from an ML model, you can see the confidence score returned for the image query:
 
 ```Python
 print(f"The confidence is {image_query.result.confidence}")
@@ -107,6 +107,14 @@ gl = Groundlight(endpoint="http://localhost:6717")
 
 ## Advanced
 
+### Explicitly create a new detector
+
+Typically you'll use the ```get_or_create_detector(name: str, query: str)``` method to find an existing detector you've already created with the same name, or create a new one if it doesn't exists.  But if you'd like to force creating a new detector you can also use the ```create_detector(name: str, query: str)``` method
+
+```Python
+detector = gl.create_detector(name="your_detector_name", query="is this what we want to see?")
+```
+
 ### Retrieve an existing detector
 
 ```Python
@@ -140,6 +148,17 @@ image_queries = gl.list_image_queries()
 # Pagination: 3rd page of 25 results per page
 image_queries = gl.list_image_queries(page=3, page_size=25)
 ```
+
+### Adding labels to existing image queries
+
+Groundlight lets you start using models by making queries against your very first image, but there are a few situations where you might either have an existing dataset, or you'd like to handle the escalation response programatically in your own code but still include the label to get better responses in the future.  With your ```image_query``` from either ```submit_image_query()``` or ```get_image_query()``` you can add the label directly.  Note that if the query is already in the escalation queue due to low ML confidence or audit thresholds, it may also receive labels from another source.
+
+```Python
+add_label(image_query, 'YES').   # or 'NO'
+```
+
+The only valid labels at this time are ```'YES'``` and ```'NO'```
+
 
 ### Handling HTTP errors
 
