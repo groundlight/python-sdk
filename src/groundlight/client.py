@@ -152,19 +152,19 @@ class Groundlight:
                 "Unsupported type for image. We only support numpy arrays (3,W,H) or JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
             )
 
-        raw_img_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
-        img_query = ImageQuery.parse_obj(raw_img_query.to_dict())
+        raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
-            img_query = self.wait_for_confident_result(img_query, confidence_threshold=threshold, timeout_sec=wait)
-        return img_query
+            image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
+        return image_query
 
     def wait_for_confident_result(
-        self, img_query: ImageQuery, confidence_threshold: float, timeout_sec: float = 30.0
+        self, image_query: ImageQuery, confidence_threshold: float, timeout_sec: float = 30.0
     ) -> ImageQuery:
         """Waits for an image query result's confidence level to reach the specified value.
         Currently this is done by polling with an exponential back-off.
-        :param img_query: An ImageQuery object to poll
+        :param image_query: An ImageQuery object to poll
         :param confidence_threshold: The minimum confidence level required to return before the timeout.
         :param timeout_sec: The maximum number of seconds to wait."""
         # TODO: Add support for ImageQuery id instead of object.
@@ -172,7 +172,7 @@ class Groundlight:
         time.sleep(self.BEFORE_POLLING_DELAY)
         delay = self.POLLING_INITIAL_DELAY
         while time.time() < timeout_time:
-            current_confidence = img_query.result.confidence
+            current_confidence = image_query.result.confidence
             if current_confidence is None:
                 logging.debug(f"Image query with None confidence implies human label (for now)")
                 break
@@ -185,19 +185,19 @@ class Groundlight:
             time_left = max(0, time.time() - timeout_time)
             time.sleep(min(delay, time_left))
             delay *= self.POLLING_EXPONENTIAL_BACKOFF
-            img_query = self.get_image_query(img_query.id)
-        return img_query
+            image_query = self.get_image_query(image_query.id)
+        return image_query
 
-    def add_label(self, img_query: Union[ImageQuery, str], label: str):
+    def add_label(self, image_query: Union[ImageQuery, str], label: str):
         """a new label to an image query.  This answers the detector's question.
-        :param img_query: Either an ImageQuery object (returned from `submit_image_query`) or
+        :param image_query: Either an ImageQuery object (returned from `submit_image_query`) or
         an image_query id as a string.
         :param label: The string "Yes" or the string "No" in answer to the query.
         """
-        if isinstance(img_query, ImageQuery):
-            image_query_id = img_query.id
+        if isinstance(image_query, ImageQuery):
+            image_query_id = image_query.id
         else:
-            image_query_id = str(img_query)
+            image_query_id = str(image_query)
             if not (image_query_id.startswith("chk_") or image_query_id.startswith("iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
