@@ -30,7 +30,7 @@ For example, say you want to set your desired confidence level to 0.95, but that
 ```Python
 d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence=0.95)
 image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
-# This will wait until either 30 seconds have passed or the confidence reaches 0.95
+# This will wait until either 60 seconds have passed or the confidence reaches 0.95
 print(f"The answer is {image_query.result}")
 ```
 
