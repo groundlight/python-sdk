@@ -38,6 +38,8 @@ def test_create_detector(gl: Groundlight):
 
 
 def test_create_detector_with_config_name(gl: Groundlight):
+    # "never-review" is a special model that always returns the same result with 100% confidence.
+    # It's useful for testing.
     name = f"Test never-review {datetime.utcnow()}"  # Need a unique name
     query = "Test query with never-review?"
     config_name = "never-review"
