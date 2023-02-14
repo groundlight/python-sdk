@@ -134,7 +134,6 @@ class ApiClient(object):
         _check_type: typing.Optional[bool] = None,
         _content_type: typing.Optional[str] = None,
     ):
-
         config = self.configuration
 
         # header parameters
@@ -780,7 +779,6 @@ class Endpoint(object):
         return self.callable(self, *args, **kwargs)
 
     def call_with_http_info(self, **kwargs):
-
         try:
             index = (
                 self.api_client.configuration.server_operation_index.get(

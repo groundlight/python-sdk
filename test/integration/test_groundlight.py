@@ -38,9 +38,11 @@ def test_create_detector(gl: Groundlight):
 
 
 def test_create_detector_with_config_name(gl: Groundlight):
-    name = f"Test b4mu11-mlp {datetime.utcnow()}"  # Need a unique name
-    query = "Test query with b4mu11-mlp?"
-    config_name = "b4mu11-mlp"
+    # "never-review" is a special model that always returns the same result with 100% confidence.
+    # It's useful for testing.
+    name = f"Test never-review {datetime.utcnow()}"  # Need a unique name
+    query = "Test query with never-review?"
+    config_name = "never-review"
     _detector = gl.create_detector(name=name, query=query, config_name=config_name)
     assert str(_detector)
     assert isinstance(_detector, Detector)
