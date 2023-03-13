@@ -19,9 +19,9 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     """
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
-        raise ValueError(f"Invalid API {endpoint=}.  Unsupported scheme: {parts.scheme}")
+        raise ValueError(f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}")
     if parts.query or parts.fragment:
-        raise ValueError(f"Invalid API {endpoint=}.  Cannot have query or fragment")
+        raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment")
     if not parts.path:
         parts = parts._replace(path="/")
     if not parts.path.endswith("/"):
@@ -29,7 +29,7 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     if parts.path == "/":
         parts = parts._replace(path="/device-api/")
     if parts.path not in ("/device-api/", "/v1/", "/v2/", "/v3/"):
-        logger.warning(f"Configured {endpoint=} does not look right - path '{parts.path}' seems wrong.")
+        logger.warning(f"Configured endpoint {endpoint} does not look right - path '{parts.path}' seems wrong.")
     out = urlunsplit(parts)
     out = out[:-1]  # remove trailing slash
     return out
