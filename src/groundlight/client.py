@@ -13,7 +13,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DEFAULT_ENDPOINT
 from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy
-from groundlight.internalapi import GroundlightApiClient
+from groundlight.internalapi import GroundlightApiClient, sanitize_endpoint_url
 from groundlight.optional_imports import np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -47,7 +47,7 @@ class Groundlight:
             environment variable "GROUNDLIGHT_API_TOKEN".
         """
         # Specify the endpoint
-        self.endpoint = endpoint
+        self.endpoint = sanitize_endpoint_url(endpoint)
         configuration = Configuration(host=endpoint)
 
         if api_token is None:

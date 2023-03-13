@@ -1,14 +1,38 @@
 import logging
-import os
 import time
 import uuid
 from typing import Dict
+from urllib.parse import urlsplit, urlunsplit
 
 import model
 import requests
 from openapi_client.api_client import ApiClient
 
 logger = logging.getLogger("groundlight.sdk")
+
+
+def sanitize_endpoint_url(endpoint: str) -> str:
+    """Takes a URL for an endpoint, and returns a "sanitized" version of it.
+    Currently the production API path must be exactly "/device-api".
+    This allows people to leave that off entirely, or add a trailing slash.
+    Also some future-proofing by allowing "v1" or "v2" or "v3" paths.
+    """
+    parts = urlsplit(endpoint)
+    if (parts.scheme not in ("http", "https")) or (not parts.netloc):
+        raise ValueError(f"Invalid API {endpoint=}.  Unsupported scheme: {parts.scheme}")
+    if parts.query or parts.fragment:
+        raise ValueError(f"Invalid API {endpoint=}.  Cannot have query or fragment")
+    if not parts.path:
+        parts = parts._replace(path="/")
+    if not parts.path.endswith("/"):
+        parts = parts._replace(path=parts.path + "/")
+    if parts.path == "/":
+        parts = parts._replace(path="/device-api/")
+    if parts.path not in ("/device-api/", "/v1/", "/v2/", "/v3/"):
+        logger.warning(f"Configured {endpoint=} does not look right - path '{parts.path}' seems wrong.")
+    out = urlunsplit(parts)
+    out = out[:-1]  # remove trailing slash
+    return out
 
 
 def _generate_request_id():
