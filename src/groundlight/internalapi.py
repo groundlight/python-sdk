@@ -19,9 +19,9 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     """
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
-        raise ValueError(f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}")
+        raise ValueError(f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g. https://api.groundlight.ai/")
     if parts.query or parts.fragment:
-        raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment")
+        raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
     if not parts.path:
         parts = parts._replace(path="/")
     if not parts.path.endswith("/"):
