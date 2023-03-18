@@ -2,7 +2,7 @@
 name = "groundlight"
 version = "0.7.0"
 license = "MIT"
-readme = "UserGuide.md"
+readme = "README.md"
 homepage = "https://www.groundlight.ai"
 description = "Build computer vision systems from natural language with Groundlight"
 authors = ["Groundlight AI <support@groundlight.ai>"]
