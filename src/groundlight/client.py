@@ -25,13 +25,16 @@ class ApiTokenError(Exception):
 
 class Groundlight:
     """
-    A convenience wrapper around the generated API classes.
+    Client for accessing the Groundlight cloud service.
+
     The API token (auth) is specified through the GROUNDLIGHT_API_TOKEN environment variable by default.
 
     Example usage:
     ```
     gl = Groundlight()
-    detectors = gl.list_detectors()
+    d = gl.get_or_create_detector("door", "Is the door locked?")
+    iq = gl.submit_image_query(d, image)
+    print(iq.result)
     ```
     """
 
@@ -120,7 +123,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
-        wait: float = 0,
+        wait: float = 30,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
