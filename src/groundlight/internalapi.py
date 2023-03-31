@@ -1,8 +1,10 @@
 import logging
+import os
 import time
-import uuid
 from typing import Dict
 from urllib.parse import urlsplit, urlunsplit
+import uuid
+
 from groundlight.config import DEFAULT_ENDPOINT
 
 import model

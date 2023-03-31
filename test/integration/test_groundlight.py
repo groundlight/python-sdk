@@ -25,7 +25,8 @@ def detector(gl: Groundlight) -> Detector:
 
 @pytest.fixture
 def image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
-    return gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
+    iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
+    return iq
 
 
 def test_create_detector(gl: Groundlight):
@@ -120,7 +121,8 @@ def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
 
 def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
-    assert iqid.startswith("iq_")
+    # TODO: Fully deprecate chk_ prefix
+    assert iqid.startswith("chk_") or iqid.startswith("iq_")
     gl.add_label(iqid, "No")
 
 

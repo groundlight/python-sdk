@@ -43,7 +43,7 @@ class Groundlight:
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(self, endpoint: str = DEFAULT_ENDPOINT, api_token: str = None):
+    def __init__(self, endpoint: Optional[str] = None, api_token: str = None):
         """
         :param endpoint: optionally specify a different endpoint
         :param api_token: use this API token for your API calls. If unset, fallback to the
