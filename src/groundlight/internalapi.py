@@ -21,7 +21,10 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     Also some future-proofing by allowing "v1" or "v2" or "v3" paths.
     """
     if not endpoint:
-        endpoint = os.environ.get("GROUNDLIGHT_ENDPOINT", "https://api.groundlight.ai/")
+        endpoint = os.environ.get("GROUNDLIGHT_ENDPOINT", "")
+        if not endpoint:
+            # Because sometimes people set an environment variable to a blank string by mistake
+            endpoint = "https://api.groundlight.ai/"
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
