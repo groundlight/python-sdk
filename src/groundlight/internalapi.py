@@ -1,8 +1,11 @@
 import logging
+import os
 import time
-import uuid
 from typing import Dict
 from urllib.parse import urlsplit, urlunsplit
+import uuid
+
+from groundlight.config import DEFAULT_ENDPOINT
 
 import model
 import requests
@@ -17,6 +20,11 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     This allows people to leave that off entirely, or add a trailing slash.
     Also some future-proofing by allowing "v1" or "v2" or "v3" paths.
     """
+    if not endpoint:
+        endpoint = os.environ.get("GROUNDLIGHT_ENDPOINT", "")
+        if not endpoint:
+            # Because sometimes people set an environment variable to a blank string by mistake
+            endpoint = "https://api.groundlight.ai/"
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(

@@ -43,7 +43,7 @@ class Groundlight:
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(self, endpoint: str = DEFAULT_ENDPOINT, api_token: str = None):
+    def __init__(self, endpoint: Optional[str] = None, api_token: str = None):
         """
         :param endpoint: optionally specify a different endpoint
         :param api_token: use this API token for your API calls. If unset, fallback to the
@@ -51,7 +51,7 @@ class Groundlight:
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
-        configuration = Configuration(host=endpoint)
+        configuration = Configuration(host=self.endpoint)
 
         if api_token is None:
             try:
@@ -201,6 +201,7 @@ class Groundlight:
             image_query_id = image_query.id
         else:
             image_query_id = str(image_query)
+            # Some old imagequery id's started with "chk_"
             if not (image_query_id.startswith("chk_") or image_query_id.startswith("iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
