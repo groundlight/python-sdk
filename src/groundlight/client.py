@@ -51,7 +51,7 @@ class Groundlight:
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
-        configuration = Configuration(host=endpoint)
+        configuration = Configuration(host=self.endpoint)
 
         if api_token is None:
             try:
