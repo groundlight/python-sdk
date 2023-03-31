@@ -201,6 +201,7 @@ class Groundlight:
             image_query_id = image_query.id
         else:
             image_query_id = str(image_query)
+            # Some old imagequery id's started with "chk_"
             if not (image_query_id.startswith("chk_") or image_query_id.startswith("iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)

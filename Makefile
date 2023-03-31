@@ -13,8 +13,8 @@ generate: install  ## Generate the SDK from our public openapi spec
 
 
 test-local: install  ## Run integration tests against an API server running at http://localhost:8000/device-api (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_TEST_API_ENDPOINT="http://localhost:8000/device-api" poetry run pytest --cov=src test --log-cli-level INFO
+	GROUNDLIGHT_API_ENDPOINT="http://localhost:8000/" poetry run pytest --cov=src test --log-cli-level INFO
 
 
 test-integ: install  ## Run integration tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_TEST_API_ENDPOINT="https://api.integ.groundlight.ai/device-api" poetry run pytest --cov=src test --log-cli-level INFO
+	GROUNDLIGHT_API_ENDPOINT="https://api.integ.groundlight.ai/" poetry run pytest --cov=src test --log-cli-level INFO
