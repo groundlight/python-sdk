@@ -167,3 +167,4 @@ node_modules/
 *.swp
 
 **/.python-version
+site/

@@ -35,6 +35,11 @@ pytest-mock = "^3.10.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
+mkdocs-material = "^9.1.5"
+mdx-include = "^1.4.2"
+mkdocs-markdownextradata-plugin = "^0.2.5"
+markdown = "^3.2.1"
+pymdown-extensions = "^9.10"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

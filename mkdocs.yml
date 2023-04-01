@@ -1,0 +1,50 @@
+site_name: Groundlight Python SDK
+site_url: https://groundlight.ai
+nav:
+  - Getting Started: index.md
+  - About: about.md
+  - Documentation Tools:
+    - How it works: docs.md
+    - MkDocs: mkdocs.md
+theme:
+  name: material
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    primary: blue
+    accent: purple
+    toggle:
+      icon: material/lightbulb
+      name: Switch to light mode
+  - media: '(prefers-color-scheme: dark)'
+    scheme: slate
+    primary: blue
+    accent: purple
+    toggle:
+      icon: material/lightbulb-outline
+      name: Switch to dark mode
+  favicon: img/favicon.ico
+  features:
+  - search.suggest
+  - search.highlight
+  - content.tabs.link
+markdown_extensions:
+- toc:
+    permalink: true
+- markdown.extensions.codehilite:
+    guess_lang: false
+- mdx_include:
+    base_path: docs
+- admonition
+- pymdownx.highlight
+- pymdownx.superfences:
+    custom_fences:
+    - name: mermaid
+      class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ''
+- pymdownx.tabbed:
+    alternate_style: true
+- attr_list
+- md_in_html
+
+
