@@ -30,9 +30,10 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
 
 
 def parse_supported_image_types(
-    image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray]
+    image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray], jpeg_quality: int = 95
 ) -> Union[BytesIO, BufferedReader]:
-    """Parse the supported image types into BytesIO"""
+    """Parse the many supported image types into a bytes-stream objects.
+    In some cases we have to JPEG compress."""
     if isinstance(image, str):
         # Assume it is a filename
         return buffer_from_jpeg_file(image)
@@ -41,14 +42,15 @@ def parse_supported_image_types(
         return BytesIO(image)
     elif isinstance(image, Image.Image):
         # Save PIL image as jpeg in BytesIO
-        jpeg = BytesIO()
-        image.save(jpeg, "jpeg")
-        return jpeg
+        bytesio = BytesIO()
+        image.save(bytesio, "jpeg", quality=jpeg_quality)
+        bytesio.seek(0)
+        return bytesio
     elif isinstance(image, BytesIO) or isinstance(image, BufferedReader):
         # Already in the right format
         return image
     elif isinstance(image, np.ndarray):
-        return BytesIO(jpeg_from_numpy(image))
+        return BytesIO(jpeg_from_numpy(image, jpeg_quality=jpeg_quality))
     else:
         raise TypeError(
             "Unsupported type for image. We only support numpy arrays (3,W,H) or JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."

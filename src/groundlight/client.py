@@ -38,6 +38,8 @@ class Groundlight:
     ```
     """
 
+    DEFAULT_WAIT = 30
+
     BEFORE_POLLING_DELAY = 3.0  # Expected minimum time for a label to post
     POLLING_INITIAL_DELAY = 0.5
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
@@ -123,7 +125,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
-        wait: float = 30,
+        wait: Optional[float] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -134,6 +136,8 @@ class Groundlight:
             - a PIL Image (gets converted to jpeg)
         :param wait: How long to wait (in seconds) for a confident answer
         """
+        if wait is None:
+            wait = self.DEFAULT_WAIT
         if isinstance(detector, Detector):
             detector_id = detector.id
         else:

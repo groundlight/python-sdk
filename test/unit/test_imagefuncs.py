@@ -1,3 +1,5 @@
+import tempfile
+
 import pytest
 
 from groundlight.images import *
@@ -26,3 +28,29 @@ def test_pil_support():
     img = Image.new("RGB", (640, 480))
     jpeg = parse_supported_image_types(img)
     assert isinstance(jpeg, BytesIO)
+
+    # Now try to parse the BytesIO object as an image
+    jpeg_bytes = jpeg.getvalue()
+    # save the image to a tempfile
+    with tempfile.TemporaryFile() as f:
+        f.write(jpeg_bytes)
+        f.seek(0)
+        img2 = Image.open(f)
+        assert img2.size == (640, 480)
+
+
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
+def test_pil_support_ref():
+    # Similar to test_pil_support, but uses a known-good file
+    from PIL import Image
+
+    fn = "test/assets/dog.jpeg"
+    parsed = parse_supported_image_types(fn)
+    # Now try to parse the BytesIO object as an image
+    jpeg_bytes = parsed.read()
+    # save the image to a tempfile
+    with tempfile.TemporaryFile() as f:
+        f.write(jpeg_bytes)
+        f.seek(0)
+        img2 = Image.open(f)
+        assert img2.size == (509, 339)
