@@ -4,10 +4,14 @@ nav:
   - Getting Started:
       - Introduction: index.md
       - Managing Confidence and Latency: managing-confidence.md
-      - Running on the Edge: edge.md
   - Building Applications:
       - Working with Detectors: working-with-detectors.md
       - Handling Errors: handling-errors.md
+      - Running on the Edge: edge.md
+      - Installation FAQs: installation-faqs.md
+  # - Examples:
+  #     - Cool Thing 1: cool-thing-1.md
+  #     - Cool Thing 2: cool-thing-2.md
 theme:
   name: material
   palette:
