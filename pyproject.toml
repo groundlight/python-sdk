@@ -9,7 +9,7 @@ packages = [
     {include = "**/*.py", from = "src"},
 ]
 readme = "README.md"
-version = "0.7.1"
+version = "0.8.0"
 
 [tool.poetry.dependencies]
 certifi = "^2021.10.8"
@@ -34,10 +34,10 @@ pytest-mock = "^3.10.0"
 
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "^1.4.2"
-mkdocs-material = "^9.1.5"
 mdx-include = "^1.4.2"
+mkdocs = "^1.4.2"
 mkdocs-markdownextradata-plugin = "^0.2.5"
+mkdocs-material = "^9.1.5"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
