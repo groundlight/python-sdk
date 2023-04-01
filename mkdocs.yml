@@ -28,6 +28,9 @@ theme:
   - search.suggest
   - search.highlight
   - content.tabs.link
+  - content.code.annotate
+  - content.code.copy
+  - content.tooltips
 markdown_extensions:
 - toc:
     permalink: true
@@ -36,7 +39,6 @@ markdown_extensions:
 - mdx_include:
     base_path: docs
 - admonition
-- pymdownx.highlight
 - pymdownx.superfences:
     custom_fences:
     - name: mermaid
@@ -46,5 +48,8 @@ markdown_extensions:
     alternate_style: true
 - attr_list
 - md_in_html
+- pymdownx.emoji:
+    emoji_index: !!python/name:materialx.emoji.twemoji
+    emoji_generator: !!python/name:materialx.emoji.to_svg
 
 
