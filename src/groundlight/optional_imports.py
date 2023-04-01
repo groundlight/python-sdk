@@ -45,6 +45,7 @@ try:
 except ImportError as e:
     PIL = UnavailableModule(e)
     Image = PIL
+    Image.Image = PIL  # for type-hinting
     MISSING_PIL = True
 
 

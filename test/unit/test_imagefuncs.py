@@ -21,6 +21,17 @@ def test_jpeg_from_numpy():
     assert len(jpeg2) > len(jpeg3)
 
 
+def test_unsupported_imagetype():
+    with pytest.raises(TypeError):
+        parse_supported_image_types(1)
+
+    with pytest.raises(TypeError):
+        parse_supported_image_types(None)
+
+    with pytest.raises(TypeError):
+        parse_supported_image_types(pytest)
+
+
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
 def test_pil_support():
     from PIL import Image
