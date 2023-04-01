@@ -102,6 +102,15 @@ def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     assert "jpeg" in str(exc_info).lower()
 
 
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
+def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
+    # generates a pil image and submits it
+    from PIL import Image
+
+    img = Image.new("RGB", (640, 480))
+    _image_query = gl.submit_image_query(detector=detector.id, image=img)
+
+
 def test_list_image_queries(gl: Groundlight):
     image_queries = gl.list_image_queries()
     assert str(image_queries)

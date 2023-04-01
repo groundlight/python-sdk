@@ -131,29 +131,14 @@ class Groundlight:
             - a filename (string) of a jpeg file
             - a byte array or BytesIO with jpeg bytes
             - a numpy array in the 0-255 range (gets converted to jpeg)
+            - a PIL Image (gets converted to jpeg)
         :param wait: How long to wait (in seconds) for a confident answer
         """
         if isinstance(detector, Detector):
             detector_id = detector.id
         else:
             detector_id = detector
-        image_bytesio: Union[BytesIO, BufferedReader]
-        # TODO: support PIL Images
-        if isinstance(image, str):
-            # Assume it is a filename
-            image_bytesio = buffer_from_jpeg_file(image)
-        elif isinstance(image, bytes):
-            # Create a BytesIO object
-            image_bytesio = BytesIO(image)
-        elif isinstance(image, BytesIO) or isinstance(image, BufferedReader):
-            # Already in the right format
-            image_bytesio = image
-        elif isinstance(image, np.ndarray):
-            image_bytesio = BytesIO(jpeg_from_numpy(image))
-        else:
-            raise TypeError(
-                "Unsupported type for image. We only support numpy arrays (3,W,H) or JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
-            )
+        image_bytesio: Union[BytesIO, BufferedReader] = parse_supported_image_types(image)
 
         raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
