@@ -21,5 +21,5 @@ We'll call out a few cool features:
   [reference](https://squidfunk.github.io/mkdocs-material/reference) for more ideas!
 
 You can see the status of [documentation deployments
-here](https://github.com/groundlight/python-sdk/settings/pages). The docs are deployed by a [github
-action]() that publishes changes to a `gh-pages` git branch.
+here](https://github.com/groundlight/python-sdk/actions/workflows/pages/pages-build-deployment). The
+docs are deployed by a [github action]() that publishes changes to a `gh-pages` git branch.

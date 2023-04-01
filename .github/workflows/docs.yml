@@ -3,20 +3,29 @@ on:
   push:
     branches: 
       - main
-      - try-mkdocs
+      - try-mkdocs # temporary while testing
 permissions:
   contents: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.10"
+      POETRY_VERSION: "1.4.0"
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-      - uses: actions/cache@v2
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
         with:
-          key: ${{ github.ref }}
-          path: .cache
-      - run: pip install mkdocs-material 
-      - run: mkdocs gh-deploy --force
+          version: ${{ env.POETRY_VERSION }}
+      - name: install docs dependencies
+        run: |
+          poetry install --only docs
+      - name: publish docs
+        run: |
+          poetry run mkdocs gh-deploy --force
