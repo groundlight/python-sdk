@@ -4,6 +4,7 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
+from groundlight.optional_imports import Image
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import ApiClient, Configuration
 from openapi_client.api.detectors_api import DetectorsApi
@@ -130,10 +131,12 @@ class Groundlight:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
-            - a filename (string) of a jpeg file
-            - a byte array or BytesIO or BufferedReader with jpeg bytes
-            - a numpy array in the 0-255 range (gets converted to jpeg)
-            - a PIL Image (gets converted to jpeg)
+          - filename (string) of a jpeg file
+          - byte array or BytesIO or BufferedReader with jpeg bytes
+          - numpy array of dimensions (3,W,H) in the 0-255 range in RGB order
+          - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get 
+          converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer
         """
         if wait is None:

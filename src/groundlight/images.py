@@ -53,5 +53,5 @@ def parse_supported_image_types(
         return BytesIO(jpeg_from_numpy(image, jpeg_quality=jpeg_quality))
     else:
         raise TypeError(
-            "Unsupported type for image. Must be PIL, numpy (3,W,H), or a JPEG as a filename (str), bytes, BytesIO, or BufferedReader."
+            "Unsupported type for image. Must be PIL, numpy (3,W,H) RGB, or a JPEG as a filename (str), bytes, BytesIO, or BufferedReader."
         )
