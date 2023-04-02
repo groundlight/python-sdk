@@ -3,7 +3,7 @@
 
 // Options: https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes
 const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -94,7 +94,7 @@ const config = {
             title: "Docs",
             items: [
               {
-                label: "Docs",
+                label: "Getting Started",
                 to: "/docs/getting-started",
               },
             ],
@@ -103,16 +103,16 @@ const config = {
             title: "Community",
             items: [
               {
-                label: "Stack Overflow",
-                href: "https://stackoverflow.com/questions/tagged/docusaurus",
+                label: "Twitter",
+                href: "https://twitter.com/GroundlightAI",
               },
               {
                 label: "Discord",
-                href: "https://discordapp.com/invite/docusaurus",
+                href: "https://discordapp.com/invite/groundlight",
               },
               {
-                label: "Twitter",
-                href: "https://twitter.com/docusaurus",
+                label: "Stack Overflow",
+                href: "https://stackoverflow.com/questions/tagged/groundlight",
               },
             ],
           },
