@@ -6,7 +6,7 @@ on:
       - try-docusaurus-base # temporary
 defaults:
   run:
-    working-directory: web
+    working-directory: docs
 
 jobs:
   deploy:
