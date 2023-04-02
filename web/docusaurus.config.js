@@ -18,8 +18,10 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  organizationName: "groundlight", // Usually your GitHub org/user name.
+  projectName: "python-sdk", // Usually your repo name.
+  deploymentBranch: "gh-pages", // Branch that GitHub pages will deploy from.
+  trailingSlash: false,
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
