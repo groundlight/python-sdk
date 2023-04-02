@@ -1,4 +1,4 @@
-# Managing confidence levels and latency
+# Confidence Levels
 
 Groundlight gives you a simple way to control the trade-off of latency against accuracy. The longer you can wait for an answer to your image query, the better accuracy you can get. In particular, if the ML models are unsure of the best response, they will escalate the image query to more intensive analysis with more complex models and real-time human monitors as needed. Your code can easily wait for this delayed response. Either way, these new results are automatically trained into your models so your next queries will get better results faster.
 
@@ -24,3 +24,9 @@ If the returned result was generated from an ML model, you can see the confidenc
 ```python
 print(f"The confidence is {image_query.result.confidence}")
 ```
+
+:::tip My tip
+
+Use this awesome feature option
+
+:::

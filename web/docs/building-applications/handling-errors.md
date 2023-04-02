@@ -2,7 +2,7 @@
 
 If there is an HTTP error during an API call, it will raise an `ApiException`. You can access different metadata from that exception:
 
-```Python
+```python
 from groundlight import ApiException, Groundlight
 
 gl = Groundlight()
