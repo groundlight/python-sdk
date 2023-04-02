@@ -4,6 +4,9 @@ on:
     branches:
       - main
       - try-docusaurus-base # temporary
+defaults:
+  run:
+    working-directory: docs
 
 jobs:
   deploy:
