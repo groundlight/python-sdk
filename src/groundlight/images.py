@@ -30,7 +30,7 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
 
 
 def parse_supported_image_types(
-    image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray], jpeg_quality: int = 95
+    image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray], jpeg_quality: int = 95
 ) -> Union[BytesIO, BufferedReader]:
     """Parse the many supported image types into a bytes-stream objects.
     In some cases we have to JPEG compress."""

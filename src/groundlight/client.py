@@ -124,14 +124,14 @@ class Groundlight:
     def submit_image_query(
         self,
         detector: Union[Detector, str],
-        image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
             - a filename (string) of a jpeg file
-            - a byte array or BytesIO with jpeg bytes
+            - a byte array or BytesIO or BufferedReader with jpeg bytes
             - a numpy array in the 0-255 range (gets converted to jpeg)
             - a PIL Image (gets converted to jpeg)
         :param wait: How long to wait (in seconds) for a confident answer
