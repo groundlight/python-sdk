@@ -13,17 +13,16 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Setup NPM
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: npm
-
       - name: Install dependencies
         run: npm install
       - name: Build website
         run: npm run build
-
       # Popular action to deploy to GitHub Pages:
       # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
       - name: Deploy to GitHub Pages
