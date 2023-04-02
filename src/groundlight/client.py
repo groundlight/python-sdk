@@ -135,7 +135,7 @@ class Groundlight:
           - byte array or BytesIO or BufferedReader with jpeg bytes
           - numpy array of dimensions (3,W,H) in the 0-255 range in RGB order
           - PIL Image
-          Any binary format must be JPEG-encoded already.  Any pixel format will get 
+          Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer
         """
