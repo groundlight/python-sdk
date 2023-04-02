@@ -1,21 +1,26 @@
 name: docs
 on:
   push:
-    branches:
-      - main
-      - try-docusaurus-base # temporary
+    paths:
+      # Only run this workflow if there are changes in any of these files.
+      - .github/workflows/**
+      - docs/**
+  pull_request:
+    paths:
+      # Only run this workflow if there are changes in any of these files.
+      - .github/workflows/**
+      - docs/**
 defaults:
   run:
     working-directory: docs
 
 jobs:
   deploy:
-    name: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Setup NPM
+      - name: Setup npm
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -23,10 +28,11 @@ jobs:
         run: npm install
       - name: Build website
         run: npm run build
-      # Popular action to deploy to GitHub Pages:
-      # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
-      - name: Deploy to GitHub Pages
+      - name: Deploy website
+        # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
         uses: peaceiris/actions-gh-pages@v3
+        # Only run this on pushes to the `main` branch (try-docusaurus-base is temporary for testing)
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/try-docusaurus-base'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # Build output to publish to the `gh-pages` branch:
