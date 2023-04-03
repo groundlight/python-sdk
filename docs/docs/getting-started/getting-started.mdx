@@ -2,14 +2,17 @@
 
 ## Computer vision made simple
 
-Build a working computer vision system in just 5 lines of python:
+Build a working computer vision system in just a few lines of python:
 
 ```python
 from groundlight import Groundlight
+from PIL import Image
+import requests
 
 gl = Groundlight()
 d = gl.get_or_create_detector(name="door", query="Is the door open?")
-image_query = gl.submit_image_query(detector=d, image=jpeg_img)
+image = Image.open(requests.get("http://images.cocodataset.org/val2017/000000039769.jpg", stream=True).raw)
+image_query = gl.submit_image_query(detector=d, image=image)
 print(f"The answer is {image_query.result}")
 ```
 

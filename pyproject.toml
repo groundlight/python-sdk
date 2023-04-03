@@ -1,40 +1,42 @@
 [tool.poetry]
-name = "groundlight"
-version = "0.7.1"
-license = "MIT"
-readme = "README.md"
-homepage = "https://www.groundlight.ai"
-description = "Build computer vision systems from natural language with Groundlight"
 authors = ["Groundlight AI <support@groundlight.ai>"]
+description = "Build computer vision systems from natural language with Groundlight"
+homepage = "https://www.groundlight.ai"
+license = "MIT"
+name = "groundlight"
 packages = [
-    { include = "**/*.py", from = "src" },
-    { include = "**/*.py", from = "generated" },
+    {include = "**/*.py", from = "generated"},
+    {include = "**/*.py", from = "src"},
 ]
+readme = "README.md"
+version = "0.7.1"
 
 [tool.poetry.dependencies]
+certifi = "^2021.10.8"
+frozendict = "^2.3.2"
+pillow = "^9.5.0"
+pydantic = "^1.7.4"
 python = ">=3.7.0,<4.0"
 python-dateutil = "^2.8.2"
-urllib3 = "^1.26.9"
-frozendict = "^2.3.2"
-certifi = "^2021.10.8"
-pydantic = "^1.7.4"
 requests = "^2.28.2"
+urllib3 = "^1.26.9"
 
-[tool.poetry.dev-dependencies]
-black = "^22.3.0"
-pytest-cov = "^3.0.0"
-pylint = "^2.13.9"
-flake8 = "^4.0.1"
-mypy = "^0.950"
-pytest = "^7.0.1"
-isort = "^5.10.1"
+[tool.poetry.group.dev.dependencies]
 autoflake = "^1.4"
+black = "^22.3.0"
 datamodel-code-generator = "^0.12.1"
+flake8 = "^4.0.1"
+isort = "^5.10.1"
+mypy = "^0.950"
+pylint = "^2.13.9"
+pytest = "^7.0.1"
+pytest-cov = "^3.0.0"
+pytest-markdown-docs = "^0.4.3"
 pytest-mock = "^3.10.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.2.0"]
 
 [tool.black]
 line-length = 120
