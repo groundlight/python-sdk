@@ -4,6 +4,7 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
+from groundlight.optional_imports import Image
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import ApiClient, Configuration
 from openapi_client.api.detectors_api import DetectorsApi
@@ -12,7 +13,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.binary_labels import convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DEFAULT_ENDPOINT
-from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy
+from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy, parse_supported_image_types
 from groundlight.internalapi import GroundlightApiClient, sanitize_endpoint_url
 from groundlight.optional_imports import np
 
@@ -37,6 +38,8 @@ class Groundlight:
     print(iq.result)
     ```
     """
+
+    DEFAULT_WAIT = 30
 
     BEFORE_POLLING_DELAY = 3.0  # Expected minimum time for a label to post
     POLLING_INITIAL_DELAY = 0.5
@@ -122,38 +125,28 @@ class Groundlight:
     def submit_image_query(
         self,
         detector: Union[Detector, str],
-        image: Union[str, bytes, BytesIO, BufferedReader, np.ndarray],
-        wait: float = 30,
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
+        wait: Optional[float] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
-            - a filename (string) of a jpeg file
-            - a byte array or BytesIO with jpeg bytes
-            - a numpy array in the 0-255 range (gets converted to jpeg)
+          - filename (string) of a jpeg file
+          - byte array or BytesIO or BufferedReader with jpeg bytes
+          - numpy array with values 0-255 and dimensions (H,W,3) in RGB order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+          - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get
+          converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer
         """
+        if wait is None:
+            wait = self.DEFAULT_WAIT
         if isinstance(detector, Detector):
             detector_id = detector.id
         else:
             detector_id = detector
-        image_bytesio: Union[BytesIO, BufferedReader]
-        # TODO: support PIL Images
-        if isinstance(image, str):
-            # Assume it is a filename
-            image_bytesio = buffer_from_jpeg_file(image)
-        elif isinstance(image, bytes):
-            # Create a BytesIO object
-            image_bytesio = BytesIO(image)
-        elif isinstance(image, BytesIO) or isinstance(image, BufferedReader):
-            # Already in the right format
-            image_bytesio = image
-        elif isinstance(image, np.ndarray):
-            image_bytesio = BytesIO(jpeg_from_numpy(image))
-        else:
-            raise TypeError(
-                "Unsupported type for image. We only support numpy arrays (3,W,H) or JPEG images specified through a filename, bytes, BytesIO, or BufferedReader object."
-            )
+        image_bytesio: Union[BytesIO, BufferedReader] = parse_supported_image_types(image)
 
         raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
