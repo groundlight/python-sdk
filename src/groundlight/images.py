@@ -1,10 +1,11 @@
 import imghdr
-import io
+from io import BufferedReader, BytesIO
+from typing import Union
 
-from groundlight.optional_imports import np, Image
+from groundlight.optional_imports import Image, np
 
 
-def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
+def buffer_from_jpeg_file(image_filename: str) -> BufferedReader:
     """
     Get a buffer from an jpeg image file.
 
@@ -21,8 +22,36 @@ def buffer_from_jpeg_file(image_filename: str) -> io.BufferedReader:
 def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
     """Converts a numpy array to BytesIO"""
     pilim = Image.fromarray(img.astype("uint8"), "RGB")
-    with io.BytesIO() as buf:
-        buf = io.BytesIO()
+    with BytesIO() as buf:
+        buf = BytesIO()
         pilim.save(buf, "jpeg", quality=jpeg_quality)
         out = buf.getvalue()
         return out
+
+
+def parse_supported_image_types(
+    image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray], jpeg_quality: int = 95
+) -> Union[BytesIO, BufferedReader]:
+    """Parse the many supported image types into a bytes-stream objects.
+    In some cases we have to JPEG compress."""
+    if isinstance(image, str):
+        # Assume it is a filename
+        return buffer_from_jpeg_file(image)
+    elif isinstance(image, bytes):
+        # Create a BytesIO object
+        return BytesIO(image)
+    elif isinstance(image, Image.Image):
+        # Save PIL image as jpeg in BytesIO
+        bytesio = BytesIO()
+        image.save(bytesio, "jpeg", quality=jpeg_quality)
+        bytesio.seek(0)
+        return bytesio
+    elif isinstance(image, BytesIO) or isinstance(image, BufferedReader):
+        # Already in the right format
+        return image
+    elif isinstance(image, np.ndarray):
+        return BytesIO(jpeg_from_numpy(image, jpeg_quality=jpeg_quality))
+    else:
+        raise TypeError(
+            "Unsupported type for image. Must be PIL, numpy (H,W,3) RGB, or a JPEG as a filename (str), bytes, BytesIO, or BufferedReader."
+        )
