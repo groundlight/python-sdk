@@ -12,7 +12,9 @@ from groundlight.optional_imports import *
 @pytest.fixture
 def gl() -> Groundlight:
     """Creates a Groundlight client object for testing."""
-    return Groundlight()
+    gl = Groundlight()
+    gl.DEFAULT_WAIT = 0.1
+    return gl
 
 
 @pytest.fixture
@@ -100,6 +102,18 @@ def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     with pytest.raises(ValueError) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/blankfile.jpeg")
     assert "jpeg" in str(exc_info).lower()
+
+
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
+def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
+    # generates a pil image and submits it
+    from PIL import Image
+
+    dog = Image.open("test/assets/dog.jpeg")
+    _image_query = gl.submit_image_query(detector=detector.id, image=dog)
+
+    black = Image.new("RGB", (640, 480))
+    _image_query = gl.submit_image_query(detector=detector.id, image=black)
 
 
 def test_list_image_queries(gl: Groundlight):
