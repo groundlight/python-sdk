@@ -16,17 +16,14 @@ jobs:
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
-            "3.7", 
-            "3.8", 
-            "3.9", 
-            "3.10", 
+            "3.7",
+            "3.8",
+            "3.9",
+            "3.10",
             "3.11",
-        ]
-        install_numpy: [ true, false ]
-        install_pillow: [ true, false ]
-    env:
-      # This is associated with the "sdk-integ-test" user, credentials on 1password
-      GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
+          ]
+        install_numpy: [true, false]
+        install_pillow: [true, false]
     steps:
       - name: get code
         uses: actions/checkout@v3
@@ -52,4 +49,12 @@ jobs:
         run: |
           poetry run pip install pillow
       - name: run tests
+        env:
+          # This is associated with the "sdk-integ-test" user, credentials on 1password
+          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
         run: make test-integ
+      - name: run docs tests
+        run: make test-docs
+        env:
+          # This is associated with the "sdk-test-prod" user, credentials on 1password
+          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
