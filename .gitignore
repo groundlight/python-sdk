@@ -165,3 +165,4 @@ poetry.lock
 node_modules/
 
 *.swp
+**/.python-version
