@@ -166,3 +166,5 @@ node_modules/
 
 *.swp
 **/.python-version
+
+.DS_Store

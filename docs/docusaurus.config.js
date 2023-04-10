@@ -8,11 +8,11 @@ const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Groundlight",
-  tagline: "Computer vision made simple",
+  tagline: "Computer Vision powered by Natural Language",
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: "https://groundlight.ai",
+  url: "https://www.groundlight.ai",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/python-sdk/",
@@ -21,7 +21,7 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "groundlight", // Usually your GitHub org/user name.
   projectName: "python-sdk", // Usually your repo name.
-  deploymentBranch: "gh-pages", // Branch that GitHub pages will deploy from.
+  deploymentBranch: "docs", // Branch that GitHub pages will deploy from.
   trailingSlash: false,
 
   onBrokenLinks: "throw",
@@ -42,17 +42,12 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-        },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+            // Remove this to remove the "edit this page" links.
+            "https://github.com/groundlight/python-sdk/tree/docs/docs/",
+          // the first "docs" is the branch
+          // the second "docs" is the subdir within the repo
+          // there will be a third one for real URLs.  :)
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -79,7 +74,7 @@ const config = {
             position: "left",
             label: "Docs",
           },
-          { to: "/blog", label: "Blog", position: "left" },
+          { to: "/docs/category/building-applications", label: "Applications", position: "left" },
           {
             href: "https://github.com/groundlight/python-sdk",
             label: "GitHub",
@@ -91,41 +86,61 @@ const config = {
         style: "dark",
         links: [
           {
-            title: "Docs",
+            title: "Documentation",
             items: [
               {
                 label: "Getting Started",
                 to: "/docs/getting-started",
               },
-            ],
-          },
-          {
-            title: "Community",
-            items: [
               {
-                label: "Twitter",
-                href: "https://twitter.com/GroundlightAI",
+                label: "Building Applications",
+                to: "/docs/category/building-applications",
               },
               {
-                label: "Discord",
-                href: "https://discordapp.com/invite/groundlight",
-              },
-              {
-                label: "Stack Overflow",
-                href: "https://stackoverflow.com/questions/tagged/groundlight",
+                label: "Installation",
+                to: "/docs/category/installation",
               },
             ],
           },
           {
-            title: "More",
+            title: "Company",
             items: [
               {
-                label: "Blog",
-                to: "/blog",
+                label: "About",
+                href: "https://www.groundlight.ai/",
               },
               {
-                label: "GitHub",
+                label: "Team",
+                href: "https://www.groundlight.ai/team",
+              },
+              {
+                label: "Careers",
+                href: "https://www.groundlight.ai/careers",
+              },
+              {
+                label: "Sign In",
+                href: "https://app.groundlight.ai/",
+              },
+            ],
+          },
+          {
+            title: "Code",
+            items: [
+              {
+                label: "Github",
+                href: "https://github.com/groundlight/",
+              },
+              {
+                label: "Python SDK",
                 href: "https://github.com/groundlight/python-sdk",
+              },
+              {
+                label: "Video streaming",
+                href: "https://github.com/groundlight/stream",
+              },
+              {
+                label: "Arduino",
+                href: "https://github.com/groundlight/esp32cam",
               },
             ],
           },
