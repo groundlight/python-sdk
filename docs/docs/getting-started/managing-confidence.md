@@ -15,14 +15,16 @@ import requests
 
 gl = Groundlight()
 image = Image.open(
-    requests.get("https://i2.wp.com/trashcanreviews.com/wp-content/uploads/2019/05/Office-Trash-Can.jpg", stream=True).raw
+    requests.get("https://www.photos-public-domain.com/wp-content/uploads/2010/11/over_flowing_garbage_can.jpg", stream=True).raw
 )
+
 # highlight-start
 d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence=0.95)
+
+# This will wait until either 60 seconds have passed or the confidence reaches 0.95
 image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
 # highlight-end
 
-# This will wait until either 60 seconds have passed or the confidence reaches 0.95
 print(f"The answer is {image_query.result}")
 ```
 

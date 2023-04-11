@@ -91,7 +91,7 @@ image = Image.open(
 )
 image_query = gl.submit_image_query(detector=d, image=image)
 # highlight-start
-image_query.add_label(image_query, 'YES') # or 'NO'
+gl.add_label(image_query, 'YES') # or 'NO'
 # highlight-end
 ```
 
