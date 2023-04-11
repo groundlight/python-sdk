@@ -132,7 +132,7 @@ const config = {
               },
               {
                 label: "Python SDK",
-                href: "https://github.com/groundlight/python-sdk",
+                href: "https://pypi.org/project/groundlight/",
               },
               {
                 label: "Video streaming",
