@@ -2,7 +2,7 @@
 
 Groundlight makes it simple to build reliable visual applications.  Read the [full documentation here](https://code.groundlight.ai/python-sdk/).
 
-## Computer vision made simple
+## Computer Vision powered by Natural Language
 
 ```bash
 pip install groundlight
