@@ -1,6 +1,6 @@
 # Groundlight Python SDK
 
-Check out our [documentation here](https://groundlight.github.io/python-sdk/docs/getting-started)!
+Check out our [documentation here](https://code.groundlight.ai/)
 
 ## Computer vision made simple
 
