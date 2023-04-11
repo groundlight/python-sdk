@@ -91,8 +91,8 @@ image = Image.open(
 )
 image_query = gl.submit_image_query(detector=d, image=image)
 # highlight-start
-image_query.add_label(image_query, 'YES'). # or 'NO'
+image_query.add_label(image_query, 'YES') # or 'NO'
 # highlight-end
 ```
 
-The only valid labels at this time are `'YES'` and `'NO'`
+The only valid labels at this time are `'YES'` and `'NO'`.
