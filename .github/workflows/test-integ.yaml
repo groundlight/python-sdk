@@ -1,6 +1,10 @@
 # Run integration tests against the integ API endpoint
 name: test integ
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 jobs:
   run-tests:
     runs-on: ubuntu-20.04

@@ -28,6 +28,13 @@ image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
 print(f"The answer is {image_query.result}")
 ```
 
+:::tip
+
+Tuning confidence lets you balance accuracy against latency.
+Higher confidence will get higher accuracy, but will generally require longer latency.
+
+:::
+
 Or if you want to run as fast as possible, set `wait=0`. This way you will only get the ML results, without waiting for escalation. Image queries which are below the desired confidence level still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
 
 ```python notest continuation

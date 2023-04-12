@@ -7,4 +7,4 @@ from groundlight import Groundlight
 gl = Groundlight(endpoint="http://localhost:6717")
 ```
 
-(Edge model download is not yet generally available.)
+(Edge model download is not yet generally available.  Work with your Solutions Engineer to set up edge inference.)
