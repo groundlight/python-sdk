@@ -2,14 +2,19 @@
 
 ## Computer Vision powered by Natural Language
 
-Build a working computer vision system in just 5 lines of python:
+Build a working computer vision system in just a few lines of python:
 
 ```python
 from groundlight import Groundlight
+from PIL import Image
+import requests
 
 gl = Groundlight()
-d = gl.get_or_create_detector(name="door", query="Is the door open?")
-image_query = gl.submit_image_query(detector=d, image=jpeg_img)
+d = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
+image = Image.open(
+    requests.get("https://images.selfstorage.com/large-compress/2174925f24362c479b2.jpg", stream=True).raw
+)
+image_query = gl.submit_image_query(detector=d, image=image)
 print(f"The answer is {image_query.result}")
 ```
 
@@ -27,33 +32,32 @@ _Note: The SDK is currently in "beta" phase. Interfaces are subject to change in
     pip3 install groundlight
     ```
 
-1.  To access the API, you need an API token. You can create one on the
-    [groundlight web app](https://app.groundlight.ai/reef/my-account/api-tokens). The API token
-    should be stored securely. You can use it directly in your code to initialize the SDK like:
-
-    ```python
-    gl = Groundlight(api_token="<YOUR_API_TOKEN>")
-    ```
-
-    This is an easy way to get started, but is NOT a best practice. Please do not commit your API Token to version control! Instead we recommend setting the `GROUNDLIGHT_API_TOKEN` environment variable outside your code so that the SDK can find it automatically.
+1.  Head over to the [groundlight web
+    app](https://app.groundlight.ai/reef/my-account/api-tokens) to create an API token. You will
+    need to set the `GROUNDLIGHT_API_TOKEN` environment variable to access the API.
 
     ```shell
     export GROUNDLIGHT_API_TOKEN=api_2GdXMflhJi6L_example
     ```
 
-1.  Create a python file.
+1.  Create a python script.
 
-    ```python title="hello.py"
+    ```python title="ask.py"
     from groundlight import Groundlight
+    from PIL import Image
+    import requests
 
     gl = Groundlight()
-    d = gl.get_or_create_detector(name="door", query="Is the door open?")
-    image_query = gl.submit_image_query(detector=d, image=jpeg_img)
+    d = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
+    image = Image.open(
+        requests.get("https://images.selfstorage.com/large-compress/2174925f24362c479b2.jpg", stream=True).raw
+    )
+    image_query = gl.submit_image_query(detector=d, image=image)
     print(f"The answer is {image_query.result}")
     ```
 
 1.  Run it!
 
     ```shell
-    $ python hello.py
+    $ python ask.py
     ```

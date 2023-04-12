@@ -11,9 +11,9 @@ jobs:
       POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
       - name: install python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
-          python-version: 3.9
+          python-version: 3.10
       - name: install poetry
         run: |
           pip install -U pip

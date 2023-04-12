@@ -82,7 +82,7 @@ class Groundlight:
 
     def get_detector_by_name(self, name: str) -> Optional[Detector]:
         # TODO: Do this on server.
-        detector_list = self.list_detectors(page_size=100)
+        detector_list = self.list_detectors(page_size=250)
         for d in detector_list.results:
             if d.name == name:
                 return d

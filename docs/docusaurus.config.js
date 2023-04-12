@@ -74,7 +74,11 @@ const config = {
             position: "left",
             label: "Docs",
           },
-          { to: "/docs/category/building-applications", label: "Applications", position: "left" },
+          {
+            to: "/docs/category/building-applications",
+            label: "Applications",
+            position: "left",
+          },
           {
             href: "https://github.com/groundlight/python-sdk",
             label: "GitHub",
