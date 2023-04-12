@@ -21,7 +21,7 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "groundlight", // Usually your GitHub org/user name.
   projectName: "python-sdk", // Usually your repo name.
-  deploymentBranch: "docs", // Branch that GitHub pages will deploy from.
+  deploymentBranch: "gh-pages", // Branch that GitHub pages will deploy from.
   trailingSlash: false,
 
   onBrokenLinks: "throw",

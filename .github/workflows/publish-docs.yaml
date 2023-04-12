@@ -6,7 +6,7 @@ on:
       - .github/workflows/**
       - docs/**
     branches:
-      - docs
+      - main
 defaults:
   run:
     working-directory: docs
@@ -34,7 +34,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build
-          #TODO: set staging if publishing to another branch
+          #TODO: setup a staging directory when doing a PR
           #destination_dir: staging
           # The following lines assign commit authorship to the official
           # GH-Actions bot for deploys to `gh-pages` branch:
