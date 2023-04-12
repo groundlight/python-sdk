@@ -1,53 +1,62 @@
 import clsx from "clsx";
-import React from "react";
 import styles from "./styles.module.css";
+// There should be a line here that says
+// import React from "react";
+// VSCode might try to delete it, but that will break the site.
+import React from "react";
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<"svg">>;
+  imgsrc: string;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "Model Creation",
-    Svg: require("@site/static/img/undraw_docusaurus_mountain.svg").default,
+    title: "Instant Models",
+    imgsrc: "img/1-models.png",
     description: (
       <>
-        Groundlight automatically builds a custom model for your application,
-        starting from our Visual Language Model (VLM) and your first query. No
-        need to even bring a data set.
+        Groundlight's Visual Large Language Model (VLLM) technology creates
+        computer vision models from English instructions instead of a dataset.
+        This reduces the time to get an AI-driven solution off the ground.
+        Did we mention you don't need a dataset?
       </>
     ),
   },
   {
-    title: "Active Learning",
-    Svg: require("@site/static/img/undraw_docusaurus_tree.svg").default,
+    title: "Human Reliability",
+
+    imgsrc: "img/2-reliability.png",
     description: (
       <>
-        Realtime escalations handle edge cases so that your model can work
-        effectively from the first query. Groundlight constantly updates and
-        tunes.
+        Groundlight's models are allowed to say they're "<i>Unsure</i>" and can
+        escalate to a larger model or human expert for assistance.
+        By knowing what they know, Groundlight's models act more robust,
+        combining the speed of AI with the reliability of human oversight.
       </>
     ),
   },
   {
-    title: "Invisible MLOps",
-    Svg: require("@site/static/img/undraw_docusaurus_react.svg").default,
+    title: "Seamless MLOps",
+    imgsrc: "img/3-mlops.png",
     description: (
       <>
-        Groundlight continuously audits both labels and results to keep your
-        model up-to-date and always able to adapt to changes in the environment.
+        Because Groundlight starts with humans-in-the-loop (HITL),
+        continuous monitoring and auditing are automatic.
+        Any data drift is automatically detected and corrected for.
+        So you know your visual applications won't fall behind as the world
+        around them inevitably changes.
       </>
     ),
   },
 ];
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function Feature({ title, imgsrc, description }: FeatureItem) {
   return (
     <div className={clsx("col col--4")}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img src={imgsrc} width="200px" />
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>

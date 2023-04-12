@@ -15,7 +15,8 @@ print(f"The answer is {image_query.result}")
 
 :::tip
 
-Add a tip here!
+Tuning confidence lets you balance accuracy against latency.
+Higher confidence will get higher accuracy, but will generally require longer latency.
 
 :::
 
