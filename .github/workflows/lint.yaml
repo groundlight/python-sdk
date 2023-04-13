@@ -1,4 +1,4 @@
-# Check our code with linters
+# Run our linter on every push to the repository.
 name: lint
 on: [push]
 
@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v3
       - name: install linter dependencies
         run: |
-          poetry install --only lint
+          make install-lint
       - name: lint
         run: |
           make lint

@@ -3,6 +3,9 @@
 install:  ## Install the package from source
 	poetry install
 
+install-lint:  ## Only install the linter dependencies
+	poetry install --only lint
+
 install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
@@ -22,8 +25,8 @@ test-integ: install  ## Run integration tests against the integ API server (need
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	poetry run pytest --markdown-docs docs -v
 
-lint: ## Linter checks for formatting and style
+lint: install-lint  ## Linter checks for formatting and style
 	./code-quality/lint src test bin
 
-format: ## Run standard python formatting
+format: install-lint  ## Run standard python formatting
 	./code-quality/format src test bin

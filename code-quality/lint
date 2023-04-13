@@ -13,22 +13,27 @@ fi
 
 # Args
 TARGET_PATHS="$@"
+echo "Linting paths: $TARGET_PATHS ..."
 
 errors=0
 
-echo "Linting paths: $TARGET_PATHS ..."
+# https://toml-sort.readthedocs.io/en/latest/
 echo "Linting with toml-sort (checks pyproject.toml formatting) ..."
-poetry run toml-sort --no-sort-tables --trailing-comma-inline-array --spaces-indent-inline-array 4 --check pyproject.toml || ((errors++))
+poetry run toml-sort --check pyproject.toml || ((errors++))
 
 # https://beta.ruff.rs/docs/
 echo "Linting with ruff (isort / flake8 / autoflake issues) ..."
-poetry run ruff check --exclude "__init__.py" $TARGET_PATHS || ((errors++))
+poetry run ruff check $TARGET_PATHS || ((errors++))
 
+# Tradeoff: Pylint is useful, but it is also stricter and slower than other linters. TBD on whether
+# we want to keep it.
+# https://pylint.readthedocs.io/en/latest/index.html
 echo "Linting with pylint ..."
-poetry run pylint --ignore .venv $TARGET_PATHS || ((errors++))
+poetry run pylint $TARGET_PATHS || ((errors++))
 
+# https://mypy.readthedocs.io/en/stable/index.html
 echo "Linting with mypy (type checking) ..."
-poetry run mypy --exclude .venv $TARGET_PATHS || ((errors++))
+poetry run mypy $TARGET_PATHS || ((errors++))
 
 if [[ $errors -gt 0 ]]; then
     echo "🚨 $errors linters found errors!"
