@@ -90,7 +90,7 @@ disable=raw-checker-failed,
         invalid-name,
         too-few-public-methods,
         line-too-long,
-        import-error
+        import-error, # we only install linter dependencies in CI/CD
 
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -177,7 +177,7 @@ spelling-store-unknown-words=no
 # List of note tags to take in consideration, separated by a comma.
 notes=FIXME,
       XXX
-      # For now, we disable TODO as a warning, as it is too noisy.
+      # Warnings on TODOs are too noisy.
       # TODO
 
 # Regular expression of note tags to take in consideration.

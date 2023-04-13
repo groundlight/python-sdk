@@ -1,3 +1,5 @@
+# We call our local formatting script as a pre-commit hook.
+# https://pre-commit.com/
 repos:
   - repo: local
     hooks:
