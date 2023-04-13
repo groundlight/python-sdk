@@ -31,7 +31,7 @@ echo "Linting with mypy (type checking) ..."
 poetry run mypy --exclude .venv $TARGET_PATHS || ((errors++))
 
 if [[ $errors -gt 0 ]]; then
-    echo "🚨 $errors linters found errors, but we're not failing the build yet."
+    echo "🚨 $errors linters found errors!"
     exit $errors
 fi
 
