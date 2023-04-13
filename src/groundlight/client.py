@@ -4,18 +4,22 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from groundlight.optional_imports import Image
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-from openapi_client import ApiClient, Configuration
+from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.binary_labels import convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DEFAULT_ENDPOINT
-from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy, parse_supported_image_types
+from groundlight.binary_labels import convert_display_label_to_internal
+from groundlight.config import (
+    API_TOKEN_VARIABLE_NAME,
+    API_TOKEN_WEB_URL,
+)
+from groundlight.images import (
+    parse_supported_image_types,
+)
 from groundlight.internalapi import GroundlightApiClient, sanitize_endpoint_url
-from groundlight.optional_imports import np
+from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -45,6 +49,7 @@ class Groundlight:
     POLLING_INITIAL_DELAY = 0.5
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
+    DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
     def __init__(self, endpoint: Optional[str] = None, api_token: str = None):
         """
@@ -95,11 +100,17 @@ class Groundlight:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
-        obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
+    def create_detector(
+        self, name: str, query: str, *, confidence: float = DEFAULT_CONFIDENCE_THRESHOLD, config_name: str = None
+    ) -> Detector:
+        obj = self.detectors_api.create_detector(
+            DetectorCreationInput(name=name, query=query, confidence_threshold=confidence, config_name=config_name)
+        )
         return Detector.parse_obj(obj.to_dict())
 
-    def get_or_create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
+    def get_or_create_detector(
+        self, name: str, query: str, *, confidence: float = DEFAULT_CONFIDENCE_THRESHOLD, config_name: str = None
+    ) -> Detector:
         """Tries to look up the detector by name.  If a detector with that name and query exists, return it.
         Otherwise, create a detector with the specified query and config.
         """
@@ -112,7 +123,7 @@ class Groundlight:
                     f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match"
                 )
 
-        return self.create_detector(name, query, config_name)
+        return self.create_detector(name=name, query=query, confidence=confidence, config_name=config_name)
 
     def get_image_query(self, id: str) -> ImageQuery:
         obj = self.image_queries_api.get_image_query(id=id)
