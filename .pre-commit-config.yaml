@@ -1,0 +1,7 @@
+repos:
+  - repo: local
+    hooks:
+      - id: format
+        name: Format Code
+        entry: ./code-quality/format
+        language: script

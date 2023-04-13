@@ -23,6 +23,7 @@ urllib3 = "^1.26.9"
 
 [tool.poetry.group.dev.dependencies]
 datamodel-code-generator = "^0.12.1"
+pre-commit = "^2.0.0"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 pytest-markdown-docs = "^0.4.3"

@@ -3,6 +3,9 @@
 install:  ## Install the package from source
 	poetry install
 
+install-pre-commit: install  ## Install pre-commit hooks
+	poetry run pre-commit install
+
 generate: install  ## Generate the SDK from our public openapi spec
 	node_modules/.bin/openapi-generator-cli generate -i spec/public-api.yaml \
 		-g python \
