@@ -6,7 +6,7 @@ The desired confidence level is set as the escalation threshold on your detector
 
 For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.
 
-<!-- We skip tests here because the tests are too slow -->
+<!-- We skip tests here because the tests may be slow -->
 
 ```python notest
 from groundlight import Groundlight

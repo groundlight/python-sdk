@@ -104,25 +104,27 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(
-        self, name: str, query: str, *, confidence: float = DEFAULT_CONFIDENCE_THRESHOLD, config_name: str = None
+        self, name: str, query: str, *, confidence: Optional[float] = None, config_name: str = None
     ) -> Detector:
-        """Tries to look up the detector by name.  If a detector with that name and query exists, return it.
+        """Tries to look up the detector by name.  If a detector with that name, query, and confidence exists, return it.
         Otherwise, create a detector with the specified query and config.
         """
         existing_detector = self.get_detector_by_name(name)
         if existing_detector:
-            # TODO: allow updating the detector fields?
+            # TODO: We may soon allow users to update the retrieved detector's fields.
             if existing_detector.query != query:
                 raise ValueError(
                     f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match. The existing query is '{existing_detector.query}'."
                 )
-            elif existing_detector.confidence_threshold != confidence:
+            elif confidence is not None and existing_detector.confidence_threshold != confidence:
                 raise ValueError(
                     f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence thresholds don't match. The existing confidence threshold is {existing_detector.confidence_threshold}."
                 )
             else:
                 return existing_detector
 
+        if confidence is None:
+            confidence = self.DEFAULT_CONFIDENCE_THRESHOLD
         return self.create_detector(name=name, query=query, confidence=confidence, config_name=config_name)
 
     def get_image_query(self, id: str) -> ImageQuery:

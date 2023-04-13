@@ -35,6 +35,9 @@ def test_create_detector(gl: Groundlight):
     _detector = gl.create_detector(name=name, query=query)
     assert str(_detector)
     assert isinstance(_detector, Detector)
+    assert (
+        _detector.confidence_threshold == Groundlight.DEFAULT_CONFIDENCE_THRESHOLD
+    ), "We expected the default confidence threshold to be used."
 
 
 def test_create_detector_with_config_name(gl: Groundlight):
@@ -70,6 +73,12 @@ def test_create_detector_with_confidence(gl: Groundlight):
     different_query = "Bad bad bad?"
     with pytest.raises(ValueError):
         gl.get_or_create_detector(name=name, query=different_query, confidence=confidence, config_name=config_name)
+
+    # If the confidence is not provided, we will use the existing detector's confidence.
+    retrieved_detector = gl.get_or_create_detector(name=name, query=query)
+    assert (
+        retrieved_detector.confidence_threshold == confidence
+    ), "We expected to retrieve the existing detector's confidence, but got a different value."
 
 
 def test_list_detectors(gl: Groundlight):
