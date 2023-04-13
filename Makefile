@@ -18,3 +18,9 @@ test-integ: install  ## Run integration tests against the integ API server (need
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	poetry run pytest --markdown-docs docs -v
+
+lint: ## Linter checks for formatting and style
+	./code-quality/lint src test bin
+
+format: ## Run standard python formatting
+	./code-quality/format src test bin

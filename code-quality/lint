@@ -4,7 +4,7 @@
 # - poetry
 # - toml-sort, ruff, pylint, mypy
 # Usage:
-# $ lint test predictors
+# $ lint src test bin
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 TARGET_PATHS"
@@ -32,12 +32,7 @@ poetry run mypy --exclude .venv $TARGET_PATHS || ((errors++))
 
 if [[ $errors -gt 0 ]]; then
     echo "🚨 $errors linters found errors, but we're not failing the build yet."
-
-    # For now, we just report the errors without failing the build.
-    # TODO: Uncomment the following line to fail the build if there are errors!
-    # Generally, ruff (faster version of flake8) is the easiest linter to fix, so it's a good starting
-    # goal. Mypy and pylint are usually more strict.
-    # exit $errors
+    exit $errors
 fi
 
 echo "✅ Success!"

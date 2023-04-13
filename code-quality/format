@@ -4,7 +4,7 @@
 # - poetry
 # - toml-sort, ruff, black
 # Usage:
-# $ format test predictors
+# $ format src test bin
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 TARGET_PATHS"
