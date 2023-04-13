@@ -1,45 +1,68 @@
 # Python SDK Developer Guide
 
-The raw API is generated using an OpenAPI spec.  The SDK adds commonly used functionality
-like polling for blocking submits and configuration of tokens and endpoints.
+The raw API is generated using an [OpenAPI spec](spec/public-api.yaml). The SDK adds commonly used
+functionality like polling for blocking submits and configuration of tokens and endpoints.
 
 ## Local Development
 
-The auto-generated SDK code is in the `generated/` directory. To
-re-generate the client code, you'll need to install
-[openapi-generator](https://openapi-generator.tech/docs/installation#homebrew)
-(I recommend homebrew if you're on a mac). Then you can run it with:
+### Install dependencies
 
-```Bash
-$ make generate
+First, make sure you have [poetry installed](https://python-poetry.org/docs/#installation). Then,
+you can install the package dependencies by running:
+
+```shell
+make install
 ```
 
-## Testing
-Most tests need an API endpoint to run.  This can be the public API endpoint `https://api.groundlight.ai`,
-or a local endpoint with an edge client or development environment.
+Note: We support Python 3.7+ for clients of the SDK, but we recommend developing with Python 3.10+.
 
-### Getting the tests to use your current code.
+### Run tests
 
-(This needs to be updated.)
+Most tests need an API endpoint and an API token to run. The default endpoint is the public API
+endpoint (`https://api.groundlight.ai`). But you can also test against other endpoints (like
+localhost or integ).
 
-You kinda want to do a `pip install -e .` equivalent but I don't know how to do that with poetry.  The ugly version is this...
-
-Find the directory where `groundlight` is installed:
-
-```
-$  python
-Python 3.7.4 (default, Aug 13 2019, 20:35:49)
-[GCC 7.3.0] :: Anaconda, Inc. on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> import groundlight
->>> groundlight
-<module 'groundlight' from '/home/ubuntu/anaconda3/lib/python3.7/site-packages/groundlight/__init__.py'>
+```shell
+# Run tests against the public API
+GROUNDLIGHT_API_TOKEN="api_YOUR_PROD_TOKEN_HERE" make test
 ```
 
-Then blow this away and set up a symlink from that directory to your source.
+But you can also test against other endpoints (like localhost or integ). Make sure the API token
+comes from the same environment as the API endpoint you're testing against!
 
+```shell
+# Run tests against a local API
+GROUNDLIGHT_API_TOKEN="api_YOUR_LOCALHOST_TOKEN_HERE" make test-local
+
+# Run tests against the integ API
+GROUNDLIGHT_API_TOKEN="api_YOUR_INTEG_TOKEN_HERE" make test-integ
 ```
-cd /home/ubuntu/anaconda3/lib/python3.7/site-packages/
-rm -rf groundlight
-ln -s ~/dev/python-sdk/src/groundlight groundlight
+
+### Install auto-formatter pre-commit hook
+
+We use [pre-commit](https://pre-commit.com/) to run some auto-formatters before committing code. You
+can install the pre-commit hooks by running:
+
+```shell
+make install-pre-commit
+```
+
+This will check to see whether any formatters need to be run every time you do `git commit`. If so,
+it will run them, add the changes, and then ask you to try committing again with the new changes.
+
+### Generating code based on the latest API spec
+
+The auto-generated SDK code is in the [generated/](generated) directory. Most of the time, you won't
+need to generate code. But if the API specification changes, you may need to generate SDK code. To
+re-generate the client code, you'll need to [install npm](https://github.com/nvm-sh/nvm#intro)
+first. Then you can install the code generator by running:
+
+```shell
+make install-generator
+```
+
+Then you can generate the code by running:
+
+```shell
+make generate
 ```

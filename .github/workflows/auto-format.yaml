@@ -5,16 +5,28 @@ jobs:
     # Check if the PR is not from a fork
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.10"
+      POETRY_VERSION: "1.4.0"
     steps:
-      - uses: actions/checkout@v1
+      - name: get code
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
-      - name: black
-        #uses: lgeiger/black-action@v1.0.1
-        uses: psf/black@stable
+      - name: install python
+        uses: actions/setup-python@v4
         with:
-          src: "."
-          options: "--verbose"
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: install linter dependencies
+        run: |
+          make install-lint
+      - name: run formatter
+        run: |
+          make format
       - name: Check for modified files
         id: git-check
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
@@ -22,7 +34,7 @@ jobs:
         if: steps.git-check.outputs.modified == 'true'
         run: |
           git config --global user.name 'Auto-format Bot'
+          git config --global user.email 'autoformatbot@groundlight.ai'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git commit -am "Automatically reformatting code with black"
+          git commit -am "Automatically reformatting code"
           git push
-

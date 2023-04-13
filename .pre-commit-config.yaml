@@ -7,3 +7,4 @@ repos:
         name: Format Code
         entry: ./code-quality/format
         language: script
+        types: [python, toml]
