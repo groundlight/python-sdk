@@ -1,12 +1,10 @@
-import os
 from datetime import datetime
 
 import openapi_client
 import pytest
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-
 from groundlight import Groundlight
 from groundlight.optional_imports import *
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
 @pytest.fixture
@@ -48,6 +46,30 @@ def test_create_detector_with_config_name(gl: Groundlight):
     _detector = gl.create_detector(name=name, query=query, config_name=config_name)
     assert str(_detector)
     assert isinstance(_detector, Detector)
+
+
+def test_create_detector_with_confidence(gl: Groundlight):
+    # "never-review" is a special model that always returns the same result with 100% confidence.
+    # It's useful for testing.
+    name = f"Test with confidence {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog in the image?"
+    config_name = "never-review"
+    confidence = 0.825
+    _detector = gl.create_detector(name=name, query=query, confidence=confidence, config_name=config_name)
+    assert str(_detector)
+    assert isinstance(_detector, Detector)
+    assert _detector.confidence_threshold == confidence
+
+    # If you retrieve an existing detector, we currently require the confidence and query to match
+    # exactly. TODO: We may want to allow updating those fields through the SDK (and then we can
+    # change this test).
+    different_confidence = 0.7
+    with pytest.raises(ValueError):
+        gl.get_or_create_detector(name=name, query=query, confidence=different_confidence, config_name=config_name)
+
+    different_query = "Bad bad bad?"
+    with pytest.raises(ValueError):
+        gl.get_or_create_detector(name=name, query=different_query, confidence=confidence, config_name=config_name)
 
 
 def test_list_detectors(gl: Groundlight):

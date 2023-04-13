@@ -6,7 +6,7 @@ The desired confidence level is set as the escalation threshold on your detector
 
 For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.
 
-<!-- TODO: turn on `confidence` parameter, and re-enable tests! -->
+<!-- We skip tests here because the tests are too slow -->
 
 ```python notest
 from groundlight import Groundlight
@@ -22,7 +22,7 @@ image = Image.open(
 d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence=0.95)
 
 # This will wait until either 60 seconds have passed or the confidence reaches 0.95
-image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=60)
+image_query = gl.submit_image_query(detector=d, image=image, wait=60)
 # highlight-end
 
 print(f"The answer is {image_query.result}")
@@ -38,7 +38,7 @@ Higher confidence will get higher accuracy, but will generally require longer la
 Or if you want to run as fast as possible, set `wait=0`. This way you will only get the ML results, without waiting for escalation. Image queries which are below the desired confidence level still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
 
 ```python notest continuation
-image_query = gl.submit_image_query(detector=d, image=jpeg_img, wait=0)
+image_query = gl.submit_image_query(detector=d, image=image, wait=0)
 ```
 
 If the returned result was generated from an ML model, you can see the confidence score returned for the image query:

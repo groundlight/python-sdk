@@ -11,13 +11,8 @@ from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.binary_labels import convert_display_label_to_internal
-from groundlight.config import (
-    API_TOKEN_VARIABLE_NAME,
-    API_TOKEN_WEB_URL,
-)
-from groundlight.images import (
-    parse_supported_image_types,
-)
+from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
+from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import GroundlightApiClient, sanitize_endpoint_url
 from groundlight.optional_imports import Image, np
 
@@ -116,12 +111,17 @@ class Groundlight:
         """
         existing_detector = self.get_detector_by_name(name)
         if existing_detector:
-            if existing_detector.query == query:
-                return existing_detector
-            else:
+            # TODO: allow updating the detector fields?
+            if existing_detector.query != query:
                 raise ValueError(
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match"
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match. The existing query is '{existing_detector.query}'."
                 )
+            elif existing_detector.confidence_threshold != confidence:
+                raise ValueError(
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence thresholds don't match. The existing confidence threshold is {existing_detector.confidence_threshold}."
+                )
+            else:
+                return existing_detector
 
         return self.create_detector(name=name, query=query, confidence=confidence, config_name=config_name)
 
