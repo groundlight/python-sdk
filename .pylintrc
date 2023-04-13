@@ -3,13 +3,7 @@
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code.
-extension-pkg-allow-list=
-
-# A comma-separated list of package or module names from where C extensions may
-# be loaded. Extensions are loading into the active Python interpreter and may
-# run arbitrary code. (This is an alternative name to extension-pkg-allow-list
-# for backward compatibility.)
-extension-pkg-whitelist=
+extension-pkg-allow-list=pydantic
 
 # Return non-zero exit code if any of these messages/categories are detected,
 # even if score is above --fail-under value. Syntax same as enable. Messages
@@ -33,7 +27,7 @@ ignore-patterns=
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
 # This is a workaround until pysrc is its own package!
-init-hook='import sys; sys.path.append("./janzu"); sys.path.append("./pysrc")'
+init-hook=
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
@@ -53,7 +47,7 @@ persistent=yes
 
 # Min Python version to use for version dependend checks. Will default to the
 # version used to run pylint.
-py-version=3.9
+py-version=3.7
 
 # When enabled, pylint would attempt to guess common misconfiguration and emit
 # user-friendly hints instead of false-positive error messages.
@@ -181,8 +175,9 @@ spelling-store-unknown-words=no
 
 # List of note tags to take in consideration, separated by a comma.
 notes=FIXME,
-      XXX,
-      TODO
+      XXX
+      # For now, we disable TODO as a warning, as it is too noisy.
+      # TODO
 
 # Regular expression of note tags to take in consideration.
 #notes-rgx=

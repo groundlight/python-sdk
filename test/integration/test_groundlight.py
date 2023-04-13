@@ -1,32 +1,34 @@
-import os
+# Optional star-imports are weird and not usually recommended ...
+# ruff: noqa: F403,F405
+# pylint: disable=wildcard-import,unused-wildcard-import
 from datetime import datetime
 
 import openapi_client
 import pytest
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-
 from groundlight import Groundlight
 from groundlight.optional_imports import *
+from groundlight.status_codes import is_user_error
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
-@pytest.fixture
-def gl() -> Groundlight:
+@pytest.fixture(name="gl")
+def fixture_gl() -> Groundlight:
     """Creates a Groundlight client object for testing."""
-    gl = Groundlight()
-    gl.DEFAULT_WAIT = 0.1
-    return gl
+    _gl = Groundlight()
+    _gl.DEFAULT_WAIT = 0.1
+    return _gl
 
 
-@pytest.fixture
-def detector(gl: Groundlight) -> Detector:
+@pytest.fixture(name="detector")
+def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Test query?"
     return gl.create_detector(name=name, query=query)
 
 
-@pytest.fixture
-def image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
+@pytest.fixture(name="image_query")
+def fixture_image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
     return iq
 
@@ -89,8 +91,8 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     # So a casual check of the image will appear valid.
     with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated)
-    e = exc_info.value
-    assert e.status == 400
+    exc_value = exc_info.value
+    assert is_user_error(exc_value.status)
 
 
 def test_submit_image_query_bad_filename(gl: Groundlight, detector: Detector):
@@ -136,7 +138,7 @@ def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
 def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
     # TODO: Fully deprecate chk_ prefix
-    assert iqid.startswith("chk_") or iqid.startswith("iq_")
+    assert iqid.startswith(("chk_", "iq_"))
     gl.add_label(iqid, "No")
 
 

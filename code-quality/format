@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Formats the codebase.
+# Dependencies:
+# - poetry
+# - toml-sort, ruff, black
+# Usage:
+# $ format test predictors
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 TARGET_PATHS"
+  exit 1
+fi
+
+# Args
+TARGET_PATHS=$@
+
+echo "Formatting paths: $TARGET_PATHS ..."
+echo "Running toml-sort formatter (pyproject.toml formatting) ..."
+poetry run toml-sort --no-sort-tables --trailing-comma-inline-array --spaces-indent-inline-array 4 -i pyproject.toml
+
+# https://beta.ruff.rs/docs/
+echo "Running ruff formatter (fixes some of the easier isort / flake8 / autoflake issues) ..."
+poetry run ruff --exclude "__init__.py" --fix $TARGET_PATHS
+
+echo "Running black formatter ..."
+poetry run black $TARGET_PATHS
+
+echo "✅ Done!"

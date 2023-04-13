@@ -1,19 +1,18 @@
 from typing import Union
 
 import pytest
-
 from groundlight.optional_imports import UnavailableModule
 
 
-@pytest.fixture
-def failed_import() -> type:
+@pytest.fixture(name="failed_import")
+def fixture_failed_import() -> type:
     e = ModuleNotFoundError("perfect_perception module does not exist")
     return UnavailableModule(e)
 
 
 def test_type_hints(failed_import):
     # Check that the UnavailableModule class can be used in type hints.
-    def typed_method(foo: Union[failed_import, str]):
+    def typed_method(foo: Union[failed_import, str]):  # pylint: disable=unused-variable,disallowed-name
         print(foo)
 
     assert True, "Yay UnavailableModule can be used in a type hint"
@@ -26,4 +25,4 @@ def test_raises_exception(failed_import):
     # but builds on the original ImportError so you can see what went wrong.
     # The old version had this, but didn't work with modern type-hinting.
     with pytest.raises(RuntimeError):
-        failed_import.foo
+        failed_import.foo  # pylint: disable=pointless-statement

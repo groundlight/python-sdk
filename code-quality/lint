@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Lints the codebase.
+# Dependencies:
+# - poetry
+# - toml-sort, ruff, pylint, mypy
+# Usage:
+# $ lint test predictors
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 TARGET_PATHS"
+  exit 1
+fi
+
+# Args
+TARGET_PATHS="$@"
+
+errors=0
+
+echo "Linting paths: $TARGET_PATHS ..."
+echo "Linting with toml-sort (checks pyproject.toml formatting) ..."
+poetry run toml-sort --no-sort-tables --trailing-comma-inline-array --spaces-indent-inline-array 4 --check pyproject.toml || ((errors++))
+
+# https://beta.ruff.rs/docs/
+echo "Linting with ruff (isort / flake8 / autoflake issues) ..."
+poetry run ruff check --exclude "__init__.py" $TARGET_PATHS || ((errors++))
+
+echo "Linting with pylint ..."
+poetry run pylint --ignore .venv $TARGET_PATHS || ((errors++))
+
+echo "Linting with mypy (type checking) ..."
+poetry run mypy --exclude .venv $TARGET_PATHS || ((errors++))
+
+if [[ $errors -gt 0 ]]; then
+    echo "🚨 $errors linters found errors, but we're not failing the build yet."
+
+    # For now, we just report the errors without failing the build.
+    # TODO: Uncomment the following line to fail the build if there are errors!
+    # Generally, ruff (faster version of flake8) is the easiest linter to fix, so it's a good starting
+    # goal. Mypy and pylint are usually more strict.
+    # exit $errors
+fi
+
+echo "✅ Success!"

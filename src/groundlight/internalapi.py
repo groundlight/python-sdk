@@ -1,20 +1,19 @@
 import logging
 import os
 import time
-from typing import Dict
-from urllib.parse import urlsplit, urlunsplit
 import uuid
+from typing import Optional
+from urllib.parse import urlsplit, urlunsplit
 
-from groundlight.config import DEFAULT_ENDPOINT
-
-import model
 import requests
 from openapi_client.api_client import ApiClient
+
+from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
 
 
-def sanitize_endpoint_url(endpoint: str) -> str:
+def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
     Currently the production API path must be exactly "/device-api".
     This allows people to leave that off entirely, or add a trailing slash.
@@ -28,7 +27,10 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
-            f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g. https://api.groundlight.ai/"
+            (
+                f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
+                " https://api.groundlight.ai/"
+            ),
         )
     if parts.query or parts.fragment:
         raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
@@ -51,7 +53,7 @@ def _generate_request_id():
     return "req_uu" + uuid.uuid4().hex
 
 
-class InternalApiException(RuntimeError):
+class InternalApiError(RuntimeError):
     # TODO: We need a better exception hierarchy
     pass
 
@@ -72,10 +74,9 @@ class GroundlightApiClient(ApiClient):
         if not header_param:
             # This will never happen in normal useage.
             logger.warning("Can't set request-id because headers not set")
-        else:
-            if not header_param.get(self.REQUEST_ID_HEADER, None):
-                header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
-                # Note that we have updated the actual dict in args, so we don't have to put it back in
+        elif not header_param.get(self.REQUEST_ID_HEADER, None):
+            header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
+            # Note that we have updated the actual dict in args, so we don't have to put it back in
         return super().call_api(*args, **kwargs)
 
     #
@@ -109,9 +110,9 @@ class GroundlightApiClient(ApiClient):
         elapsed = 1000 * (time.time() - start_time)
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
-        if response.status_code != 200:
-            raise InternalApiException(
-                f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}"
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}",
             )
 
         return response.json()

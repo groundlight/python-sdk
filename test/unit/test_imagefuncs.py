@@ -1,16 +1,20 @@
+# Optional star-imports are weird and not usually recommended ...
+# ruff: noqa: F403,F405
+# pylint: disable=wildcard-import,unused-wildcard-import
 import tempfile
 
 import pytest
-
 from groundlight.images import *
 from groundlight.optional_imports import *
+
+JPEG_MIN_SIZE = 500
 
 
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
 def test_jpeg_from_numpy():
     np_img = np.random.uniform(0, 255, (480, 640, 3))
     jpeg1 = jpeg_from_numpy(np_img)
-    assert len(jpeg1) > 500
+    assert len(jpeg1) > JPEG_MIN_SIZE
 
     np_img = np.random.uniform(0, 255, (768, 1024, 3))
     jpeg2 = jpeg_from_numpy(np_img)
