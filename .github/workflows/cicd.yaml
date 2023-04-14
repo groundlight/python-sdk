@@ -161,7 +161,7 @@ jobs:
           git commit -am "Automatically reformatting code"
           git push
 
-  # Try to build the docsand deploy to github pages if we're on the main branch and tests passed.
+  # Try to build the docs and deploy to github pages if we're on the main branch and tests passed.
   # Note that we don't require a code release -- we don't want to couple documentation updates with
   # code releases.
   deploy-docs:
