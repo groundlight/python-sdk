@@ -1,8 +1,4 @@
 {
   "label": "Building Applications",
-  "position": 2,
-  "link": {
-    "type": "generated-index",
-    "description": "Let's build some reliable vision applications."
-  }
+  "position": 2
 }
