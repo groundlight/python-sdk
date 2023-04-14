@@ -1,6 +1,9 @@
 install:  ## Install the package from source
 	poetry install
 
+install-extras: install  ## Install the package from source with extra dependencies
+	poetry run pip install numpy
+
 install-lint:  ## Only install the linter dependencies
 	poetry install --only lint
 
