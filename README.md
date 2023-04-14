@@ -8,14 +8,18 @@ Groundlight makes it simple to build reliable visual applications. Read the [ful
 pip install groundlight
 ```
 
-Build a working computer vision system in just 5 lines of python:
+Build a working computer vision system in just a few lines of python:
 
 ```python
 from groundlight import Groundlight
+from PIL import Image
+import requests
 
 gl = Groundlight()
-d = gl.get_or_create_detector(name="door", query="Is the door open?")
-image_query = gl.submit_image_query(detector=d, image=jpeg_img)
+d = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
+image_url= "https://images.selfstorage.com/large-compress/2174925f24362c479b2.jpg"
+image = Image.open(requests.get(image_url, stream=True).raw)
+image_query = gl.submit_image_query(detector=d, image=image)
 print(f"The answer is {image_query.result}")
 ```
 
