@@ -1,7 +1,10 @@
 # CI/CD workflow for the groundlight-sdk-python repository. We lint, test, deploy docs, and publish
 # to pypi.
 name: cicd
-on: [push]
+on:
+  push:
+  release:
+    types: [created]
 
 env:
   PYTHON_VERSION: "3.10"
@@ -66,7 +69,7 @@ jobs:
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
   test-comprehensive:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
     needs:
       - test-simple
     runs-on: ubuntu-latest
@@ -123,7 +126,7 @@ jobs:
   # Run the auto-formatter when we're not on the main branch. This will push a new commit to the PR
   # branch if needed.
   format:
-    if: github.ref != 'refs/heads/main'
+    if: github.ref != 'refs/heads/main' && github.event_name != 'release'
     runs-on: ubuntu-latest
     steps:
       - name: get code
@@ -166,7 +169,7 @@ jobs:
   # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
   # we are on the `main` branch and docs/** has changes.
   deploy-docs:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
     needs:
       - test-comprehensive
     runs-on: ubuntu-latest
@@ -204,7 +207,7 @@ jobs:
   # When a release is created on github (and comprehensive tests passed), publish the groundlight
   # package to public pypi.
   publish-python-package:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'release'
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     needs:
       - test-comprehensive
@@ -228,5 +231,5 @@ jobs:
           poetry run python --version
       - name: build package
         run: poetry build
-      - name: configure poetry and publish
-        run: poetry publish
+      # - name: configure poetry and publish
+      #   run: poetry publish
