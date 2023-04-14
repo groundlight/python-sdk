@@ -14,12 +14,11 @@ from PIL import Image
 import requests
 
 gl = Groundlight()
-image = Image.open(
-    requests.get("https://www.photos-public-domain.com/wp-content/uploads/2010/11/over_flowing_garbage_can.jpg", stream=True).raw
-)
+image_url = "https://www.photos-public-domain.com/wp-content/uploads/2010/11/over_flowing_garbage_can.jpg"
+image = Image.open(requests.get(image_url, stream=True).raw)
 
 # highlight-start
-d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence=0.95)
+d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence_threshold=0.95)
 
 # This will wait until either 60 seconds have passed or the confidence reaches 0.95
 image_query = gl.submit_image_query(detector=d, image=image, wait=60)
