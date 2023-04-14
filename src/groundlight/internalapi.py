@@ -125,13 +125,13 @@ class GroundlightApiClient(ApiClient):
 
         headers = self._headers()
 
-        logger.info(f"Getting detector by {name=} ...")
+        logger.info(f"Getting detector by name '{name}' ...")
         response = requests.request("GET", url, headers=headers)
         logger.debug(f"Response to _get_detector_by_name(): {response.text}")
 
         if response.status_code != 200:
             raise InternalApiException(
-                f"Error getting detector by {name=}: status={response.status_code}; {response.text}"
+                f"Error getting detector by name '{name}': status={response.status_code}; {response.text}"
             )
 
         return response.json()
