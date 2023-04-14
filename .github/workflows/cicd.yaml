@@ -49,11 +49,8 @@ jobs:
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
-      - name: setup environment
+      - name: install dependencies (without extras)
         run: make install
-      - name: install extras
-        run: |
-          poetry run pip install numpy
       # TODO: Should we run all tests against the prod API?
       - name: run tests
         env:
@@ -91,7 +88,7 @@ jobs:
             "3.10",
             "3.11",
           ]
-        install_numpy: [true, false]
+        install_extras: [true, false]
     steps:
       - name: get code
         uses: actions/checkout@v3
@@ -106,12 +103,11 @@ jobs:
       - name: show python version ${{ matrix.python-version }}
         run: |
           poetry run python --version
-      - name: setup environment
+      - name: install dependencies
         run: make install
-      - name: install numpy
-        if: matrix.install_numpy
-        run: |
-          poetry run pip install numpy
+      - name: install extras
+        if: matrix.install_extras
+        run: make install-extras
       # TODO: Should we run all tests against the prod API?
       - name: run tests
         env:
@@ -124,7 +120,7 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
-  # Check if we have changes in the docs directory, and if so, set a flag.
+  # Check if we have changes in the docs directory, and if so, set a `changed` flag.
   check-docs-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -146,7 +142,7 @@ jobs:
   # Try to build the docs if there are changes in the docs directory, and deploy to github pages if
   # we're on the main branch and tests passed.
   deploy-docs:
-    if: needs.check-docs-changes.outputs.changed == 'true'
+    if: needs.check-docs-changes.outputs.changed == 'true' && github.ref == 'refs/heads/main'
     needs:
       - check-docs-changes
       - test-comprehensive
