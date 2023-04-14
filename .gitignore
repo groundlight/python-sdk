@@ -159,9 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# This is a library, so we want clients to have more flexible dependencies. So we don't include a lockfile.
-poetry.lock
-
 node_modules/
 
 *.swp

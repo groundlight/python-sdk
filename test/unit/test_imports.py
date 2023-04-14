@@ -1,5 +1,5 @@
 # pylint: disable=unused-import, import-outside-toplevel
-# flake8: noqa: F401
+# ruff: noqa: F401
 
 
 def test_imports():

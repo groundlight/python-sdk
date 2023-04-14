@@ -1,4 +1,4 @@
-# flake8: noqa
+# ruff: noqa
 
 # Import all APIs into this package.
 # If you have many APIs here with many many models used in each API this may

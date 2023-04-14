@@ -1,0 +1,10 @@
+# We call our local formatting script as a pre-commit hook.
+# https://pre-commit.com/
+repos:
+  - repo: local
+    hooks:
+      - id: format
+        name: Format Code
+        entry: ./code-quality/format
+        language: script
+        types: [python, toml]

@@ -1,6 +1,6 @@
 # Windows, Linux, Mac
 
-Installation on common platforms is simple.  Just get `python3`, `pip`, and you're ready to go.
+Installation on common platforms is simple. Just get `python3`, `pip`, and you're ready to go.
 
 ## Python 3.7 or newer
 
@@ -13,4 +13,3 @@ Make sure you have the latest version by running:
 ```
 pip3 install groundlight --upgrade
 ```
-

@@ -2,23 +2,23 @@ import logging
 import os
 import time
 import uuid
-from typing import Dict
+from typing import Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector
 from openapi_client.api_client import ApiClient
 
-from groundlight.config import DEFAULT_ENDPOINT
+from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
 
 
-class NotFoundException(Exception):
+class NotFoundError(Exception):
     pass
 
 
-def sanitize_endpoint_url(endpoint: str) -> str:
+def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
     Currently the production API path must be exactly "/device-api".
     This allows people to leave that off entirely, or add a trailing slash.
@@ -32,7 +32,10 @@ def sanitize_endpoint_url(endpoint: str) -> str:
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
-            f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g. https://api.groundlight.ai/"
+            (
+                f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
+                " https://api.groundlight.ai/"
+            ),
         )
     if parts.query or parts.fragment:
         raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
@@ -55,7 +58,7 @@ def _generate_request_id():
     return "req_uu" + uuid.uuid4().hex
 
 
-class InternalApiException(RuntimeError):
+class InternalApiError(RuntimeError):
     # TODO: We need a better exception hierarchy
     pass
 
@@ -74,12 +77,11 @@ class GroundlightApiClient(ApiClient):
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
         if not header_param:
-            # This will never happen in normal useage.
+            # This will never happen in normal usage.
             logger.warning("Can't set request-id because headers not set")
-        else:
-            if not header_param.get(self.REQUEST_ID_HEADER, None):
-                header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
-                # Note that we have updated the actual dict in args, so we don't have to put it back in
+        elif not header_param.get(self.REQUEST_ID_HEADER, None):
+            header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
+            # Note that we have updated the actual dict in args, so we don't have to put it back in
         return super().call_api(*args, **kwargs)
 
     #
@@ -113,9 +115,9 @@ class GroundlightApiClient(ApiClient):
         elapsed = 1000 * (time.time() - start_time)
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
-        if response.status_code != 200:
-            raise InternalApiException(
-                f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}"
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}",
             )
 
         return response.json()
@@ -129,16 +131,16 @@ class GroundlightApiClient(ApiClient):
         headers = self._headers()
         response = requests.request("GET", url, headers=headers)
 
-        if response.status_code != 200:
-            raise InternalApiException(
+        if not is_ok(response.status_code):
+            raise InternalApiError(
                 f"Error getting detector by name '{name}' (status={response.status_code}): {response.text}"
             )
 
         parsed = response.json()
 
         if parsed["count"] == 0:
-            raise NotFoundException(f"Detector with name={name} not found.")
-        elif parsed["count"] > 1:
+            raise NotFoundError(f"Detector with name={name} not found.")
+        if parsed["count"] > 1:
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen."
             )

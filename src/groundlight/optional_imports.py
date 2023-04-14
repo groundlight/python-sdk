@@ -1,9 +1,10 @@
+# ruff: noqa: N804
 """We use a trick to check if libraries like numpy are installed or not.
 If they are, we make it available as normal.
 If not, we set it up as a shim object which still lets type-hinting work properly,
 but will fail at runtime if you try to use it.
 
-This can be confusing, but hopefully the errors are explicit enough to be 
+This can be confusing, but hopefully the errors are explicit enough to be
 clear about what's happening, and it makes the code which hopes numpy is installed
 look readable.
 """
@@ -22,19 +23,19 @@ class UnavailableModule(type):
         out.exc = exc
         return out
 
-    def __getattr__(self, key):
+    def __getattr__(self, key):  # pylint: disable=bad-mcs-method-argument
         # TODO: This isn't getting called for some reason.
-        raise RuntimeError("attempt to use module that failed to load") from self.exc
+        raise RuntimeError("attempt to use module that failed to load") from self.exc  # type: ignore
 
 
 try:
-    import numpy as np
+    import numpy as np  # pyright: reportMissingImports=false
 
     MISSING_NUMPY = False
 except ImportError as e:
     np = UnavailableModule(e)
     # Expose np.ndarray so type-hinting looks normal
-    np.ndarray = np
+    np.ndarray = np  # pylint: disable=attribute-defined-outside-init
     MISSING_NUMPY = True
 
 try:
@@ -45,7 +46,7 @@ try:
 except ImportError as e:
     PIL = UnavailableModule(e)
     Image = PIL
-    Image.Image = PIL  # for type-hinting
+    Image.Image = PIL  # for type-hinting; pylint: disable=attribute-defined-outside-init
     MISSING_PIL = True
 
 
