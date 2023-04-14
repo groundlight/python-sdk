@@ -17,7 +17,7 @@ import requests
 
 gl = Groundlight()
 d = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
-image_url= "https://images.selfstorage.com/large-compress/2174925f24362c479b2.jpg"
+image_url = "https://images.selfstorage.com/large-compress/2174925f24362c479b2.jpg"
 image = Image.open(requests.get(image_url, stream=True).raw)
 image_query = gl.submit_image_query(detector=d, image=image)
 print(f"The answer is {image_query.result}")
