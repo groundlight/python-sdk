@@ -19,7 +19,7 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
-      - name: show python version ${{ env.PYTHON_VERSION }}}
+      - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
       - name: install linter dependencies
@@ -48,7 +48,7 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
-      - name: show python version ${{ env.PYTHON_VERSION }}}
+      - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
       - name: setup environment
@@ -106,7 +106,7 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
-      - name: show python version ${{ matrix.python-version }}}
+      - name: show python version ${{ matrix.python-version }}
         run: |
           poetry run python --version
       - name: setup environment
@@ -204,7 +204,7 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
-      - name: show python version ${{ env.PYTHON_VERSION }}}
+      - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
       - name: build package
