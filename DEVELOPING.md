@@ -66,3 +66,29 @@ Then you can generate the code by running:
 ```shell
 make generate
 ```
+
+### Linters
+
+Linters help us find issues before runtime. We're currently using:
+
+- [ruff](https://beta.ruff.rs/docs/) and
+  [pylint](https://pylint.readthedocs.io/en/latest/index.html) for general python linting.
+- [mypy](https://mypy.readthedocs.io/en/stable/index.html) for type checking.
+- [black](https://black.readthedocs.io/en/stable/index.html) for standardizing code formatting.
+- [toml-sort](https://toml-sort.readthedocs.io/en/latest/) for linting the `pyproject.toml` file.
+
+Most of these linters are configured in [pyproject.toml](pyproject.toml) (except for `pylint` in
+[.pylintrc](.pylintrc)). It may feel like the linters are evil and want to make your life miserable.
+But they can be your friend if you give them a chance! So, if the linter is complaining about
+something, try to understand it first and make an attempt to fix the issue.
+
+Sometimes the linters are wrong, so we can add overrides. We prefer to make the smallest possible
+override:
+
+- single line override with a specific rule (e.g., `# pylint: disable=some-rule` or `# ruff: noqa: F403`)
+- single file override with a specific rule
+- single file override with a whole class of rules
+- global override for a specific rule
+
+Note: `pylint` is usually the strictest and slowest, so we may end up turning it off - but we'll try
+it for a while and see how it goes!
