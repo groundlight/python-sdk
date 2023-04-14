@@ -35,10 +35,6 @@ jobs:
   # non-main branches.
   test-simple:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        install_extras: [true, false]
     steps:
       - name: get code
         uses: actions/checkout@v3
@@ -56,9 +52,7 @@ jobs:
       - name: setup environment
         run: make install
       - name: install extras
-        if: matrix.install_extras
         run: |
-          # pillow is already installed
           poetry run pip install numpy
       # TODO: Should we run all tests against the prod API?
       - name: run tests
@@ -98,7 +92,6 @@ jobs:
             "3.11",
           ]
         install_numpy: [true, false]
-        # install_pillow: [true, false] # pillow is already installed
     steps:
       - name: get code
         uses: actions/checkout@v3
