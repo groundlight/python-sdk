@@ -1,7 +1,7 @@
 [tool.poetry]
 authors = ["Groundlight AI <support@groundlight.ai>"]
 description = "Build computer vision systems from natural language with Groundlight"
-homepage = "https://www.groundlight.ai"
+homepage = "https://code.groundlight.ai/python-sdk"
 license = "MIT"
 name = "groundlight"
 packages = [
@@ -9,7 +9,7 @@ packages = [
     {include = "**/*.py", from = "src"},
 ]
 readme = "README.md"
-version = "0.7.6"
+version = "0.7.7"
 
 [tool.poetry.dependencies]
 certifi = "^2021.10.8"

@@ -37,7 +37,7 @@ test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGH
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	poetry run pytest -v --markdown-docs ${TEST_ARGS} docs
+	poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
 LINT_PATHS="src test bin samples"
