@@ -79,7 +79,7 @@ class Groundlight:
         obj = self.detectors_api.get_detector(id=id)
         return Detector.parse_obj(obj.to_dict())
 
-    def get_detector_by_name(self, name: str) -> Optional[Detector]:
+    def get_detector_by_name(self, name: str) -> Detector:
         return self.api_client._get_detector_by_name(name)
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
