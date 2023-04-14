@@ -10,7 +10,7 @@ jobs:
       POETRY_VERSION: "1.4.0"
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v1
         with:
           ref: ${{ github.head_ref }}
       - name: install python
@@ -27,10 +27,12 @@ jobs:
       - name: run formatter
         run: |
           make format
-      - name: Check for modified files
+      - name: check for modified files
         id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
-      - name: Push changes
+        run: |
+          git status
+          echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+      - name: push changes (if needed)
         if: steps.git-check.outputs.modified == 'true'
         run: |
           git config --global user.name 'Auto-format Bot'
