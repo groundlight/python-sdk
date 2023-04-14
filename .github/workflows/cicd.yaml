@@ -1,3 +1,5 @@
+# CI/CD workflow for the groundlight-sdk-python repository. We lint, test, deploy docs, and publish
+# to pypi.
 name: cicd
 on: [push]
 
@@ -58,6 +60,7 @@ jobs:
         run: |
           # pillow is already installed
           poetry run pip install numpy
+      # TODO: Should we run all tests against the prod API?
       - name: run tests
         env:
           # This is associated with the "sdk-integ-test" user, credentials on 1password
@@ -69,7 +72,8 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
-  # Run integration tests against the API.
+  # Run integration tests against the API (only on the main branch, though). The comprehensive
+  # version runs a matrix of python versions for better coverage.
   test-comprehensive:
     if: github.ref == 'refs/heads/main'
     needs:
@@ -115,6 +119,7 @@ jobs:
         if: matrix.install_numpy
         run: |
           poetry run pip install numpy
+      # TODO: Should we run all tests against the prod API?
       - name: run tests
         env:
           # This is associated with the "sdk-integ-test" user, credentials on 1password
@@ -145,8 +150,8 @@ jobs:
             echo "::set-output name=changed::false"
           fi
 
-  # Build the docs if there are changes in the docs directory, and deploy to github pages if we're on
-  # the main branch.
+  # Try to build the docs if there are changes in the docs directory, and deploy to github pages if
+  # we're on the main branch and tests passed.
   deploy-docs:
     if: needs.check-docs-changes.outputs.changed == 'true'
     needs:
@@ -183,7 +188,8 @@ jobs:
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
 
-  # When a release is created on github, publish the groundlight package to public pypi.
+  # When a release is created on github (and comprehensive tests passed), publish the groundlight
+  # package to public pypi.
   publish-python-package:
     if: github.ref == 'refs/heads/main' && github.event_name == 'release'
     runs-on: ubuntu-latest
