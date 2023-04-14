@@ -4,7 +4,7 @@
 # Example usage:
 # jobs:
 #   some-job-name:
-#     uses: .github/workflows/poetry-prep.yaml
+#     uses: ./.github/workflows/poetry-prep.yaml
 #     with:
 #       python-version: "3.11"
 #       ...
