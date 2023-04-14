@@ -78,12 +78,8 @@ Linters help us find issues before runtime. We're currently using:
 - [toml-sort](https://toml-sort.readthedocs.io/en/latest/) for linting the `pyproject.toml` file.
 
 Most of these linters are configured in [pyproject.toml](pyproject.toml) (except for `pylint` in
-[.pylintrc](.pylintrc)). It may feel like the linters are evil and want to make your life miserable.
-But they can be your friend if you give them a chance! So, if the linter is complaining about
-something, try to understand it first and make an attempt to fix the issue.
-
-Sometimes the linters are wrong, so we can add overrides. We prefer to make the smallest possible
-override:
+[.pylintrc](.pylintrc)). Sometimes the linters are wrong or not useful, so we can add overrides. We
+prefer to make the smallest possible override:
 
 - single line override with a specific rule (e.g., `# pylint: disable=some-rule` or `# ruff: noqa: F403`)
 - single file override with a specific rule
