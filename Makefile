@@ -1,5 +1,3 @@
-.PHONY: all test clean
-
 install:  ## Install the package from source
 	poetry install
 
@@ -19,20 +17,30 @@ generate: install-generator  ## Generate the SDK from our public openapi spec
 	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py
 	poetry run black .
 
+PYTEST=poetry run pytest -v --cov=src
+
+# You can pass extra arguments to pytest by setting the TEST_ARGS environment variable.
+# For example:
+# 	`make test TEST_ARGS="-k some_filter"`
+TEST_ARGS=
+
 test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	poetry run pytest -v --cov=src test
+	${PYTEST} ${TEST_ARGS} test
 
 test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API_TOKEN and a local API server)
-	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" poetry run pytest -v --cov=src test
+	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" ${PYTEST} ${TEST_ARGS} test
 
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" poetry run pytest --cov=src test --log-cli-level INFO
+	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	poetry run pytest --markdown-docs docs -v
+	poetry run pytest -v --markdown-docs ${TEST_ARGS} docs
+
+# Adjust which paths we lint
+LINT_PATHS="src test bin samples"
 
 lint: install-lint  ## Run linter to check formatting and style
-	./code-quality/lint src test bin samples
+	./code-quality/lint ${LINT_PATHS}
 
 format: install-lint  ## Run standard python formatting
-	./code-quality/format src test bin samples
+	./code-quality/format ${LINT_PATHS}
