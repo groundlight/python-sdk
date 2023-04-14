@@ -4,23 +4,26 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from groundlight.optional_imports import Image
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-from openapi_client import ApiClient, Configuration
+from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.binary_labels import convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DEFAULT_ENDPOINT
-from groundlight.images import buffer_from_jpeg_file, jpeg_from_numpy, parse_supported_image_types
+from groundlight.binary_labels import convert_display_label_to_internal
+from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
+from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import GroundlightApiClient, sanitize_endpoint_url
-from groundlight.optional_imports import np
+from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
 
 
 class ApiTokenError(Exception):
+    pass
+
+
+class NotFoundException(Exception):
     pass
 
 
@@ -81,15 +84,14 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Optional[Detector]:
-        # TODO: Do this on server.
-        detector_list = self.list_detectors(page_size=250)
-        for d in detector_list.results:
-            if d.name == name:
-                return d
-        if detector_list.next:
-            # TODO: paginate
-            raise RuntimeError("You have too many detectors to use get_detector_by_name")
-        return None
+        response = self.api_client._get_detector_by_name(name)
+        if response["count"] == 0:
+            raise NotFoundException(f"Detector with name={name} not found.")
+        elif response["count"] > 1:
+            raise RuntimeError(
+                f"We found multiple ({response['count']}) detectors with the same name. This shouldn't happen."
+            )
+        return Detector.parse_obj(response["results"][0])
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)

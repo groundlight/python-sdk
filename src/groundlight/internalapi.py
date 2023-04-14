@@ -1,15 +1,15 @@
 import logging
 import os
 import time
+import uuid
 from typing import Dict
 from urllib.parse import urlsplit, urlunsplit
-import uuid
-
-from groundlight.config import DEFAULT_ENDPOINT
 
 import model
 import requests
 from openapi_client.api_client import ApiClient
+
+from groundlight.config import DEFAULT_ENDPOINT
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -112,6 +112,26 @@ class GroundlightApiClient(ApiClient):
         if response.status_code != 200:
             raise InternalApiException(
                 f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}"
+            )
+
+        return response.json()
+
+    def _get_detector_by_name(self, name: str) -> dict:
+        """Get a detector by name. For now, we use the list detectors API directly.
+
+        TODO: Properly model this in the API, and generate SDK code for it.
+        """
+        url = f"{self.configuration.host}/v1/detectors?name={name}"
+
+        headers = self._headers()
+
+        logger.info(f"Getting detector by {name=} ...")
+        response = requests.request("GET", url, headers=headers)
+        logger.debug(f"Response to _get_detector_by_name(): {response.text}")
+
+        if response.status_code != 200:
+            raise InternalApiException(
+                f"Error getting detector by {name=}: status={response.status_code}; {response.text}"
             )
 
         return response.json()
