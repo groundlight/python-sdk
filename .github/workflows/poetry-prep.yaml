@@ -1,0 +1,38 @@
+# Set up python and poetry.
+# Reusable workflow (https://docs.github.com/en/actions/using-workflows/reusing-workflows#example-reusable-workflow)
+
+# Example usage:
+# jobs:
+#   some-job-name:
+#     uses: .github/workflows/poetry-prep.yaml
+#     with:
+#       python-version: "3.11"
+#       ...
+name: poetry-prep
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        type: string
+        default: "3.10"
+      poetry-version:
+        type: string
+        default: "1.4.0"
+
+jobs:
+  poetry-prep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ inputs.poetry-version }}
+      - name: show python version ${{ inputs.python-version }}}
+        run: |
+          poetry run python --version

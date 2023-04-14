@@ -1,24 +1,12 @@
 name: cicd
 on: [push]
-env:
-  PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.4.0"
 
 jobs:
   # Run our linter on every push to the repository.
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: get code
-        uses: actions/checkout@v3
-      - name: install python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+      - uses: .github/workflows/poetry-prep.yaml
       - name: install linter dependencies
         run: |
           make install-lint
@@ -35,16 +23,7 @@ jobs:
       matrix:
         install_extras: [true, false]
     steps:
-      - name: get code
-        uses: actions/checkout@v3
-      - name: install python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+      - uses: .github/workflows/poetry-prep.yaml
       - name: setup environment
         run: make install
       - name: install extras
@@ -90,19 +69,9 @@ jobs:
         install_numpy: [true, false]
         # install_pillow: [true, false] # pillow is already installed
     steps:
-      - name: get code
-        uses: actions/checkout@v3
-      - name: install python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: .github/workflows/poetry-prep.yaml
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
-      - name: display python version
-        run: |
-          poetry run python --version
       - name: setup environment
         run: make install
       - name: install numpy
@@ -188,16 +157,7 @@ jobs:
     env:
       POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
-      - name: get code
-        uses: actions/checkout@v3
-      - name: install python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+      - uses: .github/workflows/poetry-prep.yaml
       - name: build package
         run: poetry build
       # - name: configure poetry and publish
