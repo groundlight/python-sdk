@@ -181,7 +181,8 @@ jobs:
           fi
 
   # Try to build the docs if there are changes in the docs directory, and deploy to github pages if
-  # we're on the main branch and tests passed.
+  # we're on the main branch and tests passed. Note that we don't require a code release -- we don't
+  # want to couple documentation updates with code releases.
   deploy-docs:
     if: needs.check-docs-changes.outputs.changed == 'true' && github.ref == 'refs/heads/main'
     needs:
