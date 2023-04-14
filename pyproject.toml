@@ -9,7 +9,7 @@ packages = [
     {include = "**/*.py", from = "src"},
 ]
 readme = "README.md"
-version = "0.7.5"
+version = "0.7.6"
 
 [tool.poetry.dependencies]
 certifi = "^2021.10.8"
