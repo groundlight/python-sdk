@@ -161,9 +161,11 @@ jobs:
           git commit -am "Automatically reformatting code"
           git push
 
-  # Try to build the docs on all pushes (TODO: only do it when docs/** changes). Deploy the docs to
-  # github pages if we're on the main branch and tests passed. Note that we don't require a code
-  # release -- we don't want to couple documentation updates with code releases.
+  # Build and deploy the docs on all pushes to `main` branch (TODO: only do it when docs/**
+  # changes). Note that we don't require a code release -- we don't want to couple documentation
+  # updates with code releases.
+  # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
+  # we are on the `main` branch and docs/** has changes.
   deploy-docs:
     if: github.ref == 'refs/heads/main'
     needs:
