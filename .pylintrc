@@ -26,7 +26,6 @@ ignore-patterns=
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-# This is a workaround until pysrc is its own package!
 init-hook=
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
