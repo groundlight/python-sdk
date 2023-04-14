@@ -3,10 +3,10 @@ from datetime import datetime
 
 import openapi_client
 import pytest
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-
 from groundlight import Groundlight
+from groundlight.internalapi import NotFoundException
 from groundlight.optional_imports import *
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 
 @pytest.fixture
@@ -60,6 +60,16 @@ def test_get_detector(gl: Groundlight, detector: Detector):
     _detector = gl.get_detector(id=detector.id)
     assert str(_detector)
     assert isinstance(_detector, Detector)
+
+
+def test_get_detector_by_name(gl: Groundlight, detector: Detector):
+    _detector = gl.get_detector_by_name(name=detector.name)
+    assert str(_detector)
+    assert isinstance(_detector, Detector)
+    assert _detector.id == detector.id
+
+    with pytest.raises(NotFoundException):
+        gl.get_detector_by_name(name="not a real name")
 
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
