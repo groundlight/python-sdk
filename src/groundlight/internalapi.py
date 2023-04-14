@@ -72,7 +72,7 @@ class GroundlightApiClient(ApiClient):
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
         if not header_param:
-            # This will never happen in normal useage.
+            # This will never happen in normal usage.
             logger.warning("Can't set request-id because headers not set")
         elif not header_param.get(self.REQUEST_ID_HEADER, None):
             header_param[self.REQUEST_ID_HEADER] = _generate_request_id()

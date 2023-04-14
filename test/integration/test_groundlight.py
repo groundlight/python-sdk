@@ -1,6 +1,6 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
-# pylint: disable=wildcard-import,unused-wildcard-import
+# pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
 
 import openapi_client
@@ -106,7 +106,7 @@ def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     assert "jpeg" in str(exc_info).lower()
 
 
-@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     # generates a pil image and submits it
     from PIL import Image
@@ -152,9 +152,9 @@ def test_add_label_names(gl: Groundlight, image_query: ImageQuery):
         gl.add_label(iqid, "sorta")
 
 
-@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
-    np_img = np.random.uniform(0, 255, (600, 800, 3))
+    np_img = np.random.uniform(0, 255, (600, 800, 3))  # type: ignore
     _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)

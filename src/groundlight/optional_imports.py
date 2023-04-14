@@ -25,11 +25,11 @@ class UnavailableModule(type):
 
     def __getattr__(self, key):  # pylint: disable=bad-mcs-method-argument
         # TODO: This isn't getting called for some reason.
-        raise RuntimeError("attempt to use module that failed to load") from self.exc
+        raise RuntimeError("attempt to use module that failed to load") from self.exc  # type: ignore
 
 
 try:
-    import numpy as np
+    import numpy as np  # pyright: reportMissingImports=false
 
     MISSING_NUMPY = False
 except ImportError as e:

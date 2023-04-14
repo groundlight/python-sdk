@@ -1,6 +1,6 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
-# pylint: disable=wildcard-import,unused-wildcard-import
+# pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 import tempfile
 
 import pytest
@@ -10,7 +10,7 @@ from groundlight.optional_imports import *
 JPEG_MIN_SIZE = 500
 
 
-@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_jpeg_from_numpy():
     np_img = np.random.uniform(0, 255, (480, 640, 3))
     jpeg1 = jpeg_from_numpy(np_img)
@@ -25,7 +25,7 @@ def test_jpeg_from_numpy():
     assert len(jpeg2) > len(jpeg3)
 
 
-def test_unsupported_imagetype():
+def test_unsupported_image_type():
     with pytest.raises(TypeError):
         parse_supported_image_types(1)
 
@@ -36,7 +36,7 @@ def test_unsupported_imagetype():
         parse_supported_image_types(pytest)
 
 
-@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_pil_support():
     from PIL import Image
 
@@ -54,7 +54,7 @@ def test_pil_support():
         assert img2.size == (640, 480)
 
 
-@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_pil_support_ref():
     # Similar to test_pil_support, but uses a known-good file
     from PIL import Image

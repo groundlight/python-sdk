@@ -91,6 +91,7 @@ disable=raw-checker-failed,
         too-few-public-methods,
         line-too-long,
         import-error, # we only install linter dependencies in CI/CD
+        wrong-import-order, # we use ruff to enforce import order
 
 
 # Enable the message, report, category or checker with the given id(s). You can

@@ -1,4 +1,4 @@
-# flake8: noqa
+# ruff: noqa
 # Add useful imports from the generated code here at the top level, as a convenience.
 from openapi_client import ApiException
 

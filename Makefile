@@ -32,7 +32,7 @@ test-docs: install  ## Run the example code and tests in our docs against the pr
 	poetry run pytest --markdown-docs docs -v
 
 lint: install-lint  ## Run linter to check formatting and style
-	./code-quality/lint src test bin
+	./code-quality/lint src test bin samples
 
 format: install-lint  ## Run standard python formatting
-	./code-quality/format src test bin
+	./code-quality/format src test bin samples
