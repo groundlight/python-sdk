@@ -161,32 +161,13 @@ jobs:
           git commit -am "Automatically reformatting code"
           git push
 
-  # Check if we have changes in the docs directory, and if so, set a `changed` flag.
-  check-docs-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.changes.outputs.changed }}
-    steps:
-      - name: get code
-        uses: actions/checkout@v3
-      - name: check for docs changes
-        id: changes
-        run: |
-          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^docs/'; then
-            echo "Changes detected in 'docs'"
-            echo "::set-output name=changed::true"
-          else
-            echo "No changes detected in 'docs'"
-            echo "::set-output name=changed::false"
-          fi
-
-  # Try to build the docs if there are changes in the docs directory, and deploy to github pages if
-  # we're on the main branch and tests passed. Note that we don't require a code release -- we don't
-  # want to couple documentation updates with code releases.
+  # Build and deploy the docs on all pushes to the `main` branch. Note that we don't require a code
+  # release -- we don't want to couple documentation updates with code releases.
+  # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
+  # we are on the `main` branch and docs/** has changes.
   deploy-docs:
-    if: needs.check-docs-changes.outputs.changed == 'true' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs:
-      - check-docs-changes
       - test-comprehensive
     runs-on: ubuntu-latest
     steps:
@@ -204,8 +185,6 @@ jobs:
       - name: Deploy website (if on main branch)
         # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
         uses: peaceiris/actions-gh-pages@v3
-        # Only deploy on pushes to the `main` branch
-        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build
