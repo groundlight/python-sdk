@@ -120,6 +120,47 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
+  # Run the auto-formatter on every pull request. This will push a new commit to the PR branch if
+  # needed.
+  format:
+    if: github.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v1
+        with:
+          ref: ${{ github.head_ref }}
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: show python version ${{ env.PYTHON_VERSION }}
+        run: |
+          poetry run python --version
+      - name: install linter dependencies
+        run: |
+          make install-lint
+      - name: run formatter
+        run: |
+          make format
+      - name: check for modified files
+        id: git-check
+        run: |
+          git status
+          echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+      - name: push changes (if needed)
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'Auto-format Bot'
+          git config --global user.email 'autoformatbot@groundlight.ai'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "Automatically reformatting code"
+          git push
+
   # Check if we have changes in the docs directory, and if so, set a `changed` flag.
   check-docs-changes:
     runs-on: ubuntu-latest
