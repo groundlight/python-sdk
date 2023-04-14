@@ -170,6 +170,9 @@ jobs:
     needs:
       - test-comprehensive
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/
     steps:
       - name: Get code
         uses: actions/checkout@v3
