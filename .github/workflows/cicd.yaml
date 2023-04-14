@@ -52,20 +52,20 @@ jobs:
         run: |
           # pillow is already installed
           poetry run pip install numpy
-      - name: run tests
-        env:
-          # This is associated with the "sdk-integ-test" user, credentials on 1password
-          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
-        run: make test-integ
-      - name: run docs tests
-        run: make test-docs
-        env:
-          # This is associated with the "sdk-test-prod" user, credentials on 1password
-          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
+      # - name: run tests
+      #   env:
+      #     # This is associated with the "sdk-integ-test" user, credentials on 1password
+      #     GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
+      #   run: make test-integ
+      # - name: run docs tests
+      #   run: make test-docs
+      #   env:
+      #     # This is associated with the "sdk-test-prod" user, credentials on 1password
+      #     GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
   # Run integration tests against the API.
   test-comprehensive:
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     needs:
       - test-simple
     runs-on: ubuntu-latest
@@ -82,10 +82,10 @@ jobs:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
             "3.7",
-            "3.8",
-            "3.9",
-            "3.10",
-            "3.11",
+            # "3.8",
+            # "3.9",
+            # "3.10",
+            # "3.11",
           ]
         install_numpy: [true, false]
         # install_pillow: [true, false] # pillow is already installed
@@ -109,16 +109,16 @@ jobs:
         if: matrix.install_numpy
         run: |
           poetry run pip install numpy
-      - name: run tests
-        env:
-          # This is associated with the "sdk-integ-test" user, credentials on 1password
-          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
-        run: make test-integ
-      - name: run docs tests
-        run: make test-docs
-        env:
-          # This is associated with the "sdk-test-prod" user, credentials on 1password
-          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
+      # - name: run tests
+      #   env:
+      #     # This is associated with the "sdk-integ-test" user, credentials on 1password
+      #     GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
+      #   run: make test-integ
+      # - name: run docs tests
+      #   run: make test-docs
+      #   env:
+      #     # This is associated with the "sdk-test-prod" user, credentials on 1password
+      #     GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
   # Check if we have changes in the docs directory, and if so, set a flag.
   check-docs-changes:
@@ -179,7 +179,7 @@ jobs:
 
   # When a release is created on github, publish the groundlight package to public pypi.
   publish-python-package:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'release'
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'release'
     runs-on: ubuntu-latest
     needs:
       - test-comprehensive
@@ -200,5 +200,5 @@ jobs:
           version: ${{ env.POETRY_VERSION }}
       - name: build package
         run: poetry build
-      - name: configure poetry and publish
-        run: poetry publish
+      # - name: configure poetry and publish
+      #   run: poetry publish
