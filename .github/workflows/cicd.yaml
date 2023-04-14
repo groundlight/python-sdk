@@ -1,0 +1,205 @@
+name: cicd
+on: [push]
+env:
+  OS: "ubuntu-latest"
+  PYTHON_VERSION: "3.10"
+  POETRY_VERSION: "1.4.0"
+
+jobs:
+  # Run our linter on every push to the repository.
+  lint:
+    runs-on: ${{ env.OS }}
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: install linter dependencies
+        run: |
+          make install-lint
+      - name: lint
+        run: |
+          make lint
+
+  # Run integration tests against the API. For efficiency, we only run one version of python on
+  # non-main branches.
+  test-simple:
+    runs-on: ${{ env.OS }}
+    strategy:
+      fail-fast: false
+      matrix:
+        install_extras: [true, false]
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: setup environment
+        run: make install
+      - name: install extras
+        if: matrix.install_extras
+        run: |
+          # pillow is already installed
+          poetry run pip install numpy
+      - name: run tests
+        env:
+          # This is associated with the "sdk-integ-test" user, credentials on 1password
+          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
+        run: make test-integ
+      - name: run docs tests
+        run: make test-docs
+        env:
+          # This is associated with the "sdk-test-prod" user, credentials on 1password
+          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
+
+  # Run integration tests against the API.
+  test-comprehensive:
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - test-simple
+    runs-on: ${{ env.OS }}
+    strategy:
+      # It's totally debatable which is better here: fail-fast or not.
+      # Failing fast will use fewer cloud resources, in theory.
+      #    But if the tests are slightly flaky (fail to pip install something)
+      #    Then one flaky install kills lots of jobs that need to be redone.
+      #    So the efficiency argument has its limits
+      # Failing slow is clearer about what's going on.
+      #    This is pretty unambiguous, so we're going with it for now.
+      fail-fast: false
+      matrix:
+        python-version: [
+            #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
+            "3.7",
+            "3.8",
+            "3.9",
+            "3.10",
+            "3.11",
+          ]
+        install_numpy: [true, false]
+        # install_pillow: [true, false] # pillow is already installed
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: display python version
+        run: |
+          poetry run python --version
+      - name: setup environment
+        run: make install
+      - name: install numpy
+        if: matrix.install_numpy
+        run: |
+          poetry run pip install numpy
+      - name: run tests
+        env:
+          # This is associated with the "sdk-integ-test" user, credentials on 1password
+          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
+        run: make test-integ
+      - name: run docs tests
+        run: make test-docs
+        env:
+          # This is associated with the "sdk-test-prod" user, credentials on 1password
+          GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
+
+  # Check if we have changes in the docs directory, and if so, set a flag.
+  check-docs-changes:
+    runs-on: ${{ env.OS }}
+    outputs:
+      changed: ${{ steps.changes.outputs.changed }}
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: check for docs changes
+        id: changes
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^docs/'; then
+            echo "Changes detected in 'docs'"
+            echo "::set-output name=changed::true"
+          else
+            echo "No changes detected in 'docs'"
+            echo "::set-output name=changed::false"
+          fi
+
+  # Build the docs if there are changes in the docs directory, and deploy to github pages if we're on
+  # the main branch.
+  deploy-docs:
+    if: needs.check-docs-changes.outputs.changed == 'true'
+    needs:
+      - check-docs-changes
+      - test-comprehensive
+    runs-on: ${{ env.OS }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Setup npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Build website
+        run: npm run build
+      - name: Deploy website (if on main branch)
+        # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
+        uses: peaceiris/actions-gh-pages@v3
+        # Only deploy on pushes to the `main` branch
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build
+          #TODO: setup a staging directory when doing a PR
+          #destination_dir: staging
+          # The following lines assign commit authorship to the official
+          # GH-Actions bot for deploys to `gh-pages` branch:
+          # https://github.com/actions/checkout/issues/13#issuecomment-724415212
+          # The GH actions bot is used by default if you didn't specify the two fields.
+          # You can swap them out with your own user credentials.
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+
+  # When a release is created on github, publish the groundlight package to public pypi.
+  publish-python-package:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'release'
+    runs-on: ${{ env.OS }}
+    needs:
+      - test-comprehensive
+      # For now, we'll require the comprehensive tests to succeed, but not the linter checks.
+      # - lint
+    env:
+      POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: build package
+        run: poetry build
+      - name: configure poetry and publish
+        run: poetry publish
