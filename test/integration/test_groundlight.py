@@ -7,6 +7,8 @@ from groundlight.internalapi import NotFoundException
 from groundlight.optional_imports import *
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
+DEFAULT_CONFIDENCE_THRESHOLD = 0.9
+
 
 @pytest.fixture
 def gl() -> Groundlight:
@@ -37,7 +39,7 @@ def test_create_detector(gl: Groundlight):
     assert str(_detector)
     assert isinstance(_detector, Detector)
     assert (
-        _detector.confidence_threshold == Groundlight.DEFAULT_CONFIDENCE_THRESHOLD
+        _detector.confidence_threshold == DEFAULT_CONFIDENCE_THRESHOLD
     ), "We expected the default confidence threshold to be used."
 
 
@@ -52,33 +54,39 @@ def test_create_detector_with_config_name(gl: Groundlight):
     assert isinstance(_detector, Detector)
 
 
-def test_create_detector_with_confidence(gl: Groundlight):
+def test_create_detector_with_confidence_threshold(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
     name = f"Test with confidence {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog in the image?"
     config_name = "never-review"
-    confidence = 0.825
-    _detector = gl.create_detector(name=name, query=query, confidence=confidence, config_name=config_name)
+    confidence_threshold = 0.825
+    _detector = gl.create_detector(
+        name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
+    )
     assert str(_detector)
     assert isinstance(_detector, Detector)
-    assert _detector.confidence_threshold == confidence
+    assert _detector.confidence_threshold == confidence_threshold
 
     # If you retrieve an existing detector, we currently require the confidence and query to match
     # exactly. TODO: We may want to allow updating those fields through the SDK (and then we can
     # change this test).
     different_confidence = 0.7
     with pytest.raises(ValueError):
-        gl.get_or_create_detector(name=name, query=query, confidence=different_confidence, config_name=config_name)
+        gl.get_or_create_detector(
+            name=name, query=query, confidence_threshold=different_confidence, config_name=config_name
+        )
 
     different_query = "Bad bad bad?"
     with pytest.raises(ValueError):
-        gl.get_or_create_detector(name=name, query=different_query, confidence=confidence, config_name=config_name)
+        gl.get_or_create_detector(
+            name=name, query=different_query, confidence_threshold=confidence_threshold, config_name=config_name
+        )
 
     # If the confidence is not provided, we will use the existing detector's confidence.
     retrieved_detector = gl.get_or_create_detector(name=name, query=query)
     assert (
-        retrieved_detector.confidence_threshold == confidence
+        retrieved_detector.confidence_threshold == confidence_threshold
     ), "We expected to retrieve the existing detector's confidence, but got a different value."
 
 
