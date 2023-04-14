@@ -231,5 +231,5 @@ jobs:
           poetry run python --version
       - name: build package
         run: poetry build
-      # - name: configure poetry and publish
-      #   run: poetry publish
+      - name: configure poetry and publish
+        run: poetry publish
