@@ -1,6 +1,6 @@
 # Ubuntu 18.04
 
-Ubuntu 18.04 still uses python 3.6 by default, which is end-of-life. We generally recommend using python 3.10.  If you know how to install py3.10, please go ahead.  But the easiest version of python 3 to use with Ubuntu 18.04 is python 3.8, which can be installed as follows:
+Ubuntu 18.04 still uses python 3.6 by default, which is end-of-life. We generally recommend using python 3.10. If you know how to install py3.10, please go ahead. But the easiest version of python 3 to use with Ubuntu 18.04 is python 3.8, which can be installed as follows:
 
 ```shell
 # Prepare Ubuntu to install things
