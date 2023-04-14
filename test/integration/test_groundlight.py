@@ -6,7 +6,7 @@ from datetime import datetime
 import openapi_client
 import pytest
 from groundlight import Groundlight
-from groundlight.internalapi import NotFoundException
+from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
@@ -71,7 +71,7 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
     assert isinstance(_detector, Detector)
     assert _detector.id == detector.id
 
-    with pytest.raises(NotFoundException):
+    with pytest.raises(NotFoundError):
         gl.get_detector_by_name(name="not a real name")
 
 

@@ -80,7 +80,7 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
-        return self.api_client._get_detector_by_name(name)
+        return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)

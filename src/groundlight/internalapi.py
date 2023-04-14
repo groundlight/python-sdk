@@ -14,7 +14,7 @@ from groundlight.status_codes import is_ok
 logger = logging.getLogger("groundlight.sdk")
 
 
-class NotFoundException(Exception):
+class NotFoundError(Exception):
     pass
 
 
@@ -131,16 +131,16 @@ class GroundlightApiClient(ApiClient):
         headers = self._headers()
         response = requests.request("GET", url, headers=headers)
 
-        if response.status_code != 200:
-            raise InternalApiException(
+        if not is_ok(response.status_code):
+            raise InternalApiError(
                 f"Error getting detector by name '{name}' (status={response.status_code}): {response.text}"
             )
 
         parsed = response.json()
 
         if parsed["count"] == 0:
-            raise NotFoundException(f"Detector with name={name} not found.")
-        elif parsed["count"] > 1:
+            raise NotFoundError(f"Detector with name={name} not found.")
+        if parsed["count"] > 1:
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen."
             )
