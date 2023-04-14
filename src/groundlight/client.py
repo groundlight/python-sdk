@@ -23,10 +23,6 @@ class ApiTokenError(Exception):
     pass
 
 
-class NotFoundException(Exception):
-    pass
-
-
 class Groundlight:
     """
     Client for accessing the Groundlight cloud service.
@@ -84,14 +80,7 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Optional[Detector]:
-        response = self.api_client._get_detector_by_name(name)
-        if response["count"] == 0:
-            raise NotFoundException(f"Detector with name={name} not found.")
-        elif response["count"] > 1:
-            raise RuntimeError(
-                f"We found multiple ({response['count']}) detectors with the same name. This shouldn't happen."
-            )
-        return Detector.parse_obj(response["results"][0])
+        return self.api_client._get_detector_by_name(name)
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)

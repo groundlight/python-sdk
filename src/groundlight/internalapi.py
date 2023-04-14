@@ -5,13 +5,17 @@ import uuid
 from typing import Dict
 from urllib.parse import urlsplit, urlunsplit
 
-import model
 import requests
+from model import Detector
 from openapi_client.api_client import ApiClient
 
 from groundlight.config import DEFAULT_ENDPOINT
 
 logger = logging.getLogger("groundlight.sdk")
+
+
+class NotFoundException(Exception):
+    pass
 
 
 def sanitize_endpoint_url(endpoint: str) -> str:
@@ -116,22 +120,26 @@ class GroundlightApiClient(ApiClient):
 
         return response.json()
 
-    def _get_detector_by_name(self, name: str) -> dict:
+    def _get_detector_by_name(self, name: str) -> Detector:
         """Get a detector by name. For now, we use the list detectors API directly.
 
         TODO: Properly model this in the API, and generate SDK code for it.
         """
         url = f"{self.configuration.host}/v1/detectors?name={name}"
-
         headers = self._headers()
-
-        logger.info(f"Getting detector by name '{name}' ...")
         response = requests.request("GET", url, headers=headers)
-        logger.debug(f"Response to _get_detector_by_name(): {response.text}")
 
         if response.status_code != 200:
             raise InternalApiException(
-                f"Error getting detector by name '{name}': status={response.status_code}; {response.text}"
+                f"Error getting detector by name '{name}' (status={response.status_code}): {response.text}"
             )
 
-        return response.json()
+        parsed = response.json()
+
+        if parsed["count"] == 0:
+            raise NotFoundException(f"Detector with name={name} not found.")
+        elif parsed["count"] > 1:
+            raise RuntimeError(
+                f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen."
+            )
+        return Detector.parse_obj(parsed["results"][0])

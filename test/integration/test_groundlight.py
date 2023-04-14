@@ -4,7 +4,7 @@ from datetime import datetime
 import openapi_client
 import pytest
 from groundlight import Groundlight
-from groundlight.client import NotFoundException
+from groundlight.internalapi import NotFoundException
 from groundlight.optional_imports import *
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
