@@ -6,6 +6,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: get code
+        uses: actions/checkout@v3
       - uses: ./.github/workflows/poetry-prep.yaml
       - name: install linter dependencies
         run: |
@@ -23,6 +25,8 @@ jobs:
       matrix:
         install_extras: [true, false]
     steps:
+      - name: get code
+        uses: actions/checkout@v3
       - uses: ./.github/workflows/poetry-prep.yaml
       - name: setup environment
         run: make install
@@ -69,6 +73,8 @@ jobs:
         install_numpy: [true, false]
         # install_pillow: [true, false] # pillow is already installed
     steps:
+      - name: get code
+        uses: actions/checkout@v3
       - uses: ./.github/workflows/poetry-prep.yaml
         with:
           python-version: ${{ matrix.python-version }}
@@ -157,6 +163,8 @@ jobs:
     env:
       POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
+      - name: get code
+        uses: actions/checkout@v3
       - uses: ./.github/workflows/poetry-prep.yaml
       - name: build package
         run: poetry build
