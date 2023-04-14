@@ -86,24 +86,45 @@ class Groundlight:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
-        obj = self.detectors_api.create_detector(DetectorCreationInput(name=name, query=query, config_name=config_name))
+    def create_detector(
+        self,
+        name: str,
+        query: str,
+        *,
+        confidence_threshold: Optional[float] = None,
+        config_name: str = None,
+    ) -> Detector:
+        detector_creation_input = DetectorCreationInput(name=name, query=query)
+        if confidence_threshold is not None:
+            detector_creation_input.confidence_threshold = confidence_threshold
+        if config_name is not None:
+            detector_creation_input.config_name = config_name
+        obj = self.detectors_api.create_detector(detector_creation_input)
         return Detector.parse_obj(obj.to_dict())
 
-    def get_or_create_detector(self, name: str, query: str, config_name: str = None) -> Detector:
-        """Tries to look up the detector by name.  If a detector with that name and query exists, return it.
+    def get_or_create_detector(
+        self, name: str, query: str, *, confidence_threshold: Optional[float] = None, config_name: str = None
+    ) -> Detector:
+        """Tries to look up the detector by name.  If a detector with that name, query, and confidence exists, return it.
         Otherwise, create a detector with the specified query and config.
         """
         existing_detector = self.get_detector_by_name(name)
         if existing_detector:
-            if existing_detector.query == query:
-                return existing_detector
-            else:
+            # TODO: We may soon allow users to update the retrieved detector's fields.
+            if existing_detector.query != query:
                 raise ValueError(
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match"
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match. The existing query is '{existing_detector.query}'."
                 )
+            elif confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
+                raise ValueError(
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence thresholds don't match. The existing confidence threshold is {existing_detector.confidence_threshold}."
+                )
+            else:
+                return existing_detector
 
-        return self.create_detector(name, query, config_name)
+        return self.create_detector(
+            name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
+        )
 
     def get_image_query(self, id: str) -> ImageQuery:
         obj = self.image_queries_api.get_image_query(id=id)
