@@ -6,7 +6,7 @@ When building applications with the Groundlight SDK, you may encounter server er
 
 If there is an HTTP error during an API call, the SDK will raise an `ApiException`. You can access different metadata from that exception:
 
-```python
+```python notest
 import traceback
 from groundlight import ApiException, Groundlight
 

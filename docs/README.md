@@ -14,3 +14,12 @@ npm start
 ```
 
 and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
+
+
+## Running docs tests
+
+You'll need python poetry and make installed.  And you'll need an API Token configured.  Then you can just run:
+
+```
+make test-docs
+```
