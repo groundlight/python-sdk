@@ -23,7 +23,7 @@ pip install groundlight opencv-python pillow pyaudio
 
 2. Next, we'll write the Python script for the application. Import the required libraries:
 
-```python
+```python notest
 import time
 import cv2
 from groundlight import Groundlight
@@ -76,7 +76,7 @@ def play_sound(file_path):
 
 5. Write the main application loop:
 
-```python
+```python notest
 gl = Groundlight()
 
 detector = gl.get_detector("Dog on Couch Detector")
