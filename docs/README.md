@@ -1,41 +1,44 @@
-# Website
+# Documentation: code.groundlight.ai
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This part of the SDK repo contains all the code for the website at [code.groundlight.ai](https://code.groundlight.ai/)  It is built with [Docusaurus 2](https://docusaurus.io/).
 
-## Installation
+The docs are included with the SDK so that we can automate testing of the code samples in the documentation.  This way we can ensure that the code samples in our docs always work with the current SDK.
 
-```shell
+## Previewing doc changes
+
+Doc changes are published automatically when they're merged to main.  To preview changes, build and host the site locally.  You'll need a reasonably modern version of `npm` and then:
+
+<<<<<<< HEAD
+```
 npm install
+npm run build  # looks for any errors
+npm start  # starts interactive server
 ```
 
-## Local Development
+and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
 
-```shell
+
+## Running docs tests
+
+You'll need python poetry and make installed.  And you'll need an API Token configured.  Then you can just run:
+
+```
+make test-docs
+```
+=======
+```
+npm install
 npm start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
 
-### Build
 
-```shell
-npm run build
+## Running docs tests
+
+You'll need python poetry and make installed.  And you'll need an API Token configured.  Then you can just run:
+
 ```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```shell
-USE_SSH=true npm run deploy
+make test-docs
 ```
-
-Not using SSH:
-
-```shell
-GIT_USER=<Your GitHub username> npm run deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+>>>>>>> origin/docs-applications
