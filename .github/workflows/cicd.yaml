@@ -64,12 +64,32 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
+  # Check that the docs build.  (No broken links, etc.)
+  test-docs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Setup npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Build website
+        run: npm run build
+
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
   test-comprehensive:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     needs:
       - test-simple
+      - test-docs
     runs-on: ubuntu-latest
     strategy:
       # It's totally debatable which is better here: fail-fast or not.
