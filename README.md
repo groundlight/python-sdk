@@ -12,14 +12,11 @@ Build a working computer vision system in just a few lines of python:
 
 ```python
 from groundlight import Groundlight
-from PIL import Image
-import requests
 
 gl = Groundlight()
 d = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
-image_url = "https://images.selfstorage.com/large-compress/2174925f24362c479b2.jpg"
-image = Image.open(requests.get(image_url, stream=True).raw)
-image_query = gl.submit_image_query(detector=d, image=image)
+#image_filename = "./docs/static/img/doorway.jpg"  # breaking to see if test is running.
+image_query = gl.submit_image_query(detector=d, image=image_filename)
 print(f"The answer is {image_query.result}")
 ```
 
