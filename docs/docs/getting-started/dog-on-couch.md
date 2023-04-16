@@ -4,7 +4,7 @@ Here is a whimsical example of how you could use Groundlight in your home to kee
 
 ## Requirements
 
-- [Groundlight SDK](../installation/) with Python 3.7 or higher
+- [Groundlight SDK](/docs/installation/) with Python 3.7 or higher
 - A supported USB or network-connected camera
 - A pre-recorded sound file (e.g., `get_off_couch.mp3`)
 - A couch and a dog are recommended for proper end-to-end testing.
