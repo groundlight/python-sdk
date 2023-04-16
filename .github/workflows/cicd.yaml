@@ -192,7 +192,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build
-          #TODO: setup a staging directory when doing a PR
+          # Someday we might want to set the destination to a staging dir for PR's
           #destination_dir: staging
           # The following lines assign commit authorship to the official
           # GH-Actions bot for deploys to `gh-pages` branch:
