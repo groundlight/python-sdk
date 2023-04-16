@@ -2,7 +2,7 @@
 
 ## Tracking utilization of a customer service counter
 
-This example demonstrates the application of Groundlight to a retail analytics solution, which monitors the usage of a service counter by customers throughout the day. The application creates a detector to identify when the service desk is being utilized by a customer. It checks the detector every minute, and once an hour, it prints out a summary of the percentage of time that the register is in use. At the end of the day, it emails the daily log.
+This example demonstrates the application of Groundlight to a retail analytics solution, which monitors the usage of a service counter by customers throughout the day. The application creates a detector to identify when the service desk is being utilized by a customer. It checks the detector every minute, and once an hour, it prints out a summary of the percentage of time that the service counter is in use. At the end of the day, it emails the daily log.
 
 This retail analytics application can be beneficial in various ways:
 
@@ -63,7 +63,7 @@ def capture_image():
         return None
 ```
 
-4. Define a function to send the daily log via email:
+4. Define a function to send the daily log via email.  You will need to customize this for your particular network environment.
 
 ```python
 def send_email(sender, receiver, subject, body):
@@ -81,50 +81,89 @@ def send_email(sender, receiver, subject, body):
     server.quit()
 ```
 
-5. Write the main application loop:
+5.  Define when your business's operating hours are:
+
+```python notest
+START_OF_BUSINESS = 9  # e.g. 9am
+END_OF_BUSINESS = 17  # e.g. 5pm
+
+def is_within_business_hours():
+    current_hour = datetime.now().hour
+    return START_OF_BUSINESS <= current_hour < END_OF_BUSINESS
+
+```
+
+
+6.  Write the main application loop:
 
 ```python notest
 gl = Groundlight()
 
-detector = gl.get_detector("Customer At Register Detector")
+detector = gl.get_or_create_detector(
+                name="counter-in-use",
+                query="Is there a customer at the service counter?",
+                # We can get away with relatively low confidence since we're aggregating
+                confidence_threshold=0.8)
+
+DELAY = 60
 
 log = []
-hourly_start = datetime.now()
-daily_start = datetime.now()
+daily_log = []
+next_hourly_start = datetime.now().replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
 
 while True:
+    if not is_within_business_hours():
+        time.sleep(DELAY)
+        continue
+
     image = capture_image()
-    if image:
-        try:
-            iq = gl.submit_image_query(image=image, detector=detector, wait=60)
-            result = iq.result
-            log.append(result)
-            if datetime.now() - hourly_start >= timedelta(hours=1):
-                hourly_start = datetime.now()
-                percent_in_use = (log.count("YES") / len(log)) * 100
-                print(f"Hourly summary: {percent_in_use:.2f}% register in use")
-
-            if datetime.now() - daily_start >= timedelta(days=1):
-                daily_start = datetime.now()
-                daily_percent_in_use = (log.count("YES") / len(log)) * 100
-                daily_log = f"Daily summary: {daily_percent_in_use:.2f}% register in use"
-                print(daily_log)
-                send_email("you@example.com", "receiver@example.com", "Daily Register Usage Log", daily_log)
-                log = []
-        except Exception as e:
-            print(f"Error submitting image query: {e}")
-    else:
+    if not image:
         print("Failed to capture image")
+        time.sleep(DELAY)
+        continue
 
-    # Sleep for a minute before checking again
-    time.sleep(60)
+    try:
+        iq = gl.submit_image_query(image=image, detector=detector, wait=60)
+    except Exception as e:
+        print(f"Error submitting image query: {e}")
+        time.sleep(DELAY)
+        continue
+
+    result = iq.result
+    log.append(result)
+
+    if datetime.now() >= next_hourly_start:
+        next_hourly_start += timedelta(hours=1)
+
+        percent_in_use = (log.count("YES") / len(log)) * 100
+        current_time = datetime.now().replace(hour=START_OF_BUSINESS, minute=0, second=0)
+        formatted_time = current_time.strftime("%I%p")  # like 3pm
+        msg = f"Hourly summary for {formatted_time}: {percent_in_use:.0f}% counter in use"
+        print(msg)
+        daily_log.append(msg)
+        log = []
+
+    current_hour = datetime.now().hour
+    if current_hour == END_OF_BUSINESS and not daily_log == []:
+        daily_summary = "Daily summary:\n"
+        for msg in daily_log:
+            daily_summary += f"{msg}\n"
+
+        print(daily_summary)
+        send_email(sender="counterbot@example.com",
+           receiver="manager@example.com",
+           subject="Daily Service Counter Usage Log",
+           body=daily_summary)
+        daily_log = []
+
+    time.sleep(DELAY)
 ```
 
-This application captures an image using the `capture_image` function, then submits it to the Groundlight API for analysis. If a customer is detected at the register, it logs the event. Every hour, it prints a summary of the register's usage percentage, and at the end of the day, it emails the daily log using the `send_email` function.
+This application captures an image using the `capture_image` function, then submits it to the Groundlight API for analysis. If a customer is detected at the counter, it logs the event. Every hour, it prints a summary of the counter's usage percentage, and at the end of the day, it emails the daily log using the `send_email` function.
 
-Save the script as `customer_at_register_detector.py` and run it:
+Save the script as `service_counter_monitor.py` and run it:
 
 ```bash
-python customer_at_register_detector.py
+python service_counter_monitor.py
 ```
 
