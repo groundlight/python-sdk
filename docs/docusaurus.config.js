@@ -75,7 +75,7 @@ const config = {
             label: "Docs",
           },
           {
-            to: "/docs/category/building-applications",
+            to: "/docs/building-applications",
             label: "Applications",
             position: "left",
           },
@@ -98,11 +98,11 @@ const config = {
               },
               {
                 label: "Building Applications",
-                to: "/docs/category/building-applications",
+                to: "/docs/building-applications",
               },
               {
                 label: "Installation",
-                to: "/docs/category/installation",
+                to: "/docs/installation/",
               },
             ],
           },

@@ -10,7 +10,8 @@ Doc changes are published automatically when they're merged to main.  To preview
 
 ```
 npm install
-npm start
+npm run build  # looks for any errors
+npm start  # starts interactive server
 ```
 
 and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).

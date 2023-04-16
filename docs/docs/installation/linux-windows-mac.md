@@ -140,5 +140,5 @@ pip3 install groundlight
 
 ## Ready to go!
 
-You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](../getting-started/api-tokens) and [Building Applications](../category/building-applications) documentation pages.
+You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](../getting-started/api-tokens) and [Building Applications](../building-applications) documentation pages.
 
