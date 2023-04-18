@@ -112,7 +112,7 @@ class Groundlight:
         try:
             existing_detector = self.get_detector_by_name(name)
         except NotFoundError:
-            logger.debug(f"Detector with name={name} not found. Creating a new detector.")
+            logger.debug(f"We could not find a detector with name='{name}'. So we will create a new detector ...")
             return self.create_detector(
                 name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
             )
