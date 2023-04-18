@@ -13,7 +13,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import convert_display_label_to_internal
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import GroundlightApiClient, sanitize_endpoint_url
+from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -109,25 +109,27 @@ class Groundlight:
         confidence exists, return it. Otherwise, create a detector with the specified query and
         config.
         """
-        existing_detector = self.get_detector_by_name(name)
-        if existing_detector:
-            # TODO: We may soon allow users to update the retrieved detector's fields.
-            if existing_detector.query != query:
-                raise ValueError(
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                    f" The existing query is '{existing_detector.query}'."
-                )
-            if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
-                raise ValueError(
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                    " thresholds don't match. The existing confidence threshold is"
-                    f" {existing_detector.confidence_threshold}."
-                )
-            return existing_detector
+        try:
+            existing_detector = self.get_detector_by_name(name)
+        except NotFoundError:
+            logger.debug(f"Detector with name={name} not found. Creating a new detector.")
+            return self.create_detector(
+                name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
+            )
 
-        return self.create_detector(
-            name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
-        )
+        # TODO: We may soon allow users to update the retrieved detector's fields.
+        if existing_detector.query != query:
+            raise ValueError(
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                f" The existing query is '{existing_detector.query}'."
+            )
+        if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
+            raise ValueError(
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                " thresholds don't match. The existing confidence threshold is"
+                f" {existing_detector.confidence_threshold}."
+            )
+        return existing_detector
 
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         obj = self.image_queries_api.get_image_query(id=id)
