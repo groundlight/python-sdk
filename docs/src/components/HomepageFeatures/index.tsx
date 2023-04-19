@@ -17,7 +17,7 @@ const FeatureList: FeatureItem[] = [
     imgsrc: "img/1-models.png",
     description: (
       <>
-        Groundlight's Visual Large Language Model (VLLM) technology creates
+        Groundlight's Visual LLM creates
         computer vision models from English instructions instead of a dataset.
         This reduces the time to get an AI-driven solution off the ground.
         Did we mention you don't need a dataset?
