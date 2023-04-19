@@ -1,4 +1,4 @@
-# A Silly Example: Dog-on-Couch Detector
+# A Fun Example: Dog-on-Couch Detector
 
 Here is a whimsical example of how you could use Groundlight in your home to keep your dog off the couch.  This document will guide you through creating a complete application. If the dog is detected on the couch, the application will play a pre-recorded sound over the computer's speakers, instructing the dog to get off the couch.  Be sure to record your own voice so that your dog pays attention to you.
 
