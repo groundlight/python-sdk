@@ -100,6 +100,19 @@ def test_list_detectors(gl: Groundlight):
     assert isinstance(detectors, PaginatedDetectorList)
 
 
+def test_get_or_create_detector(gl: Groundlight):
+    # With a unique name, we should be creating a new detector.
+    unique_name = f"Unique name {datetime.utcnow()}"
+    query = "Test query?"
+    detector = gl.get_or_create_detector(name=unique_name, query=query)
+    assert str(detector)
+    assert isinstance(detector, Detector)
+
+    # If we try to create a detector with the same name, we should get the same detector back.
+    retrieved_detector = gl.get_or_create_detector(name=unique_name, query=query)
+    assert retrieved_detector.id == detector.id
+
+
 def test_get_detector(gl: Groundlight, detector: Detector):
     _detector = gl.get_detector(id=detector.id)
     assert str(_detector)
