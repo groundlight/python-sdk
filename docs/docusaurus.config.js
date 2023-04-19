@@ -66,6 +66,7 @@ const config = {
         logo: {
           alt: "Groundlight Logo",
           src: "img/favicon-32x32.png",
+          href: "https://www.groundlight.ai/",
         },
         items: [
           {
@@ -102,7 +103,7 @@ const config = {
               },
               {
                 label: "Installation",
-                to: "/docs/installation/",
+                to: "/docs/installation",
               },
             ],
           },
