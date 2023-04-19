@@ -187,9 +187,9 @@ jobs:
   # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
   # we are on the `main` branch and docs/** has changes.
   deploy-docs:
-    # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    # needs:
-    #   - test-comprehensive
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - test-comprehensive
     runs-on: ubuntu-latest
     defaults:
       run:
