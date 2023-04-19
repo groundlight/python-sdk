@@ -56,6 +56,24 @@ const config = {
     ],
   ],
 
+  themes: [
+    [
+      // This adds a search bar to the docs.
+      // For more details: https://github.com/easyops-cn/docusaurus-search-local
+      // @ts-ignore
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+      // @ts-ignore
+      ({
+        // ... Your options.
+        hashed: true,
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        removeDefaultStemmer: true,
+      }),
+    ],
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
