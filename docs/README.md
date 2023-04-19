@@ -8,7 +8,6 @@ The docs are included with the SDK so that we can automate testing of the code s
 
 Doc changes are published automatically when they're merged to main.  To preview changes, build and host the site locally.  You'll need a reasonably modern version of `npm` and then:
 
-<<<<<<< HEAD
 ```
 npm install
 npm run build  # looks for any errors
@@ -25,20 +24,4 @@ You'll need python poetry and make installed.  And you'll need an API Token conf
 ```
 make test-docs
 ```
-=======
-```
-npm install
-npm start
-```
 
-and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
-
-
-## Running docs tests
-
-You'll need python poetry and make installed.  And you'll need an API Token configured.  Then you can just run:
-
-```
-make test-docs
-```
->>>>>>> origin/docs-applications
