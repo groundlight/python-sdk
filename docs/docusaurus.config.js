@@ -66,9 +66,10 @@ const config = {
       // @ts-ignore
       ({
         // ... Your options.
-        // `hashed` is recommended as long-term-cache of index file is possible.
         hashed: true,
         highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        removeDefaultStemmer: true,
       }),
     ],
   ],
