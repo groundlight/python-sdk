@@ -72,7 +72,8 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
-    def _post_process_image_query(self, iq: ImageQuery) -> ImageQuery:
+    @classmethod
+    def _post_process_image_query(cls, iq: ImageQuery) -> ImageQuery:
         """Post-process the image query so we don't use confusing internal labels.
 
         TODO: Get rid of this once we clean up the mapping logic server-side.
