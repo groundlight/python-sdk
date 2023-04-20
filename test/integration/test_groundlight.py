@@ -2,7 +2,6 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
-from logging import getLogger
 
 import openapi_client
 import pytest
@@ -12,9 +11,6 @@ from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-
-logger = getLogger(__name__)
-
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
