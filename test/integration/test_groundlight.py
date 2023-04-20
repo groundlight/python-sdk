@@ -6,7 +6,7 @@ from datetime import datetime
 import openapi_client
 import pytest
 from groundlight import Groundlight
-from groundlight.binary_labels import DEPRECATED_LABEL_NAMES, NO, YES
+from groundlight.binary_labels import DeprecatedLabel, Label, convert_internal_label_to_display, is_valid_display_result
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
@@ -135,20 +135,21 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=2)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert _image_query.result.label not in DEPRECATED_LABEL_NAMES
+    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" model to guarantee a "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", config_name="never-review")
     image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=5)
-    assert image_query.result.label == YES
+    assert image_query.result.label == Label.YES
 
 
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
@@ -156,6 +157,7 @@ def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=jpeg)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
@@ -201,49 +203,105 @@ def test_list_image_queries(gl: Groundlight):
         for image_query in image_queries.results:
             assert str(image_query)
             assert isinstance(image_query, ImageQuery)
-            assert image_query.result.label.lower() not in DEPRECATED_LABEL_NAMES
+            assert is_valid_display_result(image_query.result)
 
 
 def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
 
 
 def test_get_image_query_label_yes(gl: Groundlight, image_query: ImageQuery):
-    gl.add_label(image_query, YES)
+    gl.add_label(image_query, Label.YES)
     retrieved_iq = gl.get_image_query(id=image_query.id)
-    assert retrieved_iq.result.label == YES
+    assert retrieved_iq.result.label == Label.YES
 
 
 def test_get_image_query_label_no(gl: Groundlight, image_query: ImageQuery):
-    gl.add_label(image_query, NO)
+    gl.add_label(image_query, Label.NO)
     retrieved_iq = gl.get_image_query(id=image_query.id)
-    assert retrieved_iq.result.label == NO
+    assert retrieved_iq.result.label == Label.NO
 
 
 def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(image_query, ImageQuery)
-    gl.add_label(image_query, YES)
+    gl.add_label(image_query, Label.YES)
 
 
 def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
     # TODO: Fully deprecate chk_ prefix
     assert iqid.startswith(("chk_", "iq_"))
-    gl.add_label(iqid, NO)
+    gl.add_label(iqid, Label.NO)
 
 
 def test_add_label_names(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
-    gl.add_label(iqid, "FAIL")
-    gl.add_label(iqid, "PASS")
+
+    # Valid labels
+    gl.add_label(iqid, Label.YES)
+    gl.add_label(iqid, Label.YES.value)
     gl.add_label(iqid, "YES")
-    gl.add_label(iqid, "NO")
-    gl.add_label(iqid, "FaIl")
+    gl.add_label(iqid, "yes")
     gl.add_label(iqid, "yEs")
+    gl.add_label(iqid, Label.NO)
+    gl.add_label(iqid, Label.NO.value)
+    gl.add_label(iqid, "NO")
+    gl.add_label(iqid, "no")
+
+    # Invalid labels
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "PASS")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "FAIL")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, DeprecatedLabel.PASS)
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, DeprecatedLabel.FAIL)
     with pytest.raises(ValueError):
         gl.add_label(iqid, "sorta")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "YES ")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, " YES")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "0")
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, "1")
+
+    # We technically don't allow these in the type signature, but users might do it anyway
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, 0)  # type: ignore
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, 1)  # type: ignore
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, None)  # type: ignore
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, True)  # type: ignore
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, False)  # type: ignore
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, b"YES")  # type: ignore
+
+    # We may want to support something like this in the future, but not yet
+    with pytest.raises(ValueError):
+        gl.add_label(iqid, Label.UNSURE)
+
+
+def test_label_conversion_produces_strings():
+    # In our code, it's easier to work with enums, but we allow users to pass in strings or enums
+    labels = ["YES", Label.YES, Label.YES.value, "NO", Label.NO, Label.NO.value]
+    for label in labels:
+        display = convert_internal_label_to_display("", label)
+        assert isinstance(display, str)
+        internal = convert_internal_label_to_display("", display)
+        assert isinstance(internal, str)
+
+
+def test_enum_string_equality():
+    assert "YES" == Label.YES == Label.YES.value
 
 
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
@@ -252,3 +310,4 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)

@@ -4,6 +4,7 @@ from openapi_client import ApiException
 
 # Imports from our code
 from .client import Groundlight
+from .binary_labels import Label
 
 try:
     import importlib.metadata
