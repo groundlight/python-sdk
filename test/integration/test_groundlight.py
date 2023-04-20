@@ -2,14 +2,19 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
+from logging import getLogger
 
 import openapi_client
 import pytest
 from groundlight import Groundlight
+from groundlight.binary_labels import DEPRECATED_LABEL_NAMES, NO, YES
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+
+logger = getLogger(__name__)
+
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -134,6 +139,14 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=2)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
+    assert _image_query.result.label not in DEPRECATED_LABEL_NAMES
+
+
+def test_submit_image_query_returns_yes(gl: Groundlight):
+    # We use the "never-review" model to guarantee a "yes" answer.
+    detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", config_name="never-review")
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=5)
+    assert image_query.result.label == YES
 
 
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
@@ -188,6 +201,12 @@ def test_list_image_queries(gl: Groundlight):
     assert str(image_queries)
     assert isinstance(image_queries, PaginatedImageQueryList)
 
+    if image_queries.results:
+        for image_query in image_queries.results:
+            assert str(image_query)
+            assert isinstance(image_query, ImageQuery)
+            assert image_query.result.label.lower() not in DEPRECATED_LABEL_NAMES
+
 
 def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     _image_query = gl.get_image_query(id=image_query.id)
@@ -195,24 +214,38 @@ def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(_image_query, ImageQuery)
 
 
+def test_get_image_query_label_yes(gl: Groundlight, image_query: ImageQuery):
+    gl.add_label(image_query, YES)
+    retrieved_iq = gl.get_image_query(id=image_query.id)
+    assert retrieved_iq.result.label == YES
+
+
+def test_get_image_query_label_no(gl: Groundlight, image_query: ImageQuery):
+    gl.add_label(image_query, NO)
+    retrieved_iq = gl.get_image_query(id=image_query.id)
+    assert retrieved_iq.result.label == NO
+
+
 def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(image_query, ImageQuery)
-    gl.add_label(image_query, "Yes")
+    gl.add_label(image_query, YES)
 
 
 def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
     # TODO: Fully deprecate chk_ prefix
     assert iqid.startswith(("chk_", "iq_"))
-    gl.add_label(iqid, "No")
+    gl.add_label(iqid, NO)
 
 
 def test_add_label_names(gl: Groundlight, image_query: ImageQuery):
     iqid = image_query.id
     gl.add_label(iqid, "FAIL")
     gl.add_label(iqid, "PASS")
-    gl.add_label(iqid, "Yes")
-    gl.add_label(iqid, "No")
+    gl.add_label(iqid, "YES")
+    gl.add_label(iqid, "NO")
+    gl.add_label(iqid, "FaIl")
+    gl.add_label(iqid, "yEs")
     with pytest.raises(ValueError):
         gl.add_label(iqid, "sorta")
 
