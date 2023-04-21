@@ -2,13 +2,13 @@
 
 ## Introduction
 
-With Groundlight's `detectors`, you can ask binary questions about images -- i.e., the answer should be
-unambiguously "YES" or "NO". So, what makes a good question? Let's look at a few good 🟢, moderate
-🟡, and bad ❌ examples!
+With Groundlight's `detectors`, you can ask binary questions about images -- i.e., the answer should
+be unambiguously "YES" or "NO". So, what makes a good question? Let's look at a few good ✅,
+moderate 🟡, and bad ❌ examples!
 
 ## Examples
 
-### 🟢 Are there any cardboard boxes on the conveyor belt?
+### ✅ Are there any cardboard boxes on the conveyor belt?
 
 This question is binary and can be answered unambiguously with a simple "YES" or "NO" based on the
 image content.
@@ -20,11 +20,11 @@ trash can more than 80% full?"
 
 :::tip
 With Groundlight, your questions may be routed to a machine learning model or a human reviewer. One
-way to improve your queries is to think "If I asked a person this question, what would they need to
-know to answer it?"
+way to improve your queries is to think "If I asked a person this question, what am I trying to
+convey?"
 :::
 
-### 🟢 Is the garage door completely closed?
+### ✅ Is the garage door completely closed?
 
 The query is very specific about what "YES" means. According to this query, any slight / partial
 opening would be considered "NO".
@@ -43,8 +43,3 @@ clear what the "thing" refers to.
 
 While this question is binary, "cleanliness" can be somewhat subjective. An improved version could
 be: "Are there any visible spills or clutter on the factory floor?"
-
-### ❌ Is the forklift on the left or right side?
-
-It is not clear which answer corresponds to "YES" and which corresponds to "NO". Instead, you might
-ask "Is there a forklift in a?".
