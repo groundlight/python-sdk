@@ -1,4 +1,4 @@
-"""Defines the possible values for binary class labels like Yes/No or PASS/FAIL.
+"""Defines the possible values for binary class labels like YES/NO or PASS/FAIL.
 Provides methods to convert between them.
 
 This part of the API is kinda ugly right now.  So we'll encapsulate the ugliness in one place.
@@ -11,6 +11,13 @@ from model import Detector, ImageQuery
 logger = logging.getLogger("groundlight.sdk")
 
 
+PASS_DEPRECATED = "PASS"
+FAIL_DEPRECATED = "FAIL"
+YES = "YES"
+NO = "NO"
+DEPRECATED_LABEL_NAMES = {PASS_DEPRECATED, FAIL_DEPRECATED}
+
+
 def internal_labels_for_detector(
     context: Union[ImageQuery, Detector, str],  # pylint: disable=unused-argument
 ) -> List[str]:
@@ -19,7 +26,7 @@ def internal_labels_for_detector(
     :param context: Can be an ImageQuery, a Detector, or a string-id for one of them.
     """
     # NOTE: At some point this will need to be an API call, because these will be defined per-detector
-    return ["PASS", "FAIL"]
+    return [PASS_DEPRECATED, FAIL_DEPRECATED]
 
 
 def convert_internal_label_to_display(
@@ -28,11 +35,11 @@ def convert_internal_label_to_display(
 ) -> str:
     # NOTE: Someday we will do nothing here, when the server provides properly named classes.
     upper = label.upper()
-    if upper == "PASS":
-        return "YES"
-    if upper == "FAIL":
-        return "NO"
-    if upper in ["YES", "NO"]:
+    if upper == PASS_DEPRECATED:
+        return YES
+    if upper == FAIL_DEPRECATED:
+        return NO
+    if upper in {PASS_DEPRECATED, NO}:
         return label
     logger.warning(f"Unrecognized internal label {label} - leaving alone.")
     return label
@@ -44,8 +51,8 @@ def convert_display_label_to_internal(
 ) -> str:
     # NOTE: In the future we should validate against actually supported labels for the detector
     upper = label.upper()
-    if upper in {"PASS", "YES"}:
-        return "PASS"
-    if upper in {"FAIL", "NO"}:
-        return "FAIL"
-    raise ValueError(f'Invalid label string "{label}".  Must be one of YES,NO,PASS,FAIL')
+    if upper in {PASS_DEPRECATED, YES}:
+        return PASS_DEPRECATED
+    if upper in {FAIL_DEPRECATED, NO}:
+        return FAIL_DEPRECATED
+    raise ValueError(f'Invalid label string "{label}".  Must be one of {YES},{NO},{PASS_DEPRECATED},{FAIL_DEPRECATED}')
