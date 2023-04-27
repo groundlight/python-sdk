@@ -5,9 +5,9 @@ This part of the API is kinda ugly right now.  So we'll encapsulate the ugliness
 """
 import logging
 from enum import Enum
-from typing import Any, Union
+from typing import Union
 
-from model import ClassificationResult, Detector, ImageQuery
+from model import Detector, ImageQuery
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,6 @@ def convert_internal_label_to_display(
     if upper in {Label.UNSURE, DeprecatedLabel.NEEDS_REVIEW}:
         return Label.UNSURE.value
 
-    # Safety versus extensibility: should it be an error if we get an unrecognized internal label?
     logger.warning(f"Unrecognized internal label {label} - leaving alone.")
 
     return label
@@ -74,25 +73,6 @@ def convert_display_label_to_internal(
         return DeprecatedLabel.PASS.value
     if upper == Label.NO:
         return DeprecatedLabel.FAIL.value
-    # TODO: Should we support the user adding an "UNSURE" label in the SDK?
+    # TODO: Should we support the user adding an "UNSURE" or "CANT_TELL" label in the SDK?
 
     raise ValueError(f'Invalid label string "{label}".  Must be one of {Label.YES.value},{Label.NO.value}.')
-
-
-def is_valid_display_result(result: Any) -> bool:
-    """
-    Is the image query result valid to display to the user?
-    """
-    if not isinstance(result, ClassificationResult):
-        return False
-    if not is_valid_display_label(result.label):
-        return False
-    return True
-
-
-def is_valid_display_label(label: str) -> bool:
-    """
-    Is the image query result label valid to display to the user?
-    """
-    # NOTE: For now, we strictly only show UPPERCASE labels to the user.
-    return label in VALID_DISPLAY_LABELS

@@ -2,17 +2,33 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
+from typing import Any
 
 import openapi_client
 import pytest
 from groundlight import Groundlight
-from groundlight.binary_labels import DeprecatedLabel, Label, convert_internal_label_to_display, is_valid_display_result
+from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
+
+
+def is_valid_display_result(result: Any) -> bool:
+    """Is the image query result valid to display to the user?."""
+    if not isinstance(result, ClassificationResult):
+        return False
+    if not is_valid_display_label(result.label):
+        return False
+    return True
+
+
+def is_valid_display_label(label: str) -> bool:
+    """Is the image query result label valid to display to the user?."""
+    # NOTE: For now, we strictly only show UPPERCASE labels to the user.
+    return label in VALID_DISPLAY_LABELS
 
 
 @pytest.fixture(name="gl")
@@ -67,7 +83,10 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     config_name = "never-review"
     confidence_threshold = 0.825
     _detector = gl.create_detector(
-        name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
+        name=name,
+        query=query,
+        confidence_threshold=confidence_threshold,
+        config_name=config_name,
     )
     assert str(_detector)
     assert isinstance(_detector, Detector)
@@ -79,13 +98,19 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     different_confidence = 0.7
     with pytest.raises(ValueError):
         gl.get_or_create_detector(
-            name=name, query=query, confidence_threshold=different_confidence, config_name=config_name
+            name=name,
+            query=query,
+            confidence_threshold=different_confidence,
+            config_name=config_name,
         )
 
     different_query = "Bad bad bad?"
     with pytest.raises(ValueError):
         gl.get_or_create_detector(
-            name=name, query=different_query, confidence_threshold=confidence_threshold, config_name=config_name
+            name=name,
+            query=different_query,
+            confidence_threshold=confidence_threshold,
+            config_name=config_name,
         )
 
     # If the confidence is not provided, we will use the existing detector's confidence.

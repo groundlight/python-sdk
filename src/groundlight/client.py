@@ -112,7 +112,12 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(
-        self, name: str, query: str, *, confidence_threshold: Optional[float] = None, config_name: Optional[str] = None
+        self,
+        name: str,
+        query: str,
+        *,
+        confidence_threshold: Optional[float] = None,
+        config_name: Optional[str] = None,
     ) -> Detector:
         """Tries to look up the detector by name.  If a detector with that name, query, and
         confidence exists, return it. Otherwise, create a detector with the specified query and
@@ -123,20 +128,27 @@ class Groundlight:
         except NotFoundError:
             logger.debug(f"We could not find a detector with name='{name}'. So we will create a new detector ...")
             return self.create_detector(
-                name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
+                name=name,
+                query=query,
+                confidence_threshold=confidence_threshold,
+                config_name=config_name,
             )
 
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                f" The existing query is '{existing_detector.query}'."
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                    f" The existing query is '{existing_detector.query}'."
+                ),
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                " thresholds don't match. The existing confidence threshold is"
-                f" {existing_detector.confidence_threshold}."
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                    " thresholds don't match. The existing confidence threshold is"
+                    f" {existing_detector.confidence_threshold}."
+                ),
             )
         return existing_detector
 

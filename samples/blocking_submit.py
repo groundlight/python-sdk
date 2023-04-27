@@ -1,5 +1,4 @@
-"""Example of how to wait for a confident result
-"""
+"""Example of how to wait for a confident result."""
 import logging
 
 from groundlight import Groundlight
