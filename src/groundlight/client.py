@@ -4,7 +4,8 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import (Detector, ImageQuery, PaginatedDetectorList,
+                   PaginatedImageQueryList)
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
@@ -13,7 +14,8 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import convert_display_label_to_internal
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
+from groundlight.internalapi import (GroundlightApiClient, NotFoundError,
+                                     sanitize_endpoint_url)
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -39,8 +41,7 @@ class Groundlight:
 
     DEFAULT_WAIT: float = 30.0
 
-    BEFORE_POLLING_DELAY = 3.0  # Expected minimum time for a label to post
-    POLLING_INITIAL_DELAY = 0.5
+    POLLING_INITIAL_DELAY = 0.25
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
@@ -183,7 +184,6 @@ class Groundlight:
         """
         # TODO: Add support for ImageQuery id instead of object.
         timeout_time = time.time() + timeout_sec
-        time.sleep(self.BEFORE_POLLING_DELAY)
         delay = self.POLLING_INITIAL_DELAY
         while time.time() < timeout_time:
             current_confidence = image_query.result.confidence
