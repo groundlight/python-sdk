@@ -10,7 +10,7 @@ from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.binary_labels import convert_display_label_to_internal, convert_internal_label_to_display
+from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
@@ -230,7 +230,7 @@ class Groundlight:
             image_query = self.get_image_query(image_query.id)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: str):
+    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
         """A new label to an image query.  This answers the detector's question.
         :param image_query: Either an ImageQuery object (returned from `submit_image_query`) or
         an image_query id as a string.

@@ -33,8 +33,8 @@ DEPRECATED_LABEL_NAMES = {DeprecatedLabel.PASS, DeprecatedLabel.FAIL, Deprecated
 def convert_internal_label_to_display(
     context: Union[ImageQuery, Detector, str],  # pylint: disable=unused-argument
     label: str,
-) -> str:
-    """Convert a label that comes from our API into the label string that we show to the user.
+) -> Union[Label, str]:
+    """Convert a label that comes from our API into the label string enum that we show to the user.
 
     NOTE: We return UPPERCASE label strings to the user, unless there is a custom label (which
     shouldn't be happening at this time).
@@ -44,20 +44,19 @@ def convert_internal_label_to_display(
         raise ValueError(f"Expected a string label, but got {label} of type {type(label)}")
     upper = label.upper()
     if upper in {Label.YES, DeprecatedLabel.PASS}:
-        return Label.YES.value
+        return Label.YES
     if upper in {Label.NO, DeprecatedLabel.FAIL}:
-        return Label.NO.value
+        return Label.NO
     if upper in {Label.UNSURE, DeprecatedLabel.NEEDS_REVIEW}:
-        return Label.UNSURE.value
+        return Label.UNSURE
 
-    logger.warning(f"Unrecognized internal label {label} - leaving alone.")
-
+    logger.warning(f"Unrecognized internal label {label} - leaving it alone as a string.")
     return label
 
 
 def convert_display_label_to_internal(
     context: Union[ImageQuery, Detector, str],  # pylint: disable=unused-argument
-    label: str,
+    label: Union[Label, str],
 ) -> str:
     """Convert a label that comes from the user into the label string that we send to the server. We
     are strict here, and only allow YES/NO.
@@ -73,6 +72,5 @@ def convert_display_label_to_internal(
         return DeprecatedLabel.PASS.value
     if upper == Label.NO:
         return DeprecatedLabel.FAIL.value
-    # TODO: Should we support the user adding an "UNSURE" or "CANT_TELL" label in the SDK?
 
-    raise ValueError(f'Invalid label string "{label}".  Must be one of {Label.YES.value},{Label.NO.value}.')
+    raise ValueError(f"Invalid label string '{label}'.  Must be one of '{Label.YES.value}','{Label.NO.value}'.")
