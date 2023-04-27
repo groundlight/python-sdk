@@ -21,7 +21,7 @@ poetry run toml-sort -i pyproject.toml
 
 # https://beta.ruff.rs/docs/
 echo "Running ruff formatter (fixes some of the easier isort / flake8 / autoflake issues) ..."
-poetry run ruff --fix --select "ALL" $TARGET_PATHS
+poetry run ruff --fix $TARGET_PATHS
 
 # https://black.readthedocs.io/en/stable/index.html
 echo "Running black formatter ..."
