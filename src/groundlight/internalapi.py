@@ -133,7 +133,7 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InternalApiError(
-                f"Error getting detector by name '{name}' (status={response.status_code}): {response.text}"
+                f"Error getting detector by name '{name}' (status={response.status_code}): {response.text}",
             )
 
         parsed = response.json()
@@ -142,6 +142,6 @@ class GroundlightApiClient(ApiClient):
             raise NotFoundError(f"Detector with name={name} not found.")
         if parsed["count"] > 1:
             raise RuntimeError(
-                f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen."
+                f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
         return Detector.parse_obj(parsed["results"][0])

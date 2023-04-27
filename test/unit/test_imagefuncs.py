@@ -27,13 +27,13 @@ def test_jpeg_from_numpy():
 
 def test_unsupported_image_type():
     with pytest.raises(TypeError):
-        parse_supported_image_types(1)
+        parse_supported_image_types(1)  # type: ignore
 
     with pytest.raises(TypeError):
-        parse_supported_image_types(None)
+        parse_supported_image_types(None)  # type: ignore
 
     with pytest.raises(TypeError):
-        parse_supported_image_types(pytest)
+        parse_supported_image_types(pytest)  # type: ignore
 
 
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore

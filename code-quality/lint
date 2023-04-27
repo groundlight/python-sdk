@@ -36,8 +36,8 @@ echo "Linting with mypy (type checking) ..."
 poetry run mypy $TARGET_PATHS || ((errors++))
 
 if [[ $errors -gt 0 ]]; then
-    echo "🚨 $errors linters found errors!"
-    exit $errors
+  echo "🚨 $errors linters found errors!"
+  exit $errors
 fi
 
 echo "✅ Success!"
