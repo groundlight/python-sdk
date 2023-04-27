@@ -225,6 +225,18 @@ def test_get_image_query_label_no(gl: Groundlight, image_query: ImageQuery):
     assert retrieved_iq.result.label == Label.NO
 
 
+def test_get_image_query_label_yes(gl: Groundlight, image_query: ImageQuery):
+    gl.add_label(image_query, YES)
+    retrieved_iq = gl.get_image_query(id=image_query.id)
+    assert retrieved_iq.result.label == YES
+
+
+def test_get_image_query_label_no(gl: Groundlight, image_query: ImageQuery):
+    gl.add_label(image_query, NO)
+    retrieved_iq = gl.get_image_query(id=image_query.id)
+    assert retrieved_iq.result.label == NO
+
+
 def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
     assert isinstance(image_query, ImageQuery)
     gl.add_label(image_query, Label.YES)
