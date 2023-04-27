@@ -4,8 +4,7 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from model import (Detector, ImageQuery, PaginatedDetectorList,
-                   PaginatedImageQueryList)
+from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
@@ -14,8 +13,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import convert_display_label_to_internal
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import (GroundlightApiClient, NotFoundError,
-                                     sanitize_endpoint_url)
+from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
