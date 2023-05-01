@@ -39,8 +39,7 @@ class Groundlight:
 
     DEFAULT_WAIT: float = 30.0
 
-    BEFORE_POLLING_DELAY = 3.0  # Expected minimum time for a label to post
-    POLLING_INITIAL_DELAY = 0.5
+    POLLING_INITIAL_DELAY = 0.25
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
@@ -183,7 +182,6 @@ class Groundlight:
         """
         # TODO: Add support for ImageQuery id instead of object.
         timeout_time = time.time() + timeout_sec
-        time.sleep(self.BEFORE_POLLING_DELAY)
         delay = self.POLLING_INITIAL_DELAY
         while time.time() < timeout_time:
             current_confidence = image_query.result.confidence
