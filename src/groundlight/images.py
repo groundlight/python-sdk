@@ -49,7 +49,8 @@ def parse_supported_image_types(
         # Already in the right format
         return image
     if isinstance(image, np.ndarray):
-        return BytesIO(jpeg_from_numpy(image, jpeg_quality=jpeg_quality))
+        # Assume it is in BGR format from opencv
+        return BytesIO(jpeg_from_numpy(image[:, :, ::-1], jpeg_quality=jpeg_quality))
     raise TypeError(
         (
             "Unsupported type for image. Must be PIL, numpy (H,W,3) RGB, or a JPEG as a filename (str), bytes,"

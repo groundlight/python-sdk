@@ -149,7 +149,7 @@ class Groundlight:
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in RGB order
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
             (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
