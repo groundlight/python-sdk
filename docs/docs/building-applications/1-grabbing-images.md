@@ -13,7 +13,7 @@ from PIL import Image
 gl = Groundlight()
 det = gl.get_or_create_detector(name="path-clear", query="Is the path clear?")
 pil_img = Image.open("./docs/static/img/doorway.jpg")
-gl.submit_image_query(detector, pil_img)
+gl.submit_image_query(det, pil_img)
 ```
 
 ## OpenCV
@@ -40,12 +40,10 @@ Pixel values should be from 0-255 (not 0.0-1.0 as floats). So `uint8` data type 
 
 Here's sample code to create an 800x600 random image in numpy:
 
-```python
-gl = Groundlight()
+-- notest on examples with numpy so we don't have to build matrix logic
+```python notest
 import numpy as np
 
-gl = Groundlight()
-det = gl.get_or_create_detector(name="api-test", query="Can you see anything in this image?")
 np_img = np.random.uniform(low=0, high=255, size=(600, 800, 3)).astype(np.uint8)
 gl.submit_image_query(detector, np_img)
 ```
