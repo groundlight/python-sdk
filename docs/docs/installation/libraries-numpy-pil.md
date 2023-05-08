@@ -22,10 +22,10 @@ import numpy as np
 img = np_img = np.random.uniform(0, 255, (600, 800, 3))
 ```
 
-Should you have an RGB array, you can reverse it with:
+If you have an RGB array, you must reverse the channel order before sending it to Groundlight, like:
 
 ```python notest
-rgb_img = bgr_img[:, :, ::-1]
+bgr_img = rgb_img[:, :, ::-1]
 ```
 
 
