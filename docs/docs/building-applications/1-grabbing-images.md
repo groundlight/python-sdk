@@ -49,21 +49,24 @@ gl.submit_image_query(detector, np_img)
 ### Channel order: BGR vs RGB
 
 Groundlight expects images in BGR order, because this is standard for OpenCV, which uses numpy arrays as image storage.
-Most other image libraries use RGB order, so you may need to reverse the channel order before sending to Groundlight.
+(OpenCV uses BGR because it was originally developed decades ago for compatibility with the BGR color format used by many cameras and image processing hardware at the time of its creation.)
+Most other image libraries use RGB order, so if you are using images as numpy arrays which did not originate from OpenCV you likely need to reverse the channel order before sending the images to Groundlight.
+Note this change was made in v0.8 of the Groundlight SDK - in previous versions, RGB order was expected.  
+
 If you have an RGB array, you must reverse the channel order before sending it to Groundlight, like:
 
 ```python notest
+# Convert numpy image in RGB channel order to BGR order
 bgr_img = rgb_img[:, :, ::-1]
 ```
 
-Note this change was made in v0.8 of the Groundlight SDK.  In previous versions, RGB order was expected.  
 The difference can be surprisingly subtle when red and blue get swapped.  Often images just look a little off, but sometimes they look very wrong.
 
-Here's an example of a subtle difference:
+Here's an example of a natural-scene image where you might think the color balance is just off:
 ![Correct color order](/img/michonne.jpg)
 ![Swapped color channels](/img/michonne-bgr.jpg)
 
-In industrial settings, the difference can be very subtle.
+In industrial settings, the difference can be almost impossible to detect without prior knowledge of the scene:
 ![Correct color order](/img/cnc-gripper.jpg)
 ![Swapped color channels](/img/cnc-gripper-bgr.jpg)
 
