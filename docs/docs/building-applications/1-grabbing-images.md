@@ -40,7 +40,8 @@ Pixel values should be from 0-255 (not 0.0-1.0 as floats). So `uint8` data type 
 
 Here's sample code to create an 800x600 random image in numpy:
 
--- notest on examples with numpy so we don't have to build matrix logic
+<!--- notest on examples with numpy so we don't have to build matrix logic -->
+
 ```python notest
 import numpy as np
 
