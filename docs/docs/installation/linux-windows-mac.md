@@ -21,7 +21,7 @@ To install the Groundlight SDK using pip, run the following command in your term
 pip install groundlight
 ```
 
-If you're using `python3`, you might need to use `pip3` instead:
+If you're also using `python2` on your system, you might need to use `pip3` instead:
 
 ```bash
 pip3 install groundlight
