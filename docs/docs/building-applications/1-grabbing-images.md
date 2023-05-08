@@ -7,6 +7,7 @@ Groundlight's SDK accepts images in many popular formats.
 The Groundlight SDK can accept PIL images directly in `submit_image_query`.  Here's an example:
 
 ```python
+from groundlight import Groundlight
 from PIL import Image
 
 gl = Groundlight()
@@ -39,9 +40,12 @@ Pixel values should be from 0-255 (not 0.0-1.0 as floats). So `uint8` data type 
 
 Here's sample code to create an 800x600 random image in numpy:
 
-```python notest
+```python
+gl = Groundlight()
 import numpy as np
 
+gl = Groundlight()
+det = gl.get_or_create_detector(name="api-test", query="Can you see anything in this image?")
 np_img = np.random.uniform(low=0, high=255, size=(600, 800, 3)).astype(np.uint8)
 gl.submit_image_query(detector, np_img)
 ```
@@ -69,5 +73,4 @@ Here's an example of a natural-scene image where you might think the color balan
 In industrial settings, the difference can be almost impossible to detect without prior knowledge of the scene:
 ![Correct color order](/img/cnc-gripper.jpg)
 ![Swapped color channels](/img/cnc-gripper-bgr.jpg)
-
 
