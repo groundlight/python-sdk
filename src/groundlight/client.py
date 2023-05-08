@@ -10,7 +10,7 @@ from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.binary_labels import convert_display_label_to_internal
+from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
@@ -71,6 +71,15 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
+    @classmethod
+    def _post_process_image_query(cls, iq: ImageQuery) -> ImageQuery:
+        """Post-process the image query so we don't use confusing internal labels.
+
+        TODO: Get rid of this once we clean up the mapping logic server-side.
+        """
+        iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
+        return iq
+
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         if isinstance(id, Detector):
             # Short-circuit
@@ -102,7 +111,12 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(
-        self, name: str, query: str, *, confidence_threshold: Optional[float] = None, config_name: Optional[str] = None
+        self,
+        name: str,
+        query: str,
+        *,
+        confidence_threshold: Optional[float] = None,
+        config_name: Optional[str] = None,
     ) -> Detector:
         """Tries to look up the detector by name.  If a detector with that name, query, and
         confidence exists, return it. Otherwise, create a detector with the specified query and
@@ -113,30 +127,41 @@ class Groundlight:
         except NotFoundError:
             logger.debug(f"We could not find a detector with name='{name}'. So we will create a new detector ...")
             return self.create_detector(
-                name=name, query=query, confidence_threshold=confidence_threshold, config_name=config_name
+                name=name,
+                query=query,
+                confidence_threshold=confidence_threshold,
+                config_name=config_name,
             )
 
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                f" The existing query is '{existing_detector.query}'."
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                    f" The existing query is '{existing_detector.query}'."
+                ),
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                " thresholds don't match. The existing confidence threshold is"
-                f" {existing_detector.confidence_threshold}."
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                    " thresholds don't match. The existing confidence threshold is"
+                    f" {existing_detector.confidence_threshold}."
+                ),
             )
         return existing_detector
 
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         obj = self.image_queries_api.get_image_query(id=id)
-        return ImageQuery.parse_obj(obj.to_dict())
+        iq = ImageQuery.parse_obj(obj.to_dict())
+        return self._post_process_image_query(iq)
 
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
-        return PaginatedImageQueryList.parse_obj(obj.to_dict())
+        image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
+        if image_queries.results is not None:
+            image_queries.results = [self._post_process_image_query(iq) for iq in image_queries.results]
+        return image_queries
 
     def submit_image_query(
         self,
@@ -166,7 +191,7 @@ class Groundlight:
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
-        return image_query
+        return self._post_process_image_query(image_query)
 
     def wait_for_confident_result(
         self,
@@ -203,11 +228,11 @@ class Groundlight:
             image_query = self.get_image_query(image_query.id)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: str):
+    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
         """A new label to an image query.  This answers the detector's question.
         :param image_query: Either an ImageQuery object (returned from `submit_image_query`) or
         an image_query id as a string.
-        :param label: The string "Yes" or the string "No" in answer to the query.
+        :param label: The string "YES" or the string "NO" in answer to the query.
         """
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
