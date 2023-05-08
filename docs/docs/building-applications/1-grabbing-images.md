@@ -1,6 +1,7 @@
 # Grabbing Images
 
-Groundlight's SDK accepts images in many popular formats.
+Groundlight's SDK accepts images in many popular formats, including PIL, OpenCV, and numpy arrays.  
+
 
 ## PIL
 
@@ -73,3 +74,13 @@ In industrial settings, the difference can be almost impossible to detect withou
 ![Correct color order](/img/cnc-gripper.jpg)
 ![Swapped color channels](/img/cnc-gripper-bgr.jpg)
 
+
+## Framegrab
+
+For a unified interface to many different kinds of image sources, see the [framegrab library](https://pypi.org/project/framegrab/).
+Framegrab is still an early work in progress, but has many useful features for working with cameras and other image sources.  Framegrab provides a single interface for many different kinds of image sources, including:
+
+- USB cameras
+- IP cameras
+- Video files
+- Image files
