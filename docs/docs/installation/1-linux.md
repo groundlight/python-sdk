@@ -1,6 +1,6 @@
-# Installing on Windows, Linux, or MacOS
+# Installing on Linux
 
-This guide will help you install the Groundlight SDK on Windows, Linux, or macOS.  The Groundlight SDK requires Python 3.7 or higher.
+This guide will help you install the Groundlight SDK on Linux. The Groundlight SDK requires Python 3.7 or higher.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Assuming you have Python 3.7 or higher installed on your system, you can proceed
 
 ### Installing Groundlight SDK
 
-To install the Groundlight SDK using pip, run the following command in your terminal (or Command Prompt on Windows):
+To install the Groundlight SDK using pip, run the following command in your terminal:
 
 ```bash
 pip install groundlight
@@ -53,67 +53,40 @@ pip3 install --upgrade groundlight
 
 After upgrading, you can use the Python one-liner mentioned in the "Checking Groundlight SDK Version" section to verify that the latest version is now installed.
 
-
 ## Getting the right Python Version
 
-To check your installed Python version, open a terminal (or Command Prompt on Windows) and run:
+To check your installed Python version, open a terminal and run:
 
 ```bash
 python --version
 ```
 
-If you see a version number starting with "3.7" or higher (e.g., "3.7.5" or "3.9.0"), you're good to go.
-
-```
-pip3 install groundlight --upgrade
-```
-
-
-
-If the above command does not work or shows a Python 2.x version, try running:
-
-```bash
-python3 --version
-```
-
-If this command returns a Python 3.7 or higher version, you can use `python3` instead of `python` in the following steps.
-
-### Upgrading Python on Windows
-
-Download the latest Python installer from the [official Python website](https://www.python.org/downloads/windows/) and run it.
-
-### Upgrading Python on MacOS
-
-Download the latest Python installer from the [official Python website](https://www.python.org/downloads/mac-osx/) and run it, or use [Homebrew](https://brew.sh/) to install Python:
-
-  ```bash
-  brew install python
-  ```
+If you see a version number starting with "3.7" or higher (e.g., "3.7.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
 
 ### Upgrading Python on Linux
 
 Use your distribution's package manager to install the latest Python version:
 
-  - For Ubuntu or Debian-based systems:
+- For Ubuntu or Debian-based systems:
 
-    ```bash
-    sudo apt update
-    sudo apt install python3
-    ```
+  ```bash
+  sudo apt update
+  sudo apt install python3
+  ```
 
-    (For Ubuntu 18.04 see note below.)
+  (For Ubuntu 18.04 see note below.)
 
-  - For Fedora-based systems:
+- For Fedora-based systems:
 
-    ```bash
-    sudo dnf install python3
-    ```
+  ```bash
+  sudo dnf install python3
+  ```
 
-  - For Arch Linux:
+- For Arch Linux:
 
-    ```bash
-    sudo pacman -S python
-    ```
+  ```bash
+  sudo pacman -S python
+  ```
 
 After upgrading, verify the Python version by running `python --version` or `python3 --version`, as described earlier.
 
@@ -137,8 +110,6 @@ sudo update-alternatives --install /usr/bin/pip3 pip3 $(which pip3.8) 10
 pip3 install groundlight
 ```
 
-
 ## Ready to go!
 
 You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications](/docs/building-applications) documentation pages.
-

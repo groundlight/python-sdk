@@ -6,12 +6,12 @@ Welcome to the Groundlight SDK installation guide. In this guide, you'll find st
 
 Choose your platform from the list below and follow the instructions in the corresponding guide:
 
-- [Linux](linux-windows-mac.md)
-- [macOS](linux-windows-mac.md)
-- [Windows](linux-windows-mac.md)
-- [Raspberry Pi](raspberry-pi-jetson.md)
-- [NVIDIA Jetson](raspberry-pi-jetson.md)
-- [Arduino](https://github.com/groundlight/esp32cam)
+- [Linux](1-linux.md)
+- [macOS](2-macos.md)
+- [Windows](3-windows.md)
+- [Raspberry Pi](4-raspberry-pi.md)
+- [NVIDIA Jetson](5-nvidia-jetson.md)
+- [Arduino](6-arduino.md)
 
 After completing the installation process for your platform, you'll be ready to start [building visual applications](/docs/building-applications/) using the Groundlight SDK.
 
