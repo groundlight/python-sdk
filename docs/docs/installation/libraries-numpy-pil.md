@@ -1,38 +1,31 @@
-# Numpy, PIL, OpenCV - using common libraries
+# Optional libraries
 
 ## Smaller is better!
 
-Groundlight is optimized to run on small edge devices. As such, you can use the Groundlight SDK without
+The Groundlight SDK is optimized to run on small edge devices. As such, you can use the Groundlight SDK without
 installing large libraries like `numpy` or `OpenCV`.
 
 But if you're already installing them, we'll use them. Our SDK detects if these libraries are installed
 and will make use of them if they're present. If not, we'll gracefully degrade, and tell you what's
 wrong if you try to use these features.
 
-## Numpy
+## PIL - optional but default installed
 
-The Groundlight SDK can accept images as `numpy` arrays. They should be in the standard HWN format in BGR color order, matching OpenCV standards.
-Pixel values should be from 0-255 (not 0.0-1.0 as floats). SO `uint8` data type is preferable since it saves memory.
+The `PIL` library offers a bunch of standard utilities for working with images in python.  The Groundlight SDK can work without `PIL`.
 
-Here's sample code to create an 800x600 random image in numpy:
+Because `PIL` is not very large, and is quite useful, we install it by default with the normal build of the Groundlight SDK.  So when you 
 
-```python notest
-import numpy as np
-
-img = np_img = np.random.uniform(0, 255, (600, 800, 3))
+``` shell
+pip3 install groundlight
 ```
 
-If you have an RGB array, you must reverse the channel order before sending it to Groundlight, like:
+it comes with the `pillow` version of the `PIL` library already installed.
 
-```python notest
-bgr_img = rgb_img[:, :, ::-1]
-```
+### Working without PIL
 
+If you are extremely space constrained, you can install the Groundlight SDK from source without `PIL` and it will work properly, but with reduced functionality.
+Specifically, you will need to convert your images into `JPEG` format yourself.  The SDK normally relies on `PIL` to do JPEG compression (which is a non-trivial algorithm), and the API requires images to be in JPEG format.  However on space-constrained platforms, sometimes this conversion is done in hardware, and so we don't want to force you to install `PIL` if you don't need it.
 
-## PIL
+## Numpy, OpenCV - fully optional
 
-The Groundlight SDK can accept PIL images directly in `submit_image_query`.
-
-## OpenCV
-
-OpenCV creates images that are stored as numpy arrays. So can send them to `submit_image_query` directly.
+These commonly-used libraries are not installed by default, because they are quite large, and their installation can often cause conflicts with other dependent libraries.  If you want to use them, install them directly.
