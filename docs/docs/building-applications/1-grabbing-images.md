@@ -47,6 +47,7 @@ Here's sample code to create an 800x600 random image in numpy:
 import numpy as np
 
 np_img = np.random.uniform(low=0, high=255, size=(600, 800, 3)).astype(np.uint8)
+# Note: channel order is interpretted as BGR not RGB
 gl.submit_image_query(detector, np_img)
 ```
 
