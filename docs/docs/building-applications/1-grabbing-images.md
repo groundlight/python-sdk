@@ -30,7 +30,7 @@ cam = cv2.VideoCapture(0)  # Initialize camera (0 is the default index)
 
 _, frame = cam.read()  # Capture one frame
 gl.submit_image_query(detector, frame)  # Send the frame to Groundlight
-cap.release()  # Release the camera
+cam.release()  # Release the camera
 ```
 
 
