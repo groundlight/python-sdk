@@ -3,9 +3,9 @@
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
 from typing import Any
+
 import openapi_client
 import pytest
-
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
 from groundlight.internalapi import NotFoundError
