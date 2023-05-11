@@ -43,7 +43,7 @@ def fixture_gl() -> Groundlight:
 def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    query = "Test query?"
+    query = "Is there a dog?"
     return gl.create_detector(name=name, query=query)
 
 
@@ -55,7 +55,7 @@ def fixture_image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
 
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    query = "Test query?"
+    query = "Is there a dog?"
     _detector = gl.create_detector(name=name, query=query)
     assert str(_detector)
     assert isinstance(_detector, Detector)
@@ -68,7 +68,7 @@ def test_create_detector_with_config_name(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
     name = f"Test never-review {datetime.utcnow()}"  # Need a unique name
-    query = "Test query with never-review?"
+    query = "Is there a dog (never-review)?"
     config_name = "never-review"
     _detector = gl.create_detector(name=name, query=query, config_name=config_name)
     assert str(_detector)
@@ -129,7 +129,7 @@ def test_list_detectors(gl: Groundlight):
 def test_get_or_create_detector(gl: Groundlight):
     # With a unique name, we should be creating a new detector.
     unique_name = f"Unique name {datetime.utcnow()}"
-    query = "Test query?"
+    query = "Is there a dog?"
     detector = gl.get_or_create_detector(name=unique_name, query=query)
     assert str(detector)
     assert isinstance(detector, Detector)
