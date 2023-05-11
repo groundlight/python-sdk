@@ -14,9 +14,7 @@ from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
-
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
-
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
