@@ -3,7 +3,6 @@
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
 from typing import Any
-
 import openapi_client
 import pytest
 
@@ -15,6 +14,7 @@ from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
+
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
