@@ -11,7 +11,7 @@ or by setting the `GROUNDLIGHT_ENDPOINT` environment variable like:
 
 ```bash
 export GROUNDLIGHT_ENDPOINT=http://localhost:6717
-python glapp.py
+python your_app.py
 ```
 
 (Edge model download is not yet generally available. Work with your Solutions Engineer to set up edge inference.)
