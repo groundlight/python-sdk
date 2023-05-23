@@ -67,9 +67,17 @@ class Groundlight:
 
         configuration.api_key["ApiToken"] = api_token
 
+        self.api_token = api_token[:20] + "..."   # redact the secret
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+
+    def __str__(self) -> str:
+        out = f"<Groundlight api_token='{self.api_token}'"
+        if self.endpoint != "https://api.groundlight.ai/":
+            out += " endpoint={self.endpoint}"
+        out += ">"
+        return out
 
     @classmethod
     def _post_process_image_query(cls, iq: ImageQuery) -> ImageQuery:
