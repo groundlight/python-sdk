@@ -64,13 +64,13 @@ def test_create_detector(gl: Groundlight):
     ), "We expected the default confidence threshold to be used."
 
 
-def test_create_detector_with_config_name(gl: Groundlight):
+def test_create_detector_with_pipeline_config(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
     name = f"Test never-review {datetime.utcnow()}"  # Need a unique name
-    query = "Is there a dog (never-review)?"
-    config_name = "never-review"
-    _detector = gl.create_detector(name=name, query=query, config_name=config_name)
+    query = "Is there a dog (always-pass)?"
+    pipeline_config = "dummy-always-pass"
+    _detector = gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
     assert str(_detector)
     assert isinstance(_detector, Detector)
 
@@ -80,13 +80,13 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     # It's useful for testing.
     name = f"Test with confidence {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog in the image?"
-    config_name = "never-review"
+    pipeline_config = "dummy-always-pass"
     confidence_threshold = 0.825
     _detector = gl.create_detector(
         name=name,
         query=query,
         confidence_threshold=confidence_threshold,
-        config_name=config_name,
+        pipeline_config=pipeline_config,
     )
     assert str(_detector)
     assert isinstance(_detector, Detector)
@@ -101,7 +101,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
             name=name,
             query=query,
             confidence_threshold=different_confidence,
-            config_name=config_name,
+            pipeline_config=pipeline_config,
         )
 
     different_query = "Bad bad bad?"
@@ -110,7 +110,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
             name=name,
             query=different_query,
             confidence_threshold=confidence_threshold,
-            config_name=config_name,
+            pipeline_config=pipeline_config,
         )
 
     # If the confidence is not provided, we will use the existing detector's confidence.
@@ -164,8 +164,10 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 
 
 def test_submit_image_query_returns_yes(gl: Groundlight):
-    # We use the "never-review" model to guarantee a "yes" answer.
-    detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", config_name="never-review")
+    # We use the "dummy-always-pass" model to guarantee a "yes" answer.
+    detector = gl.get_or_create_detector(
+        name="Always a dog", query="Is there a dog?", pipeline_config="dummy-always-pass"
+    )
     image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=5)
     assert image_query.result.label == Label.YES
 

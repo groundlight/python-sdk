@@ -116,7 +116,7 @@ class Groundlight:
         query: str,
         *,
         confidence_threshold: Optional[float] = None,
-        config_name: Optional[str] = None,
+        pipeline_config: Optional[str] = None,
     ) -> Detector:
         """Tries to look up the detector by name.  If a detector with that name, query, and
         confidence exists, return it. Otherwise, create a detector with the specified query and
@@ -130,7 +130,7 @@ class Groundlight:
                 name=name,
                 query=query,
                 confidence_threshold=confidence_threshold,
-                config_name=config_name,
+                pipeline_config=pipeline_config,
             )
 
         # TODO: We may soon allow users to update the retrieved detector's fields.

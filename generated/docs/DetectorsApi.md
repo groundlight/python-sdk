@@ -53,7 +53,7 @@ with openapi_client.ApiClient(configuration) as api_client:
         query="query_example",
         group_name="group_name_example",
         confidence_threshold=0.9,
-        config_name="config_name_example",
+        pipeline_config="pipeline_config_example",
     ) # DetectorCreationInput | 
 
     # example passing only required values which don't have defaults set
