@@ -100,13 +100,13 @@ class Groundlight:
         query: str,
         *,
         confidence_threshold: Optional[float] = None,
-        config_name: Optional[str] = None,
+        pipeline_config: Optional[str] = None,
     ) -> Detector:
         detector_creation_input = DetectorCreationInput(name=name, query=query)
         if confidence_threshold is not None:
             detector_creation_input.confidence_threshold = confidence_threshold
-        if config_name is not None:
-            detector_creation_input.config_name = config_name
+        if pipeline_config is not None:
+            detector_creation_input.pipeline_config = pipeline_config
         obj = self.detectors_api.create_detector(detector_creation_input)
         return Detector.parse_obj(obj.to_dict())
 
