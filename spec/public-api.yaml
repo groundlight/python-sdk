@@ -265,13 +265,11 @@ components:
           default: 0.9
           description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
-        config_name:
+        pipeline_config:
           type: string
           nullable: true
-          description: (Advanced usage) If your account has multiple named ML configuration
-            options enabled, you can use this field to specify which one you would
-            like to use.
-          maxLength: 100
+          description: (Advanced usage) Configuration to instantiate a specific prediction pipeline.
+          maxLength: 8192
       required:
       # TODO: make name optional - that's how the web version is going.
       - name

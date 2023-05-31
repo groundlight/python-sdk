@@ -1,4 +1,4 @@
-# ruff: noqa
+# flake8: noqa
 
 # import all models into this package
 # if you have many models here with many references from one model to another this may
