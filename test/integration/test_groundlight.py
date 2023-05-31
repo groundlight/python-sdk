@@ -164,11 +164,11 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 
 
 def test_submit_image_query_returns_yes(gl: Groundlight):
-    # We use the "never-review" model to guarantee a "yes" answer.
+    # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(
         name="Always a dog", query="Is there a dog?", pipeline_config="never-review"
     )
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=20)
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=2)
     assert image_query.result.label == Label.YES
 
 
