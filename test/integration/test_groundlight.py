@@ -69,7 +69,7 @@ def test_create_detector_with_pipeline_config(gl: Groundlight):
     # It's useful for testing.
     name = f"Test never-review {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog (always-pass)?"
-    pipeline_config = "dummy-always-pass"
+    pipeline_config = "never-review"
     _detector = gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
     assert str(_detector)
     assert isinstance(_detector, Detector)
@@ -80,7 +80,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     # It's useful for testing.
     name = f"Test with confidence {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog in the image?"
-    pipeline_config = "dummy-always-pass"
+    pipeline_config = "never-review"
     confidence_threshold = 0.825
     _detector = gl.create_detector(
         name=name,
@@ -164,9 +164,9 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 
 
 def test_submit_image_query_returns_yes(gl: Groundlight):
-    # We use the "dummy-always-pass" model to guarantee a "yes" answer.
+    # We use the "never-review" model to guarantee a "yes" answer.
     detector = gl.get_or_create_detector(
-        name="Always a dog", query="Is there a dog?", pipeline_config="dummy-always-pass"
+        name="Always a dog", query="Is there a dog?", pipeline_config="never-review"
     )
     image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=5)
     assert image_query.result.label == Label.YES
