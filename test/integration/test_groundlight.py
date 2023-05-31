@@ -168,7 +168,7 @@ def test_submit_image_query_returns_yes(gl: Groundlight):
     detector = gl.get_or_create_detector(
         name="Always a dog", query="Is there a dog?", pipeline_config="never-review"
     )
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=5)
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=20)
     assert image_query.result.label == Label.YES
 
 
