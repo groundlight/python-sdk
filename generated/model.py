@@ -11,6 +11,12 @@ from typing import List, Optional
 from pydantic import AnyUrl, BaseModel, Field, confloat, constr
 
 
+class ClassificationLabel(str, Enum):
+    YES = "YES"
+    NO = "NO"
+    UNSURE = "UNSURE"
+
+
 class ClassificationResult(BaseModel):
     confidence: Optional[confloat(ge=0.0, le=1.0)] = Field(
         None, description="On a scale of 0 to 1, how confident are we in the predicted label?"
@@ -62,7 +68,9 @@ class Detector(BaseModel):
     )
 
 
-class ImageQuery(BaseModel):
+class PartialImageQuery(BaseModel):
+    """Represents an image query coming down the wire that hasn't been interpreted yet."""
+
     id: str = Field(..., description="A unique ID for this object.")
     type: ImageQueryTypeEnum = Field(..., description="The type of this object.")
     created_at: datetime = Field(..., description="When was this detector created?")
@@ -70,6 +78,15 @@ class ImageQuery(BaseModel):
     detector_id: str = Field(..., description="Which detector was used on this image query?")
     result_type: ResultTypeEnum = Field(..., description="What type of result are we returning?")
     result: ClassificationResult
+
+
+class ImageQuery(PartialImageQuery):
+    answer: ClassificationLabel = Field(..., description="Confident answer to the image query.")
+    guess: ClassificationLabel = Field(..., description="Best guess answer to the image query.")
+    confidence: Optional[confloat(ge=0.0, le=1.0)] = Field(..., description="Numeric confidence in the answer/guess.")
+    confidence_threshold: Optional[confloat(ge=0.0, le=1.0)] = Field(
+        ..., description="The confidence threshold used for this image query"
+    )
 
 
 class PaginatedDetectorList(BaseModel):

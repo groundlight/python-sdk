@@ -4,13 +4,25 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import (
+    ClassificationLabel,
+    Detector,
+    ImageQuery,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+    PartialImageQuery,
+)
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
+from groundlight.binary_labels import (
+    Label,
+    convert_display_label_to_internal,
+    convert_internal_label_to_display,
+    is_guess_confident,
+)
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
@@ -71,13 +83,27 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
-    @classmethod
-    def _post_process_image_query(cls, iq: ImageQuery) -> ImageQuery:
-        """Post-process the image query so we don't use confusing internal labels.
+    def _lookup_confidence_threshold(self, detector_id: str) -> float:
+        # this requires a service call.
+        # TODO: cache this.
+        detector = self.get_detector(detector_id)
+        return detector.confidence_threshold
 
-        TODO: Get rid of this once we clean up the mapping logic server-side.
+    def _post_process_image_query(self, piq: PartialImageQuery) -> ImageQuery:
+        """Post-process the wire-format image query to fill in fields and make it forwards-compatible
+        with upcoming API changes.
         """
-        iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
+        iqd = piq.dict()  # convert to dict to make it mutable
+        guess = convert_internal_label_to_display(piq, piq.result.label)
+        iqd["result"]["label"] = guess
+        iqd["guess"] = guess
+        iqd["confidence"] = piq.result.confidence
+        iqd["confidence_threshold"] = self._lookup_confidence_threshold(piq.detector_id)
+        if is_guess_confident(piq, iqd["confidence_threshold"]):
+            iqd["answer"] = guess
+        else:
+            iqd["answer"] = ClassificationLabel.UNSURE
+        iq = ImageQuery.parse_obj(iqd)
         return iq
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
@@ -153,7 +179,7 @@ class Groundlight:
 
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         obj = self.image_queries_api.get_image_query(id=id)
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq = PartialImageQuery.parse_obj(obj.to_dict())
         return self._post_process_image_query(iq)
 
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
@@ -187,7 +213,7 @@ class Groundlight:
         image_bytesio: Union[BytesIO, BufferedReader] = parse_supported_image_types(image)
 
         raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        image_query = PartialImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)

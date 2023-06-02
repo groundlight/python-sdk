@@ -5,9 +5,9 @@ This part of the API is kinda ugly right now.  So we'll encapsulate the ugliness
 """
 import logging
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
 
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, PartialImageQuery
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +74,36 @@ def convert_display_label_to_internal(
         return DeprecatedLabel.FAIL.value
 
     raise ValueError(f"Invalid label string '{label}'.  Must be one of '{Label.YES.value}','{Label.NO.value}'.")
+
+
+def map_result(iq: ImageQuery, threshold: float) -> str:
+    """Interprets the result of an image query and returns a string
+    representing the answer, or "UNSURE" if the confidence is below the threshold.
+    Maps old-style PASS/FAIL labels to YES/NO if needed.
+    """
+    if (iq.result.confidence is not None) and (iq.result.confidence < threshold):
+        answer = "UNSURE"
+    else:
+        answer = iq.result.label
+
+    ANSWER_MAP = {
+        "PASS": "YES",
+        "FAIL": "NO",
+    }
+    if answer in ANSWER_MAP:
+        answer = ANSWER_MAP[answer]
+    return answer
+
+
+def is_guess_confident(iq: PartialImageQuery, confidence_threshold: Optional[float]) -> bool:
+    """Returns True if the confidence of the guess is above the threshold."""
+    if iq.result.confidence is None:
+        # Currently we don't have a confidence value for human labels.
+        # So this indicates a human label, which we're currently treating as confident.
+        return True
+    if confidence_threshold is None:
+        # I'm not sure why confidence_threshold is allowed to be None
+        # But we can't compare it.
+        # To be safe, we say that we're not confident.
+        return False
+    return iq.result.confidence >= confidence_threshold
