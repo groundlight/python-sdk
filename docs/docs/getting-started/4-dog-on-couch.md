@@ -86,8 +86,8 @@ while True:
     if image:
         try:
             iq = gl.submit_image_query(image=image, detector=detector, wait=60)
-            result = iq.result
-            if result == "YES":
+            answer = iq.result.label
+            if answer == "YES":
                 print("Dog detected on the couch!")
                 play_sound("get_off_couch.mp3")
         except Exception as e:

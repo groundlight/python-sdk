@@ -129,8 +129,8 @@ while True:
         time.sleep(DELAY)
         continue
 
-    result = iq.result
-    log.append(result)
+    answer = iq.result.label
+    log.append(answer)
 
     if datetime.now() >= next_hourly_start:
         next_hourly_start += timedelta(hours=1)
