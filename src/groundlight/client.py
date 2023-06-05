@@ -71,7 +71,7 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
-    def _fixup_image_query(self, iq: ImageQuery) -> ImageQuery:
+    def _fixup_image_query(self, iq: ImageQuery) -> ImageQuery: # pylint: disable=no-self-use
         """Process the wire-format image query to make it more usable."""
         # Note: This might go away once we clean up the mapping logic server-side.
         iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
