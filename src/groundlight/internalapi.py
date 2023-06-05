@@ -53,8 +53,6 @@ def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
 
 
 def _generate_request_id():
-    # TODO: use a ksuid instead of a uuid.  Most of our API uses ksuids for lots of reasons.
-    # But we don't want to just import ksuid because we want to avoid dependency bloat
     return "req_uu" + uuid.uuid4().hex
 
 
@@ -63,10 +61,10 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     The only subtletie here is that currently confidence of None means
     human label, which is treated as confident.
     """
-    if iq.label.confidence is None:
+    if iq.result.confidence is None:
         # Human label
         return True
-    return iq.label.confidence >= confidence_threshold
+    return iq.result.confidence >= confidence_threshold
 
 
 class InternalApiError(RuntimeError):
