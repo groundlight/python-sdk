@@ -4,28 +4,22 @@ import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
-from model import (
-    ClassificationLabel,
-    Detector,
-    ImageQuery,
-    PaginatedDetectorList,
-    PaginatedImageQueryList,
-    PartialImageQuery,
-)
+from model import (ClassificationLabel, Detector, ImageQuery,
+                   PaginatedDetectorList, PaginatedImageQueryList,
+                   PartialImageQuery)
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
-from groundlight.binary_labels import (
-    Label,
-    convert_display_label_to_internal,
-    convert_internal_label_to_display,
-    is_guess_confident,
-)
+from groundlight.binary_labels import (Label,
+                                       convert_display_label_to_internal,
+                                       convert_internal_label_to_display,
+                                       is_guess_confident)
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
+from groundlight.internalapi import (GroundlightApiClient, NotFoundError,
+                                     sanitize_endpoint_url)
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -232,26 +226,25 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         """
         # TODO: Add support for ImageQuery id instead of object.
-        timeout_time = time.time() + timeout_sec
-        delay = self.POLLING_INITIAL_DELAY
-        while time.time() < timeout_time:
-            current_confidence = image_query.result.confidence
-            if current_confidence is None:
-                logging.debug("Image query with None confidence implies human label (for now)")
+        start_time = time.time() 
+        next_delay = self.POLLING_INITIAL_DELAY
+        target_delay = 0
+        image_query = self._post_process_image_query(image_query)
+        while True:
+            patience_so_far = time.time() - start_time
+            if image_query.answer != ClassificationLabel.UNSURE:
+                logger.debug(f"Confident answer for {image_query=} after {patience_so_far:.1f}s")
                 break
-            if current_confidence >= confidence_threshold:
-                logging.debug(f"Image query confidence {current_confidence:.3f} above {confidence_threshold:.3f}")
+            if patience_so_far > timeout_sec:
+                logger.debug(f"Timeout of {timeout_sec:.0f}s waiting for {image_query=}")
                 break
-            logger.debug(
-                (
-                    f"Polling for updated image_query because confidence {current_confidence:.3f} <"
-                    f" {confidence_threshold:.3f}"
-                ),
-            )
-            time_left = max(0, time.time() - timeout_time)
-            time.sleep(min(delay, time_left))
-            delay *= self.POLLING_EXPONENTIAL_BACKOFF
+            target_delay = min(patience_so_far + next_delay, timeout_sec)
+            sleep_time = max(target_delay - patience_so_far, 0)
+            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec}s) {image_query=} until confidence>={confidence_threshold:.3f}")
+            time.sleep(sleep_time)
+            next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
             image_query = self.get_image_query(image_query.id)
+            image_query = self._post_process_image_query(image_query)
         return image_query
 
     def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):

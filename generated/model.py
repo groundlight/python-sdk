@@ -88,6 +88,19 @@ class ImageQuery(PartialImageQuery):
         ..., description="The confidence threshold used for this image query"
     )
 
+    def as_string(self) -> str:
+        confstr = f"confidence={self.confidence:.03f}" if self.confidence is not None else "confidence=None" 
+        return f"<ImageQuery id={self.id}, answer={self.answer}, guess={self.guess}, {confstr}>"
+
+    def __repr__(self) -> str:
+        return self.as_string()
+
+    def __str__(self) -> str:
+        return self.as_string()
+
+    def __format__(self, format_spec: str) -> str:
+        return self.as_string()
+
 
 class PaginatedDetectorList(BaseModel):
     count: Optional[int] = Field(None, example=123)
