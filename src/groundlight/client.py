@@ -72,8 +72,7 @@ class Groundlight:
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
     def _fixup_image_query(self, iq: ImageQuery) -> ImageQuery:
-        """Process the wire-format image query to make it more usable.
-        """
+        """Process the wire-format image query to make it more usable."""
         # Note: This might go away once we clean up the mapping logic server-side.
         iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
@@ -204,9 +203,9 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         """
         # TODO: Add support for ImageQuery id instead of object.
-        start_time = time.time() 
+        start_time = time.time()
         next_delay = self.POLLING_INITIAL_DELAY
-        target_delay = 0
+        target_delay = 0.0
         image_query = self._fixup_image_query(image_query)
         while True:
             patience_so_far = time.time() - start_time
@@ -218,12 +217,15 @@ class Groundlight:
                 break
             target_delay = min(patience_so_far + next_delay, timeout_sec)
             sleep_time = max(target_delay - patience_so_far, 0)
-            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until confidence>={confidence_threshold:.3f}")
+            logger.debug(
+                f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until"
+                f" confidence>={confidence_threshold:.3f}"
+            )
             time.sleep(sleep_time)
             next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
             image_query = self.get_image_query(image_query.id)
             image_query = self._fixup_image_query(image_query)
-        return image_query    
+        return image_query
 
     def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
         """A new label to an image query.  This answers the detector's question.
