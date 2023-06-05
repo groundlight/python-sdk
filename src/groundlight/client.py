@@ -67,7 +67,7 @@ class Groundlight:
 
         configuration.api_key["ApiToken"] = api_token
 
-        self.api_token = api_token[:20] + "..."   # redact the secret
+        self.api_token = api_token[:20] + "..."  # redact the secret
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
