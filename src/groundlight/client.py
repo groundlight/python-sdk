@@ -233,14 +233,14 @@ class Groundlight:
         while True:
             patience_so_far = time.time() - start_time
             if image_query.answer != ClassificationLabel.UNSURE:
-                logger.debug(f"Confident answer for {image_query=} after {patience_so_far:.1f}s")
+                logger.debug(f"Confident answer for iq={image_query} after {patience_so_far:.1f}s")
                 break
             if patience_so_far > timeout_sec:
-                logger.debug(f"Timeout of {timeout_sec:.0f}s waiting for {image_query=}")
+                logger.debug(f"Timeout of {timeout_sec:.0f}s waiting for iq={image_query}")
                 break
             target_delay = min(patience_so_far + next_delay, timeout_sec)
             sleep_time = max(target_delay - patience_so_far, 0)
-            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec}s) {image_query=} until confidence>={confidence_threshold:.3f}")
+            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) iq={image_query} until confidence>={confidence_threshold:.3f}")
             time.sleep(sleep_time)
             next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
             image_query = self.get_image_query(image_query.id)
