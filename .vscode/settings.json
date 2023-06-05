@@ -3,9 +3,15 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
-  "python.analysis.extraPaths": ["./generated"],
-  "python.formatting.provider": "none",
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  }
+  "python.analysis.extraPaths": [
+    "./generated"
+  ],
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    // duplicates settings in pyproject.toml because VSCode doesn't look there.
+    "--line-length",
+    "120",
+    "--target-version",
+    "py37",
+  ],
 }
