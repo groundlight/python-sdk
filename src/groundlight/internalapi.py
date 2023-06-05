@@ -6,7 +6,7 @@ from typing import Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
-from model import Detector
+from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient
 
 from groundlight.status_codes import is_ok
@@ -57,6 +57,16 @@ def _generate_request_id():
     # But we don't want to just import ksuid because we want to avoid dependency bloat
     return "req_uu" + uuid.uuid4().hex
 
+
+def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
+    """Returns True if the image query's confidence is above threshold.
+    The only subtletie here is that currently confidence of None means 
+    human label, which is treated as confident.
+    """
+    if iq.label.confidence is None:
+        # Human label
+        return True
+    return iq.label.confidence >= confidence_threshold
 
 class InternalApiError(RuntimeError):
     # TODO: We need a better exception hierarchy

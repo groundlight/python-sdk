@@ -13,7 +13,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
+from groundlight.internalapi import GroundlightApiClient, NotFoundError, iq_is_confident, sanitize_endpoint_url
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -210,7 +210,7 @@ class Groundlight:
         image_query = self._fixup_image_query(image_query)
         while True:
             patience_so_far = time.time() - start_time
-            if image_query.result.confidence >= confidence_threshold:
+            if iq_is_confident(image_query, confidence_threshold):
                 logger.debug(f"Confident answer for {image_query} after {patience_so_far:.1f}s")
                 break
             if patience_so_far >= timeout_sec:
