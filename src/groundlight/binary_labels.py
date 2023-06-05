@@ -76,25 +76,6 @@ def convert_display_label_to_internal(
     raise ValueError(f"Invalid label string '{label}'.  Must be one of '{Label.YES.value}','{Label.NO.value}'.")
 
 
-def map_result(iq: ImageQuery, threshold: float) -> str:
-    """Interprets the result of an image query and returns a string
-    representing the answer, or "UNSURE" if the confidence is below the threshold.
-    Maps old-style PASS/FAIL labels to YES/NO if needed.
-    """
-    if (iq.result.confidence is not None) and (iq.result.confidence < threshold):
-        answer = "UNSURE"
-    else:
-        answer = iq.result.label
-
-    ANSWER_MAP = {
-        "PASS": "YES",
-        "FAIL": "NO",
-    }
-    if answer in ANSWER_MAP:
-        answer = ANSWER_MAP[answer]
-    return answer
-
-
 def is_guess_confident(iq: PartialImageQuery, confidence_threshold: Optional[float]) -> bool:
     """Returns True if the confidence of the guess is above the threshold."""
     if iq.result.confidence is None:
