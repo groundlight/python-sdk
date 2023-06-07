@@ -342,8 +342,9 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
 def test_detector_improvement(gl: Groundlight, detector: Detector):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
-    from PIL import Image
     import time
+
+    from PIL import Image
 
     def submit_noisy_image(image):
         np_noise = np.random.normal(loc=0, scale=50, size=image.shape)
