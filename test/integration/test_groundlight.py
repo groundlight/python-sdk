@@ -336,3 +336,43 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
+
+
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
+def test_detector_improvement(gl: Groundlight, detector: Detector):
+    # test that we get confidence improvement after sending images in
+    # Pass two of each type of image in
+    from PIL import Image
+    import time
+
+    def submit_noisy_image(image):
+        np_noise = np.random.normal(loc=0, scale=50, size=image.shape)
+        noisy_img = np.clip(image + np_noise, 0, 255).astype(np.uint8)
+        img_query = gl.submit_image_query(detector=detector.id, image=noisy_img)
+        return img_query
+
+    dog = np.array(Image.open("test/assets/dog.jpeg"))[:, :, ::-1]
+    cat = np.array(Image.open("test/assets/cat.jpeg"))[:, :, ::-1]
+
+    dog_query_1 = submit_noisy_image(dog)
+    dog_query_2 = submit_noisy_image(dog)
+    cat_query_1 = submit_noisy_image(cat)
+    cat_query_2 = submit_noisy_image(cat)
+
+    gl.add_label(dog_query_1, "YES")
+    gl.add_label(dog_query_2, "YES")
+    gl.add_label(cat_query_1, "NO")
+    gl.add_label(cat_query_2, "NO")
+
+    # wait to give enough time to train
+    wait_time = 300  # seconds
+    time.sleep(wait_time)
+
+    dog_query_3 = submit_noisy_image(dog)
+    cat_query_3 = submit_noisy_image(cat)
+    print(cat_query_1.result.confidence)
+    print(dog_query_1.result.confidence)
+    print(cat_query_3.result.confidence)
+    print(dog_query_3.result.confidence)
+    assert dog_query_3.result.confidence > dog_query_1.result.confidence
+    assert cat_query_3.result.confidence > cat_query_1.result.confidence
