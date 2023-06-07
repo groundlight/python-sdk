@@ -2,7 +2,7 @@
 
 Groundlight gives you a simple way to control the trade-off of latency against accuracy. The longer you can wait for an answer to your image query, the better accuracy you can get. In particular, if the ML models are unsure of the best response, they will escalate the image query to more intensive analysis with more complex models and real-time human monitors as needed. Your code can easily wait for this delayed response. Either way, these new results are automatically trained into your models so your next queries will get better results faster.
 
-The desired confidence level is set as the escalation threshold on your detector. This determines what is the minimum confidence score for the ML system to provide before the image query is escalated.
+The desired confidence level is set as the escalation threshold on your detector. This determines the minimum confidence score for the ML system to provide before the image query is escalated.
 
 For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.
 
@@ -30,12 +30,13 @@ print(f"The answer is {image_query.result}")
 :::tip
 
 Tuning confidence lets you balance accuracy against latency.
-Higher confidence will get higher accuracy, but will generally require longer latency.
+Higher confidence will get higher accuracy, but will generally require higher latency.
 Higher confidence also requires more labels, which increases labor costs.
 
 :::
 
-Or if you want to run as fast as possible, set `wait=0`. This way you will only get the ML results, without waiting for escalation. Image queries which are below the desired confidence level still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
+Or if you want to execute `submit_image_query` as fast as possible, set `wait=0`. This way the execution will
+not be escalated. You will either get the ML results or a placeholder response if the ML model hasn't finished executing. Image queries which are below the desired confidence level will still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
 
 ```python notest continuation
 image_query = gl.submit_image_query(detector=d, image=image, wait=0)
