@@ -83,10 +83,6 @@ class GroundlightApiClient(ApiClient):
     # will attempt to re-establish a connection
     STATUS_CODE_RANGE = range(500, 600)
 
-    @property
-    def max_connection_retry_attempts(self):
-        return self.MAX_CONNECTION_RETRY_ATTEMPTS
-
     @staticmethod
     def _retry_http_connection(callable):
         """Tries to re-execute the decorated function in case the execution
