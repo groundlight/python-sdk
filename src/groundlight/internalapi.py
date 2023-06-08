@@ -12,6 +12,7 @@ from openapi_client.api_client import ApiClient
 from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
+logger.setLevel(level=logging.DEBUG)
 
 
 class NotFoundError(Exception):
@@ -70,6 +71,36 @@ class GroundlightApiClient(ApiClient):
     """
 
     REQUEST_ID_HEADER = "X-Request-Id"
+    MAX_RETRY_ATTEMPTS = 4
+    # Initial delay time of 100 milliseconds
+    RETRY_INITIAL_DELAY = 0.1
+    RETRY_EXPONENTIAL_BACKOFF = 2
+
+    def retry_http_connection(callable):
+        """Tries to re-execute the decorated function in case the execution
+        fails due to a server error (HTTP Error code 500 - 599).
+        Retry attempts are executed with an exponential backoff factor of 2
+        :param callable: The function which is invoked. 
+        """
+        def wrapper(self, *args, **kwargs):
+            delay = self.RETRY_INITIAL_DELAY
+            retry_count = 0
+            while retry_count <= self.MAX_RETRY_ATTEMPTS:
+                try:
+                    return function(self, *args, **kwargs)
+
+                except requests.exceptions.HTTPError as error:
+                    status_code = error.response.status_code
+                    if 500 <= status_code < 600:
+                        logger.debug(
+                            f"Current HTTP response status: {status_code}."
+                            f"Remaining retries: {self.MAX_RETRY_ATTEMPTS - retry_count + 1}"
+                        )
+                        time.sleep(delay)
+                retry_count += 1
+                delay *= self.RETRY_EXPONENTIAL_BACKOFF
+
+        return wrapper
 
     def call_api(self, *args, **kwargs):
         """Adds a request-id header to each API call."""
@@ -97,6 +128,7 @@ class GroundlightApiClient(ApiClient):
             "X-Request-Id": request_id,
         }
 
+    @retry_http_connection
     def _add_label(self, image_query_id: str, label: str) -> dict:
         """Temporary internal call to add a label to an image query.  Not supported."""
         # TODO: Properly model this with OpenApi spec.
@@ -122,6 +154,7 @@ class GroundlightApiClient(ApiClient):
 
         return response.json()
 
+    @retry_http_connection
     def _get_detector_by_name(self, name: str) -> Detector:
         """Get a detector by name. For now, we use the list detectors API directly.
 
