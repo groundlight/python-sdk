@@ -1,14 +1,15 @@
 # Helper functions for checking HTTP status codes.
 
-OK_MIN = 200
-OK_MAX = 299
-USER_ERROR_MIN = 400
-USER_ERROR_MAX = 499
+
+# We can use range because of Python's lazy evaluation. Thus, the values
+# in the range are actually not generated, so we still get O(1) time complexity
+OK_RANGE = range(200, 300)
+USER_ERROR_RANGE = range(400, 500)
 
 
 def is_ok(status_code: int) -> bool:
-    return OK_MIN <= status_code <= OK_MAX
+    return status_code in OK_RANGE
 
 
 def is_user_error(status_code: int) -> bool:
-    return USER_ERROR_MIN <= status_code <= USER_ERROR_MAX
+    return status_code in USER_ERROR_RANGE

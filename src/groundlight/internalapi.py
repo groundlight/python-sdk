@@ -1,7 +1,9 @@
 import logging
 import os
+import random
 import time
 import uuid
+from functools import wraps
 from typing import Optional
 from urllib.parse import urlsplit, urlunsplit
 
@@ -71,34 +73,51 @@ class GroundlightApiClient(ApiClient):
     """
 
     REQUEST_ID_HEADER = "X-Request-Id"
-    MAX_RETRY_ATTEMPTS = 4
+    MAX_CONNECTION_RETRY_ATTEMPTS = 4
     # Initial delay time of 100 milliseconds
     RETRY_INITIAL_DELAY = 0.1
     RETRY_EXPONENTIAL_BACKOFF = 2
+    some_variable = 0
 
-    def retry_http_connection(callable):
+    # Defines the range of HTTP error status codes for which the API
+    # will attempt to re-establish a connection
+    STATUS_CODE_RANGE = range(500, 600)
+
+    @property
+    def max_connection_retry_attempts(self):
+        return self.MAX_CONNECTION_RETRY_ATTEMPTS
+
+    @staticmethod
+    def _retry_http_connection(callable):
         """Tries to re-execute the decorated function in case the execution
         fails due to a server error (HTTP Error code 500 - 599).
-        Retry attempts are executed with an exponential backoff factor of 2
-        :param callable: The function which is invoked. 
+        Retry attempts are executed while exponentially backing off by a factor
+        of 2 with full jitter (picking a random delay time between 0 and the
+        maximum delay time).
+        :param callable: The function to invoke.
         """
+
+        @wraps(callable)
         def wrapper(self, *args, **kwargs):
             delay = self.RETRY_INITIAL_DELAY
             retry_count = 0
-            while retry_count <= self.MAX_RETRY_ATTEMPTS:
+            while retry_count <= self.MAX_CONNECTION_RETRY_ATTEMPTS:
                 try:
-                    return function(self, *args, **kwargs)
+                    return callable(self, *args, **kwargs)
 
                 except requests.exceptions.HTTPError as error:
                     status_code = error.response.status_code
-                    if 500 <= status_code < 600:
+                    if status_code in self.STATUS_CODE_RANGE:
                         logger.debug(
                             f"Current HTTP response status: {status_code}."
-                            f"Remaining retries: {self.MAX_RETRY_ATTEMPTS - retry_count + 1}"
+                            f"Remaining retries: {self.MAX_CONNECTION_RETRY_ATTEMPTS - retry_count + 1}"
                         )
-                        time.sleep(delay)
+                        random_delay = random.uniform(0, delay)
+                        time.sleep(random_delay)
                 retry_count += 1
                 delay *= self.RETRY_EXPONENTIAL_BACKOFF
+
+            raise InternalApiError("Maximum retries reached.")
 
         return wrapper
 
@@ -128,7 +147,7 @@ class GroundlightApiClient(ApiClient):
             "X-Request-Id": request_id,
         }
 
-    @retry_http_connection
+    @_retry_http_connection
     def _add_label(self, image_query_id: str, label: str) -> dict:
         """Temporary internal call to add a label to an image query.  Not supported."""
         # TODO: Properly model this with OpenApi spec.
@@ -154,7 +173,7 @@ class GroundlightApiClient(ApiClient):
 
         return response.json()
 
-    @retry_http_connection
+    @_retry_http_connection
     def _get_detector_by_name(self, name: str) -> Detector:
         """Get a detector by name. For now, we use the list detectors API directly.
 
@@ -162,12 +181,12 @@ class GroundlightApiClient(ApiClient):
         """
         url = f"{self.configuration.host}/v1/detectors?name={name}"
         headers = self._headers()
-        response = requests.request("GET", url, headers=headers)
 
-        if not is_ok(response.status_code):
-            raise InternalApiError(
-                f"Error getting detector by name '{name}' (status={response.status_code}): {response.text}",
-            )
+        try:
+            response = requests.request("GET", url, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            raise error
 
         parsed = response.json()
 
