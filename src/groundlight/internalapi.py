@@ -4,17 +4,17 @@ import random
 import time
 import uuid
 from functools import wraps
-from typing import Optional
+from typing import Callable, Optional, TypeVar
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector
 from openapi_client.api_client import ApiClient
+from typing_extensions import ParamSpec
 
 from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
-logger.setLevel(level=logging.DEBUG)
 
 
 class NotFoundError(Exception):
@@ -63,7 +63,84 @@ def _generate_request_id():
 
 class InternalApiError(RuntimeError):
     # TODO: We need a better exception hierarchy
-    pass
+    def __init__(self, *args: object, status=None, reason=None, http_resp=None) -> None:
+        super().__init__(*args)
+
+        if http_resp:
+            self.status = http_resp.status_code
+            self.reason = http_resp.text
+        else:
+            self.status = status
+            self.reason = reason
+
+    def __str__(self):
+        error_message = f"{self.status}\n Reason: {self.reason}"
+        return error_message
+
+
+ReturnType = TypeVar("ReturnType")
+ParamsType = ParamSpec("ParamsType")
+
+
+class RequestsRetryDecorator:
+    """
+    Decorate a function to retry sending HTTP requests.
+
+    Tries to re-execute the decorated function in case the execution
+    fails due to a server error (HTTP Error code 500 - 599).
+    Retry attempts are executed while exponentially backing off by a factor
+    of 2 with full jitter (picking a random delay time between 0 and the
+    maximum delay time).
+
+    """
+
+    def __init__(
+        self,
+        initial_delay: float = 0.2,
+        exponential_backoff: int = 2,
+        status_code_range: tuple = (500, 600),
+        max_retries: int = 3,
+    ):
+        self.initial_delay = initial_delay
+        self.exponential_backoff = exponential_backoff
+        self.status_code_range = range(*status_code_range)
+        self.max_retries = max_retries
+
+    def __call__(self, function: Callable[ParamsType, ReturnType]) -> Callable[ParamsType, ReturnType]:
+        """:param callable: The function to invoke."""
+
+        @wraps(function)
+        def decorated(*args, **kwargs):
+            delay = self.initial_delay
+            retry_count = 0
+
+            while retry_count <= self.max_retries:
+                try:
+                    return function(*args, **kwargs)
+                except Exception as e:
+                    is_http_error = hasattr(e, "status")
+                    if not is_http_error:
+                        raise e
+                    if retry_count == self.max_retries:
+                        raise InternalApiError(reason="Maximum retries reached") from e
+
+                    status_code = e.status
+                    if status_code in self.status_code_range:
+                        logger.warning(
+                            (
+                                f"Current HTTP response status: {status_code}. "
+                                f"Remaining retries: {self.max_retries - retry_count}"
+                            ),
+                            exc_info=True,
+                        )
+                        # This is implementing a full jitter strategy
+                        random_delay = random.uniform(0, delay)
+                        time.sleep(random_delay)
+
+                retry_count += 1
+                delay *= self.exponential_backoff
+
+        return decorated
 
 
 class GroundlightApiClient(ApiClient):
@@ -73,49 +150,6 @@ class GroundlightApiClient(ApiClient):
     """
 
     REQUEST_ID_HEADER = "X-Request-Id"
-    MAX_CONNECTION_RETRY_ATTEMPTS = 4
-    # Initial delay time of 100 milliseconds
-    RETRY_INITIAL_DELAY = 0.1
-    RETRY_EXPONENTIAL_BACKOFF = 2
-    some_variable = 0
-
-    # Defines the range of HTTP error status codes for which the API
-    # will attempt to re-establish a connection
-    STATUS_CODE_RANGE = range(500, 600)
-
-    @staticmethod
-    def _retry_http_connection(callable):
-        """Tries to re-execute the decorated function in case the execution
-        fails due to a server error (HTTP Error code 500 - 599).
-        Retry attempts are executed while exponentially backing off by a factor
-        of 2 with full jitter (picking a random delay time between 0 and the
-        maximum delay time).
-        :param callable: The function to invoke.
-        """
-
-        @wraps(callable)
-        def wrapper(self, *args, **kwargs):
-            delay = self.RETRY_INITIAL_DELAY
-            retry_count = 0
-            while retry_count <= self.MAX_CONNECTION_RETRY_ATTEMPTS:
-                try:
-                    return callable(self, *args, **kwargs)
-
-                except requests.exceptions.HTTPError as error:
-                    status_code = error.response.status_code
-                    if status_code in self.STATUS_CODE_RANGE:
-                        logger.debug(
-                            f"Current HTTP response status: {status_code}."
-                            f"Remaining retries: {self.MAX_CONNECTION_RETRY_ATTEMPTS - retry_count + 1}"
-                        )
-                        random_delay = random.uniform(0, delay)
-                        time.sleep(random_delay)
-                retry_count += 1
-                delay *= self.RETRY_EXPONENTIAL_BACKOFF
-
-            raise InternalApiError("Maximum retries reached.")
-
-        return wrapper
 
     def call_api(self, *args, **kwargs):
         """Adds a request-id header to each API call."""
@@ -134,7 +168,6 @@ class GroundlightApiClient(ApiClient):
     # The methods below will eventually go away when we move to properly model
     # these methods with OpenAPI
     #
-
     def _headers(self) -> dict:
         request_id = _generate_request_id()
         return {
@@ -143,7 +176,7 @@ class GroundlightApiClient(ApiClient):
             "X-Request-Id": request_id,
         }
 
-    @_retry_http_connection
+    @RequestsRetryDecorator()
     def _add_label(self, image_query_id: str, label: str) -> dict:
         """Temporary internal call to add a label to an image query.  Not supported."""
         # TODO: Properly model this with OpenApi spec.
@@ -163,13 +196,11 @@ class GroundlightApiClient(ApiClient):
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
         if not is_ok(response.status_code):
-            raise InternalApiError(
-                f"Error adding label to image query {image_query_id} status={response.status_code} {response.text}",
-            )
+            raise InternalApiError(reason=f"Error adding label to image query {image_query_id}", http_resp=response)
 
         return response.json()
 
-    @_retry_http_connection
+    @RequestsRetryDecorator()
     def _get_detector_by_name(self, name: str) -> Detector:
         """Get a detector by name. For now, we use the list detectors API directly.
 
@@ -177,12 +208,10 @@ class GroundlightApiClient(ApiClient):
         """
         url = f"{self.configuration.host}/v1/detectors?name={name}"
         headers = self._headers()
+        response = requests.request("GET", url, headers=headers)
 
-        try:
-            response = requests.request("GET", url, headers=headers)
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            raise error
+        if not is_ok(response.status_code):
+            raise InternalApiError(http_resp=response)
 
         parsed = response.json()
 
