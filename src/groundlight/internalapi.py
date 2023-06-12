@@ -8,7 +8,7 @@ from typing import Callable, Optional, TypeVar
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
-from model import Detector
+from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient
 from typing_extensions import ParamSpec
 
@@ -56,9 +56,18 @@ def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
 
 
 def _generate_request_id():
-    # TODO: use a ksuid instead of a uuid.  Most of our API uses ksuids for lots of reasons.
-    # But we don't want to just import ksuid because we want to avoid dependency bloat
     return "req_uu" + uuid.uuid4().hex
+
+
+def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
+    """Returns True if the image query's confidence is above threshold.
+    The only subtletie here is that currently confidence of None means
+    human label, which is treated as confident.
+    """
+    if iq.result.confidence is None:
+        # Human label
+        return True
+    return iq.result.confidence >= confidence_threshold
 
 
 class InternalApiError(RuntimeError):

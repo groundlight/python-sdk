@@ -13,7 +13,9 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import GroundlightApiClient, NotFoundError, RequestsRetryDecorator, sanitize_endpoint_url
+
+from groundlight.internalapi import GroundlightApiClient, NotFoundError, RequestsRetryDecorator, iq_is_confident, sanitize_endpoint_url
+
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -71,12 +73,9 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
-    @classmethod
-    def _post_process_image_query(cls, iq: ImageQuery) -> ImageQuery:
-        """Post-process the image query so we don't use confusing internal labels.
-
-        TODO: Get rid of this once we clean up the mapping logic server-side.
-        """
+    def _fixup_image_query(self, iq: ImageQuery) -> ImageQuery:  # pylint: disable=no-self-use
+        """Process the wire-format image query to make it more usable."""
+        # Note: This might go away once we clean up the mapping logic server-side.
         iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
@@ -158,14 +157,14 @@ class Groundlight:
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         obj = self.image_queries_api.get_image_query(id=id)
         iq = ImageQuery.parse_obj(obj.to_dict())
-        return self._post_process_image_query(iq)
+        return self._fixup_image_query(iq)
 
     @RequestsRetryDecorator()
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
         if image_queries.results is not None:
-            image_queries.results = [self._post_process_image_query(iq) for iq in image_queries.results]
+            image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
 
     @RequestsRetryDecorator()
@@ -198,7 +197,7 @@ class Groundlight:
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
-        return self._post_process_image_query(image_query)
+        return self._fixup_image_query(image_query)
 
     def wait_for_confident_result(
         self,
@@ -213,26 +212,28 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         """
         # TODO: Add support for ImageQuery id instead of object.
-        timeout_time = time.time() + timeout_sec
-        delay = self.POLLING_INITIAL_DELAY
-        while time.time() < timeout_time:
-            current_confidence = image_query.result.confidence
-            if current_confidence is None:
-                logging.debug("Image query with None confidence implies human label (for now)")
+        start_time = time.time()
+        next_delay = self.POLLING_INITIAL_DELAY
+        target_delay = 0.0
+        image_query = self._fixup_image_query(image_query)
+        while True:
+            patience_so_far = time.time() - start_time
+            if iq_is_confident(image_query, confidence_threshold):
+                logger.debug(f"Confident answer for {image_query} after {patience_so_far:.1f}s")
                 break
-            if current_confidence >= confidence_threshold:
-                logging.debug(f"Image query confidence {current_confidence:.3f} above {confidence_threshold:.3f}")
+            if patience_so_far >= timeout_sec:
+                logger.debug(f"Timeout after {timeout_sec:.0f}s waiting for {image_query}")
                 break
+            target_delay = min(patience_so_far + next_delay, timeout_sec)
+            sleep_time = max(target_delay - patience_so_far, 0)
             logger.debug(
-                (
-                    f"Polling for updated image_query because confidence {current_confidence:.3f} <"
-                    f" {confidence_threshold:.3f}"
-                ),
+                f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until"
+                f" confidence>={confidence_threshold:.3f}"
             )
-            time_left = max(0, time.time() - timeout_time)
-            time.sleep(min(delay, time_left))
-            delay *= self.POLLING_EXPONENTIAL_BACKOFF
+            time.sleep(sleep_time)
+            next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
             image_query = self.get_image_query(image_query.id)
+            image_query = self._fixup_image_query(image_query)
         return image_query
 
     def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
