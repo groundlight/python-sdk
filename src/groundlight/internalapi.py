@@ -118,24 +118,27 @@ class RequestsRetryDecorator:
                 try:
                     return function(*args, **kwargs)
                 except Exception as e:
+                    # Properly model the exception hierarchy so that we don't catch
+                    # too general an exception
                     is_http_error = hasattr(e, "status")
                     if not is_http_error:
                         raise e
                     if retry_count == self.max_retries:
                         raise InternalApiError(reason="Maximum retries reached") from e
 
-                    status_code = e.status
-                    if status_code in self.status_code_range:
-                        logger.warning(
-                            (
-                                f"Current HTTP response status: {status_code}. "
-                                f"Remaining retries: {self.max_retries - retry_count}"
-                            ),
-                            exc_info=True,
-                        )
-                        # This is implementing a full jitter strategy
-                        random_delay = random.uniform(0, delay)
-                        time.sleep(random_delay)
+                    if is_http_error:
+                        status_code = e.status
+                        if status_code in self.status_code_range:
+                            logger.warning(
+                                (
+                                    f"Current HTTP response status: {status_code}. "
+                                    f"Remaining retries: {self.max_retries - retry_count}"
+                                ),
+                                exc_info=True,
+                            )
+                            # This is implementing a full jitter strategy
+                            random_delay = random.uniform(0, delay)
+                            time.sleep(random_delay)
 
                 retry_count += 1
                 delay *= self.exponential_backoff

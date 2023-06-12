@@ -11,6 +11,7 @@ DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 DETECTOR_NAME = f"test detector_{datetime.utcnow().strftime('%Y=%m-%d %H:%M:%S')}"
 TOTAL_RETRIES = 3
 STATUS_CODES = range(500, 505)
+IMAGE_FILE = "test/assets/dog.jpeg"
 
 
 @pytest.fixture(name="gl")
@@ -79,13 +80,13 @@ def test_submit_image_query_attempts_retries(gl: Groundlight):
         api_method=gl.submit_image_query,
         expected_call_counts=TOTAL_RETRIES + 1,
         detector=DETECTOR_NAME,
-        image="assets/dog.jpeg",
+        image=IMAGE_FILE,
         wait=1,
     )
 
 
 def test_get_image_query_attempts_retries(gl: Groundlight, detector: Detector):
-    image_query = gl.submit_image_query(detector=detector.id, image="assets/dog.jpeg")
+    image_query = gl.submit_image_query(detector=detector.id, image=IMAGE_FILE)
 
     run_test(
         mocked_call="urllib3.PoolManager.request",
@@ -104,7 +105,7 @@ def test_list_image_queries_attempts_retries(gl: Groundlight):
 
 
 def test_add_label_attempts_retries(gl: Groundlight, detector: Detector):
-    image_query = gl.submit_image_query(detector=detector.id, image="assets/dog.jpeg")
+    image_query = gl.submit_image_query(detector=detector.id, image=IMAGE_FILE)
     run_test(
         mocked_call="requests.request",
         api_method=gl.add_label,
