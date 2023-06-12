@@ -6,7 +6,6 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.4.0"
 jobs:
   # Run our linter on every push to the repository.
   lint:
@@ -20,8 +19,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
@@ -45,8 +42,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
@@ -119,8 +114,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: install poetry
         uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
       - name: show python version ${{ matrix.python-version }}
         run: |
           poetry run python --version
@@ -148,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
       - name: install python
@@ -157,8 +150,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
@@ -242,8 +233,6 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
