@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import Label
+from groundlight.internalapi import InternalApiError
 from model import Detector
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
@@ -128,7 +129,7 @@ def run_test(mocked_call: str, api_method: Callable[..., Any], expected_call_cou
         for status_code in STATUS_CODES:
             mock_request.return_value.status = status_code
 
-            with pytest.raises(Exception):
+            with pytest.raises(InternalApiError):
                 api_method(**kwargs)
 
             assert mock_request.call_count == expected_call_counts

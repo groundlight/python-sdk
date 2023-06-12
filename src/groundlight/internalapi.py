@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector, ImageQuery
-from openapi_client.api_client import ApiClient
+from openapi_client.api_client import ApiClient, ApiException
 from typing_extensions import ParamSpec
 
 from groundlight.status_codes import is_ok
@@ -70,21 +70,13 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     return iq.result.confidence >= confidence_threshold
 
 
-class InternalApiError(RuntimeError):
-    # TODO: We need a better exception hierarchy
-    def __init__(self, *args: object, status=None, reason=None, http_resp=None) -> None:
-        super().__init__(*args)
-
-        if http_resp:
-            self.status = http_resp.status_code
-            self.reason = http_resp.text
-        else:
-            self.status = status
-            self.reason = reason
-
-    def __str__(self):
-        error_message = f"{self.status}\n Reason: {self.reason}"
-        return error_message
+class InternalApiError(ApiException, RuntimeError):
+    # TODO: We should really avoid this double inheritance since
+    # both `ApiException` and `RuntimeError` are subclasses of
+    # `Exception`. Error handling might become more complex since
+    # the two super classes cross paths.
+    def __init__(self, status=None, reason=None, http_resp=None) -> None:
+        super().__init__(status, reason, http_resp)
 
 
 ReturnType = TypeVar("ReturnType")
@@ -126,16 +118,14 @@ class RequestsRetryDecorator:
             while retry_count <= self.max_retries:
                 try:
                     return function(*args, **kwargs)
-                except Exception as e:
-                    # Properly model the exception hierarchy so that we don't catch
-                    # too general an exception
-                    is_http_error = hasattr(e, "status")
-                    if not is_http_error:
+                except ApiException as e:
+                    is_target_error = (e.status is not None) and (e.status in self.status_code_range)
+                    if not is_target_error:
                         raise e
                     if retry_count == self.max_retries:
                         raise InternalApiError(reason="Maximum retries reached") from e
 
-                    if is_http_error:
+                    if is_target_error:
                         status_code = e.status
                         if status_code in self.status_code_range:
                             logger.warning(
@@ -208,7 +198,11 @@ class GroundlightApiClient(ApiClient):
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
         if not is_ok(response.status_code):
-            raise InternalApiError(reason=f"Error adding label to image query {image_query_id}", http_resp=response)
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error adding label to image query {image_query_id}",
+                http_resp=response,
+            )
 
         return response.json()
 
@@ -223,7 +217,7 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("GET", url, headers=headers)
 
         if not is_ok(response.status_code):
-            raise InternalApiError(http_resp=response)
+            raise InternalApiError(status=response.status_code, http_resp=response)
 
         parsed = response.json()
 

@@ -13,9 +13,13 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-
-from groundlight.internalapi import GroundlightApiClient, NotFoundError, RequestsRetryDecorator, iq_is_confident, sanitize_endpoint_url
-
+from groundlight.internalapi import (
+    GroundlightApiClient,
+    NotFoundError,
+    RequestsRetryDecorator,
+    iq_is_confident,
+    sanitize_endpoint_url,
+)
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
