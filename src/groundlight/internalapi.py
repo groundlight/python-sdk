@@ -75,8 +75,8 @@ class InternalApiError(ApiException, RuntimeError):
     # both `ApiException` and `RuntimeError` are subclasses of
     # `Exception`. Error handling might become more complex since
     # the two super classes cross paths.
-    def __init__(self, status=None, reason=None, http_resp=None) -> None:
-        super().__init__(status, reason, http_resp)
+    def __init__(self, status=None, reason=None, http_resp=None):
+        super(InternalApiError, self).__init__(status, reason, http_resp)
 
 
 ReturnType = TypeVar("ReturnType")
