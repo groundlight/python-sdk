@@ -28,7 +28,6 @@ pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 pytest-markdown-docs = "^0.4.3"
 pytest-mock = "^3.10.0"
-requests-mock = "1.10.0"
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"

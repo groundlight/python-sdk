@@ -13,7 +13,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import GroundlightApiClient, NotFoundError, sanitize_endpoint_url
+from groundlight.internalapi import GroundlightApiClient, NotFoundError, RequestsRetryDecorator, sanitize_endpoint_url
 from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
@@ -80,6 +80,7 @@ class Groundlight:
         iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
+    @RequestsRetryDecorator()
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         if isinstance(id, Detector):
             # Short-circuit
@@ -90,10 +91,12 @@ class Groundlight:
     def get_detector_by_name(self, name: str) -> Detector:
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
+    @RequestsRetryDecorator()
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
+    @RequestsRetryDecorator()
     def create_detector(
         self,
         name: str,
@@ -151,11 +154,13 @@ class Groundlight:
             )
         return existing_detector
 
+    @RequestsRetryDecorator()
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         obj = self.image_queries_api.get_image_query(id=id)
         iq = ImageQuery.parse_obj(obj.to_dict())
         return self._post_process_image_query(iq)
 
+    @RequestsRetryDecorator()
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
@@ -163,6 +168,7 @@ class Groundlight:
             image_queries.results = [self._post_process_image_query(iq) for iq in image_queries.results]
         return image_queries
 
+    @RequestsRetryDecorator()
     def submit_image_query(
         self,
         detector: Union[Detector, str],
@@ -184,6 +190,7 @@ class Groundlight:
         if wait is None:
             wait = self.DEFAULT_WAIT
         detector_id = detector.id if isinstance(detector, Detector) else detector
+
         image_bytesio: Union[BytesIO, BufferedReader] = parse_supported_image_types(image)
 
         raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
