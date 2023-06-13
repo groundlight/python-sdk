@@ -1,16 +1,17 @@
+import io
 import logging
 import os
 import random
 import time
 import uuid
 from functools import wraps
-from typing import Callable, Optional, TypeVar
+from io import BufferedReader, BytesIO
+from typing import Callable, Optional, cast
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
-from typing_extensions import ParamSpec
 
 from groundlight.status_codes import is_ok
 
@@ -80,10 +81,6 @@ class InternalApiError(ApiException, RuntimeError):
         super().__init__(status, reason, http_resp)
 
 
-ReturnType = TypeVar("ReturnType")
-ParamsType = ParamSpec("ParamsType")
-
-
 class RequestsRetryDecorator:
     """
     Decorate a function to retry sending HTTP requests.
@@ -108,7 +105,7 @@ class RequestsRetryDecorator:
         self.status_code_range = range(*status_code_range)
         self.max_retries = max_retries
 
-    def __call__(self, function: Callable[ParamsType, ReturnType]) -> Callable[ParamsType, ReturnType]:
+    def __call__(self, function: Callable) -> Callable:
         """:param callable: The function to invoke."""
 
         @wraps(function)
@@ -153,7 +150,40 @@ class GroundlightApiClient(ApiClient):
     """
 
     REQUEST_ID_HEADER = "X-Request-Id"
+    # This represents the byte stream of the input image file.
+    # We cache the byte stream so that if we attempt to access
+    # the file again we can do so even when the file has already been closed.
+    CACHED_BYTE_STREAM = io.BytesIO()
 
+    @staticmethod
+    def get_file_data_and_close_file(file_instance: io.IOBase) -> bytes:
+        """Overrides the method from OpenAPI client in order to allow access to the
+        file byte stream even after the file has been closed.
+        NOTE: Assumes that file_instance is either io.BytesIO or io.BufferedReader
+        """
+        if file_instance.closed:
+            if isinstance(file_instance, BytesIO):
+                file_instance = BytesIO(GroundlightApiClient.CACHED_BYTE_STREAM.getvalue())
+            else:
+                # Another BytesIO object needs to be created from raw bytes to avoid an I/O exception
+                file_instance = BufferedReader(
+                    cast(io.RawIOBase, BytesIO(GroundlightApiClient.CACHED_BYTE_STREAM.getvalue()))
+                )
+
+        else:
+            if isinstance(file_instance, BytesIO):
+                raw_bytes = file_instance.getvalue()
+            else:
+                raw_bytes = file_instance.read()
+                file_instance.seek(0)
+
+            GroundlightApiClient.CACHED_BYTE_STREAM = io.BytesIO(raw_bytes)
+
+        file_data = file_instance.read()
+        file_instance.close()
+        return file_data
+
+    @RequestsRetryDecorator()
     def call_api(self, *args, **kwargs):
         """Adds a request-id header to each API call."""
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
