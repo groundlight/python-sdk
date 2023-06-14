@@ -70,7 +70,7 @@ def parse_supported_image_types(
         bytesio = BytesIO()
         image.save(bytesio, "jpeg", quality=jpeg_quality)
         bytesio.seek(0)
-        ByteStreamWrapper(data=bytesio)
+        return ByteStreamWrapper(data=bytesio)
     if isinstance(image, (BytesIO, BufferedReader)):
         # Already in the right format
         return ByteStreamWrapper(data=image)
