@@ -42,7 +42,7 @@ def test_pil_support():
 
     img = Image.new("RGB", (640, 480))
     jpeg = parse_supported_image_types(img)
-    assert isinstance(jpeg, BytesIO)
+    assert isinstance(jpeg, ByteStreamWrapper)
 
     # Now try to parse the BytesIO object as an image
     jpeg_bytes = jpeg.getvalue()

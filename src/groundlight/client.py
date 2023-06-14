@@ -12,7 +12,7 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
-from groundlight.images import parse_supported_image_types
+from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
     GroundlightApiClient,
     NotFoundError,
@@ -187,7 +187,7 @@ class Groundlight:
             wait = self.DEFAULT_WAIT
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
-        image_bytesio: Union[BytesIO, BufferedReader] = parse_supported_image_types(image)
+        image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
         raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
