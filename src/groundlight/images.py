@@ -18,14 +18,13 @@ class ByteStreamWrapper(IOBase):
     def read(self) -> bytes:
         if isinstance(self._data, (BufferedReader, BytesIO)):
             return self._data.read()
-        elif isinstance(self._data, bytes):
-            return self._data
+        return self._data
 
     def getvalue(self) -> bytes:
-        bytes = self.read()
+        bytes_ = self.read()
         if isinstance(self._data, (BufferedReader, BytesIO)):
             self._data.seek(0)
-        return bytes
+        return bytes_
 
     def close(self) -> None:
         pass
