@@ -44,7 +44,8 @@ def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
-    return gl.create_detector(name=name, query=query)
+    pipeline_config = "never-review"
+    return gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
 
 
 @pytest.fixture(name="image_query")
