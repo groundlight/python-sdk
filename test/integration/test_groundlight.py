@@ -350,10 +350,10 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
 def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
-    import time
     import random
-    from PIL import Image
-    from PIL import ImageEnhance
+    import time
+
+    from PIL import Image, ImageEnhance
 
     random.seed(2741)
 
@@ -378,10 +378,10 @@ def test_detector_improvement(gl: Groundlight):
     dog = Image.open("test/assets/dog.jpeg")
     cat = Image.open("test/assets/cat.jpeg")
 
-    dog_query_1 = submit_noisy_image(dog, "YES")
-    dog_query_2 = submit_noisy_image(dog, "YES")
-    cat_query_1 = submit_noisy_image(cat, "NO")
-    cat_query_2 = submit_noisy_image(cat, "NO")
+    submit_noisy_image(dog, "YES")
+    submit_noisy_image(dog, "YES")
+    submit_noisy_image(cat, "NO")
+    submit_noisy_image(cat, "NO")
 
     # wait to give enough time to train
     wait_period = 30  # seconds
