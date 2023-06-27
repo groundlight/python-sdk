@@ -14,7 +14,7 @@ class ByteStreamWrapper(IOBase):
     def __init__(self, data: Union[BufferedReader, BytesIO, bytes]) -> None:
         super().__init__()
         if isinstance(data, (BufferedReader, BytesIO)):
-            self._data = self._data.read()
+            self._data = data.read()
         else:
             self._data = data
 
