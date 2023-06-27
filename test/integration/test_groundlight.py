@@ -48,9 +48,15 @@ def fixture_detector(gl: Groundlight) -> Detector:
     return gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
 
 
-@pytest.fixture(name="image_query")
-def fixture_image_query(gl: Groundlight, detector: Detector) -> ImageQuery:
+@pytest.fixture(name="image_query_yes")
+def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
+    return iq
+
+
+@pytest.fixture(name="image_query_no")
+def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
+    iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg")
     return iq
 
 
@@ -232,88 +238,89 @@ def test_list_image_queries(gl: Groundlight):
             assert is_valid_display_result(image_query.result)
 
 
-def test_get_image_query(gl: Groundlight, image_query: ImageQuery):
-    _image_query = gl.get_image_query(id=image_query.id)
+def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
+    _image_query = gl.get_image_query(id=image_query_yes.id)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
 
 
-def test_get_image_query_label_yes(gl: Groundlight, image_query: ImageQuery):
-    gl.add_label(image_query, Label.YES)
-    retrieved_iq = gl.get_image_query(id=image_query.id)
+def test_get_image_query_label_yes(gl: Groundlight, image_query_yes: ImageQuery):
+    gl.add_label(image_query_yes, Label.YES)
+    retrieved_iq = gl.get_image_query(id=image_query_yes.id)
     assert retrieved_iq.result.label == Label.YES
 
 
-def test_get_image_query_label_no(gl: Groundlight, image_query: ImageQuery):
-    gl.add_label(image_query, Label.NO)
-    retrieved_iq = gl.get_image_query(id=image_query.id)
+def test_get_image_query_label_no(gl: Groundlight, image_query_no: ImageQuery):
+    gl.add_label(image_query_no, Label.NO)
+    retrieved_iq = gl.get_image_query(id=image_query_no.id)
     assert retrieved_iq.result.label == Label.NO
 
 
-def test_add_label_to_object(gl: Groundlight, image_query: ImageQuery):
-    assert isinstance(image_query, ImageQuery)
-    gl.add_label(image_query, Label.YES)
+def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
+    assert isinstance(image_query_yes, ImageQuery)
+    gl.add_label(image_query_yes, Label.YES)
 
 
-def test_add_label_by_id(gl: Groundlight, image_query: ImageQuery):
-    iqid = image_query.id
+def test_add_label_by_id(gl: Groundlight, image_query_no: ImageQuery):
+    iqid = image_query_no.id
     # TODO: Fully deprecate chk_ prefix
     assert iqid.startswith(("chk_", "iq_"))
     gl.add_label(iqid, Label.NO)
 
 
-def test_add_label_names(gl: Groundlight, image_query: ImageQuery):
-    iqid = image_query.id
+def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_query_no: ImageQuery):
+    iqid_yes = image_query_yes.id
+    iqid_no = image_query_no.id
 
     # Valid labels
-    gl.add_label(iqid, Label.YES)
-    gl.add_label(iqid, Label.YES.value)
-    gl.add_label(iqid, "YES")
-    gl.add_label(iqid, "yes")
-    gl.add_label(iqid, "yEs")
-    gl.add_label(iqid, Label.NO)
-    gl.add_label(iqid, Label.NO.value)
-    gl.add_label(iqid, "NO")
-    gl.add_label(iqid, "no")
+    gl.add_label(iqid_yes, Label.YES)
+    gl.add_label(iqid_yes, Label.YES.value)
+    gl.add_label(iqid_yes, "YES")
+    gl.add_label(iqid_yes, "yes")
+    gl.add_label(iqid_yes, "yEs")
+    gl.add_label(iqid_no, Label.NO)
+    gl.add_label(iqid_no, Label.NO.value)
+    gl.add_label(iqid_no, "NO")
+    gl.add_label(iqid_no, "no")
 
     # Invalid labels
     with pytest.raises(ValueError):
-        gl.add_label(iqid, "PASS")
+        gl.add_label(iqid_yes, "PASS")
     with pytest.raises(ValueError):
-        gl.add_label(iqid, "FAIL")
+        gl.add_label(iqid_yes, "FAIL")
     with pytest.raises(ValueError):
-        gl.add_label(iqid, DeprecatedLabel.PASS)
+        gl.add_label(iqid_yes, DeprecatedLabel.PASS)
     with pytest.raises(ValueError):
-        gl.add_label(iqid, DeprecatedLabel.FAIL)
+        gl.add_label(iqid_yes, DeprecatedLabel.FAIL)
     with pytest.raises(ValueError):
-        gl.add_label(iqid, "sorta")
+        gl.add_label(iqid_yes, "sorta")
     with pytest.raises(ValueError):
-        gl.add_label(iqid, "YES ")
+        gl.add_label(iqid_yes, "YES ")
     with pytest.raises(ValueError):
-        gl.add_label(iqid, " YES")
+        gl.add_label(iqid_yes, " YES")
     with pytest.raises(ValueError):
-        gl.add_label(iqid, "0")
+        gl.add_label(iqid_yes, "0")
     with pytest.raises(ValueError):
-        gl.add_label(iqid, "1")
+        gl.add_label(iqid_yes, "1")
 
     # We technically don't allow these in the type signature, but users might do it anyway
     with pytest.raises(ValueError):
-        gl.add_label(iqid, 0)  # type: ignore
+        gl.add_label(iqid_yes, 0)  # type: ignore
     with pytest.raises(ValueError):
-        gl.add_label(iqid, 1)  # type: ignore
+        gl.add_label(iqid_yes, 1)  # type: ignore
     with pytest.raises(ValueError):
-        gl.add_label(iqid, None)  # type: ignore
+        gl.add_label(iqid_yes, None)  # type: ignore
     with pytest.raises(ValueError):
-        gl.add_label(iqid, True)  # type: ignore
+        gl.add_label(iqid_yes, True)  # type: ignore
     with pytest.raises(ValueError):
-        gl.add_label(iqid, False)  # type: ignore
+        gl.add_label(iqid_yes, False)  # type: ignore
     with pytest.raises(ValueError):
-        gl.add_label(iqid, b"YES")  # type: ignore
+        gl.add_label(iqid_yes, b"YES")  # type: ignore
 
     # We may want to support something like this in the future, but not yet
     with pytest.raises(ValueError):
-        gl.add_label(iqid, Label.UNSURE)
+        gl.add_label(iqid_yes, Label.UNSURE)
 
 
 def test_label_conversion_produces_strings():
@@ -339,42 +346,58 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
-@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
-def test_detector_improvement(gl: Groundlight, detector: Detector):
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
+def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
     import time
-
+    import random
     from PIL import Image
+    from PIL import ImageEnhance
 
-    def submit_noisy_image(image):
-        np_noise = np.random.normal(loc=0, scale=50, size=image.shape)
-        noisy_img = np.clip(image + np_noise, 0, 255).astype(np.uint8)
-        img_query = gl.submit_image_query(detector=detector.id, image=noisy_img)
+    random.seed(2741)
+
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+    detector = gl.create_detector(name=name, query=query)
+
+    def submit_noisy_image(image, label=None):
+        sharpness = ImageEnhance.Sharpness(image)
+        noisy_image = sharpness.enhance(random.uniform(0.75, 1.25))
+        color = ImageEnhance.Color(noisy_image)
+        noisy_image = color.enhance(random.uniform(0.75, 1))
+        contrast = ImageEnhance.Contrast(noisy_image)
+        noisy_image = contrast.enhance(random.uniform(0.75, 1))
+        brightness = ImageEnhance.Brightness(noisy_image)
+        noisy_image = brightness.enhance(random.uniform(0.75, 1))
+        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0)
+        if label is not None:
+            gl.add_label(img_query, label)
         return img_query
 
-    dog = np.array(Image.open("test/assets/dog.jpeg"))[:, :, ::-1]
-    cat = np.array(Image.open("test/assets/cat.jpeg"))[:, :, ::-1]
+    dog = Image.open("test/assets/dog.jpeg")
+    cat = Image.open("test/assets/cat.jpeg")
 
-    dog_query_1 = submit_noisy_image(dog)
-    dog_query_2 = submit_noisy_image(dog)
-    cat_query_1 = submit_noisy_image(cat)
-    cat_query_2 = submit_noisy_image(cat)
-
-    gl.add_label(dog_query_1, "YES")
-    gl.add_label(dog_query_2, "YES")
-    gl.add_label(cat_query_1, "NO")
-    gl.add_label(cat_query_2, "NO")
+    dog_query_1 = submit_noisy_image(dog, "YES")
+    dog_query_2 = submit_noisy_image(dog, "YES")
+    cat_query_1 = submit_noisy_image(cat, "NO")
+    cat_query_2 = submit_noisy_image(cat, "NO")
 
     # wait to give enough time to train
-    wait_time = 300  # seconds
-    time.sleep(wait_time)
+    wait_period = 30  # seconds
+    num_wait_periods = 4  # 2 minutes total
+    for _ in range(num_wait_periods):
+        time.sleep(wait_period)
+        new_dog_query = submit_noisy_image(dog)
+        new_cat_query = submit_noisy_image(cat)
+        if new_cat_query.result.confidence < 0.6 or new_cat_query.result.label == "YES":
+            # If the new query is not confident enough, we'll try again
+            continue
+        elif new_dog_query.result.confidence < 0.6 or new_dog_query.result.label == "NO":
+            # If the new query is not confident enough, we'll try again
+            continue
+        else:
+            assert True
+            return
 
-    dog_query_3 = submit_noisy_image(dog)
-    cat_query_3 = submit_noisy_image(cat)
-    print(cat_query_1.result.confidence)
-    print(dog_query_1.result.confidence)
-    print(cat_query_3.result.confidence)
-    print(dog_query_3.result.confidence)
-    assert dog_query_3.result.confidence > dog_query_1.result.confidence
-    assert cat_query_3.result.confidence > cat_query_1.result.confidence
+    assert False, "The detector performance has not improved after two minutes"
