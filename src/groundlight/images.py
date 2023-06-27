@@ -14,17 +14,16 @@ class ByteStreamWrapper(IOBase):
     def __init__(self, data: Union[BufferedReader, BytesIO, bytes]) -> None:
         super().__init__()
         self._data = data
+        if isinstance(data, (BufferedReader, BytesIO)):
+            self._data = self._data.read()
+        else:
+            self._data = data
 
     def read(self) -> bytes:
-        if isinstance(self._data, (BufferedReader, BytesIO)):
-            return self._data.read()
         return self._data
 
     def getvalue(self) -> bytes:
-        bytes_ = self.read()
-        if isinstance(self._data, (BufferedReader, BytesIO)):
-            self._data.seek(0)
-        return bytes_
+        return self._data
 
     def close(self) -> None:
         pass
@@ -79,7 +78,7 @@ def parse_supported_image_types(
         return ByteStreamWrapper(data=jpeg_from_numpy(image[:, :, ::-1], jpeg_quality=jpeg_quality))
     raise TypeError(
         (
-            "Unsupported type for image. Must be PIL, numpy (H,W,3) RGB, or a JPEG as a filename (str), bytes,"
+            "Unsupported type for image. Must be PIL, numpy (H,W,3) BGR, or a JPEG as a filename (str), bytes,"
             " BytesIO, or BufferedReader."
         ),
     )
