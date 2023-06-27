@@ -13,7 +13,6 @@ class ByteStreamWrapper(IOBase):
 
     def __init__(self, data: Union[BufferedReader, BytesIO, bytes]) -> None:
         super().__init__()
-        self._data = data
         if isinstance(data, (BufferedReader, BytesIO)):
             self._data = self._data.read()
         else:
