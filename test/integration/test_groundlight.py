@@ -386,14 +386,15 @@ def test_detector_improvement(gl: Groundlight):
     # wait to give enough time to train
     wait_period = 30  # seconds
     num_wait_periods = 4  # 2 minutes total
+    result_confidence = 0.6
     for _ in range(num_wait_periods):
         time.sleep(wait_period)
         new_dog_query = submit_noisy_image(dog)
         new_cat_query = submit_noisy_image(cat)
-        if new_cat_query.result.confidence < 0.6 or new_cat_query.result.label == "YES":
+        if new_cat_query.result.confidence < result_confidence or new_cat_query.result.label == "YES":
             # If the new query is not confident enough, we'll try again
             continue
-        elif new_dog_query.result.confidence < 0.6 or new_dog_query.result.label == "NO":
+        elif new_dog_query.result.confidence < result_confidence or new_dog_query.result.label == "NO":
             # If the new query is not confident enough, we'll try again
             continue
         else:
