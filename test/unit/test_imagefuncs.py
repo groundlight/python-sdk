@@ -2,6 +2,7 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 import tempfile
+from io import BytesIO
 
 import pytest
 from groundlight.images import *
@@ -42,7 +43,7 @@ def test_pil_support():
 
     img = Image.new("RGB", (640, 480))
     jpeg = parse_supported_image_types(img)
-    assert isinstance(jpeg, BytesIO)
+    assert isinstance(jpeg, ByteStreamWrapper)
 
     # Now try to parse the BytesIO object as an image
     jpeg_bytes = jpeg.getvalue()
@@ -69,3 +70,32 @@ def test_pil_support_ref():
         f.seek(0)
         img2 = Image.open(f)
         assert img2.size == (509, 339)
+
+
+def test_byte_stream_wrapper():
+    """
+    Test that we can call `open` and `close` repeatedly many times on a
+    ByteStreamWrapper and get the same output.
+    """
+
+    def run_test(byte_stream: ByteStreamWrapper):
+        previous_bytes = byte_stream.read()
+
+        current_attempt, total_attempts = 0, 5
+
+        while current_attempt < total_attempts:
+            new_bytes = byte_stream.read()
+            assert new_bytes == previous_bytes
+            byte_stream.close()
+
+            current_attempt += 1
+
+    image = "test/assets/dog.jpeg"
+    buffer = buffer_from_jpeg_file(image_filename=image)
+
+    buffered_reader = ByteStreamWrapper(data=buffer)
+    with open(image, "rb") as image_file:
+        bytes_io = ByteStreamWrapper(data=BytesIO(image_file.read()))
+
+    run_test(buffered_reader)
+    run_test(bytes_io)
