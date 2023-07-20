@@ -200,6 +200,7 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated)
     exc_value = exc_info.value
+    print(f"exc_info = {exc_info}")
     assert is_user_error(exc_value.status)
 
 
@@ -391,10 +392,17 @@ def test_detector_improvement(gl: Groundlight):
         time.sleep(wait_period)
         new_dog_query = submit_noisy_image(dog)
         new_cat_query = submit_noisy_image(cat)
-        if new_cat_query.result.confidence < result_confidence or new_cat_query.result.label == "YES":
+        new_cat_result_confidence = new_cat_query.result.confidence
+        new_dog_result_confidence = new_dog_query.result.confidence
+
+        if (
+            new_cat_result_confidence and new_cat_result_confidence < result_confidence
+        ) or new_cat_query.result.label == "YES":
             # If the new query is not confident enough, we'll try again
             continue
-        elif new_dog_query.result.confidence < result_confidence or new_dog_query.result.label == "NO":
+        elif (
+            new_dog_result_confidence and new_dog_result_confidence < result_confidence
+        ) or new_dog_query.result.label == "NO":
             # If the new query is not confident enough, we'll try again
             continue
         else:
