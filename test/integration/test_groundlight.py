@@ -392,12 +392,17 @@ def test_detector_improvement(gl: Groundlight):
         time.sleep(wait_period)
         new_dog_query = submit_noisy_image(dog)
         new_cat_query = submit_noisy_image(cat)
-        new_result_confidence = new_cat_query.result.confidence
+        new_cat_result_confidence = new_cat_query.result.confidence
+        new_dog_result_confidence = new_dog_query.result.confidence
 
-        if new_result_confidence and new_result_confidence < result_confidence or new_cat_query.result.label == "YES":
+        if (
+            new_cat_result_confidence and new_cat_result_confidence < result_confidence
+        ) or new_cat_query.result.label == "YES":
             # If the new query is not confident enough, we'll try again
             continue
-        elif new_result_confidence and new_result_confidence < result_confidence or new_dog_query.result.label == "NO":
+        elif (
+            new_dog_result_confidence and new_dog_result_confidence < result_confidence
+        ) or new_dog_query.result.label == "NO":
             # If the new query is not confident enough, we'll try again
             continue
         else:
