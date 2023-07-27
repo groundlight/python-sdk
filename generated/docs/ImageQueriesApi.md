@@ -167,7 +167,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **submit_image_query**
-> ImageQuery submit_image_query(detector_id)
+> ImageQuery submit_image_query(detector_id, patience_time)
 
 
 
@@ -205,11 +205,12 @@ with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
+    patience_time = 3.14 # float | How long to wait for a confident response.
     body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.submit_image_query(detector_id)
+        api_response = api_instance.submit_image_query(detector_id, patience_time)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
@@ -217,7 +218,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.submit_image_query(detector_id, body=body)
+        api_response = api_instance.submit_image_query(detector_id, patience_time, body=body)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
@@ -229,6 +230,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
+ **patience_time** | **float**| How long to wait for a confident response. |
  **body** | **file_type**|  | [optional]
 
 ### Return type

@@ -132,6 +132,13 @@ paths:
           type: string
         description: Choose a detector by its ID.
         required: true
+      - in: query 
+        name: patience_time 
+        schema: 
+          type: number 
+          format: float 
+        description: How long to wait for a confident response. 
+        required: true 
       tags:
       - image-queries
       requestBody:

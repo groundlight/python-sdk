@@ -189,7 +189,9 @@ class Groundlight:
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        raw_image_query = self.image_queries_api.submit_image_query(
+            detector_id=detector_id, patience_time=wait, body=image_bytesio
+        )
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
