@@ -170,6 +170,7 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
+        inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -189,26 +190,30 @@ class Groundlight:
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio, inspection_id=inspection_id)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
-            image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
+            image_query = self.wait_for_confident_result(
+                image_query, confidence_threshold=threshold, timeout_sec=wait
+            )
         return self._fixup_image_query(image_query)
 
     def wait_for_confident_result(
         self,
-        image_query: ImageQuery,
+        image_query: Union[ImageQuery, str],
         confidence_threshold: float,
         timeout_sec: float = 30.0,
     ) -> ImageQuery:
         """Waits for an image query result's confidence level to reach the specified value.
         Currently this is done by polling with an exponential back-off.
-        :param image_query: An ImageQuery object to poll
+        :param image_query: An ImageQuery object or and image_query id (str).
         :param confidence_threshold: The minimum confidence level required to return before the timeout.
         :param timeout_sec: The maximum number of seconds to wait.
         """
-        # TODO: Add support for ImageQuery id instead of object.
+        # Convert from image_query id to ImageQuery if needed.
+        image_query = self.get_image_query(image_query) if isinstance(image_query, str) else image_query
+
         start_time = time.time()
         next_delay = self.POLLING_INITIAL_DELAY
         target_delay = 0.0
