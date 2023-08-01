@@ -7,6 +7,9 @@ from functools import wraps
 from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
+from io import BytesIO
+import json
+
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
@@ -204,31 +207,6 @@ class GroundlightApiClient(ApiClient):
         return response.json()
 
     @RequestsRetryDecorator()
-    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> dict:
-        start_time = time.time()
-        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}&send_notification=False"
-
-        headers = self._headers()
-        headers["Content-Type"] = "image/jpeg"
-
-        response = requests.request("POST", url, headers=headers, data=image.read())
-
-        elapsed = 1000 * (time.time() - start_time)
-        logger.debug(
-            f"Call to ImageQuery._submit_image_query_with_inspection took {elapsed:.1f}ms response={response.text}"
-        )
-
-        if not is_ok(response.status_code):
-            logger.info(response)
-            raise InternalApiError(
-                status=response.status_code,
-                reason=f"Error submitting image query with inspection ID on detector {detector_id}",
-                http_resp=response,
-            )
-
-        return response.json()
-
-    @RequestsRetryDecorator()
     def _get_detector_by_name(self, name: str) -> Detector:
         """Get a detector by name. For now, we use the list detectors API directly.
 
@@ -250,3 +228,97 @@ class GroundlightApiClient(ApiClient):
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
         return Detector.parse_obj(parsed["results"][0])
+
+    @RequestsRetryDecorator()
+    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> dict:
+        start_time = time.time()
+        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}&send_notification=False"
+
+        headers = self._headers()
+        headers["Content-Type"] = "image/jpeg"
+
+        response = requests.request("POST", url, headers=headers, data=image.read())
+
+        elapsed = 1000 * (time.time() - start_time)
+        logger.debug(
+            f"Call to ImageQuery._submit_image_query_with_inspection took {elapsed:.1f}ms response={response.text}"
+        )
+
+        if not is_ok(response.status_code):
+            logger.info(response)
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error submitting image query with inspection ID {inspection_id} on detector {detector_id}",
+                http_resp=response,
+            )
+
+        return response.json()
+
+    @RequestsRetryDecorator()
+    def _start_inspection(self) -> str:
+        """Start an inspection, return the ID."""
+        url = f"{self.configuration.host}/inspections"
+
+        headers = self._headers()
+
+        response = requests.request("POST", url, headers=headers, json={})
+
+        return response.json()["id"]
+
+    @RequestsRetryDecorator()
+    def _add_or_update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> bool:
+        """Add/update inspection metadata with the user_provided_key and user_provided_value.
+
+        Inspections store metadata in two ways:
+           1) At the top level of the inspection with user_provided_id_key and user_provided_id_value. This is a
+              kind of "primary" piece of metadata for the inspection. Only one key/value pair is allowed at this level.
+           2) In the user_metadata field as a dictionary.  Multiple key/value pairs are allowed at this level.
+
+        The first piece of metadata presented to an inspection will be assumed to be the user_provided_id_key and
+        user_provided_id_value. All subsequent pieces metadata will be stored in the user_metadata field.
+
+        """
+        url = f"{self.configuration.host}/inspections/{inspection_id}"
+
+        headers = self._headers()
+
+        # Get inspection to see if user_provided_id_key is set
+        response = requests.request("GET", url, headers=headers)
+
+        # Return false if we can't get the inspection. An invalid inspection_id might have
+        # been passed in.
+        if response.status_code != 200:
+            return False
+
+        payload = {}
+
+        # Set the user_provided_id_key and user_provided_id_value if they are not set.
+        response_json = response.json()
+        if not response_json["user_provided_id_key"]:
+            payload["user_provided_id_key"] = user_provided_key
+            payload["user_provided_id_value"] = user_provided_value
+
+        # Get the existing keys and values in user_metadata (if any) so that we don't overwrite them
+        metadata = response_json["user_metadata"]
+        if not metadata:
+            metadata = {}
+
+        # Submit the new metadata
+        metadata[user_provided_key] = user_provided_value
+        payload["user_metadata_json"] = json.dumps(metadata)
+        response = requests.request("PATCH", url, headers=headers, json=payload)
+
+        return response.status_code == 200
+
+    @RequestsRetryDecorator()
+    def _stop_inspection(self, inspection_id: str) -> bool:
+        """Stop an inspection and returns a response code."""
+        url = f"{self.configuration.host}/inspections/{inspection_id}"
+
+        headers = self._headers()
+
+        payload = {"status": "COMPLETE"}
+
+        response = requests.request("PATCH", url, headers=headers, json=payload)
+
+        return response.status_code == 200
