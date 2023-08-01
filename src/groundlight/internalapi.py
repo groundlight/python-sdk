@@ -7,6 +7,8 @@ from functools import wraps
 from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
+from io import BytesIO
+
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
@@ -198,6 +200,29 @@ class GroundlightApiClient(ApiClient):
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error adding label to image query {image_query_id}",
+                http_resp=response,
+            )
+
+        return response.json()
+
+    @RequestsRetryDecorator()
+    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> dict:
+        start_time = time.time()
+        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}&send_notification=False"
+
+        headers = self._headers()
+        headers["Content-Type"] = "image/jpeg"
+
+        response = requests.request("POST", url, headers=headers, data=image.read())
+
+        elapsed = 1000 * (time.time() - start_time)
+        logger.debug(f"Call to ImageQuery._submit_image_query_with_inspection took {elapsed:.1f}ms response={response.text}")
+
+        if not is_ok(response.status_code):
+            logger.info(response)
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error submitting image query with inspection ID on detector {detector_id}",
                 http_resp=response,
             )
 

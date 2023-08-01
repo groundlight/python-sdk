@@ -21,6 +21,8 @@ from groundlight.internalapi import (
 )
 from groundlight.optional_imports import Image, np
 
+import base64
+
 logger = logging.getLogger("groundlight.sdk")
 
 
@@ -190,13 +192,21 @@ class Groundlight:
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio, inspection_id=inspection_id)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        if inspection_id is None:
+            raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+            image_query_dict = raw_image_query.to_dict()
+        else:
+            image_query_dict = self.api_client._submit_image_query_with_inspection(
+                detector_id=detector_id, image=image_bytesio, inspection_id=inspection_id
+            )
+
+            print("image_query_dict", type(image_query_dict), image_query_dict)
+
+        # image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        image_query = ImageQuery.parse_obj(image_query_dict)
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
-            image_query = self.wait_for_confident_result(
-                image_query, confidence_threshold=threshold, timeout_sec=wait
-            )
+            image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
         return self._fixup_image_query(image_query)
 
     def wait_for_confident_result(
@@ -207,11 +217,11 @@ class Groundlight:
     ) -> ImageQuery:
         """Waits for an image query result's confidence level to reach the specified value.
         Currently this is done by polling with an exponential back-off.
-        :param image_query: An ImageQuery object or and image_query id (str).
+        :param image_query: An ImageQuery object or an image_query id (str).
         :param confidence_threshold: The minimum confidence level required to return before the timeout.
         :param timeout_sec: The maximum number of seconds to wait.
         """
-        # Convert from image_query id to ImageQuery if needed.
+        # Convert from image_query_id to ImageQuery if needed.
         image_query = self.get_image_query(image_query) if isinstance(image_query, str) else image_query
 
         start_time = time.time()
@@ -254,3 +264,25 @@ class Groundlight:
         api_label = convert_display_label_to_internal(image_query_id, label)
 
         return self.api_client._add_label(image_query_id, api_label)  # pylint: disable=protected-access
+
+    def start_inspection(
+        self,
+    ) -> str:
+        """Starts an inspection report and returns the id of the inspection."""
+        pass
+
+    def add_or_update_inspection_metadata(
+        self,
+        inspection_id: str,
+        user_provided_key: str,
+        user_provided_value: str,
+    ) -> bool:
+        """Starts a new inspection and returns the inspection id."""
+        pass
+
+    def stop_inspection(
+        self,
+        inspection_id: str,
+    ) -> None:
+        """Takes an inspection id and stops the inspection."""
+        pass
