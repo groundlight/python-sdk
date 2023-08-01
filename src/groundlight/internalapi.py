@@ -20,11 +20,14 @@ logger = logging.getLogger("groundlight.sdk")
 class NotFoundError(Exception):
     pass
 
+
 class InspectionError(Exception):
     pass
 
+
 class UpdateDetectorError(Exception):
     pass
+
 
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
@@ -146,6 +149,7 @@ class RequestsRetryDecorator:
 
         return decorated
 
+
 class GroundlightApiClient(ApiClient):
     """Subclassing the OpenAPI-generated ApiClient to add a bit of custom functionality.
     Not crazy about using polymorphism, but this is simpler than modifying the moustache
@@ -233,7 +237,7 @@ class GroundlightApiClient(ApiClient):
 
     @RequestsRetryDecorator()
     def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
-        """Submits an image query to the API, and returns the ID of the image query. 
+        """Submits an image query to the API, and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
         start_time = time.time()
@@ -257,7 +261,7 @@ class GroundlightApiClient(ApiClient):
                 http_resp=response,
             )
 
-        return response.json()['id']
+        return response.json()["id"]
 
     @RequestsRetryDecorator()
     def _start_inspection(self) -> str:
@@ -269,9 +273,7 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("POST", url, headers=headers, json={})
 
         if not is_ok(response.status_code):
-            raise InspectionError(
-                f'Error starting inspection. Status code: {response.status_code}' 
-            )
+            raise InspectionError(f"Error starting inspection. Status code: {response.status_code}")
 
         return response.json()["id"]
 
@@ -297,7 +299,7 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InspectionError(
-                f'Error getting inspection details for inspection {inspection_id}. Status code: {response.status_code}' 
+                f"Error getting inspection details for inspection {inspection_id}. Status code: {response.status_code}"
             )
 
         payload = {}
@@ -320,7 +322,7 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InspectionError(
-                f'Error updating inspection metadata on inspection {inspection_id}. Status code: {response.status_code}' 
+                f"Error updating inspection metadata on inspection {inspection_id}. Status code: {response.status_code}"
             )
 
     @RequestsRetryDecorator()
@@ -333,32 +335,25 @@ class GroundlightApiClient(ApiClient):
         payload = {"status": "COMPLETE"}
 
         response = requests.request("PATCH", url, headers=headers, json=payload)
-    
+
         if not is_ok(response.status_code):
-            raise InspectionError(
-                f'Error stopping inspection {inspection_id}. Status code: {response.status_code}' 
-            )
-        
+            raise InspectionError(f"Error stopping inspection {inspection_id}. Status code: {response.status_code}")
+
     @RequestsRetryDecorator()
     def _update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
-        """Updates the confidence threshold of a detector.
-        """
+        """Updates the confidence threshold of a detector."""
 
         # The API does not validate the confidence threshold, so we will validate it here and raise an exception if necessary
         if confidence_threshold < 0 or confidence_threshold > 1:
             raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}")
-        
+
         url = f"{self.configuration.host}/predictors/{detector_id}"
 
         headers = self._headers()
 
-        payload = {
-            "confidence_threshold": confidence_threshold
-        }
+        payload = {"confidence_threshold": confidence_threshold}
 
         response = requests.request("PATCH", url, headers=headers, json=payload)
-    
+
         if not is_ok(response.status_code):
-            raise UpdateDetectorError(
-                f'Error updating detector {detector_id}. Status code: {response.status_code}' 
-            )
+            raise UpdateDetectorError(f"Error updating detector {detector_id}. Status code: {response.status_code}")

@@ -276,7 +276,7 @@ class Groundlight:
     def stop_inspection(self, inspection_id: str) -> None:
         """Stops an inspection and raises an exception if the response from the server does not indicate success."""
         self.api_client._stop_inspection(inspection_id)
-    
+
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector.
         """
