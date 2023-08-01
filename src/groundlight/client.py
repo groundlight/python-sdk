@@ -200,8 +200,6 @@ class Groundlight:
                 detector_id=detector_id, image=image_bytesio, inspection_id=inspection_id
             )
 
-            print("image_query_dict", type(image_query_dict), image_query_dict)
-
         # image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         image_query = ImageQuery.parse_obj(image_query_dict)
         if wait:
