@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import random
@@ -6,9 +7,6 @@ import uuid
 from functools import wraps
 from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
-
-from io import BytesIO
-import json
 
 import requests
 from model import Detector, ImageQuery
