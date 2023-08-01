@@ -21,8 +21,6 @@ from groundlight.internalapi import (
 )
 from groundlight.optional_imports import Image, np
 
-import base64
-
 logger = logging.getLogger("groundlight.sdk")
 
 
