@@ -20,6 +20,11 @@ logger = logging.getLogger("groundlight.sdk")
 class NotFoundError(Exception):
     pass
 
+class InspectionError(Exception):
+    pass
+
+class UpdateDetectorError(Exception):
+    pass
 
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
@@ -141,7 +146,6 @@ class RequestsRetryDecorator:
 
         return decorated
 
-
 class GroundlightApiClient(ApiClient):
     """Subclassing the OpenAPI-generated ApiClient to add a bit of custom functionality.
     Not crazy about using polymorphism, but this is simpler than modifying the moustache
@@ -228,7 +232,10 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> dict:
+    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
+        """Submits an image query to the API, and returns the ID of the image query. 
+        The image query will be associated to the inspection_id provided.
+        """
         start_time = time.time()
         url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}&send_notification=False"
 
@@ -250,21 +257,26 @@ class GroundlightApiClient(ApiClient):
                 http_resp=response,
             )
 
-        return response.json()
+        return response.json()['id']
 
     @RequestsRetryDecorator()
     def _start_inspection(self) -> str:
-        """Start an inspection, return the ID."""
+        """Starts an inspection, returns the ID."""
         url = f"{self.configuration.host}/inspections"
 
         headers = self._headers()
 
         response = requests.request("POST", url, headers=headers, json={})
 
+        if not is_ok(response.status_code):
+            raise InspectionError(
+                f'Error starting inspection. Status code: {response.status_code}' 
+            )
+
         return response.json()["id"]
 
     @RequestsRetryDecorator()
-    def _add_or_update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> bool:
+    def _update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
         """Add/update inspection metadata with the user_provided_key and user_provided_value.
 
         Inspections store metadata in two ways:
@@ -283,9 +295,10 @@ class GroundlightApiClient(ApiClient):
         # Get inspection to see if user_provided_id_key is set
         response = requests.request("GET", url, headers=headers)
 
-        # Return false if we can't get the inspection. An invalid inspection_id might have been passed in.
-        if response.status_code != 200:
-            return False
+        if not is_ok(response.status_code):
+            raise InspectionError(
+                f'Error getting inspection details for inspection {inspection_id}. Status code: {response.status_code}' 
+            )
 
         payload = {}
 
@@ -305,11 +318,14 @@ class GroundlightApiClient(ApiClient):
         payload["user_metadata_json"] = json.dumps(metadata)
         response = requests.request("PATCH", url, headers=headers, json=payload)
 
-        return response.status_code == 200
+        if not is_ok(response.status_code):
+            raise InspectionError(
+                f'Error updating inspection metadata on inspection {inspection_id}. Status code: {response.status_code}' 
+            )
 
     @RequestsRetryDecorator()
-    def _stop_inspection(self, inspection_id: str) -> bool:
-        """Stop an inspection and returns a response code."""
+    def _stop_inspection(self, inspection_id: str) -> None:
+        """Stops an inspection and raises an exception if the response from the server does not indicate success."""
         url = f"{self.configuration.host}/inspections/{inspection_id}"
 
         headers = self._headers()
@@ -317,5 +333,32 @@ class GroundlightApiClient(ApiClient):
         payload = {"status": "COMPLETE"}
 
         response = requests.request("PATCH", url, headers=headers, json=payload)
+    
+        if not is_ok(response.status_code):
+            raise InspectionError(
+                f'Error stopping inspection {inspection_id}. Status code: {response.status_code}' 
+            )
+        
+    @RequestsRetryDecorator()
+    def _update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
+        """Updates the confidence threshold of a detector.
+        """
 
-        return response.status_code == 200
+        # The API does not validate the confidence threshold, so we will validate it here and raise an exception if necessary
+        if confidence_threshold < 0 or confidence_threshold > 1:
+            raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}")
+        
+        url = f"{self.configuration.host}/predictors/{detector_id}"
+
+        headers = self._headers()
+
+        payload = {
+            "confidence_threshold": confidence_threshold
+        }
+
+        response = requests.request("PATCH", url, headers=headers, json=payload)
+    
+        if not is_ok(response.status_code):
+            raise UpdateDetectorError(
+                f'Error updating detector {detector_id}. Status code: {response.status_code}' 
+            )

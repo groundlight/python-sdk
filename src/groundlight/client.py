@@ -199,10 +199,10 @@ class Groundlight:
             image_query_dict = raw_image_query.to_dict()
             image_query = ImageQuery.parse_obj(image_query_dict)
         else:
-            json_response = self.api_client._submit_image_query_with_inspection(
+            iq_id = self.api_client._submit_image_query_with_inspection(
                 detector_id=detector_id, image=image_bytesio, inspection_id=inspection_id
             )
-            image_query = self.get_image_query(json_response["id"])
+            image_query = self.get_image_query(iq_id)
 
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
@@ -269,10 +269,17 @@ class Groundlight:
         """Starts an inspection report and returns the id of the inspection."""
         return self.api_client._start_inspection()
 
-    def _add_or_update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> bool:
+    def update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
         """Add/update inspection metadata with the user_provided_key and user_provided_value."""
-        return self.api_client._add_or_update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
+        self.api_client._update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
-    def stop_inspection(self, inspection_id: str) -> bool:
-        """Takes an inspection id and stops the inspection."""
-        return self.api_client._stop_inspection(inspection_id)
+    def stop_inspection(self, inspection_id: str) -> None:
+        """Stops an inspection and raises an exception if the response from the server does not indicate success."""
+        self.api_client._stop_inspection(inspection_id)
+    
+    def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
+        """Updates the confidence threshold of a detector.
+        :param detector: The Detector object or string id of a detector like `det_2TB2BnYKcPAXkJGcr30Q3gZT7uc`
+        :param confidence_threshold: The new confidence threshold.
+        """
+        self.api_client._update_detector_confidence_threshold(detector_id, confidence_threshold)
