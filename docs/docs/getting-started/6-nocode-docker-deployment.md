@@ -17,6 +17,14 @@ services:
     image: docker.io/maxatgroundlight/groundlight-edge-client-backend:latest
     ports:
       - "8000:8000"
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+      - /dev/video2:/dev/video2
+      - /dev/video3:/dev/video3
+    privileged: true
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
 ```
 
 3. Run the following command in your project directory:
