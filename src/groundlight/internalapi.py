@@ -285,8 +285,7 @@ class GroundlightApiClient(ApiClient):
         # Get inspection to see if user_provided_id_key is set
         response = requests.request("GET", url, headers=headers)
 
-        # Return false if we can't get the inspection. An invalid inspection_id might have
-        # been passed in.
+        # Return false if we can't get the inspection. An invalid inspection_id might have been passed in.
         if response.status_code != 200:
             return False
 
