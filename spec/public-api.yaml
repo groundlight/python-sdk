@@ -133,12 +133,18 @@ paths:
         description: Choose a detector by its ID.
         required: true
       - in: query 
+        name: human_review 
+        schema: 
+          type: boolean 
+        description: Allow image queries to be marked for no human review. 
+        required: false 
+      - in: query 
         name: patience_time 
         schema: 
           type: number 
           format: float 
         description: How long to wait for a confident response. 
-        required: true 
+        required: false 
       tags:
       - image-queries
       requestBody:

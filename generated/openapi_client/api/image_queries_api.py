@@ -131,12 +131,12 @@ class ImageQueriesApi(object):
             params_map={
                 "all": [
                     "detector_id",
+                    "human_review",
                     "patience_time",
                     "body",
                 ],
                 "required": [
                     "detector_id",
-                    "patience_time",
                 ],
                 "nullable": [],
                 "enum": [],
@@ -147,15 +147,18 @@ class ImageQueriesApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
+                    "human_review": (bool,),
                     "patience_time": (float,),
                     "body": (file_type,),
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
+                    "human_review": "human_review",
                     "patience_time": "patience_time",
                 },
                 "location_map": {
                     "detector_id": "query",
+                    "human_review": "query",
                     "patience_time": "query",
                     "body": "body",
                 },
@@ -280,21 +283,22 @@ class ImageQueriesApi(object):
         kwargs["_host_index"] = kwargs.get("_host_index")
         return self.list_image_queries_endpoint.call_with_http_info(**kwargs)
 
-    def submit_image_query(self, detector_id, patience_time, **kwargs):
+    def submit_image_query(self, detector_id, **kwargs):
         """submit_image_query  # noqa: E501
 
          Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```    # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.submit_image_query(detector_id, patience_time, async_req=True)
+        >>> thread = api.submit_image_query(detector_id, async_req=True)
         >>> result = thread.get()
 
         Args:
             detector_id (str): Choose a detector by its ID.
-            patience_time (float): How long to wait for a confident response.
 
         Keyword Args:
+            human_review (bool): Allow image queries to be marked for no human review.. [optional]
+            patience_time (float): How long to wait for a confident response.. [optional]
             body (file_type): [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
@@ -338,5 +342,4 @@ class ImageQueriesApi(object):
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["detector_id"] = detector_id
-        kwargs["patience_time"] = patience_time
         return self.submit_image_query_endpoint.call_with_http_info(**kwargs)
