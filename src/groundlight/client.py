@@ -279,7 +279,5 @@ class Groundlight:
     
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector.
-        :param detector: The Detector object or string id of a detector like `det_2TB2BnYKcPAXkJGcr30Q3gZT7uc`
-        :param confidence_threshold: The new confidence threshold.
         """
         self.api_client._update_detector_confidence_threshold(detector_id, confidence_threshold)
