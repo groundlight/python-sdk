@@ -274,9 +274,12 @@ class Groundlight:
         """Add/update inspection metadata with the user_provided_key and user_provided_value."""
         self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
-    def stop_inspection(self, inspection_id: str) -> None:
-        """Stops an inspection and raises an exception if the response from the server does not indicate success."""
-        self.api_client.stop_inspection(inspection_id)
+    def stop_inspection(self, inspection_id: str) -> str:
+        """Stops an inspection and raises an exception if the response from the server 
+        does not indicate success communication.
+        Returns a str with result of the inspection (either PASS or FAIL)
+        """
+        return self.api_client.stop_inspection(inspection_id)
 
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector given a detector_id."""

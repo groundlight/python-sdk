@@ -319,8 +319,10 @@ class GroundlightApiClient(ApiClient):
             )
 
     @RequestsRetryDecorator()
-    def stop_inspection(self, inspection_id: str) -> None:
-        """Stops an inspection and raises an exception if the response from the server does not indicate success."""
+    def stop_inspection(self, inspection_id: str) -> str:
+        """Stops an inspection and raises an exception if the response from the server does not indicate success.
+        Returns a string that indicates the result (either PASS or FAIL). The URCap requires this.
+        """
         url = f"{self.configuration.host}/inspections/{inspection_id}"
 
         headers = self._headers()
@@ -331,6 +333,8 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InspectionError(f"Error stopping inspection {inspection_id}. Status code: {response.status_code}")
+        
+        return response.json()['result']
 
     @RequestsRetryDecorator()
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
