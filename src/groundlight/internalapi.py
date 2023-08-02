@@ -11,6 +11,7 @@ from urllib.parse import urlsplit, urlunsplit
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
+from groundlight.images import ByteStreamWrapper
 
 from groundlight.status_codes import is_ok
 
@@ -236,7 +237,7 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
+    def submit_image_query_with_inspection(self, detector_id: str, image: ByteStreamWrapper, inspection_id: str) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
