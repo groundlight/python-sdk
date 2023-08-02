@@ -200,6 +200,7 @@ class Groundlight:
             image_query_dict = raw_image_query.to_dict()
             image_query = ImageQuery.parse_obj(image_query_dict)
         else:
+            # pylint: disable=protected-access
             iq_id = self.api_client._submit_image_query_with_inspection(
                 detector_id=detector_id, image=image_bytesio, inspection_id=inspection_id
             )
