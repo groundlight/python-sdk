@@ -335,8 +335,8 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InspectionError(f"Error stopping inspection {inspection_id}. Status code: {response.status_code}")
-        
-        return response.json()['result']
+
+        return response.json()["result"]
 
     @RequestsRetryDecorator()
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:

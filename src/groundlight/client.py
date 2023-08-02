@@ -275,7 +275,7 @@ class Groundlight:
         self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
     def stop_inspection(self, inspection_id: str) -> str:
-        """Stops an inspection and raises an exception if the response from the server 
+        """Stops an inspection and raises an exception if the response from the server
         does not indicate success communication.
         Returns a str with result of the inspection (either PASS or FAIL)
         """
