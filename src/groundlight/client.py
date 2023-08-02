@@ -276,7 +276,7 @@ class Groundlight:
 
     def stop_inspection(self, inspection_id: str) -> str:
         """Stops an inspection and raises an exception if the response from the server
-        does not indicate success communication.
+        indicates that the inspection was not successfully stopped.
         Returns a str with result of the inspection (either PASS or FAIL)
         """
         return self.api_client.stop_inspection(inspection_id)
