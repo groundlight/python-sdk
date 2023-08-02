@@ -236,12 +236,15 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
+    def _submit_image_query_with_inspection(self, 
+                                            detector_id: str, 
+                                            image, inspection_id: str) -> str:
         """Submits an image query to the API, and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
         start_time = time.time()
-        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}&send_notification=False"
+        url = (f"{self.configuration.host}/posichecks?inspection_id={inspection_id}"
+               f"&predictor_id={detector_id}")
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
@@ -340,7 +343,9 @@ class GroundlightApiClient(ApiClient):
             raise InspectionError(f"Error stopping inspection {inspection_id}. Status code: {response.status_code}")
 
     @RequestsRetryDecorator()
-    def _update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
+    def _update_detector_confidence_threshold(self, 
+                                              detector_id: str, 
+                                              confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector."""
 
         # The API does not validate the confidence threshold, so we will validate it here and raise an exception if necessary
