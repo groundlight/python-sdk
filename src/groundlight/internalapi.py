@@ -236,7 +236,7 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def _submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
+    def submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
         """Submits an image query to the API, and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
@@ -250,7 +250,7 @@ class GroundlightApiClient(ApiClient):
 
         elapsed = 1000 * (time.time() - start_time)
         logger.debug(
-            f"Call to ImageQuery._submit_image_query_with_inspection took {elapsed:.1f}ms response={response.text}"
+            f"Call to ImageQuery.submit_image_query_with_inspection took {elapsed:.1f}ms response={response.text}"
         )
 
         if not is_ok(response.status_code):
@@ -264,7 +264,7 @@ class GroundlightApiClient(ApiClient):
         return response.json()["id"]
 
     @RequestsRetryDecorator()
-    def _start_inspection(self) -> str:
+    def start_inspection(self) -> str:
         """Starts an inspection, returns the ID."""
         url = f"{self.configuration.host}/inspections"
 
@@ -278,7 +278,7 @@ class GroundlightApiClient(ApiClient):
         return response.json()["id"]
 
     @RequestsRetryDecorator()
-    def _update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
+    def update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
         """Add/update inspection metadata with the user_provided_key and user_provided_value.
 
         Inspections store metadata in two ways:
@@ -326,7 +326,7 @@ class GroundlightApiClient(ApiClient):
             )
 
     @RequestsRetryDecorator()
-    def _stop_inspection(self, inspection_id: str) -> None:
+    def stop_inspection(self, inspection_id: str) -> None:
         """Stops an inspection and raises an exception if the response from the server does not indicate success."""
         url = f"{self.configuration.host}/inspections/{inspection_id}"
 
@@ -340,7 +340,7 @@ class GroundlightApiClient(ApiClient):
             raise InspectionError(f"Error stopping inspection {inspection_id}. Status code: {response.status_code}")
 
     @RequestsRetryDecorator()
-    def _update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
+    def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector."""
 
         # The API does not validate the confidence threshold,
