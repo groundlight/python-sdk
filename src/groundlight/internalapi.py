@@ -11,8 +11,8 @@ from urllib.parse import urlsplit, urlunsplit
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
-from groundlight.images import ByteStreamWrapper
 
+from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
