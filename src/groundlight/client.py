@@ -269,12 +269,12 @@ class Groundlight:
     def start_inspection(self) -> str:
         """Starts an inspection report and returns the id of the inspection."""
         # pylint: disable=protected-access
-        return self.api_client._start_inspection()  
+        return self.api_client._start_inspection()
 
     def update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
         """Add/update inspection metadata with the user_provided_key and user_provided_value."""
         # pylint: disable=protected-access
-        self.api_client._update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)  
+        self.api_client._update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
     def stop_inspection(self, inspection_id: str) -> None:
         """Stops an inspection and raises an exception if the response from the server does not indicate success."""
@@ -284,4 +284,4 @@ class Groundlight:
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector."""
         # pylint: disable=protected-access
-        self.api_client._update_detector_confidence_threshold(detector_id, confidence_threshold)  
+        self.api_client._update_detector_confidence_threshold(detector_id, confidence_threshold)
