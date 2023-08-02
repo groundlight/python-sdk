@@ -340,7 +340,7 @@ class GroundlightApiClient(ApiClient):
         # The API does not validate the confidence threshold,
         # so we will validate it here and raise an exception if necessary.
         if confidence_threshold < 0 or confidence_threshold > 1:
-            raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}")
+            raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}.")
 
         url = f"{self.configuration.host}/predictors/{detector_id}"
 
