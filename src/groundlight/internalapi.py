@@ -237,21 +237,15 @@ class GroundlightApiClient(ApiClient):
 
     @RequestsRetryDecorator()
     def submit_image_query_with_inspection(self, detector_id: str, image, inspection_id: str) -> str:
-        """Submits an image query to the API, and returns the ID of the image query.
+        """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
-        start_time = time.time()
         url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}"
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
 
         response = requests.request("POST", url, headers=headers, data=image.read())
-
-        elapsed = 1000 * (time.time() - start_time)
-        logger.debug(
-            f"Call to ImageQuery.submit_image_query_with_inspection took {elapsed:.1f}ms response={response.text}"
-        )
 
         if not is_ok(response.status_code):
             logger.info(response)
@@ -281,7 +275,7 @@ class GroundlightApiClient(ApiClient):
     def update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
         """Add/update inspection metadata with the user_provided_key and user_provided_value.
 
-        Inspections store metadata in two ways:
+        The API stores inspections metadata in two ways:
            1) At the top level of the inspection with user_provided_id_key and user_provided_id_value. This is a
               kind of "primary" piece of metadata for the inspection. Only one key/value pair is allowed at this level.
            2) In the user_metadata field as a dictionary.  Multiple key/value pairs are allowed at this level.
@@ -304,13 +298,13 @@ class GroundlightApiClient(ApiClient):
 
         payload = {}
 
-        # Set the user_provided_id_key and user_provided_id_value if they are not set.
+        # Set the user_provided_id_key and user_provided_id_value if they were not previously set.
         response_json = response.json()
         if not response_json["user_provided_id_key"]:
             payload["user_provided_id_key"] = user_provided_key
             payload["user_provided_id_value"] = user_provided_value
 
-        # Get the existing keys and values in user_metadata (if any) so that we don't overwrite them
+        # Get the existing keys and values in user_metadata (if any) so that we don't overwrite them.
         metadata = response_json["user_metadata"]
         if not metadata:
             metadata = {}
@@ -344,7 +338,7 @@ class GroundlightApiClient(ApiClient):
         """Updates the confidence threshold of a detector."""
 
         # The API does not validate the confidence threshold,
-        # so we will validate it here and raise an exception if necessary
+        # so we will validate it here and raise an exception if necessary.
         if confidence_threshold < 0 or confidence_threshold > 1:
             raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}")
 
