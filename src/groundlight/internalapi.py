@@ -21,8 +21,10 @@ logger = logging.getLogger("groundlight.sdk")
 class NotFoundError(Exception):
     pass
 
+
 class InspectionError(Exception):
     pass
+
 
 class UpdateDetectorError(Exception):
     pass
