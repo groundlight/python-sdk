@@ -282,6 +282,6 @@ class Groundlight:
         self.api_client._stop_inspection(inspection_id)
 
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
-        """Updates the confidence threshold of a detector."""
+        """Updates the confidence threshold of a detector given a detector_id."""
         # pylint: disable=protected-access
         self.api_client._update_detector_confidence_threshold(detector_id, confidence_threshold)
