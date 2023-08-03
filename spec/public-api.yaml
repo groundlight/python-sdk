@@ -136,7 +136,7 @@ paths:
         name: human_review 
         schema: 
           type: boolean 
-        description: Allow image queries to be marked for no human review. 
+        description: If set to `False` then unconfident ML predictions will not be escalated to human review.  (Defaults `True`) 
         required: false 
       - in: query 
         name: patience_time 
