@@ -297,7 +297,7 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
-            human_review (bool): Allow image queries to be marked for no human review.. [optional]
+            human_review (bool): If set to `False` then unconfident ML predictions will not be escalated to human review.  [optional, defaults `True`]
             patience_time (float): How long to wait for a confident response.. [optional]
             body (file_type): [optional]
             _return_http_data_only (bool): response data without head status
