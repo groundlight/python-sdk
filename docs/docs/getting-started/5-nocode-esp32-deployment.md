@@ -22,9 +22,9 @@ The tool supports the following notification options for your deployed detector:
 
 The supported boards are:
 
-- M5Stack ESP32 PSRAM Timer Camera X [purchase here](https://shop.m5stack.com/products/esp32-psram-timer-camera-x-ov3660?variant=36362228301988)
-- AI-Thinker ESP32-CAM [purchase here](https://www.amazon.com/s?k=ESP32-CAM&i=electronics&crid=10JXSSPIN5ZZ1&sprefix=,electronics,340)
-- SeeedStudio ESP32S3 Sense [purchase here](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html)
+- M5Stack ESP32 PSRAM Timer Camera X [[purchase here](https://shop.m5stack.com/products/esp32-psram-timer-camera-x-ov3660?variant=36362228301988)]
+- AI-Thinker ESP32-CAM [[purchase here](https://www.amazon.com/s?k=ESP32-CAM&i=electronics&crid=10JXSSPIN5ZZ1&sprefix=,electronics,340)]
+- SeeedStudio ESP32S3 Sense [[purchase here](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html)]
 
 ## Source Code
 
