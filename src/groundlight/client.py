@@ -170,6 +170,7 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
+        human_review: Optional[bool] = True,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -182,6 +183,7 @@ class Groundlight:
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
+        :param human_review: If set to False, do not escalate for human review
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
@@ -189,7 +191,9 @@ class Groundlight:
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        raw_image_query = self.image_queries_api.submit_image_query(detector_id=detector_id, body=image_bytesio)
+        raw_image_query = self.image_queries_api.submit_image_query(
+            detector_id=detector_id, patience_time=wait, human_review=human_review, body=image_bytesio
+        )
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
