@@ -1,4 +1,4 @@
-# No-Code ESP32 Deployment
+# No-Code IoT Deployment
 
 We built a tool for deploying your Groundlight detector on any supported ESP32 Camera Board without writing any code. This tool is available at https://code.groundlight.ai/groundlight-embedded-uploader/.
 
