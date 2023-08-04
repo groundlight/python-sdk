@@ -205,6 +205,8 @@ with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
+    human_review = True # bool | Allow image queries to be marked for no human review. (optional)
+    patience_time = 3.14 # float | How long to wait for a confident response. (optional)
     body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
     # example passing only required values which don't have defaults set
@@ -217,7 +219,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.submit_image_query(detector_id, body=body)
+        api_response = api_instance.submit_image_query(detector_id, human_review=human_review, patience_time=patience_time, body=body)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
@@ -229,6 +231,8 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
+ **human_review** | **bool**| Allow image queries to be marked for no human review. | [optional]
+ **patience_time** | **float**| How long to wait for a confident response. | [optional]
  **body** | **file_type**|  | [optional]
 
 ### Return type

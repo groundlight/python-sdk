@@ -131,6 +131,8 @@ class ImageQueriesApi(object):
             params_map={
                 "all": [
                     "detector_id",
+                    "human_review",
+                    "patience_time",
                     "body",
                 ],
                 "required": [
@@ -145,13 +147,19 @@ class ImageQueriesApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
+                    "human_review": (bool,),
+                    "patience_time": (float,),
                     "body": (file_type,),
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
+                    "human_review": "human_review",
+                    "patience_time": "patience_time",
                 },
                 "location_map": {
                     "detector_id": "query",
+                    "human_review": "query",
+                    "patience_time": "query",
                     "body": "body",
                 },
                 "collection_format_map": {},
@@ -289,6 +297,8 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
+            human_review (bool): If set to `False` then unconfident ML predictions will not be escalated to human review.  [optional, defaults `True`]
+            patience_time (float): How long to wait for a confident response.. [optional]
             body (file_type): [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
