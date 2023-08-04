@@ -18,13 +18,13 @@ This is the easiest way to deploy your Groundlight detector on your computer, Ra
 ```yaml
 services:
   frontend:
-    image: docker.io/maxatgroundlight/groundlight-edge-client-frontend:latest
+    image: docker.io/maxatgroundlight/detector-builder-frontend:latest
     ports:
       - "3000:3000"
     depends_on:
       - backend
   backend:
-    image: docker.io/maxatgroundlight/groundlight-edge-client-backend:latest
+    image: docker.io/maxatgroundlight/detector-builder-backend:latest
     ports:
       - "8000:8000"
     devices:
