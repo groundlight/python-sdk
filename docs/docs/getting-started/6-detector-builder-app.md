@@ -4,7 +4,7 @@ This is the easiest way to deploy your Groundlight detector on your computer, Ra
 
 ## Prerequisites
 
-1. You must have a machine that can run Docker
+1. You must have a linux machine that can run Docker
 2. The machine must have internet access
 3. You must have an API key for the Groundlight API
 4. Either a usb camera/raspberry pi camera must be plugged into your machine, or there must be an rtsp stream available at the url you provide
