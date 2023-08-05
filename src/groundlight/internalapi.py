@@ -373,6 +373,6 @@ class GroundlightApiClient(ApiClient):
         if not is_ok(response.status_code):
             raise InternalApiError(
                 status=response.status_code,
-                reason=f"Error updating detector {detector_id}.",
+                reason=f"Error updating detector: {detector_id}.",
                 http_resp=response,
             )
