@@ -193,7 +193,7 @@ class Groundlight:
 
         # Convert from Detector to detector_id if necessary
         if isinstance(detector, Detector):
-            detector_id = self.get_detector(detector)
+            detector_id = detector.id
         else:
             detector_id = detector
 
