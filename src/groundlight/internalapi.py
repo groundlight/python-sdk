@@ -17,8 +17,10 @@ from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
 
+
 class NotFoundError(Exception):
     pass
+
 
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
@@ -227,12 +229,9 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def submit_image_query_with_inspection(self, 
-                                           detector_id: str, 
-                                           patience_time: float,
-                                           human_review: bool,
-                                           image: ByteStreamWrapper, 
-                                           inspection_id: str) -> str:
+    def submit_image_query_with_inspection(
+        self, detector_id: str, patience_time: float, human_review: bool, image: ByteStreamWrapper, inspection_id: str
+    ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
@@ -240,10 +239,12 @@ class GroundlightApiClient(ApiClient):
         # In the API, "send_notification" was used to escalate image queries to cloud labelers.
         send_notification = human_review
 
-        url = (f"{self.configuration.host}/posichecks"
-                f"?inspection_id={inspection_id}"
-                f"&predictor_id={detector_id}"
-                f"&send_notification={send_notification}")
+        url = (
+            f"{self.configuration.host}/posichecks"
+            f"?inspection_id={inspection_id}"
+            f"&predictor_id={detector_id}"
+            f"&send_notification={send_notification}"
+        )
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
@@ -345,10 +346,10 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InternalApiError(
-                    status=response.status_code,
-                    reason=f"Error stopping inspection {inspection_id}.",
-                    http_resp=response,
-                )
+                status=response.status_code,
+                reason=f"Error stopping inspection {inspection_id}.",
+                http_resp=response,
+            )
 
         return response.json()["result"]
 
@@ -371,7 +372,7 @@ class GroundlightApiClient(ApiClient):
 
         if not is_ok(response.status_code):
             raise InternalApiError(
-                    status=response.status_code,
-                    reason=f"Error updating detector {detector_id}.",
-                    http_resp=response,
-                )
+                status=response.status_code,
+                reason=f"Error updating detector {detector_id}.",
+                http_resp=response,
+            )

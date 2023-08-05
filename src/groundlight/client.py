@@ -185,7 +185,7 @@ class Groundlight:
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
         :param human_review: If set to False, do not escalate for human review
-        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled, 
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
                               this is the ID of the inspection to associate with the image query.
         """
         if wait is None:
@@ -205,21 +205,18 @@ class Groundlight:
         # the private API client instead.
         if inspection_id is None:
             raw_image_query = self.image_queries_api.submit_image_query(
-                detector_id=detector_id, 
-                patience_time=wait, 
-                human_review=human_review, 
-                body=image_bytesio
-                )
+                detector_id=detector_id, patience_time=wait, human_review=human_review, body=image_bytesio
+            )
             image_query_dict = raw_image_query.to_dict()
             image_query = ImageQuery.parse_obj(image_query_dict)
         else:
             print(f"Using private API client to submit image query with human_review: {human_review}")
             iq_id = self.api_client.submit_image_query_with_inspection(
-                detector_id=detector_id, 
-                patience_time=wait, 
-                human_review=human_review, 
-                image=image_bytesio, 
-                inspection_id=inspection_id
+                detector_id=detector_id,
+                patience_time=wait,
+                human_review=human_review,
+                image=image_bytesio,
+                inspection_id=inspection_id,
             )
             image_query = self.get_image_query(iq_id)
 
@@ -227,7 +224,7 @@ class Groundlight:
             threshold = self.get_detector(detector).confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
         return self._fixup_image_query(image_query)
-    
+
     def wait_for_confident_result(
         self,
         image_query: ImageQuery,
