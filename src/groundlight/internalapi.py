@@ -17,18 +17,8 @@ from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
 
-
 class NotFoundError(Exception):
     pass
-
-
-class InspectionError(Exception):
-    pass
-
-
-class UpdateDetectorError(Exception):
-    pass
-
 
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
@@ -237,16 +227,28 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def submit_image_query_with_inspection(self, detector_id: str, image: ByteStreamWrapper, inspection_id: str) -> str:
+    def submit_image_query_with_inspection(self, 
+                                           detector_id: str, 
+                                           patience_time: float,
+                                           human_review: bool,
+                                           image: ByteStreamWrapper, 
+                                           inspection_id: str) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
-        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}"
+
+        # In the API, "send_notification" was used to escalate image queries to cloud labelers.
+        send_notification = human_review
+
+        url = (f"{self.configuration.host}/posichecks"
+                f"?inspection_id={inspection_id}"
+                f"&predictor_id={detector_id}"
+                f"&send_notification={send_notification}")
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
 
-        response = requests.request("POST", url, headers=headers, data=image.read())
+        response = requests.request("POST", url, headers=headers, timeout=patience_time, data=image.read())
 
         if not is_ok(response.status_code):
             logger.info(response)
@@ -268,12 +270,16 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("POST", url, headers=headers, json={})
 
         if not is_ok(response.status_code):
-            raise InspectionError(f"Error starting inspection. Status code: {response.status_code}")
+            raise InternalApiError(
+                status=response.status_code,
+                reason="Error starting inspection.",
+                http_resp=response,
+            )
 
         return response.json()["id"]
 
     @RequestsRetryDecorator()
-    def update_inspection_metadata(self, inspection_id: str, user_provided_key, user_provided_value) -> None:
+    def update_inspection_metadata(self, inspection_id: str, user_provided_key: str, user_provided_value: str) -> None:
         """Add/update inspection metadata with the user_provided_key and user_provided_value.
 
         The API stores inspections metadata in two ways:
@@ -293,15 +299,17 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("GET", url, headers=headers)
 
         if not is_ok(response.status_code):
-            raise InspectionError(
-                f"Error getting inspection details for inspection {inspection_id}. Status code: {response.status_code}"
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error getting inspection details for inspection {inspection_id}.",
+                http_resp=response,
             )
 
         payload = {}
 
         # Set the user_provided_id_key and user_provided_id_value if they were not previously set.
         response_json = response.json()
-        if not response_json["user_provided_id_key"]:
+        if not response_json.get("user_provided_id_key"):
             payload["user_provided_id_key"] = user_provided_key
             payload["user_provided_id_value"] = user_provided_value
 
@@ -316,8 +324,10 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("PATCH", url, headers=headers, json=payload)
 
         if not is_ok(response.status_code):
-            raise InspectionError(
-                f"Error updating inspection metadata on inspection {inspection_id}. Status code: {response.status_code}"
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error updating inspection metadata on inspection {inspection_id}.",
+                http_resp=response,
             )
 
     @RequestsRetryDecorator()
@@ -334,7 +344,11 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("PATCH", url, headers=headers, json=payload)
 
         if not is_ok(response.status_code):
-            raise InspectionError(f"Error stopping inspection {inspection_id}. Status code: {response.status_code}")
+            raise InternalApiError(
+                    status=response.status_code,
+                    reason=f"Error stopping inspection {inspection_id}.",
+                    http_resp=response,
+                )
 
         return response.json()["result"]
 
@@ -356,4 +370,8 @@ class GroundlightApiClient(ApiClient):
         response = requests.request("PATCH", url, headers=headers, json=payload)
 
         if not is_ok(response.status_code):
-            raise UpdateDetectorError(f"Error updating detector {detector_id}. Status code: {response.status_code}")
+            raise InternalApiError(
+                    status=response.status_code,
+                    reason=f"Error updating detector {detector_id}.",
+                    http_resp=response,
+                )
