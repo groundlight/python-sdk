@@ -297,7 +297,7 @@ class Groundlight:
         """For users with Inspection Reports enabled only.
         Stops an inspection and raises an exception if the response from the server
         indicates that the inspection was not successfully stopped.
-        Returns a str with result of the inspection (either PASS or FAIL)
+        Returns a str with result of the inspection (either PASS or FAIL).
         """
         return self.api_client.stop_inspection(inspection_id)
 
