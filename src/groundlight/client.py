@@ -210,7 +210,6 @@ class Groundlight:
             image_query_dict = raw_image_query.to_dict()
             image_query = ImageQuery.parse_obj(image_query_dict)
         else:
-            print(f"Using private API client to submit image query with human_review: {human_review}")
             iq_id = self.api_client.submit_image_query_with_inspection(
                 detector_id=detector_id,
                 patience_time=wait,
