@@ -138,7 +138,9 @@ class ImageQueriesApi(object):
                 "required": [
                     "detector_id",
                 ],
-                "nullable": [],
+                "nullable": [
+                    "human_review",
+                ],
                 "enum": [],
                 "validation": [],
             },
@@ -147,7 +149,10 @@ class ImageQueriesApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
-                    "human_review": (bool,),
+                    "human_review": (
+                        bool,
+                        none_type,
+                    ),
                     "patience_time": (float,),
                     "body": (file_type,),
                 },
@@ -297,7 +302,7 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
-            human_review (bool): If set to `False` then unconfident ML predictions will not be escalated to human review.  [optional, defaults `True`]
+            human_review (bool, none_type): If set to None (default), use the regular escalation logic. If set to False, never escalate for human review. If set to True, always escalate for human review.  . [optional]
             patience_time (float): How long to wait for a confident response.. [optional]
             body (file_type): [optional]
             _return_http_data_only (bool): response data without head status

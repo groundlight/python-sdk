@@ -205,7 +205,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
-    human_review = True # bool | Allow image queries to be marked for no human review. (optional)
+    human_review = True # bool, none_type | If set to None (default), use the regular escalation logic. If set to False, never escalate for human review. If set to True, always escalate for human review.   (optional)
     patience_time = 3.14 # float | How long to wait for a confident response. (optional)
     body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
@@ -231,7 +231,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
- **human_review** | **bool**| Allow image queries to be marked for no human review. | [optional]
+ **human_review** | **bool, none_type**| If set to None (default), use the regular escalation logic. If set to False, never escalate for human review. If set to True, always escalate for human review.   | [optional]
  **patience_time** | **float**| How long to wait for a confident response. | [optional]
  **body** | **file_type**|  | [optional]
 
