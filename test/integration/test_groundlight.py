@@ -11,7 +11,7 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Lab
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from internalapi import InternalApiError
+from groundlight.internalapi import InternalApiError
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
