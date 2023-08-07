@@ -11,9 +11,8 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Lab
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-
 from internalapi import InternalApiError
+from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -60,6 +59,7 @@ def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
 def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg")
     return iq
+
 
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
@@ -412,11 +412,13 @@ def test_detector_improvement(gl: Groundlight):
 
     assert False, "The detector performance has not improved after two minutes"
 
+
 def test_start_inspection(gl: Groundlight):
     inspection_id = gl.start_inspection()
 
     assert isinstance(inspection_id, str)
-    assert 'inspect_' in inspection_id
+    assert "inspect_" in inspection_id
+
 
 def test_update_inspection_metadata_successful(gl: Groundlight):
     """Starts an inspection and adds a couple pieces of metadata to it.
@@ -424,13 +426,14 @@ def test_update_inspection_metadata_successful(gl: Groundlight):
     """
     inspection_id = gl.start_inspection()
 
-    user_provided_key = 'Inspector'
-    user_provided_value = 'Bob'
+    user_provided_key = "Inspector"
+    user_provided_value = "Bob"
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
-    user_provided_key = 'Engine ID'
-    user_provided_value = '1234'
+    user_provided_key = "Engine ID"
+    user_provided_value = "1234"
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
+
 
 def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """Attempt to update metadata for an inspection that doesn't exist.
@@ -438,13 +441,14 @@ def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """
 
     # The URCap might submit an empty string if an inspection hasn't started.
-    # An InternalApiError should be raised in this case. 
-    inspection_id = ''
-    user_provided_key = 'Operator'
-    user_provided_value = 'Bob'
+    # An InternalApiError should be raised in this case.
+    inspection_id = ""
+    user_provided_key = "Operator"
+    user_provided_value = "Bob"
 
     with pytest.raises(InternalApiError):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
+
 
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should pass, stops
@@ -452,11 +456,10 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """
     inspection_id = gl.start_inspection()
 
-    _ = gl.submit_image_query(detector=detector, 
-                               image="test/assets/dog.jpeg",
-                               inspection_id=inspection_id)
+    _ = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
 
     assert gl.stop_inspection(inspection_id) == "PASS"
+
 
 def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should fail, stops
@@ -464,14 +467,13 @@ def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     """
     inspection_id = gl.start_inspection()
 
-    _ = gl.submit_image_query(detector=detector, 
-                               image="test/assets/cat.jpeg",
-                               inspection_id=inspection_id)
+    _ = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
 
     assert gl.stop_inspection(inspection_id) == "FAIL"
 
+
 def test_stop_inspection_with_invalid_id(gl: Groundlight):
-    inspection_id = 'some_invalid_inspection_id'
+    inspection_id = "some_invalid_inspection_id"
 
     with pytest.raises(InternalApiError):
         gl.stop_inspection(inspection_id)
