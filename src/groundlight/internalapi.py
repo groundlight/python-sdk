@@ -241,16 +241,14 @@ class GroundlightApiClient(ApiClient):
         The image query will be associated to the inspection_id provided.
         """
 
-        # TODO properly implement human_review based on recent changes
-        if human_review:
-            pass
-
         url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}"
 
         # # TODO: make sure this handles all cases: True, False, None
-        # if human_review:
+        if human_review:
+            pass
         #     url += f"&send_notification=True" # TODO should this be True or always?
-        # elif not human_review:
+        else:
+            pass
         #     url += f"&send_notification=False" # TODO should this be True or always?
 
         headers = self._headers()
