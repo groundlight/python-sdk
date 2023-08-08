@@ -420,7 +420,7 @@ def test_start_inspection(gl: Groundlight):
     assert "inspect_" in inspection_id
 
 
-def test_update_inspection_metadata_successful(gl: Groundlight):
+def test_update_inspection_metadata_success(gl: Groundlight):
     """Starts an inspection and adds a couple pieces of metadata to it.
     This should succeed. If there are any errors, an exception will be raised.
     """
@@ -434,21 +434,20 @@ def test_update_inspection_metadata_successful(gl: Groundlight):
     user_provided_value = "1234"
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
+    
+
 
 def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """Attempt to update metadata for an inspection that doesn't exist.
     Should raise an InternalApiError.
     """
 
-    # The URCap might submit an empty string if an inspection hasn't started.
-    # An InternalApiError should be raised in this case.
-    inspection_id = ""
+    inspection_id = "some_invalid_inspection_id"
     user_provided_key = "Operator"
     user_provided_value = "Bob"
 
     with pytest.raises(InternalApiError):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
-
 
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should pass, stops
@@ -456,7 +455,9 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """
     inspection_id = gl.start_inspection()
 
-    _ = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
+    print('DEBUGGING test_stop_inspection_pass')
+    iq = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
+    print(iq)
 
     assert gl.stop_inspection(inspection_id) == "PASS"
 
@@ -477,3 +478,16 @@ def test_stop_inspection_with_invalid_id(gl: Groundlight):
 
     with pytest.raises(InternalApiError):
         gl.stop_inspection(inspection_id)
+
+
+def test_update_detector_confidence_threshold_success(gl: Groundlight, detector: Detector):
+    """Updates the confidence threshold for a detector. This should succeed.
+    """
+    gl.update_detector_confidence_threshold(detector, 0.77)
+
+def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector: Detector):
+    """Attemps to update the confidence threshold for a detector to an invalid value.
+    Should raise an ValueError.
+    """
+    with pytest.raises(ValueError):
+        gl.update_detector_confidence_threshold(detector, 77)

@@ -235,16 +235,17 @@ class GroundlightApiClient(ApiClient):
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
-
-        # In the API, "send_notification" was used to escalate image queries to cloud labelers.
-        send_notification = human_review
-
         url = (
             f"{self.configuration.host}/posichecks"
             f"?inspection_id={inspection_id}"
             f"&predictor_id={detector_id}"
-            f"&send_notification={send_notification}"
         )
+
+        # # TODO: make sure this handles all cases: True, False, None
+        # if human_review:
+        #     url += f"&send_notification=True" # TODO should this be True or always?
+        # elif not human_review:
+        #     url += f"&send_notification=False" # TODO should this be True or always?
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
@@ -256,7 +257,6 @@ class GroundlightApiClient(ApiClient):
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error submitting image query with inspection ID {inspection_id} on detector {detector_id}",
-                http_resp=response,
             )
 
         return response.json()["id"]
@@ -274,7 +274,6 @@ class GroundlightApiClient(ApiClient):
             raise InternalApiError(
                 status=response.status_code,
                 reason="Error starting inspection.",
-                http_resp=response,
             )
 
         return response.json()["id"]
@@ -296,14 +295,20 @@ class GroundlightApiClient(ApiClient):
 
         headers = self._headers()
 
-        # Get inspection to see if user_provided_id_key is set
+        # Get inspection in order to find out: 
+        # 1) if user_provided_id_key has been set
+        # 2) if the inspection is closed
         response = requests.request("GET", url, headers=headers)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error getting inspection details for inspection {inspection_id}.",
-                http_resp=response,
+            )
+        elif response.json()["status"] == 'COMPLETE':
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Inspection {inspection_id} is closed. Metadata cannot be added.",
             )
 
         payload = {}
@@ -328,7 +333,6 @@ class GroundlightApiClient(ApiClient):
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error updating inspection metadata on inspection {inspection_id}.",
-                http_resp=response,
             )
 
     @RequestsRetryDecorator()
@@ -340,6 +344,12 @@ class GroundlightApiClient(ApiClient):
 
         headers = self._headers()
 
+        # Closing an inspection generates a new inspection PDF. Therefore, if the inspection 
+        # is already closed, just return "COMPLETE" to avoid unnecessarily generating a new PDF.
+        response = requests.request("GET", url, headers=headers)
+        if response.json()["status"] == "COMPLETE":
+            return "COMPLETE"
+
         payload = {"status": "COMPLETE"}
 
         response = requests.request("PATCH", url, headers=headers, json=payload)
@@ -348,7 +358,6 @@ class GroundlightApiClient(ApiClient):
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error stopping inspection {inspection_id}.",
-                http_resp=response,
             )
 
         return response.json()["result"]
@@ -374,5 +383,4 @@ class GroundlightApiClient(ApiClient):
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error updating detector: {detector_id}.",
-                http_resp=response,
             )
