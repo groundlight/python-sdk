@@ -211,6 +211,7 @@ class Groundlight:
             image_query_dict = raw_image_query.to_dict()
             image_query = ImageQuery.parse_obj(image_query_dict)
         else:
+            # pylint: disable=too-many-arguments
             iq_id = self.api_client.submit_image_query_with_inspection(
                 detector_id=detector_id,
                 patience_time=wait,
