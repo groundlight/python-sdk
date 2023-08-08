@@ -230,11 +230,21 @@ class GroundlightApiClient(ApiClient):
 
     @RequestsRetryDecorator()
     def submit_image_query_with_inspection(
-        self, detector_id: str, patience_time: float, human_review: bool, image: ByteStreamWrapper, inspection_id: str
-    ) -> str:  # pylint: disable=R0913
+        self, 
+        detector_id: str, 
+        patience_time: float, 
+        human_review: bool, 
+        image: ByteStreamWrapper, 
+        inspection_id: str # pylint: disable=R0913
+    ) -> str:  
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
+
+        # TODO properly implement human_review based on recent changes
+        if human_review:
+            pass
+
         url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}"
 
         # # TODO: make sure this handles all cases: True, False, None
@@ -301,7 +311,7 @@ class GroundlightApiClient(ApiClient):
                 status=response.status_code,
                 reason=f"Error getting inspection details for inspection {inspection_id}.",
             )
-        elif response.json()["status"] == "COMPLETE":
+        if response.json()["status"] == "COMPLETE":
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Inspection {inspection_id} is closed. Metadata cannot be added.",
