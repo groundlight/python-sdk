@@ -229,7 +229,7 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    # pylint: disable=too-many-arguments
+    # pylint: disable=PLR0913
     def submit_image_query_with_inspection(
         self,
         detector_id: str,
