@@ -165,13 +165,13 @@ class Groundlight:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
 
-    def submit_image_query(
+    def submit_image_query( # pylint: disable=R0913
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
         human_review: Optional[bool] = True,
-        inspection_id: Optional[str] = None,  # pylint: disable=R0913
+        inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`

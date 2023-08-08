@@ -229,13 +229,13 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    def submit_image_query_with_inspection(
+    def submit_image_query_with_inspection( # pylint: disable=R0913
         self,
         detector_id: str,
         patience_time: float,
         human_review: bool,
         image: ByteStreamWrapper,
-        inspection_id: str,  # pylint: disable=R0913
+        inspection_id: str,
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
