@@ -8,10 +8,9 @@ import openapi_client
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
-from groundlight.internalapi import NotFoundError
+from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from groundlight.internalapi import InternalApiError
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
