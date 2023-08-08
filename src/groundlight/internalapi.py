@@ -231,15 +231,11 @@ class GroundlightApiClient(ApiClient):
     @RequestsRetryDecorator()
     def submit_image_query_with_inspection(
         self, detector_id: str, patience_time: float, human_review: bool, image: ByteStreamWrapper, inspection_id: str
-    ) -> str: # pylint: disable=R0913
+    ) -> str:  # pylint: disable=R0913
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
         """
-        url = (
-            f"{self.configuration.host}/posichecks"
-            f"?inspection_id={inspection_id}"
-            f"&predictor_id={detector_id}"
-        )
+        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}"
 
         # # TODO: make sure this handles all cases: True, False, None
         # if human_review:
@@ -295,7 +291,7 @@ class GroundlightApiClient(ApiClient):
 
         headers = self._headers()
 
-        # Get inspection in order to find out: 
+        # Get inspection in order to find out:
         # 1) if user_provided_id_key has been set
         # 2) if the inspection is closed
         response = requests.request("GET", url, headers=headers)
@@ -305,7 +301,7 @@ class GroundlightApiClient(ApiClient):
                 status=response.status_code,
                 reason=f"Error getting inspection details for inspection {inspection_id}.",
             )
-        elif response.json()["status"] == 'COMPLETE':
+        elif response.json()["status"] == "COMPLETE":
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Inspection {inspection_id} is closed. Metadata cannot be added.",
@@ -344,7 +340,7 @@ class GroundlightApiClient(ApiClient):
 
         headers = self._headers()
 
-        # Closing an inspection generates a new inspection PDF. Therefore, if the inspection 
+        # Closing an inspection generates a new inspection PDF. Therefore, if the inspection
         # is already closed, just return "COMPLETE" to avoid unnecessarily generating a new PDF.
         response = requests.request("GET", url, headers=headers)
         if response.json()["status"] == "COMPLETE":

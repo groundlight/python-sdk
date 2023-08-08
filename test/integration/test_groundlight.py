@@ -433,8 +433,6 @@ def test_update_inspection_metadata_success(gl: Groundlight):
     user_provided_value = "1234"
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
-    
-
 
 def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """Attempt to update metadata for an inspection that doesn't exist.
@@ -448,13 +446,14 @@ def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     with pytest.raises(InternalApiError):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
+
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should pass, stops
     the inspection, checks the result.
     """
     inspection_id = gl.start_inspection()
 
-    print('DEBUGGING test_stop_inspection_pass')
+    print("DEBUGGING test_stop_inspection_pass")
     iq = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
     print(iq)
 
@@ -480,9 +479,9 @@ def test_stop_inspection_with_invalid_id(gl: Groundlight):
 
 
 def test_update_detector_confidence_threshold_success(gl: Groundlight, detector: Detector):
-    """Updates the confidence threshold for a detector. This should succeed.
-    """
+    """Updates the confidence threshold for a detector. This should succeed."""
     gl.update_detector_confidence_threshold(detector, 0.77)
+
 
 def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector: Detector):
     """Attemps to update the confidence threshold for a detector to an invalid value.
