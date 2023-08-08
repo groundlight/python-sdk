@@ -171,8 +171,8 @@ class Groundlight:
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
         human_review: Optional[bool] = True,
-        inspection_id: Optional[str] = None, # pylint: disable=R0913
-    ) -> ImageQuery:  
+        inspection_id: Optional[str] = None,  # pylint: disable=R0913
+    ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
