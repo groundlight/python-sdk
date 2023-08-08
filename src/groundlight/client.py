@@ -165,8 +165,7 @@ class Groundlight:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
 
-    # pylint: disable=too-many-arguments
-    def submit_image_query(
+    def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
@@ -206,15 +205,17 @@ class Groundlight:
         # the private API client instead.
         if inspection_id is None:
             raw_image_query = self.image_queries_api.submit_image_query(
-                detector_id=detector_id, patience_time=wait, human_review=human_review, body=image_bytesio
+                detector_id=detector_id,
+                patience_time=wait,
+                human_review=human_review,
+                body=image_bytesio,
             )
             image_query_dict = raw_image_query.to_dict()
             image_query = ImageQuery.parse_obj(image_query_dict)
         else:
-            # pylint: disable=too-many-arguments
             iq_id = self.api_client.submit_image_query_with_inspection(
                 detector_id=detector_id,
-                patience_time=wait,
+                patience_time=wait,  # TODO is this relevant to submit_image_query_with_inspection?
                 human_review=human_review,
                 image=image_bytesio,
                 inspection_id=inspection_id,

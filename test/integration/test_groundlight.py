@@ -12,6 +12,7 @@ from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from PIL import Image
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -58,6 +59,11 @@ def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
 def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg")
     return iq
+
+
+@pytest.fixture(name="dog_image")
+def fixture_dog_image() -> Image:
+    return Image.open("test/assets/dog.jpeg")
 
 
 def test_create_detector(gl: Groundlight):
@@ -448,14 +454,12 @@ def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
 
 
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
-    """Starts an inspection, submits a query that should pass, stops
+    """Starts an inspection, submits a query with the inspection ID that should pass, stops
     the inspection, checks the result.
     """
     inspection_id = gl.start_inspection()
 
-    print("DEBUGGING test_stop_inspection_pass")
-    iq = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
-    print(iq)
+    _ = gl.submit_image_query(detector=detector, wait=0.1, image="test/assets/dog.jpeg", inspection_id=inspection_id)
 
     assert gl.stop_inspection(inspection_id) == "PASS"
 

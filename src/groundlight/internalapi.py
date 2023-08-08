@@ -229,11 +229,10 @@ class GroundlightApiClient(ApiClient):
         return Detector.parse_obj(parsed["results"][0])
 
     @RequestsRetryDecorator()
-    # pylint: disable=too-many-arguments
-    def submit_image_query_with_inspection(
+    def submit_image_query_with_inspection(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector_id: str,
-        patience_time: float,
+        patience_time: float,  # TODO is this relevant?
         human_review: bool,
         image: ByteStreamWrapper,
         inspection_id: str,
@@ -242,26 +241,33 @@ class GroundlightApiClient(ApiClient):
         The image query will be associated to the inspection_id provided.
         """
 
-        url = f"{self.configuration.host}/posichecks?inspection_id={inspection_id}&predictor_id={detector_id}"
+        url = (
+            f"{self.configuration.host}/posichecks"
+            f"?inspection_id={inspection_id}"
+            f"&predictor_id={detector_id}&patience_time={patience_time}"
+        )
 
-        # # TODO: make sure this handles all cases: True, False, None
-        if human_review:
+        # TODO: update this in light of recent changes
+        if human_review is None:
             pass
-        #     url += f"&send_notification=True" # TODO should this be True or always?
+        elif human_review:
+            url += "&send_notification=True"  # TODO should this be True or 'ALWAYS'?
         else:
-            pass
-        #     url += f"&send_notification=False" # TODO should this be True or always?
+            url += "&send_notification=False"  # TODO should this be True or 'NEVER'?
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
 
-        response = requests.request("POST", url, headers=headers, timeout=patience_time, data=image.read())
+        # TODO: do we want patience time here?
+        # response = requests.request("POST", url, headers=headers, timeout=patience_time, data=image.read())
+        response = requests.request("POST", url, headers=headers, data=image.read())
 
         if not is_ok(response.status_code):
             logger.info(response)
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error submitting image query with inspection ID {inspection_id} on detector {detector_id}",
+                http_resp=response,
             )
 
         return response.json()["id"]
