@@ -165,7 +165,7 @@ class Groundlight:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
 
-    # pylint: disable=PLR0913
+    # pylint: disable=too-many-arguments
     def submit_image_query(
         self,
         detector: Union[Detector, str],
