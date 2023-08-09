@@ -170,7 +170,7 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
-        human_review: Optional[bool] = True,
+        human_review: str = "DEFAULT",
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -183,7 +183,10 @@ class Groundlight:
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
-        :param human_review: If set to False, do not escalate for human review
+        :param human_review: If set to `DEFAULT`, send the image query for human review
+            only if the ML prediction is not confident.
+            If set to `ALWAYS`, always send the image query for human review.
+            If set to `NEVER`, never send the image query for human review.
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
