@@ -182,6 +182,14 @@ def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
+    
+def test_submit_image_query_with_no_human_review(gl: Groundlight, detector: Detector):
+    # For now, this just tests that the image query is created successfully. There should probably be a better 
+    # way to check that the image query is never escalated for human review. 
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
