@@ -147,7 +147,7 @@ class ImageQueriesApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
-                    "human_review": (str,),
+                    "human_review": (bool,),
                     "patience_time": (float,),
                     "body": (file_type,),
                 },
@@ -297,7 +297,7 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
-            human_review (str): If set to `DEFAULT`, then the default escalation logic will be used. (i.e., send to human review if the detector is not confident enough.) If set to `ALWAYS`, then the image query will always be escalated for human review even if the detector's prediction is above the confidence threshold. If set to `NEVER`, then the image query will never be escalated for human review even if the detector's prediction is below the confidence threshold. . [optional]
+            human_review (bool): If set to `False` then unconfident ML predictions will not be escalated to human review.  [optional, defaults `True`]
             patience_time (float): How long to wait for a confident response.. [optional]
             body (file_type): [optional]
             _return_http_data_only (bool): response data without head status
