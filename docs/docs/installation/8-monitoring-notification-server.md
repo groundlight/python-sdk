@@ -1,4 +1,4 @@
-# Notification Server Example
+# Monitoring Notification Server
 
 This is the easiest way to deploy your Groundlight detectors on a linux computer. All configuration is done through a web user interface, and no code development is required.
 
@@ -18,13 +18,13 @@ This is the easiest way to deploy your Groundlight detectors on a linux computer
 ```yaml
 services:
   frontend:
-    image: docker.io/groundlight/notification-server-example-frontend:latest
+    image: docker.io/groundlight/monitoring-notification-server-frontend:latest
     ports:
       - "3000:3000"
     depends_on:
       - backend
   backend:
-    image: docker.io/groundlight/notification-server-example-backend:latest
+    image: docker.io/groundlight/monitoring-notification-server-backend:latest
     ports:
       - "8000:8000"
     devices:
@@ -45,4 +45,4 @@ docker-compose up
 
 4. If installed locally, open http://localhost:3000 in your browser. If installed on a remote device, replace `localhost` with the IP address of your device. You should see the following page:
 
-![Screenshot of the Groundlight Notification Server Example](/img/docker-img-frontpage.png)
+![Screenshot of the Groundlight Monitoring Notification Server](/img/docker-img-frontpage.png)
