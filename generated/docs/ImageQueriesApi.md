@@ -205,7 +205,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
-    human_review = True # bool | Allow image queries to be marked for no human review. (optional)
+    human_review = "human_review_example" # str | If set to `DEFAULT`, then the default escalation logic will be used. (i.e., send to human review if the detector is not confident enough.) If set to `ALWAYS`, then the image query will always be escalated for human review even if the detector's prediction is above the confidence threshold. If set to `NEVER`, then the image query will never be escalated for human review even if the detector's prediction is below the confidence threshold.  (optional)
     patience_time = 3.14 # float | How long to wait for a confident response. (optional)
     body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
@@ -231,7 +231,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
- **human_review** | **bool**| Allow image queries to be marked for no human review. | [optional]
+ **human_review** | **str**| If set to &#x60;DEFAULT&#x60;, then the default escalation logic will be used. (i.e., send to human review if the detector is not confident enough.) If set to &#x60;ALWAYS&#x60;, then the image query will always be escalated for human review even if the detector&#39;s prediction is above the confidence threshold. If set to &#x60;NEVER&#x60;, then the image query will never be escalated for human review even if the detector&#39;s prediction is below the confidence threshold.  | [optional]
  **patience_time** | **float**| How long to wait for a confident response. | [optional]
  **body** | **file_type**|  | [optional]
 

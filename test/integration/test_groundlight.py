@@ -177,6 +177,13 @@ def test_submit_image_query_returns_yes(gl: Groundlight):
     assert image_query.result.label == Label.YES
 
 
+def test_submit_image_query_with_patience_time(gl: groundlight, detector: Detector):
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+
+
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
     assert str(_image_query)
