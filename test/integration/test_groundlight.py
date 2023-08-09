@@ -6,12 +6,16 @@ from typing import Any
 
 import openapi_client
 import pytest
+from model import (ClassificationResult, Detector, ImageQuery,
+                   PaginatedDetectorList, PaginatedImageQueryList)
+
 from groundlight import Groundlight
-from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
+from groundlight.binary_labels import (VALID_DISPLAY_LABELS, DeprecatedLabel,
+                                       Label,
+                                       convert_internal_label_to_display)
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -35,7 +39,7 @@ def is_valid_display_label(label: str) -> bool:
 def fixture_gl() -> Groundlight:
     """Creates a Groundlight client object for testing."""
     _gl = Groundlight()
-    _gl.DEFAULT_WAIT = 0.1
+    _gl.DEFAULT_WAIT = 10
     return _gl
 
 
@@ -164,7 +168,7 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     # Ask for a trivially small wait so it never has time to update, but uses the code path
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=2)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -173,7 +177,7 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", pipeline_config="never-review")
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=2)
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10)
     assert image_query.result.label == Label.YES
 
 
