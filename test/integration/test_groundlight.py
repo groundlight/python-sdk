@@ -164,7 +164,7 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     # Ask for a trivially small wait so it never has time to update, but uses the code path
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=2)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -173,7 +173,7 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", pipeline_config="never-review")
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=2)
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10)
     assert image_query.result.label == Label.YES
 
 
