@@ -448,6 +448,7 @@ def test_update_inspection_metadata_success(gl: Groundlight):
     user_provided_value = "1234"
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
+
 def test_update_inspection_metadata_failure(gl: Groundlight):
     """Attempts to add metadata to an inspection after it is closed.
     Should raise an exception.
@@ -460,6 +461,7 @@ def test_update_inspection_metadata_failure(gl: Groundlight):
         user_provided_key = "Inspector"
         user_provided_value = "Bob"
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
+
 
 def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """Attempt to update metadata for an inspection that doesn't exist.
