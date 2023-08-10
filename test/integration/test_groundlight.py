@@ -6,12 +6,16 @@ from typing import Any
 
 import openapi_client
 import pytest
+from model import (ClassificationResult, Detector, ImageQuery,
+                   PaginatedDetectorList, PaginatedImageQueryList)
+
 from groundlight import Groundlight
-from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
+from groundlight.binary_labels import (VALID_DISPLAY_LABELS, DeprecatedLabel,
+                                       Label,
+                                       convert_internal_label_to_display)
 from groundlight.internalapi import NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -163,7 +167,7 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
 
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
-    # Ask for a trivially small wait so it never has time to update, but uses the code path
+    # test that the code path works at all
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
