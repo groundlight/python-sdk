@@ -163,7 +163,6 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
 
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
-    # test that the code path works at all
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)

@@ -183,7 +183,7 @@ class Groundlight:
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
-        :param human_review: If `None` or `"DEFAULT"`, send the image query for human review
+        :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
             If set to `ALWAYS`, always send the image query for human review.
             If set to `NEVER`, never send the image query for human review.
