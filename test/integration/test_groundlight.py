@@ -480,7 +480,7 @@ def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     inspection_id = gl.start_inspection()
 
     iq = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
-    gl.add_label(iq, Label.NO) # labeling it NO just to be sure the inspection fails
+    gl.add_label(iq, Label.NO)  # labeling it NO just to be sure the inspection fails
 
     assert gl.stop_inspection(inspection_id) == "FAIL"
 
@@ -502,7 +502,7 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
     Should raise ValueError exceptions.
     """
     with pytest.raises(ValueError):
-        gl.update_detector_confidence_threshold(detector.id, 77) # too high
+        gl.update_detector_confidence_threshold(detector.id, 77)  # too high
 
     with pytest.raises(ValueError):
-        gl.update_detector_confidence_threshold(detector.id, -1) # too low
+        gl.update_detector_confidence_threshold(detector.id, -1)  # too low

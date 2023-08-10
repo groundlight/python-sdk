@@ -251,11 +251,11 @@ class GroundlightApiClient(ApiClient):
         # In the API, 'send_notification' is used to control human_review escalation. This will eventually
         # be deprecated, but for now we need to support it in the following manner:
         if human_review == "ALWAYS":
-            url += "&send_notification=True" 
+            url += "&send_notification=True"
         elif human_review == "NEVER":
             url += "&send_notification=False"
         else:
-            pass # append nothing to the URL, allow "DEFAULT" behavior
+            pass  # append nothing to the URL, allow "DEFAULT" behavior
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
@@ -357,9 +357,9 @@ class GroundlightApiClient(ApiClient):
         # Closing an inspection generates a new inspection PDF. Therefore, if the inspection
         # is already closed, just return "COMPLETE" to avoid unnecessarily generating a new PDF.
         response = requests.request("GET", url, headers=headers)
-        if response.json().get('status') == "COMPLETE":
+        if response.json().get("status") == "COMPLETE":
             return "COMPLETE"
-        
+
         payload = {"status": "COMPLETE"}
 
         response = requests.request("PATCH", url, headers=headers, json=payload)
