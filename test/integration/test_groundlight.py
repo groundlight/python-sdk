@@ -216,7 +216,6 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated)
     exc_value = exc_info.value
-    print(f"exc_info = {exc_info}")
     assert is_user_error(exc_value.status)
 
 
@@ -469,7 +468,7 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """
     inspection_id = gl.start_inspection()
 
-    _ = gl.submit_image_query(detector=detector, wait=0.1, image="test/assets/dog.jpeg", inspection_id=inspection_id)
+    _ = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
 
     assert gl.stop_inspection(inspection_id) == "PASS"
 
@@ -480,7 +479,8 @@ def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     """
     inspection_id = gl.start_inspection()
 
-    _ = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
+    iq = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
+    gl.add_label(iq, Label.NO) # labeling it NO just to be sure the inspection fails
 
     assert gl.stop_inspection(inspection_id) == "FAIL"
 
@@ -494,12 +494,15 @@ def test_stop_inspection_with_invalid_id(gl: Groundlight):
 
 def test_update_detector_confidence_threshold_success(gl: Groundlight, detector: Detector):
     """Updates the confidence threshold for a detector. This should succeed."""
-    gl.update_detector_confidence_threshold(detector, 0.77)
+    gl.update_detector_confidence_threshold(detector.id, 0.77)
 
 
 def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector: Detector):
-    """Attemps to update the confidence threshold for a detector to an invalid value.
-    Should raise an ValueError.
+    """Attempts to update the confidence threshold for a detector to invalid values.
+    Should raise ValueError exceptions.
     """
     with pytest.raises(ValueError):
-        gl.update_detector_confidence_threshold(detector, 77)
+        gl.update_detector_confidence_threshold(detector.id, 77) # too high
+
+    with pytest.raises(ValueError):
+        gl.update_detector_confidence_threshold(detector.id, -1) # too low

@@ -357,9 +357,9 @@ class GroundlightApiClient(ApiClient):
         # Closing an inspection generates a new inspection PDF. Therefore, if the inspection
         # is already closed, just return "COMPLETE" to avoid unnecessarily generating a new PDF.
         response = requests.request("GET", url, headers=headers)
-        if response.json()["status"] == "COMPLETE":
+        if response.json().get('status') == "COMPLETE":
             return "COMPLETE"
-
+        
         payload = {"status": "COMPLETE"}
 
         response = requests.request("PATCH", url, headers=headers, json=payload)
