@@ -193,16 +193,16 @@ class Groundlight:
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
-        
+
         params = {"detector_id": detector_id, "body": image_bytesio}
         if wait == 0:
             params["patience_time"] = self.DEFAULT_WAIT
         else:
             params["patience_time"] = wait
-            
+
         if human_review is not None:
             params["human_review"] = human_review
-        
+
         raw_image_query = self.image_queries_api.submit_image_query(**params)
 
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
