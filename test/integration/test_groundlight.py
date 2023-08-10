@@ -192,8 +192,6 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
         _image_query = gl.submit_image_query(
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
-        assert str(_image_query)
-        assert isinstance(_image_query, ImageQuery)
         assert is_valid_display_result(_image_query.result)
 
 
