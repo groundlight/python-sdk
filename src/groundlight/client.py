@@ -185,7 +185,7 @@ class Groundlight:
         :param wait: How long to wait (in seconds) for a confident answer.
         :param human_review: If set to False, do not escalate for human review
         """
-        if wait is None:
+        if wait is None or wait == 0:
             wait = self.DEFAULT_WAIT
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
