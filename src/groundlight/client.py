@@ -170,7 +170,7 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
-        human_review: str = "DEFAULT",
+        human_review: Optional[str] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -193,10 +193,18 @@ class Groundlight:
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
+        
+        params = {"detector_id": detector_id, "body": image_bytesio}
+        if wait == 0:
+            params["patience_time"] = self.DEFAULT_WAIT
+        else:
+            params["patience_time"] = wait
+            
+        if human_review is not None:
+            params["human_review"] = human_review
+        
+        raw_image_query = self.image_queries_api.submit_image_query(**params)
 
-        raw_image_query = self.image_queries_api.submit_image_query(
-            detector_id=detector_id, patience_time=wait, human_review=human_review, body=image_bytesio
-        )
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
