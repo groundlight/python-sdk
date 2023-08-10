@@ -232,10 +232,10 @@ class GroundlightApiClient(ApiClient):
     def submit_image_query_with_inspection(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector_id: str,
-        patience_time: float,  # TODO is this relevant?
-        human_review: bool,
-        image: ByteStreamWrapper,
+        patience_time: float,
+        body: ByteStreamWrapper,
         inspection_id: str,
+        human_review: str = "DEFAULT",
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
@@ -244,30 +244,29 @@ class GroundlightApiClient(ApiClient):
         url = (
             f"{self.configuration.host}/posichecks"
             f"?inspection_id={inspection_id}"
-            f"&predictor_id={detector_id}&patience_time={patience_time}"
+            f"&predictor_id={detector_id}"
+            f"&patience_time={patience_time}"
         )
 
-        # TODO: update this in light of recent changes
-        if human_review is None:
-            pass
-        elif human_review:
-            url += "&send_notification=True"  # TODO should this be True or 'ALWAYS'?
+        # In the API, 'send_notification' is used to control human_review escalation. This will eventually
+        # be deprecated, but for now we need to support it in the following manner:
+        if human_review == "ALWAYS":
+            url += "&send_notification=True" 
+        elif human_review == "NEVER":
+            url += "&send_notification=False"
         else:
-            url += "&send_notification=False"  # TODO should this be True or 'NEVER'?
+            pass # append nothing to the URL, allow "DEFAULT" behavior
 
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
 
-        # TODO: do we want patience time here?
-        # response = requests.request("POST", url, headers=headers, timeout=patience_time, data=image.read())
-        response = requests.request("POST", url, headers=headers, data=image.read())
+        response = requests.request("POST", url, headers=headers, data=body.read())
 
         if not is_ok(response.status_code):
             logger.info(response)
             raise InternalApiError(
                 status=response.status_code,
                 reason=f"Error submitting image query with inspection ID {inspection_id} on detector {detector_id}",
-                http_resp=response,
             )
 
         return response.json()["id"]
