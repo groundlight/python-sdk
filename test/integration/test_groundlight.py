@@ -182,13 +182,16 @@ def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
-    
+
+
 def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: Detector):
-    # For now, this just tests that the image query is submitted successfully. 
-    # There should probably be a better way to check whether the image query was escalated for human review. 
-    
+    # For now, this just tests that the image query is submitted successfully.
+    # There should probably be a better way to check whether the image query was escalated for human review.
+
     for human_review_value in ("DEFAULT", "ALWAYS", "NEVER"):
-        _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value)
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
+        )
         assert str(_image_query)
         assert isinstance(_image_query, ImageQuery)
         assert is_valid_display_result(_image_query.result)
