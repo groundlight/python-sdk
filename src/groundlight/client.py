@@ -185,15 +185,20 @@ class Groundlight:
         :param wait: How long to wait (in seconds) for a confident answer.
         :param human_review: If set to False, do not escalate for human review
         """
-        if wait is None or wait == 0:
+        if wait is None:
             wait = self.DEFAULT_WAIT
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        raw_image_query = self.image_queries_api.submit_image_query(
-            detector_id=detector_id, patience_time=wait, human_review=human_review, body=image_bytesio
-        )
+        if wait == 0:
+            raw_image_query = self.image_queries_api.submit_image_query(
+                detector_id=detector_id, patience_time=self.DEFAULT_WAIT, human_review=human_review, body=image_bytesio
+            )
+        else:
+            raw_image_query = self.image_queries_api.submit_image_query(
+                detector_id=detector_id, patience_time=wait, human_review=human_review, body=image_bytesio
+            )
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
