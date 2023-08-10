@@ -204,7 +204,6 @@ class Groundlight:
             params["human_review"] = human_review
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
-
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
         if wait:
             threshold = self.get_detector(detector).confidence_threshold
