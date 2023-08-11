@@ -205,7 +205,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
-    human_review = True # bool | Allow image queries to be marked for no human review. (optional)
+    human_review = "human_review_example" # str | If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident.  (optional)
     patience_time = 3.14 # float | How long to wait for a confident response. (optional)
     body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
@@ -231,7 +231,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
- **human_review** | **bool**| Allow image queries to be marked for no human review. | [optional]
+ **human_review** | **str**| If set to &#x60;DEFAULT&#x60;, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to &#x60;ALWAYS&#x60;, always send the image query for human review even if the ML model is confident. If set to &#x60;NEVER&#x60;, never send the image query for human review even if the ML model is not confident.  | [optional]
  **patience_time** | **float**| How long to wait for a confident response. | [optional]
  **body** | **file_type**|  | [optional]
 

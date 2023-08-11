@@ -1,16 +1,18 @@
+import json
 import logging
 import os
 import random
 import time
 import uuid
 from functools import wraps
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
 
+from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
 
 logger = logging.getLogger("groundlight.sdk")
@@ -225,3 +227,182 @@ class GroundlightApiClient(ApiClient):
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
         return Detector.parse_obj(parsed["results"][0])
+
+    @RequestsRetryDecorator()
+    def submit_image_query_with_inspection(  # noqa: PLR0913 # pylint: disable=too-many-arguments
+        self,
+        detector_id: str,
+        patience_time: float,
+        body: ByteStreamWrapper,
+        inspection_id: str,
+        human_review: str = "DEFAULT",
+    ) -> str:
+        """Submits an image query to the API and returns the ID of the image query.
+        The image query will be associated to the inspection_id provided.
+        """
+
+        url = f"{self.configuration.host}/posichecks"
+
+        params: Dict[str, Union[str, float, bool]] = {
+            "inspection_id": inspection_id,
+            "predictor_id": detector_id,
+            "patience_time": patience_time,
+        }
+
+        # In the API, 'send_notification' is used to control human_review escalation. This will eventually
+        # be deprecated, but for now we need to support it in the following manner:
+        if human_review == "ALWAYS":
+            params["send_notification"] = True
+        elif human_review == "NEVER":
+            params["send_notification"] = False
+        else:
+            pass  # don't send the send_notifications param, allow "DEFAULT" behavior
+
+        headers = self._headers()
+        headers["Content-Type"] = "image/jpeg"
+
+        response = requests.request("POST", url, headers=headers, params=params, data=body.read())
+
+        if not is_ok(response.status_code):
+            logger.info(response)
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error submitting image query with inspection ID {inspection_id} on detector {detector_id}",
+                http_resp=response,
+            )
+
+        return response.json()["id"]
+
+    @RequestsRetryDecorator()
+    def start_inspection(self) -> str:
+        """Starts an inspection, returns the ID."""
+        url = f"{self.configuration.host}/inspections"
+
+        headers = self._headers()
+
+        response = requests.request("POST", url, headers=headers, json={})
+
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                status=response.status_code,
+                reason="Error starting inspection.",
+                http_resp=response,
+            )
+
+        return response.json()["id"]
+
+    @RequestsRetryDecorator()
+    def update_inspection_metadata(self, inspection_id: str, user_provided_key: str, user_provided_value: str) -> None:
+        """Add/update inspection metadata with the user_provided_key and user_provided_value.
+
+        The API stores inspections metadata in two ways:
+           1) At the top level of the inspection with user_provided_id_key and user_provided_id_value. This is a
+              kind of "primary" piece of metadata for the inspection. Only one key/value pair is allowed at this level.
+           2) In the user_metadata field as a dictionary.  Multiple key/value pairs are allowed at this level.
+
+        The first piece of metadata presented to an inspection will be assumed to be the user_provided_id_key and
+        user_provided_id_value. All subsequent pieces metadata will be stored in the user_metadata field.
+
+        """
+        url = f"{self.configuration.host}/inspections/{inspection_id}"
+
+        headers = self._headers()
+
+        # Get inspection in order to find out:
+        # 1) if user_provided_id_key has been set
+        # 2) if the inspection is closed
+        response = requests.request("GET", url, headers=headers)
+
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error getting inspection details for inspection {inspection_id}.",
+                http_resp=response,
+            )
+        if response.json()["status"] == "COMPLETE":
+            raise ValueError(f"Inspection {inspection_id} is closed. Metadata cannot be added.")
+
+        payload = {}
+
+        # Set the user_provided_id_key and user_provided_id_value if they were not previously set.
+        response_json = response.json()
+        if not response_json.get("user_provided_id_key"):
+            payload["user_provided_id_key"] = user_provided_key
+            payload["user_provided_id_value"] = user_provided_value
+
+        # Get the existing keys and values in user_metadata (if any) so that we don't overwrite them.
+        metadata = response_json["user_metadata"]
+        if not metadata:
+            metadata = {}
+
+        # Submit the new metadata
+        metadata[user_provided_key] = user_provided_value
+        payload["user_metadata_json"] = json.dumps(metadata)
+        response = requests.request("PATCH", url, headers=headers, json=payload)
+
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error updating inspection metadata on inspection {inspection_id}.",
+                http_resp=response,
+            )
+
+    @RequestsRetryDecorator()
+    def stop_inspection(self, inspection_id: str) -> str:
+        """Stops an inspection and raises an exception if the response from the server does not indicate success.
+        Returns a string that indicates the result (either PASS or FAIL). The URCap requires this.
+        """
+        url = f"{self.configuration.host}/inspections/{inspection_id}"
+
+        headers = self._headers()
+
+        # Closing an inspection generates a new inspection PDF. Therefore, if the inspection
+        # is already closed, just return "COMPLETE" to avoid unnecessarily generating a new PDF.
+        response = requests.request("GET", url, headers=headers)
+
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error checking the status of {inspection_id}.",
+                http_resp=response,
+            )
+
+        if response.json().get("status") == "COMPLETE":
+            return "COMPLETE"
+
+        payload = {"status": "COMPLETE"}
+
+        response = requests.request("PATCH", url, headers=headers, json=payload)
+
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error stopping inspection {inspection_id}.",
+                http_resp=response,
+            )
+
+        return response.json()["result"]
+
+    @RequestsRetryDecorator()
+    def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
+        """Updates the confidence threshold of a detector."""
+
+        # The API does not validate the confidence threshold,
+        # so we will validate it here and raise an exception if necessary.
+        if confidence_threshold < 0 or confidence_threshold > 1:
+            raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}.")
+
+        url = f"{self.configuration.host}/predictors/{detector_id}"
+
+        headers = self._headers()
+
+        payload = {"confidence_threshold": confidence_threshold}
+
+        response = requests.request("PATCH", url, headers=headers, json=payload)
+
+        if not is_ok(response.status_code):
+            raise InternalApiError(
+                status=response.status_code,
+                reason=f"Error updating detector: {detector_id}.",
+                http_resp=response,
+            )
