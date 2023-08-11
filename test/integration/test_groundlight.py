@@ -12,7 +12,6 @@ from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
-from PIL import Image
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
