@@ -61,11 +61,6 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     return iq
 
 
-@pytest.fixture(name="dog_image")
-def fixture_dog_image() -> Image:
-    return Image.open("test/assets/dog.jpeg")
-
-
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
