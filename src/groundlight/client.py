@@ -194,11 +194,7 @@ class Groundlight:
         if wait is None:
             wait = self.DEFAULT_WAIT
 
-        # Convert from Detector to detector_id if necessary
-        if isinstance(detector, Detector):
-            detector_id = detector.id
-        else:
-            detector_id = detector
+        detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
@@ -229,7 +225,7 @@ class Groundlight:
 
     def wait_for_confident_result(
         self,
-        image_query: ImageQuery,
+        image_query: Union[ImageQuery, str],
         confidence_threshold: float,
         timeout_sec: float = 30.0,
     ) -> ImageQuery:
