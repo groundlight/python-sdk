@@ -320,10 +320,7 @@ class GroundlightApiClient(ApiClient):
                 http_resp=response,
             )
         if response.json()["status"] == "COMPLETE":
-            raise InternalApiError(
-                # status=response.status_code,
-                reason=f"Inspection {inspection_id} is closed. Metadata cannot be added.",
-            )
+            raise ValueError(f"Inspection {inspection_id} is closed. Metadata cannot be added.")
 
         payload = {}
 

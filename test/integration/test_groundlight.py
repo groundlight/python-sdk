@@ -451,7 +451,7 @@ def test_update_inspection_metadata_failure(gl: Groundlight):
 
     _ = gl.stop_inspection(inspection_id)
 
-    with pytest.raises(InternalApiError):
+    with pytest.raises(ValueError):
         user_provided_key = "Inspector"
         user_provided_value = "Bob"
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
