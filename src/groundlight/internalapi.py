@@ -5,7 +5,7 @@ import random
 import time
 import uuid
 from functools import wraps
-from typing import Callable, Optional, Dict, Union
+from typing import Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
@@ -246,8 +246,8 @@ class GroundlightApiClient(ApiClient):
         params: Dict[str, Union[str, float]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
-            "patience_time": patience_time
-            }
+            "patience_time": patience_time,
+        }
 
         # In the API, 'send_notification' is used to control human_review escalation. This will eventually
         # be deprecated, but for now we need to support it in the following manner:
