@@ -80,8 +80,6 @@ class InternalApiError(ApiException, RuntimeError):
     def __init__(self, status=None, reason=None, http_resp=None):
         super().__init__(status, reason, http_resp)
 
-        
-
 
 class RequestsRetryDecorator:
     """
@@ -245,11 +243,7 @@ class GroundlightApiClient(ApiClient):
 
         url = f"{self.configuration.host}/posichecks"
 
-        params = {
-            "inspection_id": inspection_id,
-            "predictor_id": detector_id,
-            "patience_time": patience_time
-}
+        params = {"inspection_id": inspection_id, "predictor_id": detector_id, "patience_time": patience_time}
         # In the API, 'send_notification' is used to control human_review escalation. This will eventually
         # be deprecated, but for now we need to support it in the following manner:
         if human_review == "ALWAYS":
