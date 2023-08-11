@@ -243,7 +243,7 @@ class GroundlightApiClient(ApiClient):
 
         url = f"{self.configuration.host}/posichecks"
 
-        params: Dict[str, Union[str, float]] = {
+        params: Dict[str, Union[str, float, bool]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
             "patience_time": patience_time
