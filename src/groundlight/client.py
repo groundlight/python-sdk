@@ -3,6 +3,7 @@ import os
 import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
+import fire
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
@@ -303,3 +304,37 @@ class Groundlight:
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """Updates the confidence threshold of a detector given a detector_id."""
         self.api_client.update_detector_confidence_threshold(detector_id, confidence_threshold)
+
+
+def glcli():
+    """
+    Exposes a subset of the client commands to the command line
+    """
+    # TODO Add descriptive comments to each command that we expose
+    # TODO Make sure doc suggests specifying GROUNDLIGHT_ENDPOINT and GROUNDLIGHT_API_TOKEN
+    gl = Groundlight()
+
+    # class only used for docstring
+    class GroundlightCLI:
+        """ """
+
+        def get_detector(self, detector_id: str):
+            """Returns a detector given a detector_id"""
+            return gl.get_detector(detector_id)
+
+        def submit_image_query(self, image_url: str, detector: str, wait: float = 0.0):
+            """Submits an image query to a detector and returns the result"""
+            return gl.submit_image_query(image_url, detector, wait)
+
+        def list_detectors(self):
+            """Lists all detectors"""
+            return gl.list_detectors()
+
+    # fire.Fire(
+    #     {
+    #         "get_detector": gl.get_detector,
+    #         "submit_image_query": gl.submit_image_query,
+    #         "list_detectors": gl.list_detectors,
+    #     }
+    # )
+    fire.Fire(GroundlightCLI)
