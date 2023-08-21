@@ -1,6 +1,6 @@
 # No-Code IoT Deployment
 
-We built a tool for deploying your Groundlight detector on any supported ESP32 Camera Board without writing any code. This tool is available at https://code.groundlight.ai/groundlight-embedded-uploader/.
+Groundlight supplies a tool for no-code deployment of a detector to an ESP32 Camera board. You can find it at https://code.groundlight.ai/groundlight-embedded-uploader/.
 
 ## Easy Deployment
 
@@ -20,26 +20,36 @@ The tool supports the following notification options for your deployed detector:
 
 ## Multiple Supported Boards
 
-The supported boards are:
+Tested with the following boards. Many other ESP32 boards should work as well, but may require building the firmware from source and changing the IO pin definitions.
 
-- M5Stack ESP32 PSRAM Timer Camera X [[purchase here](https://shop.m5stack.com/products/esp32-psram-timer-camera-x-ov3660?variant=36362228301988)]
-- AI-Thinker ESP32-CAM [[purchase here](https://www.amazon.com/s?k=ESP32-CAM&i=electronics&crid=10JXSSPIN5ZZ1&sprefix=,electronics,340)]
+- M5Stack ESP32 PSRAM Timer Camera [[purchase here](https://shop.m5stack.com/products/esp32-psram-timer-camera-ov3660)]
+- M5Stack ESP32 PSRAM Timer Camera X [[purchase here](https://shop.m5stack.com/products/esp32-psram-timer-camera-x-ov3660)]
+- ESP32-CAM [[purchase here](https://www.amazon.com/s?k=ESP32-CAM&i=electronics)]
 - SeeedStudio ESP32S3 Sense [[purchase here](https://www.seeedstudio.com/XIAO-ESP32S3-Sense-p-5639.html)]
+
+<img
+src={require('/img/m5stack_timer_camera.png').default}
+alt="Example banner"
+width={"25%"}
+/>
+<img
+src={require('/img/m5stack_timer_camera_x.png').default}
+alt="Example banner"
+width={"25%"}
+/>
+<img
+src={require('/img/esp32-cam.png').default}
+alt="Example banner"
+width={"25%"}
+/>
+<img
+src={require('/img/xiao-esp32s3-sense.png').default}
+alt="Example banner"
+width={"25%"}
+/>
 
 ## Source Code
 
-The source code is written as an Arduino-based PlatformIO project for ESP32, and is available on GitHub at https://github.com/groundlight/esp32cam-edgelight
+The source code is written as an Arduino-based PlatformIO project for ESP32, and is available on GitHub at https://github.com/groundlight/esp32cam
 
 If you need assistance or have questions about integrating Groundlight with Arduino, please consider opening an issue on the GitHub repository or reaching out to our [support team](mailto:support@groundlight.ai).
-
-### Additional Arduino Resources
-
-To learn more about Arduino and expand your knowledge, you can explore the following resources:
-
-- [Arduino Official Website](https://www.arduino.cc/)
-- [Arduino Playground](https://playground.arduino.cc/)
-- [Arduino Forum](https://forum.arduino.cc/)
-- [ESP32 Community Forum](https://www.esp32.com/)
-- [Adafruit Learning System](https://learn.adafruit.com/)
-
-These resources provide extensive documentation, tutorials, and community support for Arduino enthusiasts and developers.
