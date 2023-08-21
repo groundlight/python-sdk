@@ -28,4 +28,18 @@ The supported boards are:
 
 ## Source Code
 
-The source code for the arduino binaries is available on GitHub at https://github.com/groundlight/esp32cam-edgelight
+The source code is written as an Arduino-based PlatformIO project for ESP32, and is available on GitHub at https://github.com/groundlight/esp32cam-edgelight
+
+If you need assistance or have questions about integrating Groundlight with Arduino, please consider opening an issue on the GitHub repository or reaching out to our [support team](mailto:support@groundlight.ai).
+
+### Additional Arduino Resources
+
+To learn more about Arduino and expand your knowledge, you can explore the following resources:
+
+- [Arduino Official Website](https://www.arduino.cc/)
+- [Arduino Playground](https://playground.arduino.cc/)
+- [Arduino Forum](https://forum.arduino.cc/)
+- [ESP32 Community Forum](https://www.esp32.com/)
+- [Adafruit Learning System](https://learn.adafruit.com/)
+
+These resources provide extensive documentation, tutorials, and community support for Arduino enthusiasts and developers.
