@@ -6,7 +6,7 @@ This is the easiest way to deploy your Groundlight detectors on a linux computer
 
 1. Internet connected linux computer
 2. Video source (USB camera or RTSP stream)
-3. Groundlight API Key
+3. Groundlight API Key (available from [groundlight.ai](https://www.groundlight.ai/))
 
 ## Deployment
 
