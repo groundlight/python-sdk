@@ -320,14 +320,22 @@ def glcli():
         """
 
         def get_detector(self, detector_id: str):
-            """Returns detector details given a detector_id"""
+            """
+            Returns detector details given a detector_id
+            Args:
+                detector_id: The ID of the detector to get, will match the string returned by list_detectors"""
             gl = Groundlight()
             return gl.get_detector(detector_id)
 
-        def submit_image_query(self, image_url: str, detector: str):
-            """Submits an image query to a detector and returns the result"""
+        def submit_image_query(self, detector: str, image: str):
+            """
+            Submits an image query to a detector and returns the result
+            Args:
+                detector: The ID of the detector to submit the image to, will match the string returned by list_detectors
+                image: The path to the image to submit
+            """
             gl = Groundlight()
-            return gl.submit_image_query(image_url, detector)
+            return gl.submit_image_query(detector, image)
 
         def list_detectors(self):
             """Lists recent detectors in the account"""
