@@ -312,22 +312,26 @@ def glcli():
     """
     # TODO Add descriptive comments to each command that we expose
     # TODO Make sure doc suggests specifying GROUNDLIGHT_ENDPOINT and GROUNDLIGHT_API_TOKEN
-    gl = Groundlight()
 
     # class only used for docstring
     class GroundlightCLI:
-        """ """
+        """
+        A command line interface for performing simple api calls to Groundlight
+        """
 
         def get_detector(self, detector_id: str):
-            """Returns a detector given a detector_id"""
+            """Returns detector details given a detector_id"""
+            gl = Groundlight()
             return gl.get_detector(detector_id)
 
-        def submit_image_query(self, image_url: str, detector: str, wait: float = 0.0):
+        def submit_image_query(self, image_url: str, detector: str):
             """Submits an image query to a detector and returns the result"""
-            return gl.submit_image_query(image_url, detector, wait)
+            gl = Groundlight()
+            return gl.submit_image_query(image_url, detector)
 
         def list_detectors(self):
-            """Lists all detectors"""
+            """Lists recent detectors in the account"""
+            gl = Groundlight()
             return gl.list_detectors()
 
     # fire.Fire(
