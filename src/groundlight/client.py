@@ -3,8 +3,8 @@ import os
 import time
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
-import fire
 
+import fire
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
