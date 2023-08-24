@@ -49,6 +49,15 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
         return out
 
 
+# TODO: doens't properly handle alpha channel
+def bytestream_from_PIL(pil_image: Image.Image, jpeg_quality: int = 95) -> ByteStreamWrapper:
+    """Converts a PIL image to a BytesIO."""
+    bytesio = BytesIO()
+    pil_image.save(bytesio, "jpeg", quality=jpeg_quality)
+    bytesio.seek(0)
+    return ByteStreamWrapper(data=bytesio)
+
+
 def parse_supported_image_types(
     image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
     jpeg_quality: int = 95,
@@ -58,17 +67,14 @@ def parse_supported_image_types(
     """
     if isinstance(image, str):
         # Assume it is a filename
-        buffer = buffer_from_jpeg_file(image)
-        return ByteStreamWrapper(data=buffer)
+        pil_img = Image.open(image)
+        return bytestream_from_PIL(pil_image=pil_img, jpeg_quality=jpeg_quality)
     if isinstance(image, bytes):
         # Create a BytesIO object
         return ByteStreamWrapper(data=image)
     if isinstance(image, Image.Image):
         # Save PIL image as jpeg in BytesIO
-        bytesio = BytesIO()
-        image.save(bytesio, "jpeg", quality=jpeg_quality)
-        bytesio.seek(0)
-        return ByteStreamWrapper(data=bytesio)
+        return bytestream_from_PIL(pil_image=image, jpeg_quality=jpeg_quality)
     if isinstance(image, (BytesIO, BufferedReader)):
         # Already in the right format
         return ByteStreamWrapper(data=image)
