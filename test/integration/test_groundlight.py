@@ -59,6 +59,24 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg")
     return iq
 
+@pytest.fixture(name="augmented_image_query_yes")
+def image_query_yes_with_augmentation(gl: Groundlight, detector: Detector) -> ImageQuery:
+    image = "test/assets/dog.jpeg"
+    # Flip and rotate
+    transformed_image = Image.open(image).transpose(Image.FLIP_LEFT_RIGHT).rotate(45)
+
+    iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
+    return iq  
+    
+    
+@pytest.fixture(name="augmented_image_query_no")
+def image_query_no_with_augmentation(gl: Groundlight, detector: Detector) -> ImageQuery:
+    image = "test/assets/cat.jpeg"
+    # Flip and rotate
+    transformed_image = Image.open(image).transpose(Image.FLIP_LEFT_RIGHT).rotate(45)
+
+    iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
+    return iq
 
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
@@ -255,9 +273,9 @@ def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     assert is_valid_display_result(_image_query.result)
 
 
-def test_get_image_query_label_yes(gl: Groundlight, image_query_yes: ImageQuery):
-    gl.add_label(image_query_yes, Label.YES)
-    retrieved_iq = gl.get_image_query(id=image_query_yes.id)
+def test_get_image_query_label_yes(gl: Groundlight, augmented_image_query_yes: ImageQuery):
+    gl.add_label(augmented_image_query_yes, Label.YES)
+    retrieved_iq = gl.get_image_query(id=augmented_image_query_yes.id)
     assert retrieved_iq.result.label == Label.YES
 
 
@@ -272,8 +290,8 @@ def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
     gl.add_label(image_query_yes, Label.YES)
 
 
-def test_add_label_by_id(gl: Groundlight, image_query_no: ImageQuery):
-    iqid = image_query_no.id
+def test_add_label_by_id(gl: Groundlight, augmented_image_query_no: ImageQuery):
+    iqid = augmented_image_query_no.id
     # TODO: Fully deprecate chk_ prefix
     assert iqid.startswith(("chk_", "iq_"))
     gl.add_label(iqid, Label.NO)
