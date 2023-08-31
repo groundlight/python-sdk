@@ -1,44 +1,46 @@
 import typer
 from typing import Union, get_origin
 import inspect
+from functools import wraps, partial
 from groundlight import Groundlight
 from typing import Optional
 
 cli_app = typer.Typer()
 
 
-def method_signature_to_function_signature(sig):
-    """
-    Takes a method signature and converts it to the appropriate signature for the cli
-    Takes signatures that potentially has Union types and converts them to strings to gets around Typer not supporting Union types in the signature
-    removes the self parameter as we translate from methods to stand alone functions
-    """
+def remove_self_from_signature(sig):
     params = list(sig.parameters.values())
-    for i, param in enumerate(sig.parameters.values()):
-        if get_origin(param.annotation) is Union:
-            params[i] = param.replace(annotation=str)
     params = params[1:]  # Remove the self parameter
     new_sig = sig.replace(parameters=params)
     return new_sig
 
 
 def class_func_to_cli(method):
-    def cli_func(*args, endpoint: Optional[str] = None, api_token: Optional[str] = None, **kwargs):
-        gl = Groundlight(endpoint=endpoint, api_token=api_token)
-        bound_method = method.__get__(gl)
-        print(bound_method(*args, **kwargs))
+    """
+    Given the class method, instantiate a Groundlight object that contains the endpoint and api_token and return a function
+    that behaves as if the method was called on the Groundlight object
+    """
 
-    print(method.__name__)
-    print(method.__annotations__)
-    cli_func.__name__ = method.__name__  # Preserve the function name in the cli version
-    cli_func.__doc__ = method.__doc__  # Preserve docstring in the cli version
-    cli_func.__signature__ = method_signature_to_function_signature(
-        inspect.signature(method)
-    )  # Preserve signature in the cli version
-    print(cli_func.__signature__)
-    print(cli_func.__annotations__)
-    print("\n" * 2)
-    return cli_func
+    @wraps(method)
+    def wrapper(*args, **kwargs):
+        endpoint = kwargs.get("endpoint")
+        api_token = kwargs.get("api_token")
+        gl = Groundlight(endpoint=endpoint, api_token=api_token)
+        # new_method = partial(method, self=gl)
+        bound_method = method.__get__(gl)
+        print(bound_method(*args, **kwargs))  # this is where we output to the console
+
+    # not recommended practice to directly change annotations, but gets around Typer not supporting Union types
+    for name, annotation in method.__annotations__.items():
+        if get_origin(annotation) is Union:
+            if str in annotation.__args__:
+                annotation = str
+        wrapper.__annotations__[name] = annotation
+
+    # definitely not standard practice to change the function signature, but this allows us to define functions free from the Groundlight object
+    wrapper.__signature__ = remove_self_from_signature(inspect.signature(wrapper))
+
+    return wrapper
 
 
 def groundlight():
@@ -46,6 +48,7 @@ def groundlight():
         if callable(method) and not name.startswith("_"):
             cli_func = class_func_to_cli(method)
             cli_app.command()(cli_func)
+            print(cli_func.__annotations__)
     cli_app()
 
 

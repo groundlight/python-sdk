@@ -1,25 +1,74 @@
 import subprocess
+import re
+from datetime import datetime
 
 
 def test_list_detector():
     completed_process = subprocess.run(
-        ["groundlight", "list-detectors"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-    )
-
-
-def test_create_then_get_detector():
-    completed_process = subprocess.run(
-        ["groundlight", "create-detector", "testdetector", "testdetector", "--confidence-threshold", "0.9"],
+        ["groundlight", "list-detectors", "--endpoint", "https://api.groundlight.ai/"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
     )
-    print(completed_process.stdout)
     assert completed_process.returncode == 0
-    completed_process.returncode = subprocess.run(
-        ["groundlight", "get-detector", "test_detector"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+
+
+def test_detector_and_image_queries():
+    # test creating a detector
+    test_detector_name = f"testdetector {datetime.utcnow()}"
+    completed_process = subprocess.run(
+        [
+            "groundlight",
+            "create-detector",
+            test_detector_name,
+            "testdetector",
+            "--confidence-threshold",
+            "0.9",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
     )
-    print(completed_process.stdout)
+    assert completed_process.returncode == 0
+    det_id_on_create = re.search("id='([^']+)'", completed_process.stdout).group(1)
+    # The output of the create-detector command looks like this:
+    # id='det_abc123'
+    # type=<DetectorTypeEnum.detector: 'detector'>
+    # created_at=datetime.datetime(2023, 8, 30, 18, 3, 9, 489794,
+    # tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200)))
+    # name='testdetector 2023-08-31 01:03:09.039448' query='testdetector'
+    # group_name='__DEFAULT' confidence_threshold=0.9
+
+    # test getting detectors
+    completed_process = subprocess.run(
+        ["groundlight", "get-detector-by-name", test_detector_name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    assert completed_process.returncode == 0
+    det_id_on_get = re.search("id='([^']+)'", completed_process.stdout).group(1)
+    assert det_id_on_create == det_id_on_get
+    completed_process = subprocess.run(
+        ["groundlight", "get-detector", det_id_on_create],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    assert completed_process.returncode == 0
+
+    # test submitting an image
+    completed_process = subprocess.run(
+        [
+            "groundlight",
+            "submit-image-query",
+            det_id_on_create,
+            "test/assets/cat.jpeg",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
     assert completed_process.returncode == 0
 
 
