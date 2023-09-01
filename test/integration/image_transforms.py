@@ -41,8 +41,8 @@ class ImageTransform:
 
     def color_jitter(self, img):
         if "color_jitter" not in self.used_transforms:
-            brightness_factor = random.uniform(0.7, 1.3)
-            contrast_factor = random.uniform(0.7, 1.3)
+            brightness_factor = random.uniform(0.4, 1.5)
+            contrast_factor = random.uniform(0.4, 1.5)
             img = ImageEnhance.Brightness(img).enhance(brightness_factor)
             img = ImageEnhance.Contrast(img).enhance(contrast_factor)
             self.used_transforms.add("color_jitter")
