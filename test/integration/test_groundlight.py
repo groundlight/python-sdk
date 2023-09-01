@@ -298,9 +298,14 @@ def test_get_image_query_label_no(gl: Groundlight, detector: Detector):
     assert retrieved_iq.result.label == Label.NO
 
 
-def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
-    assert isinstance(image_query_yes, ImageQuery)
-    gl.add_label(image_query_yes, Label.YES)
+def test_add_label_to_object(gl: Groundlight, detector: Detector):
+    image = "test/assets/dog.jpeg"
+    transfomed_image = img_transform.random_shear(Image.open(image))
+    iq = gl.submit_image_query(detector=detector.id, image=transfomed_image)
+    
+    assert isinstance(iq, ImageQuery)
+    gl.add_label(iq, Label.YES)
+
 
 
 def test_add_label_by_id(gl: Groundlight, detector: Detector):
@@ -320,7 +325,8 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
     transformed_yes_image = img_transform.color_jitter(Image.open("test/assets/dog.jpeg"))
     transformed_no_image = img_transform.horizontal_flip(Image.open("test/assets/cat.jpeg"))
     
-    iq_yes, iq_no = gl.submit_image_queries(detector=detector.id, image=transformed_yes_image), gl.submit_image_queries(detector=detector.id, image=transformed_no_image)
+    iq_yes = gl.submit_image_queries(detector=detector.id, image=transformed_yes_image)
+    iq_no = gl.submit_image_queries(detector=detector.id, image=transformed_no_image)
     iqid_yes, iqid_no = iq_yes.id, iq_no.id
     
 
