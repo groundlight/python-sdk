@@ -59,6 +59,7 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg")
     return iq
 
+
 @pytest.fixture(name="augmented_image_query_yes")
 def image_query_yes_with_augmentation(gl: Groundlight, detector: Detector) -> ImageQuery:
     image = "test/assets/dog.jpeg"
@@ -66,8 +67,9 @@ def image_query_yes_with_augmentation(gl: Groundlight, detector: Detector) -> Im
     transformed_image = Image.open(image).transpose(Image.FLIP_LEFT_RIGHT).rotate(45)
 
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
-    return iq  
-    
+    return iq
+
+
 @pytest.fixture(name="augmented_image_query_no")
 def image_query_no_with_augmentation(gl: Groundlight, detector: Detector) -> ImageQuery:
     image = "test/assets/cat.jpeg"
@@ -76,6 +78,7 @@ def image_query_no_with_augmentation(gl: Groundlight, detector: Detector) -> Ima
 
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
     return iq
+
 
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
