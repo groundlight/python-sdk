@@ -68,7 +68,6 @@ def image_query_yes_with_augmentation(gl: Groundlight, detector: Detector) -> Im
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
     return iq  
     
-    
 @pytest.fixture(name="augmented_image_query_no")
 def image_query_no_with_augmentation(gl: Groundlight, detector: Detector) -> ImageQuery:
     image = "test/assets/cat.jpeg"
