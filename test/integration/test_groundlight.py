@@ -284,9 +284,9 @@ def test_get_image_query_label_no(gl: Groundlight, image_query_no: ImageQuery):
     assert retrieved_iq.result.label == Label.NO
 
 
-def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
-    assert isinstance(image_query_yes, ImageQuery)
-    gl.add_label(image_query_yes, Label.YES)
+def test_add_label_to_object(gl: Groundlight, augmented_image_query_yes: ImageQuery):
+    assert isinstance(augmented_image_query_yes, ImageQuery)
+    gl.add_label(augmented_image_query_yes, Label.YES)
 
 
 def test_add_label_by_id(gl: Groundlight, augmented_image_query_no: ImageQuery):
