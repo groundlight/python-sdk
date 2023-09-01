@@ -418,7 +418,7 @@ def test_detector_improvement(gl: Groundlight):
         noisy_image = contrast.enhance(random.uniform(0.75, 1))
         brightness = ImageEnhance.Brightness(noisy_image)
         noisy_image = brightness.enhance(random.uniform(0.75, 1))
-        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0)
+        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=10)
         if label is not None:
             gl.add_label(img_query, label)
         return img_query
