@@ -18,6 +18,7 @@ from image_transforms import ImageTransform
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 img_transform = ImageTransform()
 
+
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
     if not isinstance(result, ClassificationResult):
@@ -282,7 +283,7 @@ def test_get_image_query_label_yes(gl: Groundlight, detector: Detector):
     transformed_image = img_transform.random_rotate(Image.open(image))
 
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
-    
+
     gl.add_label(iq, Label.YES)
     retrieved_iq = gl.get_image_query(id=iq.id)
     assert retrieved_iq.result.label == Label.YES
@@ -292,13 +293,13 @@ def test_get_image_query_label_no(gl: Groundlight, detector: Detector):
     image = "test/assets/cat.jpeg"
     transformed_image = img_transform.random_shift(Image.open(image))
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
-    
+
     gl.add_label(iq, Label.NO)
     retrieved_iq = gl.get_image_query(id=iq.id)
     assert retrieved_iq.result.label == Label.NO
 
 
-def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery): 
+def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
     assert isinstance(image_query_yes, ImageQuery)
     gl.add_label(image_query_yes, Label.YES)
 
