@@ -302,10 +302,9 @@ def test_add_label_to_object(gl: Groundlight, detector: Detector):
     image = "test/assets/dog.jpeg"
     transfomed_image = img_transform.random_shear(Image.open(image))
     iq = gl.submit_image_query(detector=detector.id, image=transfomed_image)
-    
+
     assert isinstance(iq, ImageQuery)
     gl.add_label(iq, Label.YES)
-
 
 
 def test_add_label_by_id(gl: Groundlight, detector: Detector):

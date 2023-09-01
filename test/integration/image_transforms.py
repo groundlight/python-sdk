@@ -48,9 +48,9 @@ class ImageTransform:
             self.used_transforms.add("color_jitter")
             return img
         return img
-    
+
     def random_shear(self, img):
-        if 'random_shear' not in self.used_transforms:
+        if "random_shear" not in self.used_transforms:
             max_shear_left = -0.3
             max_shear_right = 0.3
             shear_factor = random.uniform(max_shear_left, max_shear_right)
@@ -60,7 +60,6 @@ class ImageTransform:
 
             # Shearing in x-direction
             img = img.transform((width, height), Image.AFFINE, (1, m, 0, 0, 1, 0))
-            self.used_transforms.add('random_shear')
+            self.used_transforms.add("random_shear")
             return img
         return img
-
