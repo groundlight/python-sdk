@@ -323,7 +323,7 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
 
     transformed_yes_image = img_transform.color_jitter(Image.open("test/assets/dog.jpeg"))
     transformed_no_image = img_transform.horizontal_flip(Image.open("test/assets/cat.jpeg"))
-    
+
     iq_yes = gl.submit_image_query(detector=detector.id, image=transformed_yes_image)
     iq_no = gl.submit_image_query(detector=detector.id, image=transformed_no_image)
 
