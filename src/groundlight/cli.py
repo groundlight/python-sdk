@@ -10,8 +10,7 @@ cli_app = typer.Typer()
 
 def class_func_to_cli(method):
     """
-    Given the class method, instantiate a Groundlight object that contains the endpoint and api_token and return a function
-    that behaves as if the method was called on the Groundlight object
+    Given the class method, simplify the typing on the inputs so that Typer can accept the method
     """
 
     @wraps(method)
@@ -30,6 +29,7 @@ def class_func_to_cli(method):
 
 def groundlight():
     gl = Groundlight()
+    # For each method in the Groundlight class, create a function that can be called from the command line
     for name, method in vars(Groundlight).items():
         if callable(method) and not name.startswith("_"):
             attached_method = method.__get__(gl)
