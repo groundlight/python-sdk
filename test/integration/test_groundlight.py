@@ -11,11 +11,12 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Lab
 from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from image_transforms import ImageTransform
+from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 img_transform = ImageTransform()
+
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
@@ -281,7 +282,7 @@ def test_get_image_query_label_yes(gl: Groundlight, detector: Detector):
     transformed_image = img_transform.random_rotate(image)
 
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
-    
+
     gl.add_label(iq, Label.YES)
     retrieved_iq = gl.get_image_query(id=iq.id)
     assert retrieved_iq.result.label == Label.YES
@@ -291,13 +292,13 @@ def test_get_image_query_label_no(gl: Groundlight, detector: Detector):
     image = "test/assets/cat.jpeg"
     transformed_image = img_transform.random_shift(image)
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
-    
+
     gl.add_label(iq, Label.NO)
     retrieved_iq = gl.get_image_query(id=iq.id)
     assert retrieved_iq.result.label == Label.NO
 
 
-def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery): 
+def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
     assert isinstance(image_query_yes, ImageQuery)
     gl.add_label(image_query_yes, Label.YES)
 
