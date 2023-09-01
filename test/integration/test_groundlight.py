@@ -435,8 +435,8 @@ def test_detector_improvement(gl: Groundlight):
     cat = Image.open("test/assets/cat.jpeg")
 
     submit_noisy_image(dog, "YES")
-    submit_noisy_image(dog, "YES")
     submit_noisy_image(cat, "NO")
+    submit_noisy_image(dog, "YES")
     submit_noisy_image(cat, "NO")
 
     # wait to give enough time to train
