@@ -12,6 +12,7 @@ from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+
 from image_transforms import ImageTransform
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
@@ -278,7 +279,7 @@ def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
 
 def test_get_image_query_label_yes(gl: Groundlight, detector: Detector):
     image = "test/assets/dog.jpeg"
-    transformed_image = img_transform.random_rotate(image)
+    transformed_image = img_transform.random_rotate(Image.open(image))
 
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
     
@@ -289,7 +290,7 @@ def test_get_image_query_label_yes(gl: Groundlight, detector: Detector):
 
 def test_get_image_query_label_no(gl: Groundlight, detector: Detector):
     image = "test/assets/cat.jpeg"
-    transformed_image = img_transform.random_shift(image)
+    transformed_image = img_transform.random_shift(Image.open(image))
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
     
     gl.add_label(iq, Label.NO)
@@ -304,7 +305,7 @@ def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
 
 def test_add_label_by_id(gl: Groundlight, detector: Detector):
     image = "test/assets/cat.jpeg"
-    transformed_image = img_transform.random_scale(image)
+    transformed_image = img_transform.random_scale(Image.open(image))
     iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
 
     # TODO: Fully deprecate chk_ prefix
