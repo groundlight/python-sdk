@@ -12,9 +12,10 @@ from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from image_transforms import ImageTransform
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
-
+img_transform = ImageTransform()
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
@@ -275,28 +276,40 @@ def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     assert is_valid_display_result(_image_query.result)
 
 
-def test_get_image_query_label_yes(gl: Groundlight, augmented_image_query_yes: ImageQuery):
-    gl.add_label(augmented_image_query_yes, Label.YES)
-    retrieved_iq = gl.get_image_query(id=augmented_image_query_yes.id)
+def test_get_image_query_label_yes(gl: Groundlight, detector: Detector):
+    image = "test/assets/dog.jpeg"
+    transformed_image = img_transform.random_rotate(image)
+
+    iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
+    
+    gl.add_label(iq, Label.YES)
+    retrieved_iq = gl.get_image_query(id=iq.id)
     assert retrieved_iq.result.label == Label.YES
 
 
-def test_get_image_query_label_no(gl: Groundlight, image_query_no: ImageQuery):
-    gl.add_label(image_query_no, Label.NO)
-    retrieved_iq = gl.get_image_query(id=image_query_no.id)
+def test_get_image_query_label_no(gl: Groundlight, detector: Detector):
+    image = "test/assets/cat.jpeg"
+    transformed_image = img_transform.random_shift(image)
+    iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
+    
+    gl.add_label(iq, Label.NO)
+    retrieved_iq = gl.get_image_query(id=iq.id)
     assert retrieved_iq.result.label == Label.NO
 
 
-def test_add_label_to_object(gl: Groundlight, augmented_image_query_yes: ImageQuery):
-    assert isinstance(augmented_image_query_yes, ImageQuery)
-    gl.add_label(augmented_image_query_yes, Label.YES)
+def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery): 
+    assert isinstance(image_query_yes, ImageQuery)
+    gl.add_label(image_query_yes, Label.YES)
 
 
-def test_add_label_by_id(gl: Groundlight, augmented_image_query_no: ImageQuery):
-    iqid = augmented_image_query_no.id
+def test_add_label_by_id(gl: Groundlight, detector: Detector):
+    image = "test/assets/cat.jpeg"
+    transformed_image = img_transform.random_scale(image)
+    iq = gl.submit_image_query(detector=detector.id, image=transformed_image)
+
     # TODO: Fully deprecate chk_ prefix
-    assert iqid.startswith(("chk_", "iq_"))
-    gl.add_label(iqid, Label.NO)
+    assert iq.id.startswith(("chk_", "iq_"))
+    gl.add_label(iq.id, Label.NO)
 
 
 def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_query_no: ImageQuery):
