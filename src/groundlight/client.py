@@ -84,6 +84,8 @@ class Groundlight:
         return iq
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
+        """Get a detector by id"""
+
         if isinstance(id, Detector):
             # Short-circuit
             return id
@@ -91,9 +93,11 @@ class Groundlight:
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
+        """Get a detector by name"""
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
+        """List out detectors you own"""
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
@@ -105,6 +109,7 @@ class Groundlight:
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
     ) -> Detector:
+        """Create a new detector with a given name and query"""
         detector_creation_input = DetectorCreationInput(name=name, query=query)
         if confidence_threshold is not None:
             detector_creation_input.confidence_threshold = confidence_threshold
@@ -155,11 +160,13 @@ class Groundlight:
         return existing_detector
 
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
+        """Get an image query by id"""
         obj = self.image_queries_api.get_image_query(id=id)
         iq = ImageQuery.parse_obj(obj.to_dict())
         return self._fixup_image_query(iq)
 
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
+        """List out image queries you own"""
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
         if image_queries.results is not None:
@@ -265,7 +272,7 @@ class Groundlight:
         return image_query
 
     def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
-        """A new label to an image query.  This answers the detector's question.
+        """Add a new label to an image query.  This answers the detector's question.
         :param image_query: Either an ImageQuery object (returned from `submit_image_query`) or
         an image_query id as a string.
         :param label: The string "YES" or the string "NO" in answer to the query.

@@ -5,7 +5,7 @@ from datetime import datetime
 
 def test_list_detector():
     completed_process = subprocess.run(
-        ["groundlight", "list-detectors", "--endpoint", "https://api.groundlight.ai/"],
+        ["groundlight", "list-detectors"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -31,7 +31,7 @@ def test_detector_and_image_queries():
     )
     assert completed_process.returncode == 0
     det_id_on_create = re.search("id='([^']+)'", completed_process.stdout).group(1)
-    # The output of the create-detector command looks like this:
+    # The output of the create-detector command looks something like:
     # id='det_abc123'
     # type=<DetectorTypeEnum.detector: 'detector'>
     # created_at=datetime.datetime(2023, 8, 30, 18, 3, 9, 489794,
