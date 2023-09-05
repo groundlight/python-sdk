@@ -1,8 +1,8 @@
 from functools import wraps
 from typing import Union
-from typing_extensions import get_origin
 
 import typer
+from typing_extensions import get_origin
 
 from groundlight import Groundlight
 
