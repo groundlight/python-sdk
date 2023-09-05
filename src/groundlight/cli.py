@@ -22,8 +22,9 @@ def class_func_to_cli(method):
     for name, annotation in method.__annotations__.items():
         if get_origin(annotation) is Union:
             if str in annotation.__args__:
-                new_annotation = str
-        wrapper.__annotations__[name] = new_annotation
+                wrapper.__annotations__[name] = str
+            else:
+                wrapper.__annotations__[name] = annotation
 
     return wrapper
 
