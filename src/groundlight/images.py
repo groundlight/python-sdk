@@ -28,6 +28,23 @@ class ByteStreamWrapper(IOBase):
         pass
 
 
+def bytestream_from_filename(image_filename: str, jpeg_quality) -> str:
+    """Determines what to do with an arbitrary filename
+
+    Only supports JPEG and PNG files for now.
+    For PNG files, we convert to a JPEG.
+    """
+    if imghdr.what(image_filename) == "jpeg":
+        buffer = buffer_from_jpeg_file(image_filename)
+        return ByteStreamWrapper(data=buffer)
+    elif imghdr.what(image_filename) == "png":
+        pil_img = Image.open(image_filename)
+        # This chops off the alpha channel which can cause unexpected behavior, but handles PNGs with minimal transparency
+        pil_img = pil_img.convert("RGB")
+        return bytestream_from_PIL(pil_image=pil_img, jpeg_quality=jpeg_quality)
+    raise ValueError("We only support JPEG and PNG files, for now.")
+
+
 def buffer_from_jpeg_file(image_filename: str) -> BufferedReader:
     """Get a buffer from an jpeg image file.
 
@@ -49,7 +66,6 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
         return out
 
 
-# TODO: doens't properly handle alpha channel
 def bytestream_from_PIL(pil_image: Image.Image, jpeg_quality: int = 95) -> ByteStreamWrapper:
     """Converts a PIL image to a BytesIO."""
     bytesio = BytesIO()
@@ -67,8 +83,7 @@ def parse_supported_image_types(
     """
     if isinstance(image, str):
         # Assume it is a filename
-        pil_img = Image.open(image)
-        return bytestream_from_PIL(pil_image=pil_img, jpeg_quality=jpeg_quality)
+        return bytestream_from_filename(image_filename=image, jpeg_quality=jpeg_quality)
     if isinstance(image, bytes):
         # Create a BytesIO object
         return ByteStreamWrapper(data=image)
