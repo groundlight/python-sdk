@@ -28,7 +28,7 @@ class ByteStreamWrapper(IOBase):
         pass
 
 
-def bytestream_from_filename(image_filename: str, jpeg_quality) -> str:
+def bytestream_from_filename(image_filename: str, jpeg_quality) -> ByteStreamWrapper:
     """Determines what to do with an arbitrary filename
 
     Only supports JPEG and PNG files for now.
