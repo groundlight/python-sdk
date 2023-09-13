@@ -37,11 +37,11 @@ def bytestream_from_filename(image_filename: str, jpeg_quality) -> ByteStreamWra
     if imghdr.what(image_filename) == "jpeg":
         buffer = buffer_from_jpeg_file(image_filename)
         return ByteStreamWrapper(data=buffer)
-    elif imghdr.what(image_filename) == "png":
+    if imghdr.what(image_filename) == "png":
         pil_img = Image.open(image_filename)
-        # This chops off the alpha channel which can cause unexpected behavior, but handles PNGs with minimal transparency
+        # This chops off the alpha channel which can cause unexpected behavior, but handles minimal transparency well
         pil_img = pil_img.convert("RGB")
-        return bytestream_from_PIL(pil_image=pil_img, jpeg_quality=jpeg_quality)
+        return bytestream_from_pil(pil_image=pil_img, jpeg_quality=jpeg_quality)
     raise ValueError("We only support JPEG and PNG files, for now.")
 
 
@@ -66,7 +66,7 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
         return out
 
 
-def bytestream_from_PIL(pil_image: Image.Image, jpeg_quality: int = 95) -> ByteStreamWrapper:
+def bytestream_from_pil(pil_image: Image.Image, jpeg_quality: int = 95) -> ByteStreamWrapper:
     """Converts a PIL image to a BytesIO."""
     bytesio = BytesIO()
     pil_image.save(bytesio, "jpeg", quality=jpeg_quality)
@@ -89,7 +89,7 @@ def parse_supported_image_types(
         return ByteStreamWrapper(data=image)
     if isinstance(image, Image.Image):
         # Save PIL image as jpeg in BytesIO
-        return bytestream_from_PIL(pil_image=image, jpeg_quality=jpeg_quality)
+        return bytestream_from_pil(pil_image=image, jpeg_quality=jpeg_quality)
     if isinstance(image, (BytesIO, BufferedReader)):
         # Already in the right format
         return ByteStreamWrapper(data=image)
