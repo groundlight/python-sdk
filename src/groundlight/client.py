@@ -43,7 +43,7 @@ class Groundlight:
     """
 
     DEFAULT_WAIT: float = 30.0
-    DEFAULT_PATIENCE: float = 45.0
+    DEFAULT_PATIENCE: float = 30.0
 
     POLLING_INITIAL_DELAY = 0.25
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
@@ -197,6 +197,8 @@ class Groundlight:
             wait = self.DEFAULT_WAIT
         if patience_time is None:
             patience_time = self.DEFAULT_PATIENCE
+        if wait > patience_time:
+            patience_time = wait
 
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
@@ -231,7 +233,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
-        patience_time: float = None,
+        patience_time: Optional[float] = None,
     ) -> ImageQuery:
         self.submit_image_query(detector, image, wait=patience_time, patience_time=patience_time)
 
@@ -247,7 +249,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
-        patience_time: float = None,
+        patience_time: Optional[float] = None,
     ) -> ImageQuery:
         """Sends an image to Groundlight without waiting for a response.
         :param detector: the Detector object, or string id of a detector like `det_12345`
