@@ -236,6 +236,27 @@ def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=black)
 
 
+def test_ask_confident(gl: Groundlight, detector: Detector):
+    _iq = gl.ask_confident(detector=detector.id, image="test/assets/cat.jpeg")
+    _iq = gl.ask_confident(detector=detector.id, image="test/assets/cat.jpeg", patience_time=10)
+    # TODO: Check that we get a proper error if 0 < patience time < minimum backend patience time
+
+
+def test_ask_ml(gl: Groundlight, detector: Detector):
+    _iq = gl.ask_ml(detector=detector.id, image="test/assets/cat.jpeg")
+    _iq = gl.ask_ml(detector=detector.id, image="test/assets/cat.jpeg", wait=10)
+    _iq = gl.ask_ml(
+        detector=detector.id, image="test/assets/cat.jpeg", wait=1
+    )  # should be legal as wait isn't subject to minimum backend patience time
+
+
+def test_ask_async(gl: Groundlight, detector: Detector):
+    _iq = gl.ask_async(detector=detector.id, image="test/assets/cat.jpeg")
+    _iq = gl.ask_async(detector=detector.id, image="test/assets/cat.jpeg", patience_time=10)
+    _iq = gl.ask_async(detector=detector.id, image="test/assets/cat.jpeg", patience_time=600)
+    # TODO: Check that we get a proper error if 0 < patience time < minimum backend patience time
+
+
 def test_list_image_queries(gl: Groundlight):
     image_queries = gl.list_image_queries()
     assert str(image_queries)
