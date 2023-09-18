@@ -72,9 +72,16 @@ def test_detector_and_image_queries():
     assert completed_process.returncode == 0
 
 
-def test_bad_commands():
+def test_help():
     completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    assert completed_process.returncode != 0
+    assert completed_process.returncode == 0
+    completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    assert completed_process.returncode == 0
+    completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    assert completed_process.returncode == 0
+
+
+def test_bad_commands():
     completed_process = subprocess.run(
         ["groundlight", "wat"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )

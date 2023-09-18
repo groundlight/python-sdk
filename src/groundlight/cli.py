@@ -5,8 +5,9 @@ import typer
 from typing_extensions import get_origin
 
 from groundlight import Groundlight
+from groundlight.client import ApiTokenError
 
-cli_app = typer.Typer()
+cli_app = typer.Typer(no_args_is_help=True, context_settings={"help_option_names": ["-h", "--help"]})
 
 
 def class_func_to_cli(method):
@@ -30,7 +31,15 @@ def class_func_to_cli(method):
 
 
 def groundlight():
-    gl = Groundlight()
+    try:
+        gl = Groundlight()
+    except ApiTokenError:
+        print(
+            'No API token found. Please put your token in an environment variable named "GROUNDLIGHT_API_TOKEN". If you'
+            " don't have a token, you can create one at https://app.groundlight.ai/reef/my-account/api-tokens"
+        )
+        return
+
     # For each method in the Groundlight class, create a function that can be called from the command line
     for name, method in vars(Groundlight).items():
         if callable(method) and not name.startswith("_"):
