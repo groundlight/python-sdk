@@ -31,14 +31,7 @@ def class_func_to_cli(method):
 
 
 def groundlight():
-    try:
-        gl = Groundlight()
-    except ApiTokenError:
-        print(
-            'No API token found. Please put your token in an environment variable named "GROUNDLIGHT_API_TOKEN". If you'
-            " don't have a token, you can create one at https://app.groundlight.ai/reef/my-account/api-tokens"
-        )
-        return
+    gl = Groundlight()
 
     # For each method in the Groundlight class, create a function that can be called from the command line
     for name, method in vars(Groundlight).items():
