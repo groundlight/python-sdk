@@ -5,7 +5,6 @@ import typer
 from typing_extensions import get_origin
 
 from groundlight import Groundlight
-from groundlight.client import ApiTokenError
 
 cli_app = typer.Typer(no_args_is_help=True, context_settings={"help_option_names": ["-h", "--help"]})
 
