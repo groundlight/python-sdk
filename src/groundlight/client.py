@@ -1,9 +1,9 @@
+import asyncio
 import logging
 import os
 import time
 from io import BufferedReader, BytesIO
-from typing import Optional, Union, List
-import asyncio
+from typing import List, Optional, Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
