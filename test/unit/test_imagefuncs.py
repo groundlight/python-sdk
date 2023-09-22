@@ -5,6 +5,7 @@ import tempfile
 from io import BytesIO
 
 import pytest
+import PIL
 from groundlight.images import *
 from groundlight.optional_imports import *
 
@@ -24,6 +25,22 @@ def test_jpeg_from_numpy():
     np_img = np.random.uniform(0, 255, (768, 1024, 3))
     jpeg3 = jpeg_from_numpy(np_img, jpeg_quality=50)
     assert len(jpeg2) > len(jpeg3)
+
+
+def test_bytestream_from_filename():
+    images_streams = []
+    images_streams.append(bytestream_from_filename("test/assets/cat.jpeg"))
+    images_streams.append(bytestream_from_filename("test/assets/cat.png"))
+    images_streams.append(bytestream_from_filename("test/assets/cat.png", jpeg_quality=95))
+    for i in images_streams:
+        assert isinstance(i, ByteStreamWrapper)
+        image = Image.open(i)
+        assert image.mode == "RGB"
+
+    # pixel based test, verified the image is correct by eye, then got a pixel whose value to check against
+    png_bytestream = bytestream_from_filename("test/assets/cat.png", jpeg_quality=95)
+    png_image = Image.open(png_bytestream)
+    assert png_image.getpixel((200, 200)) == (215, 209, 197)
 
 
 def test_unsupported_image_type():

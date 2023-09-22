@@ -4,6 +4,8 @@ from typing import Union
 
 from groundlight.optional_imports import Image, np
 
+DEFAULT_JPEG_QUALITY = 95
+
 
 class ByteStreamWrapper(IOBase):
     """This class acts as a thin wrapper around bytes in order to
@@ -28,11 +30,11 @@ class ByteStreamWrapper(IOBase):
         pass
 
 
-def bytestream_from_filename(image_filename: str, jpeg_quality) -> ByteStreamWrapper:
+def bytestream_from_filename(image_filename: str, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> ByteStreamWrapper:
     """Determines what to do with an arbitrary filename
 
     Only supports JPEG and PNG files for now.
-    For PNG files, we convert to a JPEG.
+    For PNG files, we convert to RGB format used in JPEGs.
     """
     if imghdr.what(image_filename) == "jpeg":
         buffer = buffer_from_jpeg_file(image_filename)
@@ -57,7 +59,7 @@ def buffer_from_jpeg_file(image_filename: str) -> BufferedReader:
     raise ValueError("We only support JPEG files, for now.")
 
 
-def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
+def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> bytes:
     """Converts a numpy array to BytesIO."""
     pilim = Image.fromarray(img.astype("uint8"), "RGB")
     with BytesIO() as buf:
@@ -66,7 +68,7 @@ def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
         return out
 
 
-def bytestream_from_pil(pil_image: Image.Image, jpeg_quality: int = 95) -> ByteStreamWrapper:
+def bytestream_from_pil(pil_image: Image.Image, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> ByteStreamWrapper:
     """Converts a PIL image to a BytesIO."""
     bytesio = BytesIO()
     pil_image.save(bytesio, "jpeg", quality=jpeg_quality)
