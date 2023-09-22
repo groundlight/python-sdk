@@ -5,7 +5,6 @@ import tempfile
 from io import BytesIO
 
 import pytest
-import PIL
 from groundlight.images import *
 from groundlight.optional_imports import *
 
