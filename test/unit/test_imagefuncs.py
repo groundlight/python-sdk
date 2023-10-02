@@ -40,6 +40,8 @@ def test_bytestream_from_filename():
     png_bytestream = bytestream_from_filename("test/assets/cat.png", jpeg_quality=95)
     png_image = Image.open(png_bytestream)
     assert png_image.getpixel((200, 200)) == (215, 209, 197)
+    assert png_image.getpixel((170, 200)) == (196, 189, 179)
+    assert png_image.getpixel((123, 234)) == (74, 67, 59)
 
 
 def test_unsupported_image_type():
