@@ -26,6 +26,24 @@ def test_jpeg_from_numpy():
     assert len(jpeg2) > len(jpeg3)
 
 
+def test_bytestream_from_filename():
+    images_streams = []
+    images_streams.append(bytestream_from_filename("test/assets/cat.jpeg"))
+    images_streams.append(bytestream_from_filename("test/assets/cat.png"))
+    images_streams.append(bytestream_from_filename("test/assets/cat.png", jpeg_quality=95))
+    for i in images_streams:
+        assert isinstance(i, ByteStreamWrapper)
+        image = Image.open(i)
+        assert image.mode == "RGB"
+
+    # pixel based test, verified the image is correct by eye, then got a pixel whose value to check against
+    png_bytestream = bytestream_from_filename("test/assets/cat.png", jpeg_quality=95)
+    png_image = Image.open(png_bytestream)
+    assert png_image.getpixel((200, 200)) == (215, 209, 197)
+    assert png_image.getpixel((170, 200)) == (196, 189, 179)
+    assert png_image.getpixel((123, 234)) == (74, 67, 59)
+
+
 def test_unsupported_image_type():
     with pytest.raises(TypeError):
         parse_supported_image_types(1)  # type: ignore

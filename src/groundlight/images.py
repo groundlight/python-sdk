@@ -4,6 +4,8 @@ from typing import Union
 
 from groundlight.optional_imports import Image, np
 
+DEFAULT_JPEG_QUALITY = 95
+
 
 class ByteStreamWrapper(IOBase):
     """This class acts as a thin wrapper around bytes in order to
@@ -28,6 +30,23 @@ class ByteStreamWrapper(IOBase):
         pass
 
 
+def bytestream_from_filename(image_filename: str, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> ByteStreamWrapper:
+    """Determines what to do with an arbitrary filename
+
+    Only supports JPEG and PNG files for now.
+    For PNG files, we convert to RGB format used in JPEGs.
+    """
+    if imghdr.what(image_filename) == "jpeg":
+        buffer = buffer_from_jpeg_file(image_filename)
+        return ByteStreamWrapper(data=buffer)
+    if imghdr.what(image_filename) == "png":
+        pil_img = Image.open(image_filename)
+        # This chops off the alpha channel which can cause unexpected behavior, but handles minimal transparency well
+        pil_img = pil_img.convert("RGB")
+        return bytestream_from_pil(pil_image=pil_img, jpeg_quality=jpeg_quality)
+    raise ValueError("We only support JPEG and PNG files, for now.")
+
+
 def buffer_from_jpeg_file(image_filename: str) -> BufferedReader:
     """Get a buffer from an jpeg image file.
 
@@ -40,13 +59,21 @@ def buffer_from_jpeg_file(image_filename: str) -> BufferedReader:
     raise ValueError("We only support JPEG files, for now.")
 
 
-def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = 95) -> bytes:
+def jpeg_from_numpy(img: np.ndarray, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> bytes:
     """Converts a numpy array to BytesIO."""
     pilim = Image.fromarray(img.astype("uint8"), "RGB")
     with BytesIO() as buf:
         pilim.save(buf, "jpeg", quality=jpeg_quality)
         out = buf.getvalue()
         return out
+
+
+def bytestream_from_pil(pil_image: Image.Image, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> ByteStreamWrapper:
+    """Converts a PIL image to a BytesIO."""
+    bytesio = BytesIO()
+    pil_image.save(bytesio, "jpeg", quality=jpeg_quality)
+    bytesio.seek(0)
+    return ByteStreamWrapper(data=bytesio)
 
 
 def parse_supported_image_types(
@@ -58,17 +85,13 @@ def parse_supported_image_types(
     """
     if isinstance(image, str):
         # Assume it is a filename
-        buffer = buffer_from_jpeg_file(image)
-        return ByteStreamWrapper(data=buffer)
+        return bytestream_from_filename(image_filename=image, jpeg_quality=jpeg_quality)
     if isinstance(image, bytes):
         # Create a BytesIO object
         return ByteStreamWrapper(data=image)
     if isinstance(image, Image.Image):
         # Save PIL image as jpeg in BytesIO
-        bytesio = BytesIO()
-        image.save(bytesio, "jpeg", quality=jpeg_quality)
-        bytesio.seek(0)
-        return ByteStreamWrapper(data=bytesio)
+        return bytestream_from_pil(pil_image=image, jpeg_quality=jpeg_quality)
     if isinstance(image, (BytesIO, BufferedReader)):
         # Already in the right format
         return ByteStreamWrapper(data=image)
