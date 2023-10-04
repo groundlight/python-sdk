@@ -162,6 +162,41 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
         gl.get_detector_by_name(name="not a real name")
 
 
+def test_ask_confident(gl: Groundlight, detector: Detector):
+    _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+
+
+def test_ask_fast(gl: Groundlight, detector: Detector):
+    _image_query = gl.ask_fast(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+
+
+def test_submit_image_query(gl: Groundlight, detector: Detector):
+    def validate_image_query(_image_query: ImageQuery):
+        assert str(_image_query)
+        assert isinstance(_image_query, ImageQuery)
+        assert is_valid_display_result(_image_query.result)
+
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=3)
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10, patience_time=20)
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=180, confidence_threshold=0.75
+    )
+    validate_image_query(_image_query)
+    assert _image_query.result.confidence >= 0.75
+
+
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
@@ -419,6 +454,17 @@ def test_detector_improvement(gl: Groundlight):
             return
 
     assert False, "The detector performance has not improved after two minutes"
+
+
+def test_ask_method_quality(gl: Groundlight):
+    # asks for some level of quality on how fast ask_fast is and that we will get a confident result from ask_confident
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+    detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
+    fast_iq = gl.ask_fast(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
+    assert fast_iq.result.confidence > 0.5
+    confident_iq = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=180)
+    assert confident_iq.result.confidence > 0.8
 
 
 def test_start_inspection(gl: Groundlight):

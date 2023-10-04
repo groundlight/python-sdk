@@ -21,6 +21,7 @@ from groundlight.internalapi import (
 )
 from groundlight.optional_imports import Image, np
 
+
 logger = logging.getLogger("groundlight.sdk")
 
 
@@ -43,6 +44,7 @@ class Groundlight:
     """
 
     DEFAULT_WAIT: float = 30.0
+    DEFAULT_PATIENCE: float = 30.0
 
     POLLING_INITIAL_DELAY = 0.25
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
@@ -172,11 +174,62 @@ class Groundlight:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
 
+    def ask_confident(
+        self,
+        detector: Union[Detector, str],
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
+        wait: Optional[float] = None,
+    ) -> ImageQuery:
+        """Evaluates an image with Groundlight, waiting until an answer above the confidence threshold of the detector is reached or the wait period has passed.
+        :param detector: the Detector object, or string id of a detector like `det_12345`
+        :param image: The image, in several possible formats:
+          - filename (string) of a jpeg file
+          - byte array or BytesIO or BufferedReader with jpeg bytes
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+          - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get
+          converted to JPEG at high quality before sending to service.
+        :param wait: How long to wait (in seconds) for a confident answer.
+        """
+        return self.submit_image_query(
+            detector,
+            image,
+            wait=wait,
+        )
+
+    def ask_fast(
+        self,
+        detector: Union[Detector, str],
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
+        wait: Optional[float] = None,
+    ) -> ImageQuery:
+        """Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
+        :param detector: the Detector object, or string id of a detector like `det_12345`
+        :param image: The image, in several possible formats:
+          - filename (string) of a jpeg file
+          - byte array or BytesIO or BufferedReader with jpeg bytes
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+          - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get
+          converted to JPEG at high quality before sending to service.
+        :param wait: How long to wait (in seconds) for a confident answer.
+        """
+        return self.submit_image_query(
+            detector,
+            image,
+            wait=wait,
+            confidence_threshold=0.5,
+        )
+
     def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        confidence_threshold: Optional[float] = None,
         human_review: Optional[str] = None,
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
@@ -191,6 +244,8 @@ class Groundlight:
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
+        :param patience_time: How long Groundlight should work to generate a confident answer, even working beyond when wait time
+        :param confidence_threshold: If set, override the detector's confidence threshold for this query.
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
             If set to `ALWAYS`, always send the image query for human review.
@@ -200,16 +255,15 @@ class Groundlight:
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
+        if patience_time is None:
+            patience_time = self.DEFAULT_PATIENCE
 
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
         params = {"detector_id": detector_id, "body": image_bytesio}
-        if wait == 0:
-            params["patience_time"] = self.DEFAULT_WAIT
-        else:
-            params["patience_time"] = wait
+        params["patience_time"] = patience_time
 
         if human_review is not None:
             params["human_review"] = human_review
@@ -226,7 +280,10 @@ class Groundlight:
             image_query = self.get_image_query(iq_id)
 
         if wait:
-            threshold = self.get_detector(detector).confidence_threshold
+            if confidence_threshold is None:
+                threshold = self.get_detector(detector).confidence_threshold
+            else:
+                threshold = confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
         return self._fixup_image_query(image_query)
 
@@ -269,6 +326,11 @@ class Groundlight:
             image_query = self.get_image_query(image_query.id)
             image_query = self._fixup_image_query(image_query)
         return image_query
+
+    # def wait_for_first_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
+    #     """Waits for the first
+    # .   Wait, this is wait for confident with very low confidence threshold, assuming we don't get the placeholder result back
+    #     """
 
     def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
         """Add a new label to an image query.  This answers the detector's question.
