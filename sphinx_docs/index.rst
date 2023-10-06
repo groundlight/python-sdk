@@ -11,6 +11,7 @@ For a detailed view of the source code, visit the `Groundlight SDK GitHub Reposi
 
 .. automodule:: groundlight.client 
    :members:
+   :special-members: __init__
    :exclude-members: ApiTokenError
 
 

@@ -71,7 +71,8 @@ class Groundlight:
         :param endpoint: optionally specify a different endpoint
         :type endpoint: str
 
-        :param api_token: use this API token for your API calls. If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
+        :param api_token: use this API token for your API calls.
+                        If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
         :type api_token: str
 
         :return Groundlight client
@@ -289,8 +290,10 @@ class Groundlight:
 
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image: Any binary format must be JPEG-encoded already.  Any pixel format will get converted to JPEG at high quality before sending to service.
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+          - PIL Image: Any binary format must be JPEG-encoded already.
+            Any pixel format will get converted to JPEG at high quality before sending to service.
 
         :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
@@ -303,7 +306,8 @@ class Groundlight:
             If set to `NEVER`, never send the image query for human review.
         :type human_review: str
 
-        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled, this is the ID of the inspection to associate with the image query.
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
+                            this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
         :return ImageQuery
@@ -395,7 +399,8 @@ class Groundlight:
         """
         Add a new label to an image query.  This answers the detector's question.
 
-        :param image_query: Either an ImageQuery object (returned from `submit_image_query`) or an image_query id as a string.
+        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
+                            or an image_query id as a string.
         :type image_query: ImageQuery or str
 
         :param label: The string "YES" or the string "NO" in answer to the query.
