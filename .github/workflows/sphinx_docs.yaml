@@ -1,0 +1,43 @@
+name: Build Documentation 
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main 
+
+env:
+  PYTHON_VERSION: "3.10"
+  POETRY_VERSION: "1.5.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code 
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry 
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+
+      - name: Install dependencies
+        # This should really just install sphinx. I'll have to add a separate group 
+        # for sphinx dependencies, so we don't have to install everything. 
+        run: make install 
+      
+      - name: Build documentation
+        run: |
+          poetry run make html 
+      # This action would deploy the documentation to github pages.
+      # - name: Deploy documentation
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: build/html

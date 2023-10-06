@@ -99,8 +99,6 @@ def parse_supported_image_types(
         # Assume it is in BGR format from opencv
         return ByteStreamWrapper(data=jpeg_from_numpy(image[:, :, ::-1], jpeg_quality=jpeg_quality))
     raise TypeError(
-        (
-            "Unsupported type for image. Must be PIL, numpy (H,W,3) BGR, or a JPEG as a filename (str), bytes,"
-            " BytesIO, or BufferedReader."
-        ),
+        "Unsupported type for image. Must be PIL, numpy (H,W,3) BGR, or a JPEG as a filename (str), bytes,"
+        " BytesIO, or BufferedReader.",
     )
