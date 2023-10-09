@@ -107,7 +107,7 @@ class RequestsRetryDecorator:
         """:param callable: The function to invoke."""
 
         @wraps(function)
-        def decorated(*args, **kwargs):
+        def decorated(*args, **kwargs):  # pylint: disable=inconsistent-return-statements
             delay = self.initial_delay
             retry_count = 0
 

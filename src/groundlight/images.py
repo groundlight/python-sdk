@@ -1,3 +1,4 @@
+# pylint: disable=deprecated-module
 import imghdr
 from io import BufferedReader, BytesIO, IOBase
 from typing import Union

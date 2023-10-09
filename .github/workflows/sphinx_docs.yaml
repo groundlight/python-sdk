@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         # This should really just install sphinx. I'll have to add a separate group 
         # for sphinx dependencies, so we don't have to install everything. 
-        run: make install --only dev 
+        run: make install-dev
       
       - name: Build documentation
         run: |
