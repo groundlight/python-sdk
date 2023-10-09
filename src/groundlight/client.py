@@ -88,9 +88,11 @@ class Groundlight:
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
                 raise ApiTokenError(
-                    "No API token found. Please put your token in an environment variable "
-                    f'named "{API_TOKEN_VARIABLE_NAME}". If you don\'t have a token, you can '
-                    f"create one at {API_TOKEN_WEB_URL}",
+                    (
+                        "No API token found. Please put your token in an environment variable "
+                        f'named "{API_TOKEN_VARIABLE_NAME}". If you don\'t have a token, you can '
+                        f"create one at {API_TOKEN_WEB_URL}"
+                    ),
                 ) from e
 
         configuration.api_key["ApiToken"] = api_token
@@ -228,14 +230,18 @@ class Groundlight:
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                f" The existing query is '{existing_detector.query}'.",
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                    f" The existing query is '{existing_detector.query}'."
+                ),
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                " thresholds don't match. The existing confidence threshold is"
-                f" {existing_detector.confidence_threshold}.",
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                    " thresholds don't match. The existing confidence threshold is"
+                    f" {existing_detector.confidence_threshold}."
+                ),
             )
         return existing_detector
 

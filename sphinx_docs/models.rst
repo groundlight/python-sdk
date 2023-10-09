@@ -1,6 +1,6 @@
 
 API Response Objects
-===============
+=====================
 
 .. autopydantic_model:: model.Detector 
    :model-show-json: True 

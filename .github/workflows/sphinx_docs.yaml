@@ -9,8 +9,7 @@ on:
       - main 
 
 env:
-  PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.5.1"
+  POETRY_VERSION: "1.6.1"
 
 jobs:
   build:
@@ -27,11 +26,9 @@ jobs:
         with:
           version: ${{ env.POETRY_VERSION }}
 
-      - name: Install dependencies
-        # This should really just install sphinx. I'll have to add a separate group 
-        # for sphinx dependencies, so we don't have to install everything. 
-        run: make install-dev
+      - name: Install dependencies 
+        run: make install-sphinx-deps
       
-      - name: Build documentation
+      - name: Build API documentation
         run: |
-          poetry run make html 
+          poetry run make apidocs
