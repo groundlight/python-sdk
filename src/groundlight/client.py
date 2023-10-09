@@ -222,7 +222,7 @@ class Groundlight:
             params["human_review"] = human_review
 
         if want_async is True:
-            # If want_async is True, we don't want to wait for a result. As a result using both wait and want_async 
+            # If want_async is True, we don't want to wait for a result. As a result using both wait and want_async
             # makes no sense.
             if wait is not None:
                 raise ValueError(
@@ -247,22 +247,21 @@ class Groundlight:
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
 
         return self._fixup_image_query(image_query, want_async=want_async)
-    
-    def ask_async(self, 
-                  detector: Union[Detector, str], 
-                  image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
-                  human_review: Optional[str] = None, 
-                  inspection_id: Optional[str] = None) -> ImageQuery:
+
+    def ask_async(
+        self,
+        detector: Union[Detector, str],
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
+        human_review: Optional[str] = None,
+        inspection_id: Optional[str] = None,
+    ) -> ImageQuery:
         """
-        Convenience method for submitting an image query asynchronously. This is equivalent to calling 
+        Convenience method for submitting an image query asynchronously. This is equivalent to calling
         submit_image_query with want_async=True. Use get_image_query to retrieve the result of the image query.
         """
-        return self.submit_image_query(detector,
-                                       image, 
-                                       human_review=human_review, 
-                                       want_async=True, 
-                                       inspection_id=inspection_id)
-        
+        return self.submit_image_query(
+            detector, image, human_review=human_review, want_async=True, inspection_id=inspection_id
+        )
 
     def wait_for_confident_result(
         self,
