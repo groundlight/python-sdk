@@ -52,7 +52,7 @@ format: install-lint  ## Run standard python formatting
 	./code-quality/format ${LINT_PATHS}
 
 
-# Minimal makefile for Sphinx documentation
+# Targets for sphinx documentation 
 
 install-sphinx-deps: ## Only install the sphinx dependencies
 	poetry install --no-root --only sphinx-deps
@@ -65,7 +65,6 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = sphinx_docs
 BUILDDIR      = build
 
-# Put it first so that "make" without argument is like "make help".
 sphinx-help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
