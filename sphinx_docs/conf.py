@@ -9,22 +9,33 @@
 
 import sys
 import os
+import toml
 
 sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(1, os.path.abspath("../generated"))
+
+
+def get_version_name() -> str:
+    pyproject_path = "../pyproject.toml"
+    with open(pyproject_path, "r") as f:
+        pyproject_deps = toml.load(f)
+
+    version = pyproject_deps["tool"]["poetry"]["version"]
+    return version
+
 
 project = "Groundlight Python SDK"
 copyright = "2023, Groundlight AI <support@groundlight.ai>"
 author = "Groundlight AI <support@groundlight.ai>"
-release = "0.11.1"
+version = get_version_name()
+release = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 # sphinx.ext.autodoc is a Sphinx extension that automatically documents Python modules.
-# sphinx.ext.napoleon is a Sphinx extension that enables Sphinx to understand Google style docstrings.
-# We are using the `reStructuredText` format for docstrings instead of google style, but functions that
-# use google style docstrings will still be documented correctly.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon"]
+# We are using the `reStructuredText` format for docstrings instead of google style.
+extensions = ["sphinx.ext.autodoc", "sphinxcontrib.autodoc_pydantic"]
 
 templates_path = ["_templates"]
 exclude_patterns = []

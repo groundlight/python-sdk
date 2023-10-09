@@ -30,14 +30,8 @@ jobs:
       - name: Install dependencies
         # This should really just install sphinx. I'll have to add a separate group 
         # for sphinx dependencies, so we don't have to install everything. 
-        run: make install 
+        run: make install --only dev 
       
       - name: Build documentation
         run: |
           poetry run make html 
-      # This action would deploy the documentation to github pages.
-      # - name: Deploy documentation
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: build/html

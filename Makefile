@@ -7,6 +7,9 @@ install-extras: install  ## Install the package from source with extra dependenc
 install-lint:  ## Only install the linter dependencies
 	poetry install --only lint
 
+install-dev: ## Only install the deve dependencies
+	poetry install --only dev 
+
 install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
