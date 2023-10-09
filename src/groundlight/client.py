@@ -101,7 +101,8 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
-    def _fixup_image_query(self, iq: ImageQuery) -> ImageQuery:
+    @staticmethod
+    def _fixup_image_query(iq: ImageQuery) -> ImageQuery:
         """
         Process the wire-format image query to make it more usable.
         """
