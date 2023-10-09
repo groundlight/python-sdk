@@ -3,6 +3,14 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
-  "python.analysis.extraPaths": ["./generated"],
-  "python.formatting.provider": "black"
+  "python.analysis.extraPaths": [
+    "./generated"
+  ],
+  "python.formatting.provider": "black",
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.fixAll": true,
+  "ruff.organizeImports": false,
+  "ruff.path": [
+    "/.venv/bin/ruff"
+  ],
 }
