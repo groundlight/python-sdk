@@ -1,4 +1,4 @@
-name: Build Documentation 
+name: Build API Reference docs using sphinx 
 
 on:
   push:
