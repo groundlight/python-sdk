@@ -1,5 +1,5 @@
 
-Pydantic Models
+API Response Objects
 ===============
 
 .. autopydantic_model:: model.Detector 
