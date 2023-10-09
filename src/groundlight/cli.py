@@ -35,7 +35,6 @@ def groundlight():
     # For each method in the Groundlight class, create a function that can be called from the command line
     for name, method in vars(Groundlight).items():
         if callable(method) and not name.startswith("_"):
-            # pylint: disable=unnecessary-dunder-call
             attached_method = method.__get__(gl)
             cli_func = class_func_to_cli(attached_method)
             cli_app.command()(cli_func)
