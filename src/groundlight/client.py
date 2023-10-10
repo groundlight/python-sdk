@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from io import BufferedReader, BytesIO
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
@@ -17,6 +17,7 @@ from groundlight.internalapi import (
     GroundlightApiClient,
     NotFoundError,
     iq_is_confident,
+    iq_is_answered,
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
@@ -43,7 +44,6 @@ class Groundlight:
     """
 
     DEFAULT_WAIT: float = 30.0
-    DEFAULT_PATIENCE: float = 30.0
 
     POLLING_INITIAL_DELAY = 0.25
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
@@ -177,6 +177,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
+        confidence_threshold: Optional[float] = None,
         wait: Optional[float] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight, waiting until an answer above the confidence threshold of the detector is reached or the wait period has passed.
@@ -189,15 +190,18 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
+        :param confidence_threshold: The confidence threshold to wait for. If not set, use the detector's confidence threshold.
         :param wait: How long to wait (in seconds) for a confident answer.
+
         """
         return self.submit_image_query(
             detector,
             image,
+            confidence_threshold=confidence_threshold,
             wait=wait,
         )
 
-    def ask_fast(
+    def ask_ml(
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
@@ -213,14 +217,17 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
-        :param wait: How long to wait (in seconds) for a confident answer.
+        :param wait: How long to wait (in seconds) for any answer.
         """
-        return self.submit_image_query(
+        iq = self.submit_image_query(
             detector,
             image,
-            wait=wait,
-            confidence_threshold=0.5,
+            wait=0,
         )
+        if iq_is_answered(iq):
+            return iq
+        else:
+            return self._wait_for_ml_result(iq, timeout_sec=wait)
 
     def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
@@ -243,7 +250,7 @@ class Groundlight:
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
-        :param patience_time: How long Groundlight should work to generate a confident answer, even working beyond when wait time
+        :param patience_time: How long Groundlight should work to generate a confident answer, even working beyond the specified wait time
         :param confidence_threshold: If set, override the detector's confidence threshold for this query.
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
@@ -254,15 +261,14 @@ class Groundlight:
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
-        if patience_time is None:
-            patience_time = self.DEFAULT_PATIENCE
 
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
         params = {"detector_id": detector_id, "body": image_bytesio}
-        params["patience_time"] = patience_time
+        if patience_time is not None:
+            params["patience_time"] = patience_time
 
         if human_review is not None:
             params["human_review"] = human_review
@@ -283,10 +289,10 @@ class Groundlight:
                 threshold = self.get_detector(detector).confidence_threshold
             else:
                 threshold = confidence_threshold
-            image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
+            image_query = self._wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
         return self._fixup_image_query(image_query)
 
-    def wait_for_confident_result(
+    def _wait_for_confident_result(
         self,
         image_query: Union[ImageQuery, str],
         confidence_threshold: float,
@@ -326,10 +332,36 @@ class Groundlight:
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    # def wait_for_first_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
-    #     """Waits for the first
-    # .   Wait, this is wait for confident with very low confidence threshold, assuming we don't get the placeholder result back
-    #     """
+    def _wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
+        """Waits for the first ml result to be returned.
+        Currently this is done by polling with an exponential back-off.
+        :param image_query: An ImageQuery object to poll
+        :param confidence_threshold: The minimum confidence level required to return before the timeout.
+        :param timeout_sec: The maximum number of seconds to wait.
+        """
+        if isinstance(image_query, str):
+            image_query = self.get_image_query(image_query)
+
+        start_time = time.time()
+        next_delay = self.POLLING_INITIAL_DELAY
+        target_delay = 0.0
+        image_query = self._fixup_image_query(image_query)
+        while True:
+            patience_so_far = time.time() - start_time
+            if iq_is_answered(image_query):
+                logger.debug(f"ML answer for {image_query} after {patience_so_far:.1f}s")
+                break
+            if patience_so_far >= timeout_sec:
+                logger.debug(f"Timeout after {timeout_sec:.0f}s waiting for {image_query}")
+                break
+            target_delay = min(patience_so_far + next_delay, timeout_sec)
+            sleep_time = max(target_delay - patience_so_far, 0)
+            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until ML result is available")
+            time.sleep(sleep_time)
+            next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
+            image_query = self.get_image_query(image_query.id)
+            image_query = self._fixup_image_query(image_query)
+        return image_query
 
     def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
         """Add a new label to an image query.  This answers the detector's question.

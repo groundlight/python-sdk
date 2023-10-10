@@ -71,6 +71,16 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     return iq.result.confidence >= confidence_threshold
 
 
+def iq_is_answered(iq: ImageQuery) -> bool:
+    """Returns True if the image query has a ML or human label.
+    Placeholder and special labels (out of domain) have confidences exactly 0.5
+    """
+    if iq.result.confidence is None:
+        # Human label
+        return True
+    return iq.result.label >= 0.5
+
+
 class InternalApiError(ApiException, RuntimeError):
     # TODO: We should really avoid this double inheritance since
     # both `ApiException` and `RuntimeError` are subclasses of
