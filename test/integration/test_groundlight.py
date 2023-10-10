@@ -6,16 +6,12 @@ from typing import Any
 
 import openapi_client
 import pytest
-from model import (ClassificationResult, Detector, ImageQuery,
-                   PaginatedDetectorList, PaginatedImageQueryList)
-
 from groundlight import Groundlight
-from groundlight.binary_labels import (VALID_DISPLAY_LABELS, DeprecatedLabel,
-                                       Label,
-                                       convert_internal_label_to_display)
+from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
 from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
+from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -247,59 +243,62 @@ def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=black)
 
 
-def test_submit_image_query_wait_and_want_async_causes_exception(gl:Groundlight, detector:Detector):
-    '''
+def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight, detector: Detector):
+    """
     Tests that attempting to use the wait and want_async parameters together causes an exception.
-    '''
-    
+    """
+
     with pytest.raises(ValueError):
-        _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10, 
-                                             want_async=True)
-    
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/dog.jpeg", wait=10, want_async=True
+        )
+
     with pytest.raises(ValueError):
-        _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=0.0, 
-                                             want_async=True)
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/dog.jpeg", wait=0.0, want_async=True
+        )
+
 
 def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):
-    '''
+    """
     Tests the workflow for submitting an image query with the want_async parameter set to True.
-    '''
-    
+    """
+
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", want_async=True)
-    
+
     # the result should be None
     assert _image_query.result is None
-    
+
     # attempting to access fields within the result should raise an exception
     with pytest.raises(AttributeError):
         _ = _image_query.result.label
     with pytest.raises(AttributeError):
         _ = _image_query.result.confidence
-    
+
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None
     assert _image_query.result.label in VALID_DISPLAY_LABELS
-    
+
+
 def test_ask_async_workflow(gl: Groundlight, detector: Detector):
-    
     _image_query = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg")
-    
+
     # the result should be None
     assert _image_query.result is None
-    
+
     # attempting to access fields within the result should raise an exception
     with pytest.raises(AttributeError):
         _ = _image_query.result.label
     with pytest.raises(AttributeError):
         _ = _image_query.result.confidence
-    
+
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None
     assert _image_query.result.label in VALID_DISPLAY_LABELS
-    
-    
+
+
 def test_list_image_queries(gl: Groundlight):
     image_queries = gl.list_image_queries()
     assert str(image_queries)
