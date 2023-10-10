@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from io import BufferedReader, BytesIO
-from typing import Optional, Union, Callable
+from typing import Optional, Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
@@ -16,8 +16,8 @@ from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
     GroundlightApiClient,
     NotFoundError,
-    iq_is_confident,
     iq_is_answered,
+    iq_is_confident,
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
