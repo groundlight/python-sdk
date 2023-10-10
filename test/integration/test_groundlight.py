@@ -6,16 +6,12 @@ from typing import Any
 
 import openapi_client
 import pytest
-from model import (ClassificationResult, Detector, ImageQuery,
-                   PaginatedDetectorList, PaginatedImageQueryList)
-
 from groundlight import Groundlight
-from groundlight.binary_labels import (VALID_DISPLAY_LABELS, DeprecatedLabel,
-                                       Label,
-                                       convert_internal_label_to_display)
+from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
 from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
+from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 
@@ -275,10 +271,10 @@ def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: 
 
     # attempting to access fields within the result should raise an exception
     with pytest.raises(AttributeError):
-        _ = _image_query.result.label # type: ignore
+        _ = _image_query.result.label  # type: ignore
     with pytest.raises(AttributeError):
-        _ = _image_query.result.confidence # type: ignore
-    
+        _ = _image_query.result.confidence  # type: ignore
+
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None
@@ -293,10 +289,10 @@ def test_ask_async_workflow(gl: Groundlight, detector: Detector):
 
     # attempting to access fields within the result should raise an exception
     with pytest.raises(AttributeError):
-        _ = _image_query.result.label # type: ignore
+        _ = _image_query.result.label  # type: ignore
     with pytest.raises(AttributeError):
-        _ = _image_query.result.confidence # type: ignore
-    
+        _ = _image_query.result.confidence  # type: ignore
+
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None
