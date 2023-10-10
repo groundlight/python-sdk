@@ -86,7 +86,7 @@ jobs:
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
   test-comprehensive:
-    # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     needs:
       - test-simple
       - test-docs
