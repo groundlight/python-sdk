@@ -201,7 +201,8 @@ class Groundlight:
             If set to `ALWAYS`, always send the image query for human review.
             If set to `NEVER`, never send the image query for human review.
         :param want_async: If True, the client will return as soon as the image query is submitted and will not wait for
-            an ML/human prediction. The returned `ImageQuery` will have a `result` of None. Incompatible with `wait`.
+            an ML/human prediction. The returned `ImageQuery` will have a `result` of None. Must set `wait` to 0 to use
+            want_async.
         :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
                               this is the ID of the inspection to associate with the image query.
         """
@@ -222,12 +223,11 @@ class Groundlight:
             params["human_review"] = human_review
 
         if want_async is True:
-            # If want_async is True, we don't want to wait for a result. As a result using both wait and want_async
-            # makes no sense.
-            if wait is not None:
+            # If want_async is True, we don't want to wait for a result. As a result wait must be set to 0 to use 
+            # want_async.
+            if wait != 0:
                 raise ValueError(
-                    "wait must be None if want_async is True as the two are incompatible. Please set wait"
-                    " to None to use want_async."
+                    "wait must be set to 0 to use want_async. Using wait and want_async at the same time is incompatible."  # noqa: E501
                 )
             params["want_async"] = want_async
 
@@ -242,7 +242,7 @@ class Groundlight:
             iq_id = self.api_client.submit_image_query_with_inspection(**params)
             image_query = self.get_image_query(iq_id)
 
-        if wait:
+        if wait > 0:
             threshold = self.get_detector(detector).confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
 
@@ -257,10 +257,11 @@ class Groundlight:
     ) -> ImageQuery:
         """
         Convenience method for submitting an image query asynchronously. This is equivalent to calling
-        submit_image_query with want_async=True. Use get_image_query to retrieve the result of the image query.
+        submit_image_query with want_async=True and wait=0. Use get_image_query to retrieve the result of the image
+        query.
         """
         return self.submit_image_query(
-            detector, image, human_review=human_review, want_async=True, inspection_id=inspection_id
+            detector, image, wait=0, human_review=human_review, want_async=True, inspection_id=inspection_id
         )
 
     def wait_for_confident_result(
