@@ -84,3 +84,10 @@ class PaginatedImageQueryList(BaseModel):
     next: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=4")
     previous: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=2")
     results: Optional[List[ImageQuery]] = None
+
+# These are reasons a label was created. A review reason is a required field when posting a human label to the API.
+class ReviewReason(str, Enum):  # noqa: N801
+    ESCALATION = "ESCALATION"
+    AUDIT = "AUDIT"
+    ASSESSMENT = "ASSESSMENT"
+    CUSTOMER_INITIATED = "CUSTOMER_INITIATED"

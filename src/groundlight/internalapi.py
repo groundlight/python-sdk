@@ -9,7 +9,7 @@ from typing import Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, ReviewReason
 from openapi_client.api_client import ApiClient, ApiException
 
 from groundlight.images import ByteStreamWrapper
@@ -187,6 +187,7 @@ class GroundlightApiClient(ApiClient):
         data = {
             "label": label,
             "posicheck_id": image_query_id,
+            "review_reason": ReviewReason.CUSTOMER_INITIATED
         }
 
         headers = self._headers()
