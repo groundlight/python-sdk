@@ -32,4 +32,4 @@ jobs:
       
       - name: Build API documentation
         run: |
-          poetry run make apidocs
+          make apidocs

@@ -74,7 +74,8 @@ sphinx-help:
 # `make apidocs` instead. 
 .PHONY: apidocs html 
 
-apidocs: html 
+apidocs: 
+	poetry run make html 
 
 html:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(0)
