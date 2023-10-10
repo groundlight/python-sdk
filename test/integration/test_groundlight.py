@@ -463,8 +463,10 @@ def test_detector_improvement(gl: Groundlight):
     assert False, "The detector performance has not improved after two minutes"
 
 
-def test_ask_method_quality(gl: Groundlight):
-    # asks for some level of quality on how fast ask_fast is and that we will get a confident result from ask_confident
+def test_ask_method_quality(gl: Groundlight, detector: Detector):
+    # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
+    fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
+    assert fast_always_yes_iq.result.confidence > 0.5
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
