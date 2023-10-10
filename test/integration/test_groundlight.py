@@ -374,7 +374,7 @@ def test_detector_improvement(gl: Groundlight):
 
     random.seed(2741)
 
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query)
 
@@ -404,6 +404,8 @@ def test_detector_improvement(gl: Groundlight):
     wait_period = 30  # seconds
     num_wait_periods = 4  # 2 minutes total
     result_confidence = 0.6
+    new_dog_query = None
+    new_cat_query = None
     for _ in range(num_wait_periods):
         time.sleep(wait_period)
         new_dog_query = submit_noisy_image(dog)
@@ -425,7 +427,9 @@ def test_detector_improvement(gl: Groundlight):
             assert True
             return
 
-    assert False, "The detector performance has not improved after two minutes"
+    assert (
+        False
+    ), f"The detector {detector} quality has not improved after two minutes q.v. {new_dog_query}, {new_cat_query}"
 
 
 def test_start_inspection(gl: Groundlight):
