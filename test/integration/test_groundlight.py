@@ -264,7 +264,7 @@ def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: 
     Tests the workflow for submitting an image query with the want_async parameter set to True.
     """
 
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", want_async=True)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=0, want_async=True)
 
     # the result should be None
     assert _image_query.result is None
