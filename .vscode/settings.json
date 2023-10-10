@@ -11,4 +11,9 @@
     "./generated"
   ],
   "python.formatting.provider": "black",
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": false
+    }
+  }
 }
