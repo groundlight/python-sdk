@@ -1,14 +1,29 @@
+---
+id: esp32cam
+title: "Setting up an ESP32 Camera Board"
+sidebar_position: 1
+---
+
 # No-Code IoT Deployment
 
-Groundlight supplies a tool for no-code deployment of a detector to an ESP32 Camera board. You can find it at https://code.groundlight.ai/groundlight-embedded-uploader/.
+Groundlight supplies a tool for no-code deployment of a detector to an ESP32 Camera board. You can find it at [https://iot.groundlight.ai/espcam](https://iot.groundlight.ai/espcam).
 
 ## Easy Deployment
 
 This tool is designed to make it as easy as possible to deploy your Groundlight detector on an ESP32 Camera Board. You can deploy your detector in just a few clicks.
 
-1. Go to https://code.groundlight.ai/groundlight-embedded-uploader/.
+1. Go to [https://iot.groundlight.ai/espcam](https://iot.groundlight.ai/espcam)
 2. Plug your ESP32 Camera Board into your computer with a USB cable.
 3. Click through the steps to upload your detector to your ESP32 Camera Board.
+4. When prompted, allow your browser access to the serial port, so that it can program the device.
+
+<img
+src={require('/img/allow_serial_access.png').default}
+alt="Dialog box in browser asking for serial port access"
+width={"50%"}
+/>
+
+If you don't see a prompt like this, try using a current version of Chrome or another browser that supports Web Serial.
 
 ## Notification Options
 
