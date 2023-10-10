@@ -427,7 +427,9 @@ def test_detector_improvement(gl: Groundlight):
             assert True
             return
 
-    assert False, f"The detector {detector} quality has not improved after two minutes q.v. {new_dog_query}, {new_cat_query}"
+    assert (
+        False
+    ), f"The detector {detector} quality has not improved after two minutes q.v. {new_dog_query}, {new_cat_query}"
 
 
 def test_start_inspection(gl: Groundlight):
