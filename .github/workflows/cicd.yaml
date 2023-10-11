@@ -83,10 +83,37 @@ jobs:
       - name: Build website
         run: npm run build
 
+  # Checks that the API reference docs built with shpinx build
+  test-api-reference-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code 
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry 
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+
+      - name: Install dependencies 
+        run: make install-sphinx-deps
+      
+      - name: Build API documentation
+        run: |
+          make apidocs
+      - name: Upload docs as artifacts 
+        uses: actions/upload-artifact@v2
+        with: 
+          name: api-reference-docs
+          path: build/html/*
+
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
   test-comprehensive:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     needs:
       - test-simple
       - test-docs
@@ -187,9 +214,10 @@ jobs:
   # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
   # we are on the `main` branch and docs/** has changes.
   deploy-docs:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     needs:
       - test-comprehensive
+      - test-api-reference-docs 
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -204,14 +232,27 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm install
+      - name: Download api-reference docs 
+        uses: actions/download-artifact@v2
+        with: 
+          name: api-reference-docs
+          path: api-reference-docs
+
+      - name: Move api-reference docs into docusaurus
+        run: |
+          # Remove the api-reference-docs if they exist for any reason
+          rm -rf static/api-reference-docs
+          mkdir static/api-reference-docs
+          cp -r api-reference-docs/* static/api-reference-docs/
+
       - name: Build website
         run: npm run build
-      - name: Deploy website (if on main branch)
-        # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build
+      # - name: Deploy website (if on main branch)
+      #   # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./docs/build
           # Someday we might want to set the destination to a staging dir for PR's
           #destination_dir: staging
           # The following lines assign commit authorship to the official
