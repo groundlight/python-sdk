@@ -11,7 +11,7 @@ from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
+from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, API_TOKEN_HELP_MESSAGE
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
     GroundlightApiClient,
@@ -62,13 +62,7 @@ class Groundlight:
                 # Retrieve the API token from environment variable
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
-                raise ApiTokenError(
-                    (
-                        "No API token found. Please put your token in an environment variable "
-                        f'named "{API_TOKEN_VARIABLE_NAME}". If you don\'t have a token, you can '
-                        f"create one at {API_TOKEN_WEB_URL}"
-                    ),
-                ) from e
+                raise ApiTokenError(API_TOKEN_HELP_MESSAGE) from e
 
         configuration.api_key["ApiToken"] = api_token
 
