@@ -363,8 +363,7 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
-# @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
-@pytest.mark.skip
+@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
