@@ -242,7 +242,7 @@ jobs:
           # Remove the api-reference-docs if they exist for any reason
           rm -rf static/api-reference-docs
           mkdir static/api-reference-docs
-          cp -r api-reference-docs/* static/api-reference-docs/
+          mv ../api-reference-docs/* static/api-reference-docs/
       - name: Build website
         run: npm run build
       # - name: Deploy website (if on main branch)
