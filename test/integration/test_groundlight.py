@@ -337,7 +337,7 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
 
     # We may want to support something like this in the future, but not yet
     with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, Label.UNCLEAR)
+        gl.add_label(iqid_yes, Label.UNSURE)
 
 
 def test_label_conversion_produces_strings():
