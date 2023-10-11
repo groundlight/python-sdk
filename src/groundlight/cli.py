@@ -2,8 +2,6 @@ from functools import wraps
 from typing import Union
 
 import typer
-import click
-from click.testing import CliRunner
 from typing_extensions import get_origin
 
 from groundlight import Groundlight
