@@ -254,7 +254,6 @@ def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight
         )
 
 
-
 def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):
     """
     Tests the workflow for submitting an image query with the want_async parameter set to True.

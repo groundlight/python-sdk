@@ -255,7 +255,7 @@ class Groundlight:
     ) -> ImageQuery:
         """
         Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
-        submit_image_query with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the 
+        submit_image_query with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the
         ImageQuery.
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
