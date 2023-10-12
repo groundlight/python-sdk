@@ -72,12 +72,25 @@ sphinx-help:
 # The .PHONY directive tells make that `apidocs` and `html` are labels for 
 # commands. `apidocs: html` allows us to generate docs by running 
 # `make apidocs` instead. 
-.PHONY: apidocs html 
+.PHONY: docs-comprehensive apidocs html 
 
+# Start an interactive server to test docs locally
+develop-docs-comprehensive: docs-comprehensive 
+	cd docs && npm start 
+
+## Builds docs comprehensively (integrating API reference docs built 
+## with sphinx into the docusaurus docs). 
+docs-comprehensive: apidocs 
+	rm -rf docs/static/api-reference-docs
+	rm -rf docs/build/api-reference-docs
+	mkdir docs/static/api-reference-docs
+	mv build/html/* docs/static/api-reference-docs/
+
+	cd docs && npm run build 
+	
 apidocs: 
 	poetry run make html 
 
 html:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(0)
-	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
