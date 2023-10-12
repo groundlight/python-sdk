@@ -11,7 +11,7 @@ from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL
+from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DISABLE_TLS_VARIABLE_NAME
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
     GroundlightApiClient,
@@ -68,7 +68,7 @@ class Groundlight:
         self,
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,
-        disable_tls_cert_verification: Optional[bool] = False,
+        disable_tls_verification: Optional[bool] = False,
     ) -> None:
         """
         Constructs a Groundlight client.
@@ -80,9 +80,11 @@ class Groundlight:
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
         :type api_token: str
 
-        :param disable_tls_cert_verification: If set to True, the client will not verify
-                        TLS certificates.
-        :type bool
+        :param disable_tls_verification: Set this to false to skip verifying SSL/TLS certificate
+                                        when calling API from https server. In unset, fallback to
+                                        the environment variable "TLS_VERIFY". By default, certificates
+                                        are verified.
+        :type disable_tls_verification: bool
 
         :return Groundlight client
         :rtype Groundlight
@@ -103,6 +105,13 @@ class Groundlight:
                         f"create one at {API_TOKEN_WEB_URL}"
                     ),
                 ) from e
+
+        should_disable_tls = disable_tls_verification or os.environ.get(DISABLE_TLS_VARIABLE_NAME, None) is not None
+
+        if should_disable_tls:
+            logger.warn("Disabling SSL/TLS certificate verification")
+            configuration.verify_ssl = False
+            configuration.assert_hostname = False
 
         configuration.api_key["ApiToken"] = api_token
 
