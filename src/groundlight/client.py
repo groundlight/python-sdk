@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from io import BufferedReader, BytesIO
-from typing import Optional, Union, Callable
+from typing import Callable, Optional, Union
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
@@ -437,7 +437,10 @@ class Groundlight:
         :return ImageQuery
         :rtype ImageQuery
         """
-        confidence_above_thresh = lambda iq: iq_is_confident(iq, confidence_threshold=confidence_threshold)
+
+        def confidence_above_thresh(iq):
+            return iq_is_confident(iq, confidence_threshold=confidence_threshold)
+
         return self._wait_for_result(image_query, condition=confidence_above_thresh, timeout_sec=timeout_sec)
 
     def wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
