@@ -15,19 +15,25 @@ logger = logging.getLogger(__name__)
 class Label(str, Enum):
     YES = "YES"
     NO = "NO"
-    UNSURE = "UNSURE"
+    UNCLEAR = "UNCLEAR"
 
 
-VALID_DISPLAY_LABELS = {Label.YES, Label.NO, Label.UNSURE}
+VALID_DISPLAY_LABELS = {Label.YES, Label.NO, Label.UNCLEAR}
 
 
 class DeprecatedLabel(str, Enum):
     PASS = "PASS"
     FAIL = "FAIL"
     NEEDS_REVIEW = "NEEDS_REVIEW"
+    UNSURE = "__UNSURE"
 
 
-DEPRECATED_LABEL_NAMES = {DeprecatedLabel.PASS, DeprecatedLabel.FAIL, DeprecatedLabel.NEEDS_REVIEW}
+DEPRECATED_LABEL_NAMES = {
+    DeprecatedLabel.PASS,
+    DeprecatedLabel.FAIL,
+    DeprecatedLabel.NEEDS_REVIEW,
+    DeprecatedLabel.UNSURE,
+}
 
 
 def convert_internal_label_to_display(
@@ -47,8 +53,8 @@ def convert_internal_label_to_display(
         return Label.YES
     if upper in {Label.NO, DeprecatedLabel.FAIL}:
         return Label.NO
-    if upper in {Label.UNSURE, DeprecatedLabel.NEEDS_REVIEW}:
-        return Label.UNSURE
+    if upper in {Label.UNCLEAR, DeprecatedLabel.NEEDS_REVIEW, DeprecatedLabel.UNSURE}:
+        return Label.UNCLEAR
 
     logger.warning(f"Unrecognized internal label {label} - leaving it alone as a string.")
     return label
