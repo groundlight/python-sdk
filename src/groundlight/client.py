@@ -109,7 +109,14 @@ class Groundlight:
         should_disable_tls = disable_tls_verification or os.environ.get(DISABLE_TLS_VARIABLE_NAME, None) is not None
 
         if should_disable_tls:
-            logger.warn("Disabling SSL/TLS certificate verification")
+            logger.info("Disabling SSL/TLS certificate verification")
+
+            import warnings
+
+            from urllib3.exceptions import InsecureRequestWarning
+
+            warnings.simplefilter("ignore", InsecureRequestWarning)
+
             configuration.verify_ssl = False
             configuration.assert_hostname = False
 
