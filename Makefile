@@ -75,7 +75,7 @@ sphinx-help:
 .PHONY: docs-comprehensive apidocs html 
 
 # Start an interactive server to test docs locally
-test-docs-comprehensive: docs-comprehensive 
+develop-docs-comprehensive: docs-comprehensive 
 	cd docs && npm start 
 
 ## Builds docs comprehensively (integrating API reference docs built 
