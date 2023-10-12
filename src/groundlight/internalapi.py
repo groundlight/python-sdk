@@ -78,7 +78,7 @@ def iq_is_answered(iq: ImageQuery) -> bool:
     if iq.result.confidence is None:
         # Human label
         return True
-    return iq.result.label >= 0.5
+    return iq.result.label > 0.5
 
 
 class InternalApiError(ApiException, RuntimeError):

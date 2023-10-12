@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from io import BufferedReader, BytesIO
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 
 from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 from openapi_client import Configuration
@@ -227,7 +227,7 @@ class Groundlight:
         if iq_is_answered(iq):
             return iq
         else:
-            return self._wait_for_ml_result(iq, timeout_sec=wait)
+            return self.wait_for_ml_result(iq, timeout_sec=wait)
 
     def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
@@ -250,7 +250,7 @@ class Groundlight:
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for a confident answer.
-        :param patience_time: How long Groundlight should work to generate a confident answer, even working beyond the specified wait time
+        :param patience_time: If set, how long Groundlight should work to generate a confident answer, even working beyond the specified wait time
         :param confidence_threshold: If set, override the detector's confidence threshold for this query.
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
@@ -289,10 +289,10 @@ class Groundlight:
                 threshold = self.get_detector(detector).confidence_threshold
             else:
                 threshold = confidence_threshold
-            image_query = self._wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
+            image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
         return self._fixup_image_query(image_query)
 
-    def _wait_for_confident_result(
+    def wait_for_confident_result(
         self,
         image_query: Union[ImageQuery, str],
         confidence_threshold: float,
@@ -304,39 +304,24 @@ class Groundlight:
         :param confidence_threshold: The minimum confidence level required to return before the timeout.
         :param timeout_sec: The maximum number of seconds to wait.
         """
-        # Convert from image_query_id to ImageQuery if needed.
-        if isinstance(image_query, str):
-            image_query = self.get_image_query(image_query)
+        confidence_above_thresh = lambda iq: iq_is_confident(iq, confidence_threshold=confidence_threshold)
+        return self._wait_for_result(image_query, condition=confidence_above_thresh, timeout_sec=timeout_sec)
 
-        start_time = time.time()
-        next_delay = self.POLLING_INITIAL_DELAY
-        target_delay = 0.0
-        image_query = self._fixup_image_query(image_query)
-        while True:
-            patience_so_far = time.time() - start_time
-            if iq_is_confident(image_query, confidence_threshold):
-                logger.debug(f"Confident answer for {image_query} after {patience_so_far:.1f}s")
-                break
-            if patience_so_far >= timeout_sec:
-                logger.debug(f"Timeout after {timeout_sec:.0f}s waiting for {image_query}")
-                break
-            target_delay = min(patience_so_far + next_delay, timeout_sec)
-            sleep_time = max(target_delay - patience_so_far, 0)
-            logger.debug(
-                f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until"
-                f" confidence>={confidence_threshold:.3f}"
-            )
-            time.sleep(sleep_time)
-            next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
-            image_query = self.get_image_query(image_query.id)
-            image_query = self._fixup_image_query(image_query)
-        return image_query
-
-    def _wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
+    def wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
         """Waits for the first ml result to be returned.
         Currently this is done by polling with an exponential back-off.
         :param image_query: An ImageQuery object to poll
         :param confidence_threshold: The minimum confidence level required to return before the timeout.
+        :param timeout_sec: The maximum number of seconds to wait.
+        """
+        return self._wait_for_result(image_query, condition=iq_is_answered, timeout_sec=timeout_sec)
+
+    def _wait_for_result(
+        self, image_query: Union[ImageQuery, str], condition: Callable, timeout_sec: float = 30.0
+    ) -> ImageQuery:
+        """Performs polling with exponential back-off until the condition is met for the image query.
+        :param image_query: An ImageQuery object to poll
+        :param condition: A callable that takes an ImageQuery and returns True or False whether to keep waiting for a better result.
         :param timeout_sec: The maximum number of seconds to wait.
         """
         if isinstance(image_query, str):
@@ -348,15 +333,15 @@ class Groundlight:
         image_query = self._fixup_image_query(image_query)
         while True:
             patience_so_far = time.time() - start_time
-            if iq_is_answered(image_query):
-                logger.debug(f"ML answer for {image_query} after {patience_so_far:.1f}s")
+            if condition(image_query):
+                logger.debug(f"Answer for {image_query} after {patience_so_far:.1f}s")
                 break
             if patience_so_far >= timeout_sec:
                 logger.debug(f"Timeout after {timeout_sec:.0f}s waiting for {image_query}")
                 break
             target_delay = min(patience_so_far + next_delay, timeout_sec)
             sleep_time = max(target_delay - patience_so_far, 0)
-            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until ML result is available")
+            logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until result is available")
             time.sleep(sleep_time)
             next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
             image_query = self.get_image_query(image_query.id)
