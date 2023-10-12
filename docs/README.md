@@ -9,9 +9,7 @@ The docs are included with the SDK so that we can automate testing of the code s
 Doc changes are published automatically when they're merged to main.  To preview changes, build and host the site locally.  You'll need a reasonably modern version of `npm` and then:
 
 ```
-npm install
-npm run build  # looks for any errors
-npm start  # starts interactive server
+make test-docs-comprehensive
 ```
 
 and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
