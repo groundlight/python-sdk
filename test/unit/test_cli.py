@@ -1,8 +1,9 @@
+import os
 import re
 import subprocess
 from datetime import datetime
+
 import pytest
-import os
 
 
 @pytest.fixture(name="no_api_token")
