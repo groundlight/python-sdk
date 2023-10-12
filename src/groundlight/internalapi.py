@@ -144,6 +144,12 @@ class RequestsRetryDecorator:
         return decorated
 
 
+# ReviewReasons are reasons a label was created. A review reason is a required field when posting a human label
+# to the API. The only review reason currently supported on the SDK is CUSTOMER_INITIATED.
+class ReviewReason(str, Enum):  # noqa: N801
+    CUSTOMER_INITIATED = "CUSTOMER_INITIATED"
+
+
 class GroundlightApiClient(ApiClient):
     """Subclassing the OpenAPI-generated ApiClient to add a bit of custom functionality.
     Not crazy about using polymorphism, but this is simpler than modifying the moustache
@@ -177,11 +183,6 @@ class GroundlightApiClient(ApiClient):
             "x-api-token": self.configuration.api_key["ApiToken"],
             "X-Request-Id": request_id,
         }
-
-    # ReviewReasons are reasons a label was created. A review reason is a required field when posting a human label
-    # to the API. The only review reason currently supported on the SDK is CUSTOMER_INITIATED.
-    class ReviewReason(str, Enum):  # noqa: N801
-        CUSTOMER_INITIATED = "CUSTOMER_INITIATED"
 
     @RequestsRetryDecorator()
     def _add_label(self, image_query_id: str, label: str) -> dict:
