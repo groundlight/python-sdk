@@ -42,7 +42,7 @@ test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGH
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
 
-test-docs-integ: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
+test-docs-integ: install  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
