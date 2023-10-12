@@ -12,6 +12,6 @@ Choose your platform from the list below and follow the instructions in the corr
 - [Raspberry Pi](4-raspberry-pi.md)
 - [NVIDIA Jetson](5-nvidia-jetson.md)
 - [Linux with Monitoring Notification Server](7-monitoring-notification-server.md)
-- [ESP32 Camera Device](8-nocode-iot-deployment.md)
+- [ESP32 Camera Device](/docs/iot)
 
 After completing the installation process for your platform, you'll be ready to start [building visual applications](/docs/building-applications/) using the Groundlight SDK.
