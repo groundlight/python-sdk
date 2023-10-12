@@ -253,10 +253,6 @@ def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight
             detector=detector.id, image="test/assets/dog.jpeg", wait=10, want_async=True
         )
 
-    with pytest.raises(ValueError):
-        _image_query = gl.submit_image_query(
-            detector=detector.id, image="test/assets/dog.jpeg", wait=0.0, want_async=True
-        )
 
 
 def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):

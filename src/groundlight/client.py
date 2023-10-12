@@ -71,19 +71,16 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
 
-    def _fixup_image_query(self, iq: ImageQuery, want_async: bool = False) -> ImageQuery:  # pylint: disable=no-self-use
+    def _fixup_image_query(self, iq: ImageQuery) -> ImageQuery:  # pylint: disable=no-self-use
         """
         Post process an image query prior to returning it to the user.
         :param iq: The image query to fix up.
-        :param want_async: post processing for want_async=True option in submit_image_query
         """
         # Note: This might go away once we clean up the mapping logic server-side.
-        iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
-        if want_async:
-            # If want_async is True, the result returned to the user should be None because the client intentionally
-            # wants to query for the result later. Any result returned by the server is NOT representative of the
-            # query's actual result.
-            iq.result = None
+
+        # we have to check that result is not None because the server will return a result of None if want_async=True
+        if iq.result is not None:
+            iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
@@ -195,6 +192,7 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
+
         :param wait: How long to wait (in seconds) for a confident answer.
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
@@ -246,7 +244,7 @@ class Groundlight:
             threshold = self.get_detector(detector).confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
 
-        return self._fixup_image_query(image_query, want_async=want_async)
+        return self._fixup_image_query(image_query)
 
     def ask_async(
         self,
@@ -256,9 +254,28 @@ class Groundlight:
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Convenience method for submitting an image query asynchronously. This is equivalent to calling
-        submit_image_query with want_async=True and wait=0. Use get_image_query to retrieve the result of the image
-        query.
+        Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
+        submit_image_query with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the 
+        ImageQuery.
+
+        :param detector: the Detector object, or string id of a detector like `det_12345`
+        :param image: The image, in several possible formats:
+          - filename (string) of a jpeg file
+          - byte array or BytesIO or BufferedReader with jpeg bytes
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+          - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get
+          converted to JPEG at high quality before sending to service.
+
+        :param human_review: If `None` or `DEFAULT`, send the image query for human review
+            only if the ML prediction is not confident.
+            If set to `ALWAYS`, always send the image query for human review.
+            If set to `NEVER`, never send the image query for human review.
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
+                              this is the ID of the inspection to associate with the image query.
+
+
         """
         return self.submit_image_query(
             detector, image, wait=0, human_review=human_review, want_async=True, inspection_id=inspection_id
