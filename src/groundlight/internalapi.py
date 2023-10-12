@@ -10,7 +10,7 @@ from typing import Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
-from model import Detector, ImageQuery, ReviewReason
+from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
 
 from groundlight.images import ByteStreamWrapper
