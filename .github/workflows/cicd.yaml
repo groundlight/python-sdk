@@ -104,11 +104,6 @@ jobs:
       - name: Build API documentation
         run: |
           make apidocs
-      - name: Upload docs as artifacts 
-        uses: actions/upload-artifact@v2
-        with: 
-          name: api-reference-docs
-          path: build/html/*
 
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
@@ -232,20 +227,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm install
-      - name: Download api-reference docs 
-        # download docs to python-sdk/api-reference-docs
-        uses: actions/download-artifact@v2
-        with: 
-          name: api-reference-docs
-          path: api-reference-docs
-      - name: Move api-reference docs into docusaurus
-        run: |
-          # Remove the api-reference-docs if they exist for any reason
-          rm -rf static/api-reference-docs
-          mkdir static/api-reference-docs
-          mv ../api-reference-docs/* static/api-reference-docs/
       - name: Build website
-        run: npm run build
+        run: |
+          cd ..
+          make docs-comprehensive 
       - name: Deploy website (if on main branch)
         # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
         uses: peaceiris/actions-gh-pages@v3

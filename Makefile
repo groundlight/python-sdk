@@ -74,20 +74,21 @@ sphinx-help:
 # `make apidocs` instead. 
 .PHONY: docs-comprehensive apidocs html 
 
-## Builds docs comprehensively (integrating API reference docs into
-## the docusaurus docs)
-docs-comprehensive:
-	make apidocs 
+# Start an interactive server to test docs locally
+test-docs-comprehensive: docs-comprehensive 
+	cd docs && npm start 
+
+## Builds docs comprehensively (integrating API reference docs built 
+## with sphinx into the docusaurus docs). 
+docs-comprehensive: apidocs 
 	rm -rf docs/static/api-reference-docs
 	rm -rf docs/build/api-reference-docs
 	mkdir docs/static/api-reference-docs
 	mv build/html/* docs/static/api-reference-docs/
 
-	cd docs && npm run build
-	cd docs && npm start 
+	cd docs && npm run build 
 	
 apidocs: 
-	rm -rf build 
 	poetry run make html 
 
 html:

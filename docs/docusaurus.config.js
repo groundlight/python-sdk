@@ -99,6 +99,11 @@ const config = {
             position: "left",
           },
           {
+            href: "pathname:///python-sdk/api-reference-docs/",
+            label: 'API Reference',
+            position: "left",
+          },
+          {
             href: "https://github.com/groundlight/python-sdk",
             label: "GitHub",
             position: "right",
@@ -122,10 +127,6 @@ const config = {
               {
                 label: "Installation",
                 to: "/docs/installation",
-              },
-              {
-                label: "API Reference",
-                to: "/api-reference-docs",
               },
             ],
           },
