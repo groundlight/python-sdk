@@ -64,7 +64,12 @@ class Groundlight:
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        endpoint: Optional[str] = None,
+        api_token: Optional[str] = None,
+        disable_tls_cert_verification: Optional[bool] = False,
+    ) -> None:
         """
         Constructs a Groundlight client.
 
@@ -74,6 +79,10 @@ class Groundlight:
         :param api_token: use this API token for your API calls.
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
         :type api_token: str
+
+        :param disable_tls_cert_verification: If set to True, the client will not verify
+                        TLS certificates.
+        :type bool
 
         :return Groundlight client
         :rtype Groundlight
