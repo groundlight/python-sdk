@@ -259,7 +259,7 @@ class GroundlightApiClient(ApiClient):
             "predictor_id": detector_id,
         }
         if patience_time is not None:
-            params["patience_time"]: patience_time
+            params["patience_time"] = float(patience_time)
 
         # In the API, 'send_notification' is used to control human_review escalation. This will eventually
         # be deprecated, but for now we need to support it in the following manner:
