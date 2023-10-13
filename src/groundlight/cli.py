@@ -8,7 +8,11 @@ from groundlight import Groundlight
 from groundlight.client import ApiTokenError
 from groundlight.config import API_TOKEN_HELP_MESSAGE
 
-cli_app = typer.Typer(no_args_is_help=True, context_settings={"help_option_names": ["-h", "--help"]})
+
+cli_app = typer.Typer(
+    no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
+)
 
 
 def class_func_to_cli(method):
@@ -17,7 +21,7 @@ def class_func_to_cli(method):
     but only instantiates the class when the method is actually called.
     """
 
-    # We create a fake class and fake method to so we have the correct annotations for typer to use
+    # We create a fake class and fake method so we have the correct annotations for typer to use
     # When we wrap the fake method, we only use the fake method's name to access the real method
     # and attach it to a Groundlight instance that we create at function call time
     class fake_class:

@@ -3,15 +3,7 @@ import subprocess
 from datetime import datetime
 import pytest
 import os
-
-
-@pytest.fixture(name="no_api_token")
-def fixture_no_api_token():
-    # you need to have an API token set to run the tests, but this lets us test behavior if an API token is not set
-    original_api_token = os.environ.get("GROUNDLIGHT_API_TOKEN")
-    del os.environ["GROUNDLIGHT_API_TOKEN"]
-    yield
-    os.environ["GROUNDLIGHT_API_TOKEN"] = original_api_token
+from unittest.mock import patch
 
 
 def test_list_detector():
@@ -83,7 +75,8 @@ def test_detector_and_image_queries():
     assert completed_process.returncode == 0
 
 
-def test_help(no_api_token):
+@patch.dict(os.environ, {"GROUNDLIGHT_API_TOKEN": None})
+def test_help():
     completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     assert completed_process.returncode == 0
     completed_process = subprocess.run(["groundlight", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
