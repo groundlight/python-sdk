@@ -76,8 +76,8 @@ class Groundlight:
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
         :type api_token: str
 
-        :return Groundlight client
-        :rtype Groundlight
+        :return: Groundlight client
+        :rtype: Groundlight
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
@@ -118,8 +118,8 @@ class Groundlight:
         :param id: the detector id
         :type id: str or Detector
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
 
         if isinstance(id, Detector):
@@ -135,8 +135,8 @@ class Groundlight:
         :param name: the detector name
         :type name: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
@@ -150,8 +150,8 @@ class Groundlight:
         :param page_size: the page size
         :type page_size: int
 
-        :return PaginatedDetectorList
-        :rtype PaginatedDetectorList
+        :return: PaginatedDetectorList
+        :rtype: PaginatedDetectorList
         """
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
@@ -179,8 +179,8 @@ class Groundlight:
         :param pipeline_config: the pipeline config
         :type pipeline_config: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         detector_creation_input = DetectorCreationInput(name=name, query=query)
         if confidence_threshold is not None:
@@ -215,8 +215,8 @@ class Groundlight:
         :param pipeline_config: the pipeline config
         :type pipeline_config: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         try:
             existing_detector = self.get_detector_by_name(name)
@@ -254,8 +254,8 @@ class Groundlight:
         :param id: the image query id
         :type id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         obj = self.image_queries_api.get_image_query(id=id)
         iq = ImageQuery.parse_obj(obj.to_dict())
@@ -271,8 +271,8 @@ class Groundlight:
         :param page_size: the page size
         :type page_size: int
 
-        :return PaginatedImageQueryList
-        :rtype PaginatedImageQueryList
+        :return: PaginatedImageQueryList
+        :rtype: PaginatedImageQueryList
         """
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
@@ -307,8 +307,8 @@ class Groundlight:
         :param wait: How long to wait (in seconds) for a confident answer.
         :type wait: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         return self.submit_image_query(
             detector,
@@ -340,8 +340,8 @@ class Groundlight:
         :param wait: How long to wait (in seconds) for any answer.
         :type wait: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         iq = self.submit_image_query(
             detector,
@@ -391,8 +391,8 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
@@ -446,8 +446,8 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         :type timeout_sec: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
 
         def confidence_above_thresh(iq):
@@ -468,8 +468,8 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         :type timeout_sec: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         return self._wait_for_result(image_query, condition=iq_is_answered, timeout_sec=timeout_sec)
 
@@ -487,8 +487,8 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         :type timeout_sec: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
@@ -525,8 +525,8 @@ class Groundlight:
         :param label: The string "YES" or the string "NO" in answer to the query.
         :type label: Label or str
 
-        :return None
-        :rtype None
+        :return: None
+        :rtype: None
         """
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
@@ -543,8 +543,8 @@ class Groundlight:
         """For users with Inspection Reports enabled only.
         Starts an inspection report and returns the id of the inspection.
 
-        :return The unique identifier of the inspection.
-        :rtype str
+        :return: The unique identifier of the inspection.
+        :rtype: str
         """
         return self.api_client.start_inspection()
 
@@ -561,8 +561,8 @@ class Groundlight:
         :param user_provided_value: the value in the key/value pair for the inspection metadata.
         :type user_provided_value: str
 
-        :return None
-        :rtype None
+        :return: None
+        :rtype: None
         """
         self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
@@ -574,8 +574,8 @@ class Groundlight:
         :param inspection_id: The unique identifier of the inspection.
         :type inspection_id: str
 
-        :return "PASS" or "FAIL" depending on the result of the inspection.
-        :rtype str
+        :return: "PASS" or "FAIL" depending on the result of the inspection.
+        :rtype: str
         """
         return self.api_client.stop_inspection(inspection_id)
 
@@ -585,7 +585,7 @@ class Groundlight:
         :param detector_id: The unique identifier of the detector.
         :type detector_id: str
 
-        :return None
-        :rtype None
+        :return: None
+        :rtype: None
         """
         self.api_client.update_detector_confidence_threshold(detector_id, confidence_threshold)
