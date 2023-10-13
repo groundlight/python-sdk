@@ -69,7 +69,7 @@ class ImageQuery(BaseModel):
     query: str = Field(..., description="A question about the image.")
     detector_id: str = Field(..., description="Which detector was used on this image query?")
     result_type: ResultTypeEnum = Field(..., description="What type of result are we returning?")
-    result: ClassificationResult | None
+    result: ClassificationResult | None = Field(..., description="Groundlight's answer to your query.")
 
 
 class PaginatedDetectorList(BaseModel):
