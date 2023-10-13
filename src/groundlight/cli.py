@@ -8,7 +8,6 @@ from groundlight import Groundlight
 from groundlight.client import ApiTokenError
 from groundlight.config import API_TOKEN_HELP_MESSAGE
 
-
 cli_app = typer.Typer(
     no_args_is_help=True,
     context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
