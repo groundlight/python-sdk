@@ -220,6 +220,10 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Install poetry 
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
