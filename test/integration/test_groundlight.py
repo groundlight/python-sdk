@@ -8,12 +8,13 @@ import openapi_client
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
-from groundlight.internalapi import InternalApiError, NotFoundError
+from groundlight.internalapi import InternalApiError, NotFoundError, iq_is_answered
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
+IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 
 def is_valid_display_result(result: Any) -> bool:
@@ -194,7 +195,7 @@ def test_submit_image_query(gl: Groundlight, detector: Detector):
         detector=detector.id, image="test/assets/dog.jpeg", wait=180, confidence_threshold=0.75
     )
     validate_image_query(_image_query)
-    assert _image_query.result.confidence >= 0.75
+    assert _image_query.result.confidence >= IQ_IMPROVEMENT_THRESHOLD
 
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
@@ -470,14 +471,14 @@ def test_detector_improvement(gl: Groundlight):
 def test_ask_method_quality(gl: Groundlight, detector: Detector):
     # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
     fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
-    assert fast_always_yes_iq.result.confidence > 0.5
+    assert iq_is_answered(fast_always_yes_iq)
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
     fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
-    assert fast_iq.result.confidence > 0.5
+    assert iq_is_answered(fast_iq)
     confident_iq = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=180)
-    assert confident_iq.result.confidence > 0.8
+    assert confident_iq.result.confidence > IQ_IMPROVEMENT_THRESHOLD
 
 
 def test_start_inspection(gl: Groundlight):

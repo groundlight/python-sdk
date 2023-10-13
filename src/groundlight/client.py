@@ -321,7 +321,7 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
-        wait: Optional[float] = 10,
+        wait: Optional[float] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -350,8 +350,8 @@ class Groundlight:
         )
         if iq_is_answered(iq):
             return iq
-        else:
-            return self.wait_for_ml_result(iq, timeout_sec=wait)
+        wait = self.DEFAULT_WAIT if wait is None else wait
+        return self.wait_for_ml_result(iq, timeout_sec=wait)
 
     def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
