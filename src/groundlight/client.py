@@ -287,7 +287,8 @@ class Groundlight:
         confidence_threshold: Optional[float] = None,
         wait: Optional[float] = None,
     ) -> ImageQuery:
-        """Evaluates an image with Groundlight, waiting until an answer above the confidence threshold of the detector is reached or the wait period has passed.
+        """Evaluates an image with Groundlight waiting until an answer above the confidence threshold
+            of the detector is reached or the wait period has passed.
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :type detector: Detector or str
 
@@ -301,7 +302,8 @@ class Groundlight:
           converted to JPEG at high quality before sending to service.
         :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
-        :param confidence_threshold: The confidence threshold to wait for. If not set, use the detector's confidence threshold.
+        :param confidence_threshold: The confidence threshold to wait for.
+            If not set, use the detector's confidence threshold.
         :type confidence_threshold: float
 
         :param wait: How long to wait (in seconds) for a confident answer.
@@ -481,7 +483,8 @@ class Groundlight:
         :param image_query: An ImageQuery object to poll
         :type image_query: ImageQuery or str
 
-        :param condition: A callable that takes an ImageQuery and returns True or False whether to keep waiting for a better result.
+        :param condition: A callable that takes an ImageQuery and returns True or False
+            whether to keep waiting for a better result.
         :type condition: Callable
 
         :param timeout_sec: The maximum number of seconds to wait.
