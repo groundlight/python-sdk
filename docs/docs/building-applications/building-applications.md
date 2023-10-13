@@ -33,7 +33,7 @@ This sample application demonstrates how to set up a Raspberry Pi-based door loc
 ### Industrial and Manufacturing Applications
 
 Groundlight can be used to [apply modern natural-language-based computer vision to industrial and manufacturing applications](/docs/building-applications/industrial).
-
+# TODO: update Further reading section
 ## Further Reading
 
 For more in-depth guides on various aspects of building applications with Groundlight, check out the following pages:
