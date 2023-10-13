@@ -289,6 +289,8 @@ class Groundlight:
     ) -> ImageQuery:
         """Evaluates an image with Groundlight, waiting until an answer above the confidence threshold of the detector is reached or the wait period has passed.
         :param detector: the Detector object, or string id of a detector like `det_12345`
+        :type detector: Detector or str
+
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
@@ -297,9 +299,16 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
-        :param confidence_threshold: The confidence threshold to wait for. If not set, use the detector's confidence threshold.
-        :param wait: How long to wait (in seconds) for a confident answer.
+        :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
+        :param confidence_threshold: The confidence threshold to wait for. If not set, use the detector's confidence threshold.
+        :type confidence_threshold: float
+
+        :param wait: How long to wait (in seconds) for a confident answer.
+        :type wait: float
+
+        :return ImageQuery
+        :rtype ImageQuery
         """
         return self.submit_image_query(
             detector,
@@ -319,7 +328,6 @@ class Groundlight:
         :type detector: Detector or str
 
         :param image: The image, in several possible formats:
-
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
           - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
@@ -327,7 +335,13 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
+        :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
+
         :param wait: How long to wait (in seconds) for any answer.
+        :type wait: float
+
+        :return ImageQuery
+        :rtype ImageQuery
         """
         iq = self.submit_image_query(
             detector,
@@ -356,14 +370,12 @@ class Groundlight:
         :type detector: Detector or str
 
         :param image: The image, in several possible formats:
-
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
           - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
             (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
           - PIL Image: Any binary format must be JPEG-encoded already.
             Any pixel format will get converted to JPEG at high quality before sending to service.
-
         :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
         :param wait: How long to wait (in seconds) for a confident answer.
@@ -448,8 +460,16 @@ class Groundlight:
         Currently this is done by polling with an exponential back-off.
 
         :param image_query: An ImageQuery object to poll
+        :type image_query: ImageQuery or str
+
         :param confidence_threshold: The minimum confidence level required to return before the timeout.
+        :type confidence_threshold: float
+
         :param timeout_sec: The maximum number of seconds to wait.
+        :type timeout_sec: float
+
+        :return ImageQuery
+        :rtype ImageQuery
         """
         return self._wait_for_result(image_query, condition=iq_is_answered, timeout_sec=timeout_sec)
 
@@ -457,9 +477,18 @@ class Groundlight:
         self, image_query: Union[ImageQuery, str], condition: Callable, timeout_sec: float = 30.0
     ) -> ImageQuery:
         """Performs polling with exponential back-off until the condition is met for the image query.
+
         :param image_query: An ImageQuery object to poll
+        :type image_query: ImageQuery or str
+
         :param condition: A callable that takes an ImageQuery and returns True or False whether to keep waiting for a better result.
+        :type condition: Callable
+
         :param timeout_sec: The maximum number of seconds to wait.
+        :type timeout_sec: float
+
+        :return ImageQuery
+        :rtype ImageQuery
         """
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
@@ -513,12 +542,27 @@ class Groundlight:
     def start_inspection(self) -> str:
         """For users with Inspection Reports enabled only.
         Starts an inspection report and returns the id of the inspection.
+
+        :return The unique identifier of the inspection.
+        :rtype str
         """
         return self.api_client.start_inspection()
 
     def update_inspection_metadata(self, inspection_id: str, user_provided_key: str, user_provided_value: str) -> None:
         """For users with Inspection Reports enabled only.
         Add/update inspection metadata with the user_provided_key and user_provided_value.
+
+        :param inspection_id: The unique identifier of the inspection.
+        :type inspection_id: str
+
+        :param user_provided_key: the key in the key/value pair for the inspection metadata.
+        :type user_provided_key: str
+
+        :param user_provided_value: the value in the key/value pair for the inspection metadata.
+        :type user_provided_value: str
+
+        :return None
+        :rtype None
         """
         self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
@@ -526,10 +570,22 @@ class Groundlight:
         """For users with Inspection Reports enabled only.
         Stops an inspection and raises an exception if the response from the server
         indicates that the inspection was not successfully stopped.
-        Returns a str with result of the inspection (either PASS or FAIL).
+
+        :param inspection_id: The unique identifier of the inspection.
+        :type inspection_id: str
+
+        :return "PASS" or "FAIL" depending on the result of the inspection.
+        :rtype str
         """
         return self.api_client.stop_inspection(inspection_id)
 
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
-        """Updates the confidence threshold of a detector given a detector_id."""
+        """Updates the confidence threshold of a detector given a detector_id.
+
+        :param detector_id: The unique identifier of the detector.
+        :type detector_id: str
+
+        :return None
+        :rtype None
+        """
         self.api_client.update_detector_confidence_threshold(detector_id, confidence_threshold)
