@@ -169,8 +169,8 @@ def test_ask_confident(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
-def test_ask_fast(gl: Groundlight, detector: Detector):
-    _image_query = gl.ask_fast(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+def test_ask_ml(gl: Groundlight, detector: Detector):
+    _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -474,7 +474,7 @@ def test_ask_method_quality(gl: Groundlight, detector: Detector):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
-    fast_iq = gl.ask_fast(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
+    fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
     assert fast_iq.result.confidence > 0.5
     confident_iq = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=180)
     assert confident_iq.result.confidence > 0.8
