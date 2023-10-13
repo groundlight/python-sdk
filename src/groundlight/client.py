@@ -70,8 +70,8 @@ class Groundlight:
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
         :type api_token: str
 
-        :return Groundlight client
-        :rtype Groundlight
+        :return: Groundlight client
+        :rtype: Groundlight
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
@@ -115,8 +115,8 @@ class Groundlight:
         :param id: the detector id
         :type id: str or Detector
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
 
         if isinstance(id, Detector):
@@ -132,8 +132,8 @@ class Groundlight:
         :param name: the detector name
         :type name: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
@@ -147,8 +147,8 @@ class Groundlight:
         :param page_size: the page size
         :type page_size: int
 
-        :return PaginatedDetectorList
-        :rtype PaginatedDetectorList
+        :return: PaginatedDetectorList
+        :rtype: PaginatedDetectorList
         """
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
@@ -176,8 +176,8 @@ class Groundlight:
         :param pipeline_config: the pipeline config
         :type pipeline_config: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         detector_creation_input = DetectorCreationInput(name=name, query=query)
         if confidence_threshold is not None:
@@ -212,8 +212,8 @@ class Groundlight:
         :param pipeline_config: the pipeline config
         :type pipeline_config: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         try:
             existing_detector = self.get_detector_by_name(name)
@@ -251,8 +251,8 @@ class Groundlight:
         :param id: the image query id
         :type id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         obj = self.image_queries_api.get_image_query(id=id)
         iq = ImageQuery.parse_obj(obj.to_dict())
@@ -268,8 +268,8 @@ class Groundlight:
         :param page_size: the page size
         :type page_size: int
 
-        :return PaginatedImageQueryList
-        :rtype PaginatedImageQueryList
+        :return: PaginatedImageQueryList
+        :rtype: PaginatedImageQueryList
         """
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
@@ -321,8 +321,8 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
@@ -374,7 +374,7 @@ class Groundlight:
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
+        Method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
         `submit_image_query` with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the
         ImageQuery.
 
@@ -402,8 +402,40 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
+
+
+
+        **Example usage**::
+
+            gl = Groundlight()
+
+            detector = gl.get_or_create_detector(
+                            name="door",
+                            query="Is the door locked?",
+                            confidence_threshold=0.9
+                        )
+
+            image_query = gl.ask_async(
+                            detector=detector,
+                            image="path/to/image.jpeg")
+
+
+            # the image_query will have an id for later retrieval
+            assert image_query.id is not None
+
+            # attempting to access the result will return None as your result is being computed
+            # asynchronously
+            assert image_query.result is None
+
+
+            # retrieve the result later or on another machine by calling gl.get_image_query
+            # with the id of the image_query above
+            image_query = gl.get_image_query(image_query.id)
+
+            # now the result will be available for your use
+            assert image_query.result is not None
 
         """
         return self.submit_image_query(
@@ -429,8 +461,8 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         :type timeout_sec: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         # Convert from image_query_id to ImageQuery if needed.
         if isinstance(image_query, str):
@@ -471,8 +503,8 @@ class Groundlight:
         :param label: The string "YES" or the string "NO" in answer to the query.
         :type label: Label or str
 
-        :return None
-        :rtype None
+        :return: None
+        :rtype: None
         """
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
