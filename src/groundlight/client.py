@@ -429,27 +429,25 @@ class Groundlight:
 
     def start_inspection(self) -> str:
         """
-        **NOTE** For users with Inspection Reports enabled only.
-        
+        **NOTE:** For users with Inspection Reports enabled only.
         Starts an inspection report and returns the id of the inspection.
         """
         return self.api_client.start_inspection()
 
     def update_inspection_metadata(self, inspection_id: str, user_provided_key: str, user_provided_value: str) -> None:
         """
-        **NOTE** For users with Inspection Reports enabled only.
-        
+        **NOTE:** For users with Inspection Reports enabled only.
         Add/update inspection metadata with the user_provided_key and user_provided_value.
-        
+
         :param inspection_id: The id of the inspection to update.
         :type inspection_id: str
-        
+
         :param user_provided_key: The key of the metadata to add/update.
         :type user_provided_key: str
-        
+
         :param user_provided_value: The value of the metadata to add/update.
         :type user_provided_value: str
-        
+
         :return None
         :rtype None
         """
@@ -457,15 +455,14 @@ class Groundlight:
 
     def stop_inspection(self, inspection_id: str) -> str:
         """
-        **NOTE** For users with Inspection Reports enabled only.
-        
+        **NOTE:** For users with Inspection Reports enabled only.
         Stops an inspection and raises an exception if the response from the server
         indicates that the inspection was not successfully stopped.
         Returns a str with result of the inspection (either PASS or FAIL).
-        
+
         :param inspection_id: The id of the inspection to stop.
         :type inspection_id: str
-        
+
         :return str
         :rtype str
         """
@@ -474,13 +471,13 @@ class Groundlight:
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
         """
         Updates the confidence threshold of a detector given a detector_id.
-        
+
         :param detector_id: The id of the detector to update.
         :type detector_id: str
-        
+
         :param confidence_threshold: The new confidence threshold for the detector.
         :type confidence_threshold: float
-        
+
         :return None
         :rtype None
         """
