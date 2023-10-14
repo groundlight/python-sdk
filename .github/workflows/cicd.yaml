@@ -231,6 +231,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm install
+      - name: Install sphinx dependencies
+        run: |
+          cd .. 
+          make install-sphinx-deps
       - name: Build website
         run: |
           cd ..
