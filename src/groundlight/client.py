@@ -109,7 +109,10 @@ class Groundlight:
         should_disable_tls = disable_tls_verification or os.environ.get(DISABLE_TLS_VARIABLE_NAME, None) is not None
 
         if should_disable_tls:
-            logger.warning("Disabling SSL/TLS certificate verification.  This should only be used when connecting to an endpoint with a self-signed certificate.")
+            logger.warning(
+                "Disabling SSL/TLS certificate verification.  This should only be used when connecting to an endpoint"
+                " with a self-signed certificate."
+            )
 
             import warnings
 
