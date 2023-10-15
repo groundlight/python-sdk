@@ -8,6 +8,7 @@
 .docusaurus
 .cache-loader
 .package-lock.json
+/static/api-reference-docs/
 
 # Misc
 .DS_Store
