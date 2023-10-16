@@ -148,12 +148,6 @@ paths:
             format: float
           description: How long to wait for a confident response.
           required: false
-        - in: query
-          name: want_async
-          schema:
-            type: boolean
-          description: If set to `true`, the server returns immediately without a result and query's result is calculated asynchronously. 
-
       tags:
         - image-queries
       requestBody:
