@@ -133,6 +133,7 @@ class ImageQueriesApi(object):
                     "detector_id",
                     "human_review",
                     "patience_time",
+                    "want_async",
                     "body",
                 ],
                 "required": [
@@ -149,17 +150,20 @@ class ImageQueriesApi(object):
                     "detector_id": (str,),
                     "human_review": (str,),
                     "patience_time": (float,),
+                    "want_async": (str,),
                     "body": (file_type,),
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
                     "human_review": "human_review",
                     "patience_time": "patience_time",
+                    "want_async": "want_async",
                 },
                 "location_map": {
                     "detector_id": "query",
                     "human_review": "query",
                     "patience_time": "query",
+                    "want_async": "query",
                     "body": "body",
                 },
                 "collection_format_map": {},
@@ -299,6 +303,7 @@ class ImageQueriesApi(object):
         Keyword Args:
             human_review (str): If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident. . [optional]
             patience_time (float): How long to wait for a confident response.. [optional]
+            want_async (str): If \"true\" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.. [optional]
             body (file_type): [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.

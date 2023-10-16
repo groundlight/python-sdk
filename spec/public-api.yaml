@@ -148,6 +148,11 @@ paths:
             format: float
           description: How long to wait for a confident response.
           required: false
+        - in: query
+          name: want_async
+          schema:
+            type: string
+          description: If "true" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.
       tags:
         - image-queries
       requestBody:
