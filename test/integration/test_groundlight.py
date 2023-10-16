@@ -1,8 +1,8 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
-from datetime import datetime
 import time
+from datetime import datetime
 from typing import Any
 
 import openapi_client
@@ -293,7 +293,7 @@ def test_ask_async_workflow(gl: Groundlight, detector: Detector):
         _ = _image_query.result.confidence  # type: ignore
 
     time.sleep(5)
-    
+
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None
