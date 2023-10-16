@@ -126,34 +126,28 @@ paths:
         ```
 
       parameters:
-      - in: query
-        name: detector_id
-        schema:
-          type: string
-        description: Choose a detector by its ID.
-        required: true
-      - in: query 
-        name: human_review 
-        schema: 
-          type: string 
-        description: > 
-          If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
-          If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
-          If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
-        required: false 
-      - in: query 
-        name: patience_time 
-        schema: 
-          type: number 
-          format: float 
-        description: How long to wait for a confident response. 
-        required: false 
-      - in: query 
-        name: want_async 
-        schema: 
-          type: bool
-        description: If set to `true`, server returns response immediately and result is computed asynchronously.
-        required: false
+        - in: query
+          name: detector_id
+          schema:
+            type: string
+          description: Choose a detector by its ID.
+          required: true
+        - in: query
+          name: human_review
+          schema:
+            type: string
+          description: >
+            If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
+            If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
+            If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
+          required: false
+        - in: query
+          name: patience_time
+          schema:
+            type: number
+            format: float
+          description: How long to wait for a confident response.
+          required: false
       tags:
         - image-queries
       requestBody:
