@@ -1,6 +1,7 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
+import time
 from datetime import datetime
 from typing import Any
 
@@ -241,6 +242,62 @@ def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
 
     black = Image.new("RGB", (640, 480))
     _image_query = gl.submit_image_query(detector=detector.id, image=black)
+
+
+def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight, detector: Detector):
+    """
+    Tests that attempting to use the wait and want_async parameters together causes an exception.
+    """
+
+    with pytest.raises(ValueError):
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/dog.jpeg", wait=10, want_async=True
+        )
+
+
+def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):
+    """
+    Tests the workflow for submitting an image query with the want_async parameter set to True.
+    """
+
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=0, want_async=True)
+
+    # the result should be None
+    assert _image_query.result is None
+
+    # attempting to access fields within the result should raise an exception
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.label  # type: ignore
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.confidence  # type: ignore
+    time.sleep(5)
+    # you should be able to get a "real" result by retrieving an updated image query object from the server
+    _image_query = gl.get_image_query(id=_image_query.id)
+    assert _image_query.result is not None
+    assert _image_query.result.label in VALID_DISPLAY_LABELS
+
+
+def test_ask_async_workflow(gl: Groundlight, detector: Detector):
+    """
+    Tests the workflow for submitting an image query with ask_async.
+    """
+    _image_query = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg")
+
+    # the result should be None
+    assert _image_query.result is None
+
+    # attempting to access fields within the result should raise an exception
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.label  # type: ignore
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.confidence  # type: ignore
+
+    time.sleep(5)
+
+    # you should be able to get a "real" result by retrieving an updated image query object from the server
+    _image_query = gl.get_image_query(id=_image_query.id)
+    assert _image_query.result is not None
+    assert _image_query.result.label in VALID_DISPLAY_LABELS
 
 
 def test_list_image_queries(gl: Groundlight):
