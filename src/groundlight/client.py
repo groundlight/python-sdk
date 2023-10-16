@@ -68,7 +68,7 @@ class Groundlight:
         self,
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,
-        disable_tls_verification: Optional[bool] = False,
+        disable_tls_verification: Optional[bool] = None,
     ) -> None:
         """
         Constructs a Groundlight client.
@@ -84,10 +84,10 @@ class Groundlight:
                                         when calling API from https server. In unset, fallback to
                                         the environment variable "TLS_VERIFY". By default, certificates
                                         are verified.
-        :type disable_tls_verification: bool
+        :type disable_tls_verification: Optional[bool]
 
-        :return Groundlight client
-        :rtype Groundlight
+        :return: Groundlight client
+        :rtype: Groundlight
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
@@ -142,8 +142,8 @@ class Groundlight:
         :param id: the detector id
         :type id: str or Detector
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
 
         if isinstance(id, Detector):
@@ -159,8 +159,8 @@ class Groundlight:
         :param name: the detector name
         :type name: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
@@ -174,8 +174,8 @@ class Groundlight:
         :param page_size: the page size
         :type page_size: int
 
-        :return PaginatedDetectorList
-        :rtype PaginatedDetectorList
+        :return: PaginatedDetectorList
+        :rtype: PaginatedDetectorList
         """
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
         return PaginatedDetectorList.parse_obj(obj.to_dict())
@@ -203,8 +203,8 @@ class Groundlight:
         :param pipeline_config: the pipeline config
         :type pipeline_config: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         detector_creation_input = DetectorCreationInput(name=name, query=query)
         if confidence_threshold is not None:
@@ -239,8 +239,8 @@ class Groundlight:
         :param pipeline_config: the pipeline config
         :type pipeline_config: str
 
-        :return Detector
-        :rtype Detector
+        :return: Detector
+        :rtype: Detector
         """
         try:
             existing_detector = self.get_detector_by_name(name)
@@ -278,8 +278,8 @@ class Groundlight:
         :param id: the image query id
         :type id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         obj = self.image_queries_api.get_image_query(id=id)
         iq = ImageQuery.parse_obj(obj.to_dict())
@@ -295,8 +295,8 @@ class Groundlight:
         :param page_size: the page size
         :type page_size: int
 
-        :return PaginatedImageQueryList
-        :rtype PaginatedImageQueryList
+        :return: PaginatedImageQueryList
+        :rtype: PaginatedImageQueryList
         """
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
@@ -342,8 +342,8 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
@@ -396,8 +396,8 @@ class Groundlight:
         :param timeout_sec: The maximum number of seconds to wait.
         :type timeout_sec: float
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
         """
         # Convert from image_query_id to ImageQuery if needed.
         if isinstance(image_query, str):
@@ -438,8 +438,8 @@ class Groundlight:
         :param label: The string "YES" or the string "NO" in answer to the query.
         :type label: Label or str
 
-        :return None
-        :rtype None
+        :return: None
+        :rtype: None
         """
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
