@@ -93,7 +93,6 @@ files = [
 ]
 
 [package.dependencies]
-importlib-metadata = {version = ">1", markers = "python_version <= \"3.8\""}
 pydantic = ">=2.0,<3.0.0"
 pydantic-settings = ">=2.0,<3.0.0"
 Sphinx = ">=4.0"
@@ -2268,4 +2267,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7.0,<4.0"
-content-hash = "efa0586964555cb06603385a123ade083f101af28d45999f1015d0b8a324ffe0"
+content-hash = "5ece613a30338f4bf06d2e350fc2d98b556d47d5533ef11c32758843a99001c9"
