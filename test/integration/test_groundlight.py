@@ -2,6 +2,7 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 from datetime import datetime
+import time
 from typing import Any
 
 import openapi_client
@@ -265,11 +266,11 @@ def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: 
     assert _image_query.result is None
 
     # attempting to access fields within the result should raise an exception
-    with pytest.raises(ValueError):
+    with pytest.raises(AttributeError):
         _ = _image_query.result.label  # type: ignore
-    with pytest.raises(ValueError):
+    with pytest.raises(AttributeError):
         _ = _image_query.result.confidence  # type: ignore
-
+    time.sleep(5)
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None
@@ -291,6 +292,8 @@ def test_ask_async_workflow(gl: Groundlight, detector: Detector):
     with pytest.raises(AttributeError):
         _ = _image_query.result.confidence  # type: ignore
 
+    time.sleep(5)
+    
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl.get_image_query(id=_image_query.id)
     assert _image_query.result is not None

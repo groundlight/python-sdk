@@ -344,7 +344,6 @@ components:
         - detector_id
         - id
         - query
-        - result
         - result_type
         - type
       x-internal: true
