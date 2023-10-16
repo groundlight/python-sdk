@@ -23,11 +23,11 @@ def class_func_to_cli(method):
     # We create a fake class and fake method so we have the correct annotations for typer to use
     # When we wrap the fake method, we only use the fake method's name to access the real method
     # and attach it to a Groundlight instance that we create at function call time
-    class fake_class:
+    class FakeClass:
         pass
 
-    fake_instance = fake_class()
-    fake_method = method.__get__(fake_instance, fake_class)
+    fake_instance = FakeClass()
+    fake_method = method.__get__(fake_instance, FakeClass)
 
     @wraps(fake_method)
     def wrapper(*args, **kwargs):
