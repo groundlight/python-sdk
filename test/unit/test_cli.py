@@ -74,7 +74,7 @@ def test_detector_and_image_queries():
     assert completed_process.returncode == 0
 
 
-@patch.dict(os.environ, {"GROUNDLIGHT_API_TOKEN": None})
+@patch.dict(os.environ, {})
 def test_help():
     completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     assert completed_process.returncode == 0
