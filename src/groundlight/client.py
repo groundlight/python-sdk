@@ -82,12 +82,12 @@ class Groundlight:
 
         :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
                                         when calling API from https server. In unset, fallback it will check
-                                        the environment variable "TLS_VERIFY" for `1` or `0`. By default, 
+                                        the environment variable "TLS_VERIFY" for `1` or `0`. By default,
                                         certificates are verified.
 
-                                        Disable verification if using a self-signed TLS certificate with a Groundlight 
-                                        Edge Endpoint.  It is unadvised tto disable verification  if connecting directly 
-                                        to the Groundlight cloud service. 
+                                        Disable verification if using a self-signed TLS certificate with a Groundlight
+                                        Edge Endpoint.  It is unadvised tto disable verification  if connecting directly
+                                        to the Groundlight cloud service.
         :type disable_tls_verification: bool
 
         :return Groundlight client
