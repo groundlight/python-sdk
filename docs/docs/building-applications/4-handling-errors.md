@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Handling Server Errors
 
 When building applications with the Groundlight SDK, you may encounter server errors during API calls. This page covers how to handle such errors and build robust code that can gracefully handle exceptions.

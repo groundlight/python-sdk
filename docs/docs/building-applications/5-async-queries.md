@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Asynchronous Queries
 
 Groundlight provides a simple interface for submitting asynchronous queries. This is useful for times in which the thread or machine submitting image queries is not the same thread or machine that will be retrieving and using the results. For example, you might have a forward deployed robot or camera that submits image queries to Groundlight, and a separate server that retrieves the results and takes action based on them. We will refer to these two machines as the **submitting machine** and the **retrieving machine**.
