@@ -9,7 +9,7 @@ import openapi_client
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
-from groundlight.internalapi import InternalApiError, NotFoundError, iq_is_answered
+from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
@@ -461,15 +461,12 @@ def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
     import random
-    import time
-
-    from PIL import Image, ImageEnhance
 
     random.seed(2741)
 
     name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
-    detector = gl.create_detector(name=name, query=query)
+    gl.create_detector(name=name, query=query)
 
 
 # temporarily disabled until the backend bugfix is deployed
