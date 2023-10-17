@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Groundlight Python SDK’s documentation! &mdash; Groundlight Python SDK 0.11.2 documentation</title>
+  <title>Welcome to Groundlight Python SDK’s documentation! &mdash; Groundlight Python SDK 0.12.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=60336169"></script>
+        <script src="_static/documentation_options.js?v=61ccb1f1"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.11.2
+                0.12.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -118,9 +118,13 @@
 If unset, fallback to the environment variable “GROUNDLIGHT_API_TOKEN”.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Groundlight client</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#groundlight.client.Groundlight" title="groundlight.client.Groundlight">Groundlight</a></p>
+</dd>
 </dl>
-<p>:return Groundlight client
-:rtype Groundlight</p>
 </dd></dl>
 
 <dl class="py method">
@@ -135,9 +139,150 @@ or an image_query id as a string.</p></li>
 <li><p><strong>label</strong> (<em>Label</em><em> or </em><em>str</em>) – The string “YES” or the string “NO” in answer to the query.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
 </dl>
-<p>:return None
-:rtype None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.client.Groundlight.ask_async">
+<span class="sig-name descname"><span class="pre">ask_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#model.Detector" title="model.Detector"><span class="pre">Detector</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_review</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inspection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a></span></span><a class="headerlink" href="#groundlight.client.Groundlight.ask_async" title="Link to this definition"></a></dt>
+<dd><p>Convenience method for submitting an <cite>ImageQuery</cite> asynchronously. This is equivalent to calling
+<cite>submit_image_query</cite> with <cite>want_async=True</cite> and <cite>wait=0</cite>. Use <cite>get_image_query</cite> to retrieve the <cite>result</cite> of the
+ImageQuery.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<a class="reference internal" href="models.html#model.Detector" title="model.Detector"><em>Detector</em></a><em> or </em><em>str</em>) – the Detector object, or string id of a detector like <cite>det_12345</cite></p></li>
+<li><p><strong>image</strong> (<em>str</em><em> or </em><em>bytes</em><em> or </em><em>Image.Image</em><em> or </em><em>BytesIO</em><em> or </em><em>BufferedReader</em><em> or </em><em>np.ndarray</em>) – <p>The image, in several possible formats:</p>
+<ul>
+<li><p>filename (string) of a jpeg file</p></li>
+<li><p>byte array or BytesIO or BufferedReader with jpeg bytes</p></li>
+<li><p>numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+(Note OpenCV uses BGR not RGB. <cite>img[:, :, ::-1]</cite> will reverse the channels)</p></li>
+<li><p>PIL Image: Any binary format must be JPEG-encoded already.
+Any pixel format will get converted to JPEG at high quality before sending to service.</p></li>
+</ul>
+</p></li>
+<li><p><strong>human_review</strong> (<em>str</em>) – If <cite>None</cite> or <cite>DEFAULT</cite>, send the image query for human review
+only if the ML prediction is not confident.
+If set to <cite>ALWAYS</cite>, always send the image query for human review.
+If set to <cite>NEVER</cite>, never send the image query for human review.</p></li>
+<li><p><strong>inspection_id</strong> (<em>str</em>) – Most users will omit this. For accounts with Inspection Reports enabled,
+this is the ID of the inspection to associate with the image query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
+</dl>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_or_create_detector</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;door&quot;</span><span class="p">,</span>
+                <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Is the door locked?&quot;</span><span class="p">,</span>
+                <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.9</span>
+            <span class="p">)</span>
+
+<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_async</span><span class="p">(</span>
+                <span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+                <span class="n">image</span><span class="o">=</span><span class="s2">&quot;path/to/image.jpeg&quot;</span><span class="p">)</span>
+
+<span class="c1"># the image_query will have an id for later retrieval</span>
+<span class="k">assert</span> <span class="n">image_query</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+<span class="c1"># Do not attempt to access the result of this query as the result for all async queries</span>
+<span class="c1"># will be None. Your result is being computed asynchronously and will be available</span>
+<span class="c1"># later</span>
+<span class="k">assert</span> <span class="n">image_query</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span>
+
+<span class="c1"># retrieve the result later or on another machine by calling gl.get_image_query()</span>
+<span class="c1"># with the id of the image_query above</span>
+<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_image_query</span><span class="p">(</span><span class="n">image_query</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># now the result will be available for your use</span>
+<span class="k">assert</span> <span class="n">image_query</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.client.Groundlight.ask_confident">
+<span class="sig-name descname"><span class="pre">ask_confident</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#model.Detector" title="model.Detector"><span class="pre">Detector</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a></span></span><a class="headerlink" href="#groundlight.client.Groundlight.ask_confident" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Evaluates an image with Groundlight waiting until an answer above the confidence threshold</dt><dd><p>of the detector is reached or the wait period has passed.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<a class="reference internal" href="models.html#model.Detector" title="model.Detector"><em>Detector</em></a><em> or </em><em>str</em>) – the Detector object, or string id of a detector like <cite>det_12345</cite></p></li>
+<li><p><strong>image</strong> (<em>str</em><em> or </em><em>bytes</em><em> or </em><em>Image.Image</em><em> or </em><em>BytesIO</em><em> or </em><em>BufferedReader</em><em> or </em><em>np.ndarray</em>) – <p>The image, in several possible formats:
+- filename (string) of a jpeg file
+- byte array or BytesIO or BufferedReader with jpeg bytes
+- numpy array with values 0-255 and dimensions (H,W,3) in BGR order</p>
+<blockquote>
+<div><p>(Note OpenCV uses BGR not RGB. <cite>img[:, :, ::-1]</cite> will reverse the channels)</p>
+</div></blockquote>
+<ul>
+<li><p>PIL Image</p></li>
+</ul>
+<p>Any binary format must be JPEG-encoded already.  Any pixel format will get
+converted to JPEG at high quality before sending to service.</p>
+</p></li>
+<li><p><strong>confidence_threshold</strong> (<em>float</em>) – The confidence threshold to wait for.
+If not set, use the detector’s confidence threshold.</p></li>
+<li><p><strong>wait</strong> (<em>float</em>) – How long to wait (in seconds) for a confident answer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.client.Groundlight.ask_ml">
+<span class="sig-name descname"><span class="pre">ask_ml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#model.Detector" title="model.Detector"><span class="pre">Detector</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a></span></span><a class="headerlink" href="#groundlight.client.Groundlight.ask_ml" title="Link to this definition"></a></dt>
+<dd><p>Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
+:param detector: the Detector object, or string id of a detector like <cite>det_12345</cite>
+:type detector: Detector or str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>str</em><em> or </em><em>bytes</em><em> or </em><em>Image.Image</em><em> or </em><em>BytesIO</em><em> or </em><em>BufferedReader</em><em> or </em><em>np.ndarray</em>) – <p>The image, in several possible formats:
+- filename (string) of a jpeg file
+- byte array or BytesIO or BufferedReader with jpeg bytes
+- numpy array with values 0-255 and dimensions (H,W,3) in BGR order</p>
+<blockquote>
+<div><p>(Note OpenCV uses BGR not RGB. <cite>img[:, :, ::-1]</cite> will reverse the channels)</p>
+</div></blockquote>
+<ul>
+<li><p>PIL Image</p></li>
+</ul>
+<p>Any binary format must be JPEG-encoded already.  Any pixel format will get
+converted to JPEG at high quality before sending to service.</p>
+</p></li>
+<li><p><strong>wait</strong> (<em>float</em>) – How long to wait (in seconds) for any answer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -153,9 +298,13 @@ or an image_query id as a string.</p></li>
 <li><p><strong>pipeline_config</strong> (<em>str</em>) – the pipeline config</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detector</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.Detector" title="model.Detector">Detector</a></p>
+</dd>
 </dl>
-<p>:return Detector
-:rtype Detector</p>
 </dd></dl>
 
 <dl class="py method">
@@ -166,9 +315,13 @@ or an image_query id as a string.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><a class="reference internal" href="models.html#model.Detector" title="model.Detector"><em>Detector</em></a>) – the detector id</p>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detector</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.Detector" title="model.Detector">Detector</a></p>
+</dd>
 </dl>
-<p>:return Detector
-:rtype Detector</p>
 </dd></dl>
 
 <dl class="py method">
@@ -179,9 +332,13 @@ or an image_query id as a string.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the detector name</p>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detector</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.Detector" title="model.Detector">Detector</a></p>
+</dd>
 </dl>
-<p>:return Detector
-:rtype Detector</p>
 </dd></dl>
 
 <dl class="py method">
@@ -192,9 +349,13 @@ or an image_query id as a string.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – the image query id</p>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
 </dl>
-<p>:return ImageQuery
-:rtype ImageQuery</p>
 </dd></dl>
 
 <dl class="py method">
@@ -212,9 +373,13 @@ config.</p>
 <li><p><strong>pipeline_config</strong> (<em>str</em>) – the pipeline config</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detector</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.Detector" title="model.Detector">Detector</a></p>
+</dd>
 </dl>
-<p>:return Detector
-:rtype Detector</p>
 </dd></dl>
 
 <dl class="py method">
@@ -228,9 +393,13 @@ config.</p>
 <li><p><strong>page_size</strong> (<em>int</em>) – the page size</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PaginatedDetectorList</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.PaginatedDetectorList" title="model.PaginatedDetectorList">PaginatedDetectorList</a></p>
+</dd>
 </dl>
-<p>:return PaginatedDetectorList
-:rtype PaginatedDetectorList</p>
 </dd></dl>
 
 <dl class="py method">
@@ -244,9 +413,13 @@ config.</p>
 <li><p><strong>page_size</strong> (<em>int</em>) – the page size</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PaginatedImageQueryList</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.PaginatedImageQueryList" title="model.PaginatedImageQueryList">PaginatedImageQueryList</a></p>
+</dd>
 </dl>
-<p>:return PaginatedImageQueryList
-:rtype PaginatedImageQueryList</p>
 </dd></dl>
 
 <dl class="py method">
@@ -254,6 +427,14 @@ config.</p>
 <span class="sig-name descname"><span class="pre">start_inspection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#groundlight.client.Groundlight.start_inspection" title="Link to this definition"></a></dt>
 <dd><p><strong>NOTE:</strong> For users with Inspection Reports enabled only.
 Starts an inspection report and returns the id of the inspection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The unique identifier of the inspection.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -261,31 +442,36 @@ Starts an inspection report and returns the id of the inspection.</p>
 <span class="sig-name descname"><span class="pre">stop_inspection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inspection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#groundlight.client.Groundlight.stop_inspection" title="Link to this definition"></a></dt>
 <dd><p><strong>NOTE:</strong> For users with Inspection Reports enabled only.
 Stops an inspection and raises an exception if the response from the server
-indicates that the inspection was not successfully stopped.
-Returns a str with result of the inspection (either PASS or FAIL).</p>
+indicates that the inspection was not successfully stopped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>inspection_id</strong> (<em>str</em>) – The id of the inspection to stop.</p>
+<dd class="field-odd"><p><strong>inspection_id</strong> (<em>str</em>) – The unique identifier of the inspection.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>“PASS” or “FAIL” depending on the result of the inspection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
-<p>:return str
-:rtype str</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="groundlight.client.Groundlight.submit_image_query">
-<span class="sig-name descname"><span class="pre">submit_image_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#model.Detector" title="model.Detector"><span class="pre">Detector</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_review</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inspection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a></span></span><a class="headerlink" href="#groundlight.client.Groundlight.submit_image_query" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">submit_image_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#model.Detector" title="model.Detector"><span class="pre">Detector</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_review</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">want_async</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inspection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a></span></span><a class="headerlink" href="#groundlight.client.Groundlight.submit_image_query" title="Link to this definition"></a></dt>
 <dd><p>Evaluates an image with Groundlight.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>detector</strong> (<a class="reference internal" href="models.html#model.Detector" title="model.Detector"><em>Detector</em></a><em> or </em><em>str</em>) – the Detector object, or string id of a detector like <cite>det_12345</cite></p></li>
-<li><p><strong>image</strong> (<em>str</em><em> or </em><em>bytes</em><em> or </em><em>Image.Image</em><em> or </em><em>BytesIO</em><em> or </em><em>BufferedReader</em><em> or </em><em>np.ndarray</em>) – <p>The image, in several possible formats:</p>
+<li><p><strong>image</strong> (<em>str</em><em> or </em><em>bytes</em><em> or </em><em>Image.Image</em><em> or </em><em>BytesIO</em><em> or </em><em>BufferedReader</em><em> or </em><em>np.ndarray</em>) – <p>The image, in several possible formats:
+- filename (string) of a jpeg file
+- byte array or BytesIO or BufferedReader with jpeg bytes
+- numpy array with values 0-255 and dimensions (H,W,3) in BGR order</p>
+<blockquote>
+<div><p>(Note OpenCV uses BGR not RGB. <cite>img[:, :, ::-1]</cite> will reverse the channels)</p>
+</div></blockquote>
 <ul>
-<li><p>filename (string) of a jpeg file</p></li>
-<li><p>byte array or BytesIO or BufferedReader with jpeg bytes</p></li>
-<li><p>numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-(Note OpenCV uses BGR not RGB. <cite>img[:, :, ::-1]</cite> will reverse the channels)</p></li>
 <li><p>PIL Image: Any binary format must be JPEG-encoded already.
 Any pixel format will get converted to JPEG at high quality before sending to service.</p></li>
 </ul>
@@ -295,13 +481,20 @@ Any pixel format will get converted to JPEG at high quality before sending to se
 only if the ML prediction is not confident.
 If set to <cite>ALWAYS</cite>, always send the image query for human review.
 If set to <cite>NEVER</cite>, never send the image query for human review.</p></li>
+<li><p><strong>want_async</strong> (<em>bool</em>) – If True, the client will return as soon as the image query is submitted and will not wait for
+an ML/human prediction. The returned <cite>ImageQuery</cite> will have a <cite>result</cite> of None. Must set <cite>wait</cite> to 0 to use
+want_async.</p></li>
 <li><p><strong>inspection_id</strong> (<em>str</em>) – Most users will omit this. For accounts with Inspection Reports enabled,
 this is the ID of the inspection to associate with the image query.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
 </dl>
-<p>:return ImageQuery
-:rtype ImageQuery</p>
 </dd></dl>
 
 <dl class="py method">
@@ -328,14 +521,18 @@ Add/update inspection metadata with the user_provided_key and user_provided_valu
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>inspection_id</strong> (<em>str</em>) – The id of the inspection to update.</p></li>
-<li><p><strong>user_provided_key</strong> (<em>str</em>) – The key of the metadata to add/update.</p></li>
-<li><p><strong>user_provided_value</strong> (<em>str</em>) – The value of the metadata to add/update.</p></li>
+<li><p><strong>inspection_id</strong> (<em>str</em>) – The unique identifier of the inspection.</p></li>
+<li><p><strong>user_provided_key</strong> (<em>str</em>) – the key in the key/value pair for the inspection metadata.</p></li>
+<li><p><strong>user_provided_value</strong> (<em>str</em>) – the value in the key/value pair for the inspection metadata.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
 </dl>
-<p>:return None
-:rtype None</p>
 </dd></dl>
 
 <dl class="py method">
@@ -351,9 +548,35 @@ Currently this is done by polling with an exponential back-off.</p>
 <li><p><strong>timeout_sec</strong> (<em>float</em>) – The maximum number of seconds to wait.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
 </dl>
-<p>:return ImageQuery
-:rtype ImageQuery</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.client.Groundlight.wait_for_ml_result">
+<span class="sig-name descname"><span class="pre">wait_for_ml_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a></span></span><a class="headerlink" href="#groundlight.client.Groundlight.wait_for_ml_result" title="Link to this definition"></a></dt>
+<dd><p>Waits for the first ml result to be returned.
+Currently this is done by polling with an exponential back-off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_query</strong> (<a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery"><em>ImageQuery</em></a><em> or </em><em>str</em>) – An ImageQuery object to poll</p></li>
+<li><p><strong>confidence_threshold</strong> (<em>float</em>) – The minimum confidence level required to return before the timeout.</p></li>
+<li><p><strong>timeout_sec</strong> (<em>float</em>) – The maximum number of seconds to wait.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ImageQuery</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#model.ImageQuery" title="model.ImageQuery">ImageQuery</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
