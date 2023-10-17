@@ -443,7 +443,6 @@ class Groundlight:
         wait = self.DEFAULT_WAIT if wait is None else wait
         return self.wait_for_ml_result(iq, timeout_sec=wait)
 
-
     def ask_async(
         self,
         detector: Union[Detector, str],
