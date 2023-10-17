@@ -1,3 +1,7 @@
-# API Reference 
+---
+id: redirect
+title: API Reference
+hide_title: true
+---
 
-Click [here](pathname:///python-sdk/api-reference-docs/) to access a detailed documentation of the SDK with all available methods. 
+<meta http-equiv="refresh" content="0; url=/python-sdk/api-reference-docs/" />
