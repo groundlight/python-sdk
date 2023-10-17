@@ -456,23 +456,23 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
-@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
-def test_detector_improvement(gl: Groundlight):
-    # test that we get confidence improvement after sending images in
-    # Pass two of each type of image in
-    import random
-    import time
-
-    from PIL import Image, ImageEnhance
-
-    random.seed(2741)
-
-    name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
-    query = "Is there a dog?"
-    detector = gl.create_detector(name=name, query=query)
-
-
 # temporarily disabled until the backend bugfix is deployed
+# @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
+# def test_detector_improvement(gl: Groundlight):
+#     # test that we get confidence improvement after sending images in
+#     # Pass two of each type of image in
+#     import random
+#     import time
+
+#     from PIL import Image, ImageEnhance
+
+#     random.seed(2741)
+
+#     name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
+#     query = "Is there a dog?"
+#     detector = gl.create_detector(name=name, query=query)
+
+
 #     def submit_noisy_image(image, label=None):
 #         sharpness = ImageEnhance.Sharpness(image)
 #         noisy_image = sharpness.enhance(random.uniform(0.75, 1.25))
