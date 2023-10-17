@@ -601,7 +601,8 @@ class Groundlight:
         return self.api_client._add_label(image_query_id, api_label)  # pylint: disable=protected-access
 
     def start_inspection(self) -> str:
-        """For users with Inspection Reports enabled only.
+        """
+        **NOTE:** For users with Inspection Reports enabled only.
         Starts an inspection report and returns the id of the inspection.
 
         :return: The unique identifier of the inspection.
@@ -610,7 +611,8 @@ class Groundlight:
         return self.api_client.start_inspection()
 
     def update_inspection_metadata(self, inspection_id: str, user_provided_key: str, user_provided_value: str) -> None:
-        """For users with Inspection Reports enabled only.
+        """
+        **NOTE:** For users with Inspection Reports enabled only.
         Add/update inspection metadata with the user_provided_key and user_provided_value.
 
         :param inspection_id: The unique identifier of the inspection.
@@ -628,7 +630,8 @@ class Groundlight:
         self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
     def stop_inspection(self, inspection_id: str) -> str:
-        """For users with Inspection Reports enabled only.
+        """
+        **NOTE:** For users with Inspection Reports enabled only.
         Stops an inspection and raises an exception if the response from the server
         indicates that the inspection was not successfully stopped.
 
@@ -641,12 +644,16 @@ class Groundlight:
         return self.api_client.stop_inspection(inspection_id)
 
     def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
-        """Updates the confidence threshold of a detector given a detector_id.
+        """
+        Updates the confidence threshold of a detector given a detector_id.
 
-        :param detector_id: The unique identifier of the detector.
+        :param detector_id: The id of the detector to update.
         :type detector_id: str
 
-        :return: None
-        :rtype: None
+        :param confidence_threshold: The new confidence threshold for the detector.
+        :type confidence_threshold: float
+
+        :return None
+        :rtype None
         """
         self.api_client.update_detector_confidence_threshold(detector_id, confidence_threshold)

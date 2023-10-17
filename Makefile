@@ -77,7 +77,9 @@ sphinx-help:
 # `make apidocs` instead.
 .PHONY: docs-comprehensive apidocs html
 
-# Start an interactive server to test docs locally
+# Start an interactive server to test docs locally.
+# Before running this, make sure that you have installed the node modules
+# by running `node install` in the docs directory.
 develop-docs-comprehensive: docs-comprehensive
 	cd docs && npm start
 
