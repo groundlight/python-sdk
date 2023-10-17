@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import warnings
 from io import BufferedReader, BytesIO
 from typing import Optional, Union
 
@@ -9,6 +10,7 @@ from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
+from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_VARIABLE_NAME, API_TOKEN_WEB_URL, DISABLE_TLS_VARIABLE_NAME
@@ -81,12 +83,12 @@ class Groundlight:
         :type api_token: str
 
         :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
-                                        when calling API from https server. If unset, fallback it will check
+                                        when calling API from https server. If unset, the fallback will check
                                         the environment variable "TLS_VERIFY" for `1` or `0`. By default,
                                         certificates are verified.
 
                                         Disable verification if using a self-signed TLS certificate with a Groundlight
-                                        Edge Endpoint.  It is unadvised tto disable verification  if connecting directly
+                                        Edge Endpoint.  It is unadvised to disable verification  if connecting directly
                                         to the Groundlight cloud service.
         :type disable_tls_verification: Optional[bool]
 
@@ -110,18 +112,15 @@ class Groundlight:
                     ),
                 ) from e
 
-        should_disable_tls = disable_tls_verification or os.environ.get(DISABLE_TLS_VARIABLE_NAME, None) is not None
+        should_disable_tls_verification = disable_tls_verification or bool(
+            int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0))
+        )
 
-        if should_disable_tls:
+        if should_disable_tls_verification:
             logger.warning(
                 "Disabling SSL/TLS certificate verification.  This should only be used when connecting to an endpoint"
                 " with a self-signed certificate."
             )
-
-            import warnings
-
-            from urllib3.exceptions import InsecureRequestWarning
-
             warnings.simplefilter("ignore", InsecureRequestWarning)
 
             configuration.verify_ssl = False
