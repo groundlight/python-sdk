@@ -12,105 +12,105 @@ paths:
       operationId: List detectors
       description: Retrieve a list of detectors.
       parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
+        - name: page_size
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
       tags:
-      - detectors
+        - detectors
       security:
-      - ApiToken: []
+        - ApiToken: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedDetectorList'
-          description: ''
+                $ref: "#/components/schemas/PaginatedDetectorList"
+          description: ""
     post:
       operationId: Create detector
       description: Create a new detector.
       tags:
-      - detectors
+        - detectors
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DetectorCreationInput'
+              $ref: "#/components/schemas/DetectorCreationInput"
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/DetectorCreationInput'
+              $ref: "#/components/schemas/DetectorCreationInput"
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/DetectorCreationInput'
+              $ref: "#/components/schemas/DetectorCreationInput"
         required: true
       security:
-      - ApiToken: []
+        - ApiToken: []
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Detector'
-          description: ''
+                $ref: "#/components/schemas/Detector"
+          description: ""
   /v1/detectors/{id}:
     get:
       operationId: Get detector
       description: Retrieve a detector by its ID.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        description: Choose a detector by its ID.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Choose a detector by its ID.
+          required: true
       tags:
-      - detectors
+        - detectors
       security:
-      - ApiToken: []
+        - ApiToken: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Detector'
-          description: ''
+                $ref: "#/components/schemas/Detector"
+          description: ""
   /v1/image-queries:
     get:
       operationId: List image queries
       description: Retrieve a list of image-queries.
       parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
+        - name: page_size
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
       tags:
-      - image-queries
+        - image-queries
       security:
-      - ApiToken: []
+        - ApiToken: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedImageQueryList'
-          description: ''
+                $ref: "#/components/schemas/PaginatedImageQueryList"
+          description: ""
     post:
       operationId: Submit image query
       description: |2+
@@ -126,30 +126,35 @@ paths:
         ```
 
       parameters:
-      - in: query
-        name: detector_id
-        schema:
-          type: string
-        description: Choose a detector by its ID.
-        required: true
-      - in: query 
-        name: human_review 
-        schema: 
-          type: string 
-        description: > 
-          If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
-          If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
-          If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
-        required: false 
-      - in: query 
-        name: patience_time 
-        schema: 
-          type: number 
-          format: float 
-        description: How long to wait for a confident response. 
-        required: false 
+        - in: query
+          name: detector_id
+          schema:
+            type: string
+          description: Choose a detector by its ID.
+          required: true
+        - in: query
+          name: human_review
+          schema:
+            type: string
+          description: >
+            If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
+            If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
+            If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
+          required: false
+        - in: query
+          name: patience_time
+          schema:
+            type: number
+            format: float
+          description: How long to wait for a confident response.
+          required: false
+        - in: query
+          name: want_async
+          schema:
+            type: string
+          description: If "true" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.
       tags:
-      - image-queries
+        - image-queries
       requestBody:
         content:
           image/jpeg:
@@ -158,44 +163,45 @@ paths:
               format: binary
             examples:
               JPEGBinaryImageData:
-                value: '@path/to/image.jpeg'
+                value: "@path/to/image.jpeg"
                 summary: JPEG binary image data
       security:
-      - ApiToken: []
+        - ApiToken: []
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImageQuery'
-          description: ''
+                $ref: "#/components/schemas/ImageQuery"
+          description: ""
   /v1/image-queries/{id}:
     get:
       operationId: Get image query
       description: Retrieve an image-query by its ID.
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        description: Choose an image query by its ID.
-        required: true
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Choose an image query by its ID.
+          required: true
       tags:
-      - image-queries
+        - image-queries
       security:
-      - ApiToken: []
+        - ApiToken: []
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImageQuery'
-          description: ''
+                $ref: "#/components/schemas/ImageQuery"
+          description: ""
 components:
   schemas:
     ClassificationResult:
       type: object
-      description: Our classification result. This result can come from the detector,
+      description:
+        Our classification result. This result can come from the detector,
         or a human reviewer.
       properties:
         confidence:
@@ -203,13 +209,14 @@ components:
           maximum: 1
           minimum: 0
           nullable: true
-          description: On a scale of 0 to 1, how confident are we in the predicted
+          description:
+            On a scale of 0 to 1, how confident are we in the predicted
             label?
         label:
           type: string
           description: What is the predicted label?
       required:
-      - label
+        - label
       x-internal: true
     Detector:
       type: object
@@ -221,7 +228,7 @@ components:
           description: A unique ID for this object.
         type:
           allOf:
-          - $ref: '#/components/schemas/DetectorTypeEnum'
+            - $ref: "#/components/schemas/DetectorTypeEnum"
           readOnly: true
           description: The type of this object.
         created_at:
@@ -247,15 +254,16 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description: If the detector's prediction is below this confidence threshold,
+          description:
+            If the detector's prediction is below this confidence threshold,
             send the image query for human review.
       required:
-      - created_at
-      - group_name
-      - id
-      - name
-      - query
-      - type
+        - created_at
+        - group_name
+        - id
+        - name
+        - query
+        - type
       x-internal: true
     DetectorCreationInput:
       type: object
@@ -279,7 +287,8 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description: If the detector's prediction is below this confidence threshold,
+          description:
+            If the detector's prediction is below this confidence threshold,
             send the image query for human review.
         pipeline_config:
           type: string
@@ -287,13 +296,13 @@ components:
           description: (Advanced usage) Configuration to instantiate a specific prediction pipeline.
           maxLength: 8192
       required:
-      # TODO: make name optional - that's how the web version is going.
-      - name
-      - query
+        # TODO: make name optional - that's how the web version is going.
+        - name
+        - query
       x-internal: true
     DetectorTypeEnum:
       enum:
-      - detector
+        - detector
       type: string
     ImageQuery:
       type: object
@@ -305,7 +314,7 @@ components:
           description: A unique ID for this object.
         type:
           allOf:
-          - $ref: '#/components/schemas/ImageQueryTypeEnum'
+            - $ref: "#/components/schemas/ImageQueryTypeEnum"
           readOnly: true
           description: The type of this object.
         created_at:
@@ -323,25 +332,24 @@ components:
           description: Which detector was used on this image query?
         result_type:
           allOf:
-          - $ref: '#/components/schemas/ResultTypeEnum'
+            - $ref: "#/components/schemas/ResultTypeEnum"
           readOnly: true
           description: What type of result are we returning?
         result:
           allOf:
-          - $ref: '#/components/schemas/ClassificationResult'
+            - $ref: "#/components/schemas/ClassificationResult"
           readOnly: true
       required:
-      - created_at
-      - detector_id
-      - id
-      - query
-      - result
-      - result_type
-      - type
+        - created_at
+        - detector_id
+        - id
+        - query
+        - result_type
+        - type
       x-internal: true
     ImageQueryTypeEnum:
       enum:
-      - image_query
+        - image_query
       type: string
     PaginatedDetectorList:
       type: object
@@ -362,7 +370,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Detector'
+            $ref: "#/components/schemas/Detector"
     PaginatedImageQueryList:
       type: object
       properties:
@@ -382,10 +390,10 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/ImageQuery'
+            $ref: "#/components/schemas/ImageQuery"
     ResultTypeEnum:
       enum:
-      - binary_classification
+        - binary_classification
       type: string
   securitySchemes:
     ApiToken:
@@ -393,11 +401,11 @@ components:
       type: apiKey
       in: header
 servers:
-- url: https://api.groundlight.ai/device-api
-  description: Prod
-- url: https://api.integ.groundlight.ai/device-api
-  description: Integ
-- url: https://device.positronix.ai/device-api
-  description: Device Prod
-- url: https://device.integ.positronix.ai/device-api
-  description: Device Integ
+  - url: https://api.groundlight.ai/device-api
+    description: Prod
+  - url: https://api.integ.groundlight.ai/device-api
+    description: Integ
+  - url: https://device.positronix.ai/device-api
+    description: Device Prod
+  - url: https://device.integ.positronix.ai/device-api
+    description: Device Integ

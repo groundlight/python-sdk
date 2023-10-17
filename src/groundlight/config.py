@@ -8,3 +8,9 @@ __all__ = [
     "API_TOKEN_VARIABLE_NAME",
     "DEFAULT_ENDPOINT",
 ]
+
+API_TOKEN_HELP_MESSAGE = (
+    "No API token found. Please put your token in an environment variable "
+    f'named "{API_TOKEN_VARIABLE_NAME}". If you don\'t have a token, you can '
+    f"create one at {API_TOKEN_WEB_URL}"
+)
