@@ -31,28 +31,18 @@ from groundlight import Groundlight
 
 detector = gl.get_or_create_detector(name="your_detector_name", query="your_query")
 
-def process_image_query(image_query_id):
-    '''
-    : param image_query_id: the id of the image query to process from the database
-    '''
-    
-    # retrieve the image query from Groundlight
-    image_query = gl.get_image_query(id=image_query_id)
-    result = image_query.result
-    # take action based on the result 
-    if result == 'YES':
-        # take action if the result is YES
-        pass
-    elif result == 'NO':
-        # take action if the result is NO
-        pass
-    elif result ==  'UNCLEAR'
-        # take action if the result is UNCLEAR
-        pass
-
-while True:  # TODO: add a way to exit this loop... not sure what makes sense here
+while db.next_image_query() is not None:  # TODO: this is condition is a bit weird. Maybe just while True????
     image_query_id = db.get_next_image_query_id()  # get the next image query id from the database
-    process_image_query(image_query_id)  # process the image query 
+    image_query = gl.get_image_query(id=image_query_id) # retrieve the image query from Groundlight
+    result = image_query.result
+
+    # take action based on the result of the image query
+    if result.label == 'YES':
+        pass # TODO: do something based on your application
+    elif result.label == 'NO':
+        pass # TODO: do something based on your application
+    elif result.label == 'UNCLEAR':
+        pass # TODO: do something based on your application
 ```
 
 ## Important Considerations
