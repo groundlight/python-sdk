@@ -479,8 +479,37 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :return ImageQuery
-        :rtype ImageQuery
+        :return: ImageQuery
+        :rtype: ImageQuery
+
+
+        **Example usage**::
+
+            gl = Groundlight()
+            detector = gl.get_or_create_detector(
+                            name="door",
+                            query="Is the door locked?",
+                            confidence_threshold=0.9
+                        )
+
+            image_query = gl.ask_async(
+                            detector=detector,
+                            image="path/to/image.jpeg")
+
+            # the image_query will have an id for later retrieval
+            assert image_query.id is not None
+
+            # Do not attempt to access the result of this query as the result for all async queries
+            # will be None. Your result is being computed asynchronously and will be available
+            # later
+            assert image_query.result is None
+
+            # retrieve the result later or on another machine by calling gl.get_image_query()
+            # with the id of the image_query above
+            image_query = gl.get_image_query(image_query.id)
+
+            # now the result will be available for your use
+            assert image_query.result is not None
 
         """
         return self.submit_image_query(
