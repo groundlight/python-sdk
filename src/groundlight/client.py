@@ -278,7 +278,7 @@ class Groundlight:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
 
-    def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments
+    def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
