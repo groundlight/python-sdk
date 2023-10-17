@@ -207,6 +207,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
     human_review = "human_review_example" # str | If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident.  (optional)
     patience_time = 3.14 # float | How long to wait for a confident response. (optional)
+    want_async = "want_async_example" # str | If \"true\" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later. (optional)
     body = open('@path/to/image.jpeg', 'rb') # file_type |  (optional)
 
     # example passing only required values which don't have defaults set
@@ -219,7 +220,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.submit_image_query(detector_id, human_review=human_review, patience_time=patience_time, body=body)
+        api_response = api_instance.submit_image_query(detector_id, human_review=human_review, patience_time=patience_time, want_async=want_async, body=body)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
@@ -233,6 +234,7 @@ Name | Type | Description  | Notes
  **detector_id** | **str**| Choose a detector by its ID. |
  **human_review** | **str**| If set to &#x60;DEFAULT&#x60;, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to &#x60;ALWAYS&#x60;, always send the image query for human review even if the ML model is confident. If set to &#x60;NEVER&#x60;, never send the image query for human review even if the ML model is not confident.  | [optional]
  **patience_time** | **float**| How long to wait for a confident response. | [optional]
+ **want_async** | **str**| If \&quot;true\&quot; then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later. | [optional]
  **body** | **file_type**|  | [optional]
 
 ### Return type
