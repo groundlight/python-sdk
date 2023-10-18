@@ -38,16 +38,6 @@ Higher confidence also requires more labels, which increases labor costs.
 
 :::
 
-If you want to submit image queries without waiting for confidence to reach your detector's threshold, use the
-`ask_ml` or `ask_async` methods. `ask_ml` will wait for the first available prediction from an ML model, but will not wait
-for confident results via escalation to a human reviewer. `ask_async` will return immediately with a placeholder response,
-and the user can poll `get_image_query` to see when the results are ready. In both cases, image queries which are below the desired confidence level will still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
-
-
-```python notest continuation
-
-```
-
 Or if you want to execute `submit_image_query` as fast as possible, set `wait=0`. You will either get the ML results or a placeholder response if the ML model hasn't finished executing. Image queries which are below the desired confidence level will still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
 
 ```python notest continuation
