@@ -36,7 +36,7 @@ while true; do
   echo "Waiting for 15 seconds before starting to watch for file changes..."
   sleep 15
   
-  CHANGED_FILE=$(fswatch -1 --exclude 'docs/static/api-reference-docs' --exclude 'build/' --exclude '/docs/.docusaurus' --exclude 'changes.log' --exclude 'docs/node_modules/.cache/webpack' --exclude '.git/'  $WATCH_PATH)
+  CHANGED_FILE=$(fswatch -1 --exclude 'docs/static/api-reference-docs' --exclude 'build/' --exclude '/docs/.docusaurus' --exclude 'docs/node_modules/.cache/webpack' --exclude '.git/'  $WATCH_PATH)
   echo "Detected changes in: $CHANGED_FILE"
   
 echo "Code changed. Attempting to kill server on port 3000..."
