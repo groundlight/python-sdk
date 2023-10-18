@@ -461,7 +461,7 @@ class Groundlight:
         wait = self.DEFAULT_WAIT if wait is None else wait
         return self.wait_for_ml_result(iq, timeout_sec=wait)
 
-    def ask_async(
+    def ask_async(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
@@ -580,7 +580,7 @@ class Groundlight:
         """
         if confidence_threshold is None:
             if isinstance(image_query, str):
-                image_query: ImageQuery = self.get_image_query(image_query)
+                image_query = self.get_image_query(image_query)
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)
