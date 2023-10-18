@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 import os
 import time
@@ -304,8 +305,19 @@ class Groundlight:
             Any pixel format will get converted to JPEG at high quality before sending to service.
         :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
-        :param wait: How long to wait (in seconds) for a confident answer.
+        :param wait: How long to poll (in seconds) for a confident answer in this method. This is a client-side timeout.
         :type wait: float
+
+        :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
+            The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
+            Within patience_time, Groundlight will update ML predictions based on stronger findings,
+            and, additionally, Groundlight will prioritize human review of the image query if necessary.
+            This is a soft server-side timeout. If not set, use the detector's patience_time.
+        :type patience_time: float
+
+        :param confidence_threshold: The confidence threshold to wait for.
+            If not set, use the detector's confidence threshold.
+        :type confidence_threshold: float
 
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
@@ -375,8 +387,10 @@ class Groundlight:
         confidence_threshold: Optional[float] = None,
         wait: Optional[float] = None,
     ) -> ImageQuery:
-        """Evaluates an image with Groundlight waiting until an answer above the confidence threshold
-            of the detector is reached or the wait period has passed.
+        """
+        Evaluates an image with Groundlight waiting until an answer above the confidence threshold
+        of the detector is reached or the wait period has passed.
+
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :type detector: Detector or str
 
@@ -405,6 +419,8 @@ class Groundlight:
             image,
             confidence_threshold=confidence_threshold,
             wait=wait,
+            patience_time=wait,
+            human_review=None,
         )
 
     def ask_ml(
@@ -412,6 +428,7 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
+        # human_review: Optional[str] = None,
     ) -> ImageQuery:
         """Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
         :param detector: the Detector object, or string id of a detector like `det_12345`
@@ -447,8 +464,9 @@ class Groundlight:
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
+        patience_time: Optional[float] = None,
+        confidence_threshold: Optional[float] = None,
         human_review: Optional[str] = None,
-        inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
         Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
@@ -468,6 +486,17 @@ class Groundlight:
             Any pixel format will get converted to JPEG at high quality before sending to service.
 
         :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
+
+        :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
+            The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
+            Within patience_time, Groundlight will update ML predictions based on stronger findings,
+            and, additionally, Groundlight will prioritize human review of the image query if necessary.
+            This is a soft server-side timeout. If not set, use the detector's patience_time.
+        :type patience_time: float
+
+        :param confidence_threshold: The confidence threshold to wait for.
+            If not set, use the detector's confidence threshold.
+        :type confidence_threshold: float
 
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
@@ -500,26 +529,35 @@ class Groundlight:
             assert image_query.id is not None
 
             # Do not attempt to access the result of this query as the result for all async queries
-            # will be None. Your result is being computed asynchronously and will be available
-            # later
+            # will be None. Your result is being computed asynchronously and will be available later
             assert image_query.result is None
 
-            # retrieve the result later or on another machine by calling gl.get_image_query()
-            # with the id of the image_query above
-            image_query = gl.get_image_query(image_query.id)
+            # retrieve the result later or on another machine by calling gl.wait_for_confident_result()
+            # with the id of the image_query above. This will block until the result is available.
+            image_query = gl.wait_for_confident_result(image_query.id)
 
             # now the result will be available for your use
             assert image_query.result is not None
 
+            # alternatively, you can check if the result is available (without blocking) by calling
+            # gl.get_image_query() with the id of the image_query above. This will return the image_query,
+            # but the result may still be None.
+            image_query = gl.get_image_query(image_query.id)
         """
         return self.submit_image_query(
-            detector, image, wait=0, human_review=human_review, want_async=True, inspection_id=inspection_id
+            detector,
+            image,
+            wait=0,
+            patience_time=patience_time,
+            confidence_threshold=confidence_threshold,
+            human_review=human_review,
+            want_async=True
         )
 
     def wait_for_confident_result(
         self,
         image_query: Union[ImageQuery, str],
-        confidence_threshold: float,
+        confidence_threshold: Optional[float] = None,
         timeout_sec: float = 30.0,
     ) -> ImageQuery:
         """
@@ -529,7 +567,8 @@ class Groundlight:
         :param image_query: An ImageQuery object to poll
         :type image_query: ImageQuery or str
 
-        :param confidence_threshold: The minimum confidence level required to return before the timeout.
+        :param confidence_threshold: The confidence threshold to wait for.
+            If not set, use the detector's confidence threshold.
         :type confidence_threshold: float
 
         :param timeout_sec: The maximum number of seconds to wait.
@@ -538,10 +577,13 @@ class Groundlight:
         :return: ImageQuery
         :rtype: ImageQuery
         """
+        if isinstance(image_query, str):
+            image_query: ImageQuery = self.get_image_query(image_query)
 
-        def confidence_above_thresh(iq):
-            return iq_is_confident(iq, confidence_threshold=confidence_threshold)
+        if confidence_threshold is None:
+            confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
+        confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)
         return self._wait_for_result(image_query, condition=confidence_above_thresh, timeout_sec=timeout_sec)
 
     def wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
@@ -550,9 +592,6 @@ class Groundlight:
 
         :param image_query: An ImageQuery object to poll
         :type image_query: ImageQuery or str
-
-        :param confidence_threshold: The minimum confidence level required to return before the timeout.
-        :type confidence_threshold: float
 
         :param timeout_sec: The maximum number of seconds to wait.
         :type timeout_sec: float
@@ -623,6 +662,7 @@ class Groundlight:
         else:
             image_query_id = str(image_query)
             # Some old imagequery id's started with "chk_"
+            # TODO: handle iqe
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
