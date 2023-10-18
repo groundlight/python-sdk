@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Grabbing Images
 
 Groundlight's SDK accepts images in many popular formats, including PIL, OpenCV, and numpy arrays.  
