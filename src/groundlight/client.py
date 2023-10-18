@@ -1,7 +1,7 @@
-from functools import partial
 import logging
 import os
 import time
+from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Callable, Optional, Union
 
@@ -551,7 +551,7 @@ class Groundlight:
             patience_time=patience_time,
             confidence_threshold=confidence_threshold,
             human_review=human_review,
-            want_async=True
+            want_async=True,
         )
 
     def wait_for_confident_result(
