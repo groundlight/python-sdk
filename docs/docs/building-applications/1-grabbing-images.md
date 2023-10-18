@@ -4,12 +4,12 @@ sidebar_position: 1
 
 # Grabbing Images
 
-Groundlight's SDK accepts images in many popular formats, including PIL, OpenCV, and numpy arrays.
+Groundlight's SDK accepts images in many popular formats, including PIL, OpenCV, and numpy arrays.  
 
 
 ## PIL
 
-The Groundlight SDK can accept PIL images directly in `submit_image_query` (or its derivatives: `ask_ml`, `ask_confident`, `ask_async`).  Here's an example:
+The Groundlight SDK can accept PIL images directly in `submit_image_query`.  Here's an example:
 
 ```python
 from groundlight import Groundlight
@@ -60,7 +60,7 @@ gl.submit_image_query(detector, np_img)
 Groundlight expects images in BGR order, because this is standard for OpenCV, which uses numpy arrays as image storage.
 (OpenCV uses BGR because it was originally developed decades ago for compatibility with the BGR color format used by many cameras and image processing hardware at the time of its creation.)
 Most other image libraries use RGB order, so if you are using images as numpy arrays which did not originate from OpenCV you likely need to reverse the channel order before sending the images to Groundlight.
-Note this change was made in v0.8 of the Groundlight SDK - in previous versions, RGB order was expected.
+Note this change was made in v0.8 of the Groundlight SDK - in previous versions, RGB order was expected.  
 
 If you have an RGB array, you must reverse the channel order before sending it to Groundlight, like:
 

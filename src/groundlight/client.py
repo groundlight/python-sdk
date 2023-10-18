@@ -305,7 +305,7 @@ class Groundlight:
             Any pixel format will get converted to JPEG at high quality before sending to service.
         :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
-        :param wait: How long to poll (in seconds) for a confident answer in this method. This is a client-side timeout.
+        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout.
         :type wait: float
 
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
@@ -578,10 +578,9 @@ class Groundlight:
         :return: ImageQuery
         :rtype: ImageQuery
         """
-        if isinstance(image_query, str):
-            image_query: ImageQuery = self.get_image_query(image_query)
-
         if confidence_threshold is None:
+            if isinstance(image_query, str):
+                image_query: ImageQuery = self.get_image_query(image_query)
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)
