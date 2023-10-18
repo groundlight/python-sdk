@@ -1,6 +1,30 @@
 #!/bin/bash
 # convient script to run the docs server. It automatically rebuilds and restarts when you change code. You just need to refresh your browser. 
-cd "$(dirname "$0")"
+
+check_dependencies() {
+  if ! command -v fswatch &> /dev/null
+  then
+      # if homebrew is installed, install fswatch
+      if command -v brew &> /dev/null
+      then
+          echo "Installing fswatch..."
+          brew install fswatch
+          # check that fswatch is installed
+          if ! command -v fswatch &> /dev/null
+          then
+              echo "ERROR: fswatch failed to install.  Please install it manually."
+              exit 1
+          fi
+      else
+          echo "ERROR: fswatch is not installed. Please install it using your package manager or homebrew."
+          exit 1
+      fi
+  fi
+}
+
+check_dependencies
+
+cd "$(dirname "$0")"/..
 WATCH_PATH="."
 START_SERVER_CMD="make develop-docs-comprehensive"
 while true; do
@@ -11,13 +35,8 @@ while true; do
   echo "Waiting for 15 seconds before starting to watch for file changes..."
   sleep 15
   
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    CHANGED_FILE=$(fswatch -1 --exclude 'docs/static/api-reference-docs' --exclude 'build/' --exclude '/docs/.docusaurus' --exclude 'changes.log' --exclude 'docs/node_modules/.cache/webpack' --exclude '.git/'  $WATCH_PATH)
-    echo "Detected changes in: $CHANGED_FILE"
-  else
-    echo "OS not supported"
-    exit 1
-  fi
+  CHANGED_FILE=$(fswatch -1 --exclude 'docs/static/api-reference-docs' --exclude 'build/' --exclude '/docs/.docusaurus' --exclude 'changes.log' --exclude 'docs/node_modules/.cache/webpack' --exclude '.git/'  $WATCH_PATH)
+  echo "Detected changes in: $CHANGED_FILE"
   
 echo "Code changed. Attempting to kill server on port 3000..."
 
