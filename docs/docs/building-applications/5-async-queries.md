@@ -16,7 +16,7 @@ from time import sleep
 
 detector = gl.get_or_create_detector(name="your_detector_name", query="your_query")
 
-cam = cv2.VideoCapture(0)  # Initialize camera (0 is the default index) 
+cam = cv2.VideoCapture(0)  # Initialize camera (0 is the default index)
 
 while True:
     _, image = cam.read()  # Capture one frame from the camera
@@ -35,7 +35,7 @@ from groundlight import Groundlight
 
 detector = gl.get_or_create_detector(name="your_detector_name", query="your_query")
 
-image_query_id = db.get_next_image_query_id()  
+image_query_id = db.get_next_image_query_id()
 
 while image_query_id is not None:
     image_query = gl.get_image_query(id=image_query_id) # retrieve the image query from Groundlight
@@ -67,4 +67,7 @@ result = image_query.result  # This will always be 'None' as you asked asynchron
 
 image_query = gl.get_image_query(id=image_query.id)  # Immediately retrieve the image query from Groundlight
 result = image_query.result  # This will likely be 'UNCLEAR' as Groundlight is still processing your query
+
+image_query = gl.wait_for_confident_result(id=image_query.id)  # Poll for a confident result from Groundlight
+result = image_query.result
 ```
