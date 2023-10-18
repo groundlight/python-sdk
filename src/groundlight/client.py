@@ -541,8 +541,7 @@ class Groundlight:
             assert image_query.result is not None
 
             # alternatively, you can check if the result is available (without blocking) by calling
-            # gl.get_image_query() with the id of the image_query above. This will return the image_query,
-            # but the result may still be None or UNCLEAR.
+            # gl.get_image_query() with the id of the image_query above.
             image_query = gl.get_image_query(image_query.id)
         """
         return self.submit_image_query(
@@ -662,7 +661,7 @@ class Groundlight:
         else:
             image_query_id = str(image_query)
             # Some old imagequery id's started with "chk_"
-            # TODO: handle iqe
+            # TODO: handle iqe_ for image_queries returned from edge endpoints
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
