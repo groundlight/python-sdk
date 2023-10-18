@@ -18,7 +18,7 @@ detector = gl.get_or_create_detector(name="your_detector_name", query="your_quer
 
 cam = cv2.VideoCapture(0)  # Initialize camera (0 is the default index) 
 
-while True:  # TODO: add a way to exit this loop... not sure what makes sense here
+while True:
     _, image = cam.read()  # Capture one frame from the camera
     image_query = gl.ask_async(detector=detector, image=image)  # Submit the frame to Groundlight
     db.save(image_query.id)  # Save the image_query.id to a database for the retrieving machine to use
@@ -54,7 +54,7 @@ while image_query_id is not None:
 ```
 
 ## Important Considerations
-When you submit an image query asynchronously, ML prediction on your query is **not** instant. So attempting to retrieve the result immediately after submitting the query will likely result in an `UNCLEAR` result as Groundlight is still processing your query. Instead, if your code needs a `result` synchronously we recommend using one of our methods with a polling mechanism to retrieve the result. You can see all of the interfaces available in the documentation [here](pathname:///python-sdk/api-reference-docs/#groundlight.client.Groundlight).
+When you submit an image query asynchronously, ML prediction on your query is **not** instant. So attempting to retrieve the result immediately after submitting an async query will likely result in an `UNCLEAR` result as Groundlight is still processing your query. Instead, if your code needs a `result` synchronously we recommend using one of our methods with a polling mechanism to retrieve the result. You can see all of the interfaces available in the documentation [here](pathname:///python-sdk/api-reference-docs/#groundlight.client.Groundlight).
 
 ```python notest
 from groundlight import Groundlight
@@ -62,9 +62,9 @@ from PIL import Image
 
 detector = gl.get_or_create_detector(name="your_detector_name", query="your_query")
 image = Image.open("/path/to/your/image.jpg")
-image_query = gl.ask_async(detector=detector, image=image)  # Submit the frame to Groundlight
+image_query = gl.ask_async(detector=detector, image=image)  # Submit async query to Groundlight
+result = image_query.result  # This will always be 'None' as you asked asynchronously
+
+image_query = gl.get_image_query(id=image_query.id)  # Immediately retrieve the image query from Groundlight
 result = image_query.result  # This will likely be 'UNCLEAR' as Groundlight is still processing your query
 ```
-
-# TODO: what other considerations are there?
-
