@@ -542,7 +542,7 @@ class Groundlight:
 
             # alternatively, you can check if the result is available (without blocking) by calling
             # gl.get_image_query() with the id of the image_query above. This will return the image_query,
-            # but the result may still be None.
+            # but the result may still be None or UNCLEAR.
             image_query = gl.get_image_query(image_query.id)
         """
         return self.submit_image_query(
