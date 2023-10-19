@@ -112,8 +112,8 @@ class Groundlight:
                     ),
                 ) from e
 
-        should_disable_tls_verification = disable_tls_verification 
-        
+        should_disable_tls_verification = disable_tls_verification
+
         if should_disable_tls_verification is None:
             should_disable_tls_verification = bool(int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0)))
 
