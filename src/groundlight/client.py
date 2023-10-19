@@ -84,7 +84,7 @@ class Groundlight:
 
         :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
                                         when calling API from https server. If unset, the fallback will check
-                                        the environment variable "TLS_VERIFY" for `1` or `0`. By default,
+                                        the environment variable "DISABLE_TLS_VERIFY" for `1` or `0`. By default,
                                         certificates are verified.
 
                                         Disable verification if using a self-signed TLS certificate with a Groundlight
@@ -112,9 +112,10 @@ class Groundlight:
                     ),
                 ) from e
 
-        should_disable_tls_verification = disable_tls_verification or bool(
-            int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0))
-        )
+        should_disable_tls_verification = disable_tls_verification 
+        
+        if should_disable_tls_verification is None:
+            should_disable_tls_verification = bool(int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0)))
 
         if should_disable_tls_verification:
             logger.warning(
