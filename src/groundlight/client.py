@@ -50,14 +50,16 @@ class Groundlight:
                         detector=detector,
                         image="path/to/image.jpeg",
                         wait=0.0,
-                        human_review="ALWAYS")
+                        human_review="ALWAYS"
+                    )
         print(f"Image query confidence = {image_query.result.confidence}")
 
         # Poll the backend service for a confident answer
         image_query = gl.wait_for_confident_result(
                         image_query=image_query,
                         confidence_threshold=0.9,
-                        timeout_sec=60.0)
+                        timeout_sec=60.0
+                    )
 
         # Examine new confidence after a continuously trained ML model has re-evaluated the image query
         print(f"Image query confidence = {image_query.result.confidence}")
