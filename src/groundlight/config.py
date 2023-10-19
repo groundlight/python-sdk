@@ -5,12 +5,7 @@ DEFAULT_ENDPOINT = "https://api.groundlight.ai/"
 DISABLE_TLS_VARIABLE_NAME = "DISABLE_TLS_VERIFY"
 
 
-__all__ = [
-    "API_TOKEN_WEB_URL",
-    "API_TOKEN_VARIABLE_NAME",
-    "DEFAULT_ENDPOINT",
-    "DISABLE_TLS_VARIABLE_NAME"
-]
+__all__ = ["API_TOKEN_WEB_URL", "API_TOKEN_VARIABLE_NAME", "DEFAULT_ENDPOINT", "DISABLE_TLS_VARIABLE_NAME"]
 
 API_TOKEN_HELP_MESSAGE = (
     "No API token found. Please put your token in an environment variable "
