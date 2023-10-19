@@ -71,6 +71,17 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     return iq.result.confidence >= confidence_threshold
 
 
+def iq_is_answered(iq: ImageQuery) -> bool:
+    """Returns True if the image query has a ML or human label.
+    Placeholder and special labels (out of domain) have confidences exactly 0.5
+    """
+    if iq.result.confidence is None:
+        # Human label
+        return True
+    placeholder_confidence = 0.5
+    return iq.result.confidence > placeholder_confidence
+
+
 class InternalApiError(ApiException, RuntimeError):
     # TODO: We should really avoid this double inheritance since
     # both `ApiException` and `RuntimeError` are subclasses of
@@ -232,9 +243,9 @@ class GroundlightApiClient(ApiClient):
     def submit_image_query_with_inspection(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector_id: str,
-        patience_time: float,
         body: ByteStreamWrapper,
         inspection_id: str,
+        patience_time: Optional[float] = None,
         human_review: str = "DEFAULT",
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
@@ -246,8 +257,9 @@ class GroundlightApiClient(ApiClient):
         params: Dict[str, Union[str, float, bool]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
-            "patience_time": patience_time,
         }
+        if patience_time is not None:
+            params["patience_time"] = float(patience_time)
 
         # In the API, 'send_notification' is used to control human_review escalation. This will eventually
         # be deprecated, but for now we need to support it in the following manner:

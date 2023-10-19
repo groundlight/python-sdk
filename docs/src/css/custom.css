@@ -34,3 +34,7 @@ See: https://docusaurus.io/docs/styling-layout#styling-your-site-with-infima
   --ifm-color-primary-lightest: #c8dbf5;
   --docusaurus-highlighted-code-line-bg: rgba(68, 105, 165, 0.3);
 }
+
+.page-content[data-id='redirect'] {
+  display: none;
+}
