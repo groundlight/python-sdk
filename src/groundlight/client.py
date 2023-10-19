@@ -125,7 +125,7 @@ class Groundlight:
 
             configuration.verify_ssl = False
             configuration.assert_hostname = False
-            configuration.client_side_validation = False 
+            configuration.client_side_validation = False
 
         configuration.api_key["ApiToken"] = api_token
 
