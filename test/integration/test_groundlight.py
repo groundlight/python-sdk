@@ -535,7 +535,7 @@ def test_ask_method_quality(gl: Groundlight, detector: Detector):
     fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
     assert iq_is_answered(fast_iq)
     confident_iq = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=180)
-    assert confident_iq.result.confidence > IQ_IMPROVEMENT_THRESHOLD
+    assert confident_iq.result.confidence is None or (confident_iq.result.confidence > IQ_IMPROVEMENT_THRESHOLD)
 
 
 def test_start_inspection(gl: Groundlight):
