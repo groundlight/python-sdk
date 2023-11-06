@@ -1,4 +1,8 @@
-# Using Groundlight on the edge
+---
+sidebar_position: 6
+---
+
+# Using Groundlight on the Edge
 
 If your account has access to edge models, you can download and install them to your edge devices.  
 This allows you to run your model evaluations on the edge, reducing latency, cost, network bandwidth, and energy.

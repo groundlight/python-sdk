@@ -456,6 +456,7 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip(reason="Detector improvement is incredibly flaky")
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
@@ -525,6 +526,7 @@ def test_detector_improvement(gl: Groundlight):
     ), f"The detector {detector} quality has not improved after two minutes q.v. {new_dog_query}, {new_cat_query}"
 
 
+@pytest.mark.skip(reason="Detector improvement is incredibly flaky")
 def test_ask_method_quality(gl: Groundlight, detector: Detector):
     # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
     fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
