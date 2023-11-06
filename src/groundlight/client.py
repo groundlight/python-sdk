@@ -125,7 +125,6 @@ class Groundlight:
 
             configuration.verify_ssl = False
             configuration.assert_hostname = False
-            configuration.client_side_validation = False
 
         configuration.api_key["ApiToken"] = api_token
 
@@ -386,7 +385,7 @@ class Groundlight:
         if human_review is not None:
             params["human_review"] = human_review
 
-        if want_async:
+        if want_async is True:
             # If want_async is True, we don't want to wait for a result. As a result wait must be set to 0 to use
             # want_async.
             if wait != 0:
