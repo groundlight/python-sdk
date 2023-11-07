@@ -241,7 +241,7 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
 
     for human_review_value in ("DEFAULT", "ALWAYS", "NEVER"):
         _image_query = gl.submit_image_query(
-            detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value, human_review="NEVER"
+            detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
         assert is_valid_display_result(_image_query.result)
 
@@ -297,7 +297,7 @@ def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight
 
     with pytest.raises(ValueError):
         _image_query = gl.submit_image_query(
-            detector=detector.id, image="test/assets/dog.jpeg", wait=10, want_async=True
+            detector=detector.id, image="test/assets/dog.jpeg", wait=10, want_async=True, human_review="NEVER"
         )
 
 
@@ -306,7 +306,9 @@ def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: 
     Tests the workflow for submitting an image query with the want_async parameter set to True.
     """
 
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=0, want_async=True)
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, want_async=True, human_review="NEVER"
+    )
 
     # the result should be None
     assert _image_query.result is None
@@ -460,7 +462,7 @@ def test_enum_string_equality():
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     np_img = np.random.uniform(0, 255, (600, 800, 3))  # type: ignore
-    _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
+    _image_query = gl.submit_image_query(detector=detector.id, image=np_img, human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -490,7 +492,7 @@ def test_detector_improvement(gl: Groundlight):
         noisy_image = contrast.enhance(random.uniform(0.75, 1))
         brightness = ImageEnhance.Brightness(noisy_image)
         noisy_image = brightness.enhance(random.uniform(0.75, 1))
-        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0)
+        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0, human_review="NEVER")
         if label is not None:
             gl.add_label(img_query, label)
         return img_query
