@@ -393,7 +393,7 @@ class Groundlight:
 
         return self._fixup_image_query(image_query)
 
-    def ask_confident(
+    def ask_confident(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
