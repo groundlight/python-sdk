@@ -138,6 +138,10 @@ class ImageQuery(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "metadata": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -152,6 +156,7 @@ class ImageQuery(ModelNormal):
         "detector_id": "detector_id",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
         "result": "result",  # noqa: E501
+        "metadata": "metadata",  # noqa: E501
     }
 
     read_only_vars = {
@@ -162,6 +167,7 @@ class ImageQuery(ModelNormal):
         "detector_id",  # noqa: E501
         "result_type",  # noqa: E501
         "result",  # noqa: E501
+        "metadata",  # noqa: E501
     }
 
     _composed_schemas = {}
@@ -211,6 +217,7 @@ class ImageQuery(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             result (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -304,6 +311,7 @@ class ImageQuery(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             result (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
