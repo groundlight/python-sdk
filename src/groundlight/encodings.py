@@ -1,13 +1,13 @@
 import base64
 import json
 import sys
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 
-def url_encode_dict(maybe_dict: Dict, name: str, size_limit_bytes: Optional[int] = None) -> str:
+def url_encode_dict(maybe_dict: Union[Dict, str], name: str, size_limit_bytes: Optional[int] = None) -> str:
     """Encode a dictionary as a URL-safe, base64-encoded JSON string.
 
-    :param maybe_dict: The dictionary to encode.
+    :param maybe_dict: The dictionary or JSON string to encode.
     :type maybe_dict: dict
 
     :param name: The name of the dictionary, for use in the error message.
@@ -17,14 +17,21 @@ def url_encode_dict(maybe_dict: Dict, name: str, size_limit_bytes: Optional[int]
         If `None`, no size limit is enforced.
     :type size_limit_bytes: int or None
 
-    :raises TypeError: If `maybe_dict` is not a dictionary.
+    :raises TypeError: If `maybe_dict` is not a dictionary or JSON string.
     :raises ValueError: If `maybe_dict` is too large.
 
     :return: The URL-safe, base64-encoded JSON string.
     :rtype: str
     """
+    original_type = type(maybe_dict)
+    if isinstance(maybe_dict, str):
+        try:
+            maybe_dict = json.loads(maybe_dict)
+        except json.JSONDecodeError:
+            raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}")
+
     if not isinstance(maybe_dict, dict):
-        raise TypeError(f"`{name}` must be a dictionary: got {type(maybe_dict)}")
+        raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}")
 
     data_json = json.dumps(maybe_dict)
 

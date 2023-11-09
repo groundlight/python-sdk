@@ -290,7 +290,7 @@ class Groundlight:
         human_review: Optional[str] = None,
         want_async: bool = False,
         inspection_id: Optional[str] = None,
-        metadata: Optional[dict] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight.
@@ -336,10 +336,10 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :param metadata: A dictionary of custom key/value metadata to associate with the image
-            query (limited to 1KB). You can retrieve this metadata later by calling
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        :type metadata: dict
+        :type metadata: dict or str
 
         :return: ImageQuery
         :rtype: ImageQuery
@@ -399,7 +399,7 @@ class Groundlight:
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         confidence_threshold: Optional[float] = None,
         wait: Optional[float] = None,
-        metadata: Optional[dict] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight waiting until an answer above the confidence threshold
@@ -425,10 +425,10 @@ class Groundlight:
         :param wait: How long to wait (in seconds) for a confident answer.
         :type wait: float
 
-        :param metadata: A dictionary of custom key/value metadata to associate with the image
-            query (limited to 1KB). You can retrieve this metadata later by calling
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        :type metadata: dict
+        :type metadata: dict or str
 
         :return: ImageQuery
         :rtype: ImageQuery
@@ -448,7 +448,7 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
-        metadata: Optional[dict] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
@@ -469,10 +469,10 @@ class Groundlight:
         :param wait: How long to wait (in seconds) for any answer.
         :type wait: float
 
-        :param metadata: A dictionary of custom key/value metadata to associate with the image
-            query (limited to 1KB). You can retrieve this metadata later by calling
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        :type metadata: dict
+        :type metadata: dict or str
 
         :return: ImageQuery
         :rtype: ImageQuery
@@ -495,7 +495,7 @@ class Groundlight:
         patience_time: Optional[float] = None,
         confidence_threshold: Optional[float] = None,
         human_review: Optional[str] = None,
-        metadata: Optional[dict] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
@@ -537,10 +537,10 @@ class Groundlight:
                             this is the ID of the inspection to associate with the image query.
         :type inspection_id: str
 
-        :param metadata: A dictionary of custom key/value metadata to associate with the image
-            query (limited to 1KB). You can retrieve this metadata later by calling
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        :type metadata: dict
+        :type metadata: dict or str
 
         :return: ImageQuery
         :rtype: ImageQuery

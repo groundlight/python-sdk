@@ -1,6 +1,7 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
+import json
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -251,16 +252,19 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
         assert is_valid_display_result(_image_query.result)
 
 
-@pytest.mark.parametrize("metadata", [None, {}, {"a": 1}])
+@pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
 def test_submit_image_query_with_metadata(
     gl: Groundlight, detector: Detector, image: str, metadata: Optional[Dict[str, Any]]
 ):
+    # We expect the returned value to be a dict
+    expected_metadata: Optional[Dict] = json.loads(metadata) if isinstance(metadata, str) else metadata
+
     iq = gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
-    assert iq.metadata == metadata
+    assert iq.metadata == expected_metadata
 
     # Test that we can retrieve the metadata from the server at a later time
     retrieved_iq = gl.get_image_query(id=iq.id)
-    assert retrieved_iq.metadata == metadata
+    assert retrieved_iq.metadata == expected_metadata
 
 
 def test_ask_methods_with_metadata(gl: Groundlight, detector: Detector, image: str):
