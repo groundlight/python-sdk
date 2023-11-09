@@ -8,7 +8,7 @@ def url_encode_dict(maybe_dict: Union[Dict, str], name: str, size_limit_bytes: O
     """Encode a dictionary as a URL-safe, base64-encoded JSON string.
 
     :param maybe_dict: The dictionary or JSON string to encode.
-    :type maybe_dict: dict
+    :type maybe_dict: dict or str
 
     :param name: The name of the dictionary, for use in the error message.
     :type name: str
@@ -26,9 +26,11 @@ def url_encode_dict(maybe_dict: Union[Dict, str], name: str, size_limit_bytes: O
     original_type = type(maybe_dict)
     if isinstance(maybe_dict, str):
         try:
+            # It's a little inefficient to parse the JSON string, just to re-encode it later. But it
+            # allows us to check that we get a valid dictionary, and we remove any whitespace.
             maybe_dict = json.loads(maybe_dict)
-        except json.JSONDecodeError:
-            raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}")
+        except json.JSONDecodeError as e:
+            raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}") from e
 
     if not isinstance(maybe_dict, dict):
         raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}")
