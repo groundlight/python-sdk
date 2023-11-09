@@ -4,7 +4,7 @@
 import json
 import time
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import openapi_client
 import pytest
@@ -254,7 +254,7 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
 
 @pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
 def test_submit_image_query_with_metadata(
-    gl: Groundlight, detector: Detector, image: str, metadata: Optional[Dict[str, Any]]
+    gl: Groundlight, detector: Detector, image: str, metadata: Union[Dict, str, None]
 ):
     # We expect the returned value to be a dict
     expected_metadata: Optional[Dict] = json.loads(metadata) if isinstance(metadata, str) else metadata
