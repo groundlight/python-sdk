@@ -1,4 +1,13 @@
 
+Groundlight Client
+==================
+
+.. automodule:: groundlight.client 
+   :members:
+   :special-members: __init__
+   :exclude-members: ApiTokenError
+
+
 API Response Objects
 =====================
 
