@@ -14,6 +14,7 @@ from openapi_client.api_client import ApiClient, ApiException
 
 from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
+from groundlight.version import get_version
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -36,10 +37,8 @@ def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
-            (
-                f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
-                " https://api.groundlight.ai/"
-            ),
+            f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
+            " https://api.groundlight.ai/",
         )
     if parts.query or parts.fragment:
         raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
@@ -138,10 +137,8 @@ class RequestsRetryDecorator:
                         status_code = e.status
                         if status_code in self.status_code_range:
                             logger.warning(
-                                (
-                                    f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}"
-                                ),
+                                f"Current HTTP response status: {status_code}. "
+                                f"Remaining retries: {self.max_retries - retry_count}",
                                 exc_info=True,
                             )
                             # This is implementing a full jitter strategy
@@ -186,6 +183,9 @@ class GroundlightApiClient(ApiClient):
             "Content-Type": "application/json",
             "x-api-token": self.configuration.api_key["ApiToken"],
             "X-Request-Id": request_id,
+            # This metadata helps us debug issues with specific SDK versions.
+            "x-sdk-version": get_version(),
+            "x-sdk-language": "python",
         }
 
     @RequestsRetryDecorator()
