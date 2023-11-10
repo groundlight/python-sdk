@@ -1,9 +1,10 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
+import json
 import time
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, Optional, Union
 
 import openapi_client
 import pytest
@@ -60,6 +61,11 @@ def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
 def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg", human_review="NEVER")
     return iq
+
+
+@pytest.fixture(name="image")
+def fixture_image() -> str:
+    return "test/assets/dog.jpeg"
 
 
 def test_create_detector(gl: Groundlight):
@@ -244,6 +250,50 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
         assert is_valid_display_result(_image_query.result)
+
+
+@pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
+def test_submit_image_query_with_metadata(
+    gl: Groundlight, detector: Detector, image: str, metadata: Union[Dict, str, None]
+):
+    # We expect the returned value to be a dict
+    expected_metadata: Optional[Dict] = json.loads(metadata) if isinstance(metadata, str) else metadata
+
+    iq = gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
+    assert iq.metadata == expected_metadata
+
+    # Test that we can retrieve the metadata from the server at a later time
+    retrieved_iq = gl.get_image_query(id=iq.id)
+    assert retrieved_iq.metadata == expected_metadata
+
+
+def test_ask_methods_with_metadata(gl: Groundlight, detector: Detector, image: str):
+    metadata = {"a": 1}
+    iq = gl.ask_ml(detector=detector.id, image=image, metadata=metadata)
+    assert iq.metadata == metadata
+
+    iq = gl.ask_async(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
+    assert iq.metadata == metadata
+
+    # `ask_confident()` can make our unit tests take longer, so we don't include it here.
+    # iq = gl.ask_confident(detector=detector.id, image=image, metadata=metadata)
+    # assert iq.metadata == metadata
+
+
+@pytest.mark.parametrize("metadata", ["", "a", b'{"a": 1}'])
+def test_submit_image_query_with_invalid_metadata(gl: Groundlight, detector: Detector, image: str, metadata: Any):
+    with pytest.raises(TypeError):
+        gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
+
+
+def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: Detector, image: str):
+    with pytest.raises(ValueError):
+        gl.submit_image_query(
+            detector=detector.id,
+            image=image,
+            human_review="NEVER",
+            metadata={"a": "b" * 2000},  # More than 1KB
+        )
 
 
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
