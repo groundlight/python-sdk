@@ -25,7 +25,7 @@ const config = {
   trailingSlash: false,
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenMarkdownLinks: "throw",
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -96,6 +96,11 @@ const config = {
           {
             to: "/docs/building-applications",
             label: "Applications",
+            position: "left",
+          },
+          {
+            href: "pathname:///python-sdk/api-reference-docs/",
+            label: 'API Reference',
             position: "left",
           },
           {

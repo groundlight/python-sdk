@@ -83,6 +83,28 @@ jobs:
       - name: Build website
         run: npm run build
 
+    # Checks that the API reference docs built with shpinx build
+  test-api-reference-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code 
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry 
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+
+      - name: Install dependencies 
+        run: make install-sphinx-deps
+
+      - name: Build API documentation
+        run: |
+          make apidocs
+
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
   test-comprehensive:
@@ -190,6 +212,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     needs:
       - test-comprehensive
+      - test-api-reference-docs
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -197,6 +220,10 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Install poetry 
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
@@ -204,8 +231,14 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm install
+      - name: Install sphinx dependencies
+        run: |
+          cd .. 
+          make install-sphinx-deps
       - name: Build website
-        run: npm run build
+        run: |
+          cd ..
+          make docs-comprehensive 
       - name: Deploy website (if on main branch)
         # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
         uses: peaceiris/actions-gh-pages@v3

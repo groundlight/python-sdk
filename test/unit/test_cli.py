@@ -1,6 +1,8 @@
+import os
 import re
 import subprocess
 from datetime import datetime
+from unittest.mock import patch
 
 
 def test_list_detector():
@@ -72,12 +74,19 @@ def test_detector_and_image_queries():
     assert completed_process.returncode == 0
 
 
+@patch.dict(os.environ, {})
 def test_help():
     completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     assert completed_process.returncode == 0
-    completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    completed_process = subprocess.run(["groundlight", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     assert completed_process.returncode == 0
-    completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    completed_process = subprocess.run(
+        ["groundlight", "--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    assert completed_process.returncode == 0
+    completed_process = subprocess.run(
+        ["groundlight", "get-detector", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
     assert completed_process.returncode == 0
 
 

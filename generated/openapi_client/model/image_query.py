@@ -138,6 +138,10 @@ class ImageQuery(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "metadata": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -152,6 +156,7 @@ class ImageQuery(ModelNormal):
         "detector_id": "detector_id",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
         "result": "result",  # noqa: E501
+        "metadata": "metadata",  # noqa: E501
     }
 
     read_only_vars = {
@@ -162,15 +167,14 @@ class ImageQuery(ModelNormal):
         "detector_id",  # noqa: E501
         "result_type",  # noqa: E501
         "result",  # noqa: E501
+        "metadata",  # noqa: E501
     }
 
     _composed_schemas = {}
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(
-        cls, id, type, created_at, query, detector_id, result_type, result, *args, **kwargs
-    ):  # noqa: E501
+    def _from_openapi_data(cls, id, type, created_at, query, detector_id, result_type, *args, **kwargs):  # noqa: E501
         """ImageQuery - a model defined in OpenAPI
 
         Args:
@@ -180,7 +184,6 @@ class ImageQuery(ModelNormal):
             query (str): A question about the image.
             detector_id (str): Which detector was used on this image query?
             result_type (bool, date, datetime, dict, float, int, list, str, none_type): What type of result are we returning?
-            result (bool, date, datetime, dict, float, int, list, str, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -213,6 +216,8 @@ class ImageQuery(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            result (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -247,7 +252,6 @@ class ImageQuery(ModelNormal):
         self.query = query
         self.detector_id = detector_id
         self.result_type = result_type
-        self.result = result
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -306,6 +310,8 @@ class ImageQuery(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            result (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

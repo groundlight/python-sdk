@@ -1,19 +1,22 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
+import json
+import time
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, Optional, Union
 
 import openapi_client
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
-from groundlight.internalapi import InternalApiError, NotFoundError
+from groundlight.internalapi import InternalApiError, NotFoundError, iq_is_answered
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
+IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 
 def is_valid_display_result(result: Any) -> bool:
@@ -50,14 +53,19 @@ def fixture_detector(gl: Groundlight) -> Detector:
 
 @pytest.fixture(name="image_query_yes")
 def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
-    iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
+    iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     return iq
 
 
 @pytest.fixture(name="image_query_no")
 def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
-    iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg")
+    iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg", human_review="NEVER")
     return iq
+
+
+@pytest.fixture(name="image")
+def fixture_image() -> str:
+    return "test/assets/dog.jpeg"
 
 
 def test_create_detector(gl: Groundlight):
@@ -162,8 +170,51 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
         gl.get_detector_by_name(name="not a real name")
 
 
+def test_ask_confident(gl: Groundlight, detector: Detector):
+    _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+
+
+def test_ask_ml(gl: Groundlight, detector: Detector):
+    _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+
+
+def test_submit_image_query(gl: Groundlight, detector: Detector):
+    def validate_image_query(_image_query: ImageQuery):
+        assert str(_image_query)
+        assert isinstance(_image_query, ImageQuery)
+        assert is_valid_display_result(_image_query.result)
+
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
+    )
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=3, human_review="NEVER"
+    )
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=10, patience_time=20, human_review="NEVER"
+    )
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+    validate_image_query(_image_query)
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=180, confidence_threshold=0.75, human_review="NEVER"
+    )
+    validate_image_query(_image_query)
+    assert _image_query.result.confidence >= IQ_IMPROVEMENT_THRESHOLD
+
+
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
+    )
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -172,19 +223,19 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", pipeline_config="never-review")
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10)
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10, human_review="NEVER")
     assert image_query.result.label == Label.YES
 
 
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg")
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_png(gl: Groundlight, detector: Detector):
-    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/cat.png")
+    _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/cat.png", human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -201,9 +252,53 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
         assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
+def test_submit_image_query_with_metadata(
+    gl: Groundlight, detector: Detector, image: str, metadata: Union[Dict, str, None]
+):
+    # We expect the returned value to be a dict
+    expected_metadata: Optional[Dict] = json.loads(metadata) if isinstance(metadata, str) else metadata
+
+    iq = gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
+    assert iq.metadata == expected_metadata
+
+    # Test that we can retrieve the metadata from the server at a later time
+    retrieved_iq = gl.get_image_query(id=iq.id)
+    assert retrieved_iq.metadata == expected_metadata
+
+
+def test_ask_methods_with_metadata(gl: Groundlight, detector: Detector, image: str):
+    metadata = {"a": 1}
+    iq = gl.ask_ml(detector=detector.id, image=image, metadata=metadata)
+    assert iq.metadata == metadata
+
+    iq = gl.ask_async(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
+    assert iq.metadata == metadata
+
+    # `ask_confident()` can make our unit tests take longer, so we don't include it here.
+    # iq = gl.ask_confident(detector=detector.id, image=image, metadata=metadata)
+    # assert iq.metadata == metadata
+
+
+@pytest.mark.parametrize("metadata", ["", "a", b'{"a": 1}'])
+def test_submit_image_query_with_invalid_metadata(gl: Groundlight, detector: Detector, image: str, metadata: Any):
+    with pytest.raises(TypeError):
+        gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
+
+
+def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: Detector, image: str):
+    with pytest.raises(ValueError):
+        gl.submit_image_query(
+            detector=detector.id,
+            image=image,
+            human_review="NEVER",
+            metadata={"a": "b" * 2000},  # More than 1KB
+        )
+
+
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
     jpeg = open("test/assets/dog.jpeg", "rb").read()
-    _image_query = gl.submit_image_query(detector=detector.id, image=jpeg)
+    _image_query = gl.submit_image_query(detector=detector.id, image=jpeg, human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -215,19 +310,21 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     # This is an extra difficult test because the header is valid.
     # So a casual check of the image will appear valid.
     with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
-        _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated)
+        _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated, human_review="NEVER")
     exc_value = exc_info.value
     assert is_user_error(exc_value.status)
 
 
 def test_submit_image_query_bad_filename(gl: Groundlight, detector: Detector):
     with pytest.raises(FileNotFoundError):
-        _image_query = gl.submit_image_query(detector=detector.id, image="missing-file.jpeg")
+        _image_query = gl.submit_image_query(detector=detector.id, image="missing-file.jpeg", human_review="NEVER")
 
 
 def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     with pytest.raises(ValueError) as exc_info:
-        _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/blankfile.jpeg")
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/blankfile.jpeg", human_review="NEVER"
+        )
     assert "jpeg" in str(exc_info).lower()
 
 
@@ -237,10 +334,68 @@ def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     from PIL import Image
 
     dog = Image.open("test/assets/dog.jpeg")
-    _image_query = gl.submit_image_query(detector=detector.id, image=dog)
+    _image_query = gl.submit_image_query(detector=detector.id, image=dog, human_review="NEVER")
 
     black = Image.new("RGB", (640, 480))
-    _image_query = gl.submit_image_query(detector=detector.id, image=black)
+    _image_query = gl.submit_image_query(detector=detector.id, image=black, human_review="NEVER")
+
+
+def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight, detector: Detector):
+    """
+    Tests that attempting to use the wait and want_async parameters together causes an exception.
+    """
+
+    with pytest.raises(ValueError):
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/dog.jpeg", wait=10, want_async=True, human_review="NEVER"
+        )
+
+
+def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):
+    """
+    Tests the workflow for submitting an image query with the want_async parameter set to True.
+    """
+
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, want_async=True, human_review="NEVER"
+    )
+
+    # the result should be None
+    assert _image_query.result is None
+
+    # attempting to access fields within the result should raise an exception
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.label  # type: ignore
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.confidence  # type: ignore
+    time.sleep(5)
+    # you should be able to get a "real" result by retrieving an updated image query object from the server
+    _image_query = gl.get_image_query(id=_image_query.id)
+    assert _image_query.result is not None
+    assert _image_query.result.label in VALID_DISPLAY_LABELS
+
+
+def test_ask_async_workflow(gl: Groundlight, detector: Detector):
+    """
+    Tests the workflow for submitting an image query with ask_async.
+    """
+    _image_query = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg")
+
+    # the result should be None
+    assert _image_query.result is None
+
+    # attempting to access fields within the result should raise an exception
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.label  # type: ignore
+    with pytest.raises(AttributeError):
+        _ = _image_query.result.confidence  # type: ignore
+
+    time.sleep(5)
+
+    # you should be able to get a "real" result by retrieving an updated image query object from the server
+    _image_query = gl.get_image_query(id=_image_query.id)
+    assert _image_query.result is not None
+    assert _image_query.result.label in VALID_DISPLAY_LABELS
 
 
 def test_list_image_queries(gl: Groundlight):
@@ -337,7 +492,7 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
 
     # We may want to support something like this in the future, but not yet
     with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, Label.UNSURE)
+        gl.add_label(iqid_yes, Label.UNCLEAR)
 
 
 def test_label_conversion_produces_strings():
@@ -357,12 +512,13 @@ def test_enum_string_equality():
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     np_img = np.random.uniform(0, 255, (600, 800, 3))  # type: ignore
-    _image_query = gl.submit_image_query(detector=detector.id, image=np_img)
+    _image_query = gl.submit_image_query(detector=detector.id, image=np_img, human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip(reason="This test can block development depending on the state of the service")
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
@@ -374,7 +530,7 @@ def test_detector_improvement(gl: Groundlight):
 
     random.seed(2741)
 
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query)
 
@@ -387,7 +543,7 @@ def test_detector_improvement(gl: Groundlight):
         noisy_image = contrast.enhance(random.uniform(0.75, 1))
         brightness = ImageEnhance.Brightness(noisy_image)
         noisy_image = brightness.enhance(random.uniform(0.75, 1))
-        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0)
+        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0, human_review="NEVER")
         if label is not None:
             gl.add_label(img_query, label)
         return img_query
@@ -404,6 +560,8 @@ def test_detector_improvement(gl: Groundlight):
     wait_period = 30  # seconds
     num_wait_periods = 4  # 2 minutes total
     result_confidence = 0.6
+    new_dog_query = None
+    new_cat_query = None
     for _ in range(num_wait_periods):
         time.sleep(wait_period)
         new_dog_query = submit_noisy_image(dog)
@@ -425,7 +583,25 @@ def test_detector_improvement(gl: Groundlight):
             assert True
             return
 
-    assert False, "The detector performance has not improved after two minutes"
+    assert (
+        False
+    ), f"The detector {detector} quality has not improved after two minutes q.v. {new_dog_query}, {new_cat_query}"
+
+
+@pytest.mark.skip(
+    reason="We don't yet have an SLA level to test ask_confident against, and the test is flakey as a result"
+)
+def test_ask_method_quality(gl: Groundlight, detector: Detector):
+    # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
+    fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
+    assert iq_is_answered(fast_always_yes_iq)
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+    detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
+    fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
+    assert iq_is_answered(fast_iq)
+    confident_iq = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=180)
+    assert confident_iq.result.confidence is None or (confident_iq.result.confidence > IQ_IMPROVEMENT_THRESHOLD)
 
 
 def test_start_inspection(gl: Groundlight):
