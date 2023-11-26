@@ -121,7 +121,7 @@ class Groundlight:
             # Short-circuit
             return id
         obj = self.detectors_api.get_detector(id=id)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
@@ -144,7 +144,7 @@ class Groundlight:
         :return: PaginatedDetectorList
         """
         obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
-        return PaginatedDetectorList.parse_obj(obj.to_dict())
+        return PaginatedDetectorList.model_validate(obj.to_dict())
 
     def create_detector(
         self,
@@ -173,7 +173,7 @@ class Groundlight:
         if pipeline_config is not None:
             detector_creation_input.pipeline_config = pipeline_config
         obj = self.detectors_api.create_detector(detector_creation_input)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def get_or_create_detector(
         self,
@@ -212,18 +212,14 @@ class Groundlight:
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                    f" The existing query is '{existing_detector.query}'."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                f" The existing query is '{existing_detector.query}'.",
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                    " thresholds don't match. The existing confidence threshold is"
-                    f" {existing_detector.confidence_threshold}."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                " thresholds don't match. The existing confidence threshold is"
+                f" {existing_detector.confidence_threshold}.",
             )
         return existing_detector
 
@@ -236,7 +232,7 @@ class Groundlight:
         :return: ImageQuery
         """
         obj = self.image_queries_api.get_image_query(id=id)
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq = ImageQuery.model_validate(obj.to_dict())
         return self._fixup_image_query(iq)
 
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
@@ -250,7 +246,7 @@ class Groundlight:
         :return: PaginatedImageQueryList
         """
         obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
-        image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
+        image_queries = PaginatedImageQueryList.model_validate(obj.to_dict())
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
@@ -343,7 +339,7 @@ class Groundlight:
         # provided, we use the private API client instead.
         if inspection_id is None:
             raw_image_query = self.image_queries_api.submit_image_query(**params)
-            image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+            image_query = ImageQuery.model_validate(raw_image_query.to_dict())
         else:
             params["inspection_id"] = inspection_id
             iq_id = self.api_client.submit_image_query_with_inspection(**params)

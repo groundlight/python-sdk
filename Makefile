@@ -23,7 +23,7 @@ generate: install-generator  ## Generate the SDK from our public openapi spec
 	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py
 	poetry run black .
 
-PYTEST=poetry run pytest -v
+PYTEST=poetry run pytest
 
 # You can pass extra arguments to pytest by setting the TEST_ARGS environment variable.
 # For example:
@@ -40,10 +40,10 @@ test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGH
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
+	poetry run pytest --markdown-docs ${TEST_ARGS} docs README.md
 
 test-docs-integ: install  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
+	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" poetry run pytest --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
 LINT_PATHS="src test bin samples"

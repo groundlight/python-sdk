@@ -37,10 +37,8 @@ def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
-            (
-                f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
-                " https://api.groundlight.ai/"
-            ),
+            f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
+            " https://api.groundlight.ai/",
         )
     if parts.query or parts.fragment:
         raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
@@ -139,10 +137,8 @@ class RequestsRetryDecorator:
                         status_code = e.status
                         if status_code in self.status_code_range:
                             logger.warning(
-                                (
-                                    f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}"
-                                ),
+                                f"Current HTTP response status: {status_code}. "
+                                f"Remaining retries: {self.max_retries - retry_count}",
                                 exc_info=True,
                             )
                             # This is implementing a full jitter strategy
@@ -241,7 +237,7 @@ class GroundlightApiClient(ApiClient):
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
-        return Detector.parse_obj(parsed["results"][0])
+        return Detector.model_validate(parsed["results"][0])
 
     @RequestsRetryDecorator()
     def submit_image_query_with_inspection(  # noqa: PLR0913 # pylint: disable=too-many-arguments
