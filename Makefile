@@ -94,6 +94,7 @@ docs-comprehensive: apidocs
 	cd docs && npm run build
 
 apidocs:
+	cd docs && npm install
 	poetry run make html
 
 html:

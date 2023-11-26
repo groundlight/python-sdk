@@ -7,8 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 
-import sys
 import os
+import sys
+
 import toml
 
 sys.path.insert(0, os.path.abspath("../src"))
@@ -39,6 +40,10 @@ extensions = ["sphinx.ext.autodoc", "sphinxcontrib.autodoc_pydantic"]
 
 templates_path = ["_templates"]
 exclude_patterns = []
+
+# Automatically add type annotations to the generated function signatures and descriptions. This
+# means we don't have to manually add :type: annotations into the docstrings.
+autodoc_typehints = "both"
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -14,6 +14,7 @@ from openapi_client.api_client import ApiClient, ApiException
 
 from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
+from groundlight.version import get_version
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -186,6 +187,9 @@ class GroundlightApiClient(ApiClient):
             "Content-Type": "application/json",
             "x-api-token": self.configuration.api_key["ApiToken"],
             "X-Request-Id": request_id,
+            # This metadata helps us debug issues with specific SDK versions.
+            "x-sdk-version": get_version(),
+            "x-sdk-language": "python",
         }
 
     @RequestsRetryDecorator()

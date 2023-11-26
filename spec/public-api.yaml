@@ -153,6 +153,14 @@ paths:
           schema:
             type: string
           description: If "true" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.
+        - in: query
+          name: metadata
+          schema:
+            type: string
+          required: false
+          description:
+            A dictionary of custom key/value metadata to associate with the image
+            query (limited to 1KB).
       tags:
         - image-queries
       requestBody:
@@ -339,6 +347,13 @@ components:
           allOf:
             - $ref: "#/components/schemas/ClassificationResult"
           readOnly: true
+        metadata:
+          type: object
+          readOnly: true
+          nullable: true
+          description:
+            A dictionary of custom key/value metadata to associate with the image
+            query (limited to 1KB).
       required:
         - created_at
         - detector_id
