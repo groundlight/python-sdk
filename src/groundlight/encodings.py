@@ -8,20 +8,16 @@ def url_encode_dict(maybe_dict: Union[Dict, str], name: str, size_limit_bytes: O
     """Encode a dictionary as a URL-safe, base64-encoded JSON string.
 
     :param maybe_dict: The dictionary or JSON string to encode.
-    :type maybe_dict: dict or str
 
     :param name: The name of the dictionary, for use in the error message.
-    :type name: str
 
     :param size_limit_bytes: The maximum size of the dictionary, in bytes.
         If `None`, no size limit is enforced.
-    :type size_limit_bytes: int or None
 
     :raises TypeError: If `maybe_dict` is not a dictionary or JSON string.
     :raises ValueError: If `maybe_dict` is too large.
 
     :return: The URL-safe, base64-encoded JSON string.
-    :rtype: str
     """
     original_type = type(maybe_dict)
     if isinstance(maybe_dict, str):
