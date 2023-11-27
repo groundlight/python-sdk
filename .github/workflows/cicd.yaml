@@ -57,7 +57,7 @@ jobs:
         env:
           # This is associated with the "sdk-integ-test" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN }}
-        run: make test-integ
+        run: make test-integ TEST_ARGS="-n 2"
       - name: run docs tests
         run: make test-docs
         env:
@@ -87,18 +87,18 @@ jobs:
   test-api-reference-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: get code 
+      - name: get code
         uses: actions/checkout@v3
       - name: install python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - name: install poetry 
+      - name: install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
 
-      - name: Install dependencies 
+      - name: Install dependencies
         run: make install-sphinx-deps
 
       - name: Build API documentation
@@ -220,7 +220,7 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Install poetry 
+      - name: Install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
@@ -238,7 +238,7 @@ jobs:
       - name: Build website
         run: |
           cd ..
-          make docs-comprehensive 
+          make docs-comprehensive
       - name: Deploy website (if on main branch)
         # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
         uses: peaceiris/actions-gh-pages@v3

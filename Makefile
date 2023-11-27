@@ -23,7 +23,7 @@ generate: install-generator  ## Generate the SDK from our public openapi spec
 	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py
 	poetry run black .
 
-PYTEST=poetry run pytest
+PYTEST=poetry run pytest --tb=native --show-capture=stdout
 
 # You can pass extra arguments to pytest by setting the TEST_ARGS environment variable.
 # For example:
