@@ -12,7 +12,12 @@ A quick example to get used to setting up detectors and asking good questions: s
 Ensure you have Python 3.7 or higher installed, and then install the Groundlight SDK and OpenCV library:
 
 ```bash
+# MacOS
 brew install ffmpeg
+
+# Ubuntu/Fedora linux
+sudo apt install -y ffmpeg
+
 pip install groundlight pillow ffmpeg yt-dlp typer
 ```
 
