@@ -12,6 +12,12 @@ A quick example to get used to setting up detectors and asking good questions: s
 Ensure you have Python 3.7 or higher installed, and then install the Groundlight SDK and OpenCV library:
 
 ```bash
+# MacOS
+brew install ffmpeg
+
+# Ubuntu/Fedora linux
+sudo apt install -y ffmpeg
+
 pip install groundlight pillow ffmpeg yt-dlp typer
 ```
 
@@ -27,9 +33,15 @@ ffmpeg -i "$(yt-dlp -g $1 | head -n 1)" -vframes 1 last.jpg -y
 
 This will download the most recent frame from a YouTube live stream and save it to a local file `last.jpg`. 
 
-2. Log in to the [Groundlight application](https://app.groundlight.ai) and get an [API Token](api-tokens).
+2. Ensure that the script has execute permissions. You can add execute permissions using the following command:
 
-3. Next, we'll write the Python script for the application.
+```
+chmod +x get_latest_frame.sh
+``` 
+
+3. Log in to the [Groundlight application](https://app.groundlight.ai) and get an [API Token](api-tokens).
+
+4. Next, we'll write the Python script for the application.
 
 ```python notest
 import os
@@ -47,7 +59,7 @@ def main(*, video_id: str = None, detector_name: str = None, query: str = None, 
     :param query: Question you want to ask of the stream (we will alert on the answer of NO)
     """
     gl = Groundlight()
-    detector = gl.create_detector(name=detector_name, query=query, confidence_threshold=confidence)
+    detector = gl.get_or_create_detector(name=detector_name, query=query, confidence_threshold=confidence)
 
     while True:
         p = subprocess.run(["./get_latest_frame.sh", video_id])
@@ -66,9 +78,9 @@ if __name__ == "__main__":
 
 ```
 
-4. Save the script as `streaming_alert.py` in the same directory as `get_latest_frame.sh` above and run it:
+5. Save the script as `streaming_alert.py` in the same directory as `get_latest_frame.sh` above and run it:
 
 ```bash
-python streaming_alert.py <VIDEO_ID> --detector_name <DETECTOR_NAME> --query <QUERY IN QUOTATION MARKS>
+python streaming_alert.py --video-id=<VIDEO_ID> --detector-name=<DETECTOR_NAME> --query=<QUERY IN QUOTATION MARKS>
 ```
 
