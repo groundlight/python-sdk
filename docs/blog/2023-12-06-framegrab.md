@@ -118,7 +118,7 @@ configurations.
 We recommend autodiscovery for simple applications where you don't need to set any special options on your cameras. 
 It is also a convenient method for finding the serial numbers of your cameras in case they are not printed on them. 
 
-Below is a short example of how to lauch autodiscovery mode. 
+Below is a short example of how to launch autodiscovery mode. 
 
 ```python 
 grabbers = FrameGrabber.autodiscover()
