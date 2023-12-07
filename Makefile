@@ -30,8 +30,6 @@ PYTEST=poetry run pytest -v
 # 	`make test TEST_ARGS="-k some_filter"`
 TEST_ARGS=
 
-VALID_LABELS_FILTER="-m "valid_labels'"
-
 CLOUD_FILTERS = -m "not run_only_for_edge_endpoint"
 EDGE_FILTERS = -m "not skip_for_edge_endpoint"
 
