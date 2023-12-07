@@ -21,7 +21,7 @@ much more. We've built many features towards the goal of declarative computer vi
 announce FrameGrab, an extremely easy-to-use Python library designed to make it easy to grab frames from
 cameras or streams. 
 
-FrameGrab also supports generic USB cameras, RTSP streams, Basler USB cameras, Basler GigE cameras, and 
+FrameGrab supports generic USB cameras, RTSP streams, Basler USB cameras, Basler GigE cameras, and 
 Intel RealSense depth cameras. 
 
 
