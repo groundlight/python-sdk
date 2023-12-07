@@ -168,7 +168,7 @@ while True:
 ## Conclusion 
 
 
-This release of FrameGrab comes with several awesome features that are very easy to use. We now support 
+This release of FrameGrab adds some great, easy to use features. We now support 
 multiple camera types and continue to support motion detection. 
 
 If you encounter any issues while using FrameGrab, please feel free to file an issue in our [GitHub repository](https://github.com/groundlight/framegrab)
