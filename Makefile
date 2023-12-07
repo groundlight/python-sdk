@@ -45,14 +45,11 @@ test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
-test-integ-4edge: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} ${EDGE_FILTERS} test
-
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} --markdown-docs ${TEST_ARGS} ${CLOUD_FILTERS} docs README.md
+	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 test-docs-integ: install  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} ${CLOUD_FILTERS} docs README.md
+	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
 LINT_PATHS="src test bin samples"
