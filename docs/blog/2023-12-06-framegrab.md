@@ -6,6 +6,9 @@ authors:
   - name: Tim Huff
     title: Engineering intern at Groundlight
     image_url: https://media.licdn.com/dms/image/D5603AQGQwDSbGUBQGA/profile-displayphoto-shrink_800_800/0/1666299654820?e=1707955200&v=beta&t=0V2Y83ZcAIvVnyGsm7HVmo9FK4S54cRdVu3jnOW1mRE
+  - name: Blaise Munyampirwa
+    title: Engineer at Groundlight
+    image_url: https://media.licdn.com/dms/image/C5603AQFn3zyJUMwMUA/profile-displayphoto-shrink_800_800/0/1656538661201?e=1707350400&v=beta&t=LtAkwTpt4avbqaQLSUdFerM7ydEfTTlZ3dOgmnDTpj4
   - name: Leo Dirac
     title: CTO and Co-founder at Groundlight
     image_url: https://media.licdn.com/dms/image/C5603AQGtXilFu-aISw/profile-displayphoto-shrink_400_400/0/1646094305554?e=1707955200&v=beta&t=ZaD2WPrNTdLeWzeuSMjdgz08pEz92v0JyLvQHs4iA4w
@@ -15,9 +18,7 @@ authors:
   - name: Michael Vogelsong 
     title: Chief ML Scientist 
     image_url: https://media.licdn.com/dms/image/C4E03AQGNcA6o2YP-yw/profile-displayphoto-shrink_200_200/0/1516836772974?e=1707955200&v=beta&t=sm1qBabL3bN1oZlO4iBvwuWhuqeMa0E-Jc4EqTtmJps
-  - name: Blaise Munyampirwa
-    title: Engineer at Groundlight
-    image_url: https://media.licdn.com/dms/image/C5603AQFn3zyJUMwMUA/profile-displayphoto-shrink_800_800/0/1656538661201?e=1707350400&v=beta&t=LtAkwTpt4avbqaQLSUdFerM7ydEfTTlZ3dOgmnDTpj4
+
 
 tags: [groundlight-extensions, framegrab]
 image: https://i.imgur.com/mErPwqL.png
