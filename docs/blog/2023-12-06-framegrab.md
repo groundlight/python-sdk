@@ -1,8 +1,20 @@
 ---
 title: Introducing Groundlight's FrameGrab Library
-description: Today, we are happy to announce FrameGrab 0.4.3. 
+description: We would like to introduce you to the FrameGrab library. 
 slug: introducing-framegrab
 authors:
+  - name: Tim Huff
+    title: Engineering intern at Groundlight
+    image_url: https://media.licdn.com/dms/image/D5603AQGQwDSbGUBQGA/profile-displayphoto-shrink_800_800/0/1666299654820?e=1707955200&v=beta&t=0V2Y83ZcAIvVnyGsm7HVmo9FK4S54cRdVu3jnOW1mRE
+  - name: Leo Dirac
+    title: CTO and Co-founder at Groundlight
+    image_url: https://media.licdn.com/dms/image/C5603AQGtXilFu-aISw/profile-displayphoto-shrink_400_400/0/1646094305554?e=1707955200&v=beta&t=ZaD2WPrNTdLeWzeuSMjdgz08pEz92v0JyLvQHs4iA4w
+  - name: Tyler Romero 
+    title: Senior Machine Learning Engineer
+    image_url: https://media.licdn.com/dms/image/D5603AQF0tC5-7i7o5g/profile-displayphoto-shrink_400_400/0/1667186510594?e=1707955200&v=beta&t=CAKXZuSxsNgLlNZxKUwREOlWeu7tz6GnKBHQCZ7U-d0 
+  - name: Michael Vogelsong 
+    title: Chief ML Scientist 
+    image_url: https://media.licdn.com/dms/image/C4E03AQGNcA6o2YP-yw/profile-displayphoto-shrink_200_200/0/1516836772974?e=1707955200&v=beta&t=sm1qBabL3bN1oZlO4iBvwuWhuqeMa0E-Jc4EqTtmJps
   - name: Blaise Munyampirwa
     title: Engineer at Groundlight
     image_url: https://media.licdn.com/dms/image/C5603AQFn3zyJUMwMUA/profile-displayphoto-shrink_800_800/0/1656538661201?e=1707350400&v=beta&t=LtAkwTpt4avbqaQLSUdFerM7ydEfTTlZ3dOgmnDTpj4
@@ -18,11 +30,10 @@ hide_table_of_contents: false
 At Groundlight, we continue to build infrastructure that allows our customers to easily use computer 
 vision without a pre-existing dataset for industrial inspection, retail analytics, mobile robotics, and 
 much more. We've built many features towards the goal of declarative computer vision, and today we are excited to 
-announce FrameGrab, a Python library designed to make it easy to grab frames from
+introduce FrameGrab, a Python library designed to make it easy to grab frames from
 cameras or streams. 
 
-FrameGrab supports generic USB cameras, RTSP streams, Basler USB cameras, Basler GigE cameras, and 
-Intel RealSense depth cameras. 
+FrameGrab supports generic USB cameras, RTSP streams, Basler USB cameras, Basler GigE cameras, and Intel RealSense depth cameras. 
 
 
 ## Grabbing Camera Frames
@@ -38,7 +49,7 @@ options. The YAML config contains many configurable features, but only `input_ty
 
 Here is an example of how to use the generic USB configuration 
 
-```python 
+```python notest
 from framegrab import FrameGrabber 
 
 config = """
@@ -104,7 +115,7 @@ GL_CAMERAS: |
 
 ## FrameGrab Autodiscovery Mode 
 
-With this release, we also introduce autodiscovery mode. This mode allows you to automatically connect to all cameras 
+Among other features, FrameGrab also includes autodiscovery mode. This allows you to automatically connect to all cameras 
 that are plugged into your machine (or discoverable on the network). Autodiscovery will load up default configurations 
 for each camera. 
 
@@ -120,7 +131,9 @@ It is also a convenient method for finding the serial numbers of your cameras in
 
 Below is a short example of how to launch autodiscovery mode. 
 
-```python 
+```python notest
+from framegrab import FrameGrabber
+
 grabbers = FrameGrabber.autodiscover()
 
 # Print some information about the discovered cameras
@@ -137,14 +150,14 @@ for grabber in grabbers.values():
 
 ## Using FrameGrab for Motion Detection 
 
-With this release, we also continue to support [motion detection](https://en.wikipedia.org/wiki/Motion_detection) via the frame differencing
-algorithm. This is an extremely fast algorithm for easily detecting motion in a sequence of frames. 
+With this release, we also continue to support [motion detection](https://en.wikipedia.org/wiki/Motion_detection) via frame differencing, a 
+fast algorithm for easily detecting motion in a sequence of frames. 
 
 To use motion detection, initialize the MotionDetector instance with the desired percentage of pixels 
 needed to change in an image for it to be flagged for motion and the minimum brightness change for each pixel for it 
 to be considered changed. Here is a comprehensive example. 
 
-```python 
+```python notest
 from framegrab import FrameGrabber, MotionDetector
 
 config = {
@@ -167,8 +180,7 @@ while True:
 
 ## Conclusion 
 
-
-This release of FrameGrab adds some great, easy to use features. We now support 
+Recent releases of FrameGrab add various easy to use features. We now support 
 multiple camera types and continue to support motion detection. 
 
 If you encounter any issues while using FrameGrab, please feel free to file an issue in our [GitHub repository](https://github.com/groundlight/framegrab)
