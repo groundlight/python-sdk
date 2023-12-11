@@ -252,6 +252,7 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
         assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing metadata.")
 @pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
 def test_submit_image_query_with_metadata(
     gl: Groundlight, detector: Detector, image: str, metadata: Union[Dict, str, None]
@@ -267,6 +268,7 @@ def test_submit_image_query_with_metadata(
     assert retrieved_iq.metadata == expected_metadata
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing metadata.")
 def test_ask_methods_with_metadata(gl: Groundlight, detector: Detector, image: str):
     metadata = {"a": 1}
     iq = gl.ask_ml(detector=detector.id, image=image, metadata=metadata)
@@ -280,12 +282,14 @@ def test_ask_methods_with_metadata(gl: Groundlight, detector: Detector, image: s
     # assert iq.metadata == metadata
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing metadata.")
 @pytest.mark.parametrize("metadata", ["", "a", b'{"a": 1}'])
 def test_submit_image_query_with_invalid_metadata(gl: Groundlight, detector: Detector, image: str, metadata: Any):
     with pytest.raises(TypeError):
         gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata=metadata)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing metadata.")
 def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: Detector, image: str):
     with pytest.raises(ValueError):
         gl.submit_image_query(
@@ -294,6 +298,14 @@ def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: D
             human_review="NEVER",
             metadata={"a": "b" * 2000},  # More than 1KB
         )
+
+
+@pytest.mark.run_only_for_edge_endpoint
+def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, detector: Detector, image: str):
+    """On the edge-endpoint, we raise an exception if the user passes metadata."""
+    with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
+        gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata={"a": 1})
+    assert is_user_error(exc_info.value.status)
 
 
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
