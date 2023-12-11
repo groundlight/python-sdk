@@ -1,7 +1,7 @@
 ---
-title: Announcing Groundlight's FrameGrab Library
+title: Introducing Groundlight's FrameGrab Library
 description: Today, we are happy to announce FrameGrab 0.4.3. 
-slug: announcing-framegrab
+slug: introducing-framegrab
 authors:
   - name: Blaise Munyampirwa
     title: Engineer at Groundlight
@@ -18,7 +18,7 @@ hide_table_of_contents: false
 At Groundlight, we continue to build infrastructure that allows our customers to easily use computer 
 vision without a pre-existing dataset for industrial inspection, retail analytics, mobile robotics, and 
 much more. We've built many features towards the goal of declarative computer vision, and today we are excited to 
-announce FrameGrab, an extremely easy-to-use Python library designed to make it easy to grab frames from
+announce FrameGrab, a Python library designed to make it easy to grab frames from
 cameras or streams. 
 
 FrameGrab supports generic USB cameras, RTSP streams, Basler USB cameras, Basler GigE cameras, and 
@@ -140,7 +140,7 @@ for grabber in grabbers.values():
 With this release, we also continue to support [motion detection](https://en.wikipedia.org/wiki/Motion_detection) via the frame differencing
 algorithm. This is an extremely fast algorithm for easily detecting motion in a sequence of frames. 
 
-To use motion detection, it suffices to initialize the MotionDetector instance with the desired percentage of pixels 
+To use motion detection, initialize the MotionDetector instance with the desired percentage of pixels 
 needed to change in an image for it to be flagged for motion and the minimum brightness change for each pixel for it 
 to be considered changed. Here is a comprehensive example. 
 
@@ -172,4 +172,4 @@ This release of FrameGrab adds some great, easy to use features. We now support
 multiple camera types and continue to support motion detection. 
 
 If you encounter any issues while using FrameGrab, please feel free to file an issue in our [GitHub repository](https://github.com/groundlight/framegrab)
-and while there, review guidelines for [contributing](https://github.com/groundlight/framegrab#contributing) to this awesome library. 
+and while there, review guidelines for [contributing](https://github.com/groundlight/framegrab#contributing) to this library. 
