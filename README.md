@@ -1,6 +1,6 @@
 # Groundlight Python SDK
 
-Groundlight makes it simple to build reliable visual applications. Read the [full documentation here](https://code.groundlight.ai).
+Groundlight makes it simple to build reliable visual applications. Read the [full documentation here](https://code.groundlight.ai/python-sdk/).
 
 ## Computer Vision powered by Natural Language
 
@@ -30,7 +30,7 @@ _Note: The SDK is currently in "beta" phase. Interfaces are subject to change in
 
 Some more resources you might like:
 
-- [Code Documentation](https://code.groundlight.ai/docs/getting-started)
+- [Code Documentation](https://code.groundlight.ai/python-sdk/docs/getting-started)
 - [Python SDK on PyPi](https://pypi.org/project/groundlight/) or [GitHub](https://github.com/groundlight/python-sdk)
 - [Company](https://www.groundlight.ai/)
 - [Login to Groundlight App](https://app.groundlight.ai/)
