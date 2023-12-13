@@ -44,7 +44,7 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl:
             // Remove this to remove the "edit this page" links.
-            "https://github.com/groundlight/python-sdk/tree/main/docs/",
+            "https://github.com/groundlight/tree/main/docs/",
           // the first "docs" is the branch
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
