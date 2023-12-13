@@ -15,7 +15,7 @@ cd ..
 make develop-docs-comprehensive
 ```
 
-and then open [http://localhost:3000](http://localhost:3000).
+and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
 
 
 ## Running docs tests

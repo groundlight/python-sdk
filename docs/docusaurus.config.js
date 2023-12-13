@@ -15,7 +15,7 @@ const config = {
   url: "https://www.groundlight.ai",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/",
+  baseUrl: "/python-sdk/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -44,7 +44,7 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl:
             // Remove this to remove the "edit this page" links.
-            "https://github.com/groundlight/tree/main/docs/",
+            "https://github.com/groundlight/python-sdk/tree/main/docs/",
           // the first "docs" is the branch
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
@@ -99,7 +99,7 @@ const config = {
             position: "left",
           },
           {
-            href: "pathname:///api-reference-docs/",
+            href: "pathname:///python-sdk/api-reference-docs/",
             label: "API Reference",
             position: "left",
           },
