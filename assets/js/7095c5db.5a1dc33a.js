@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[658],{4568:a=>{a.exports=JSON.parse('{"label":"framegrab","permalink":"/python-sdk/blog/tags/framegrab","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);

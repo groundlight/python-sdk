@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[2535],{5641:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Introducing Groundlight\'s FrameGrab Library","permalink":"/blog/introducing-framegrab","unlisted":false}]}')}}]);

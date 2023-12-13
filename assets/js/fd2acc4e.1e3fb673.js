@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[3262],{1007:e=>{e.exports=JSON.parse('[{"label":"groundlight-extensions","permalink":"/python-sdk/blog/tags/groundlight-extensions","count":1},{"label":"framegrab","permalink":"/python-sdk/blog/tags/framegrab","count":1}]')}}]);
