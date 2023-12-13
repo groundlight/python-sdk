@@ -26,8 +26,6 @@ hide_table_of_contents: false
 ---
 
 
-<!-- truncate -->
-
 At Groundlight, we continue to build infrastructure that allows our customers to easily use computer 
 vision without a pre-existing dataset for industrial inspection, retail analytics, mobile robotics, and 
 much more. We've built many features towards the goal of declarative computer vision, and today we are excited to 
@@ -36,6 +34,7 @@ cameras or streams.
 
 FrameGrab supports generic USB cameras, RTSP streams, Basler USB cameras, Basler GigE cameras, and Intel RealSense depth cameras. 
 
+<!-- truncate -->
 
 ## Grabbing Camera Frames
 
