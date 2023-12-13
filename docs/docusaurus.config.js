@@ -99,7 +99,7 @@ const config = {
             position: "left",
           },
           {
-            href: "pathname:///python-sdk/api-reference-docs/",
+            href: "pathname:///api-reference-docs/",
             label: "API Reference",
             position: "left",
           },
