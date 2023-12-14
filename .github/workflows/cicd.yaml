@@ -209,7 +209,7 @@ jobs:
   # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
   # we are on the `main` branch and docs/** has changes.
   deploy-docs:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    # if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     needs:
       - test-comprehensive
       - test-api-reference-docs
@@ -245,6 +245,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build
+          cname: code.groundlight.ai
           # Someday we might want to set the destination to a staging dir for PR's
           #destination_dir: staging
           # The following lines assign commit authorship to the official
