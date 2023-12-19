@@ -1,6 +1,6 @@
 ---
 title: Best practices for best results with Groundlight
-description: How to be a gold-star Groundlight customer
+description: How to get the best chance of success from Groundlight detectors
 slug: best-practices
 authors:
   - name: Paulina Varshavskaya
@@ -83,7 +83,11 @@ answers for each class of Yes or No will also give you ML performance metrics on
 ![Blue button before 2 examples of each class are provided](./images/2023-12-15-best-practices/label_button_before.png "")
 
 ## Only you know the truth
-It's good practice to continue adding a few ground truth labels here and there by clicking on the “Keep labeling” button 
+Check periodically under the Flagged tab on your detector's detail page to see if any images may still be confusing. Click on the "Override Label" button to provide the correct answer in those cases. 
+
+[![Screenshot of image flagged as needing better examples](./images/2023-12-15-best-practices/flagged_images.png "Partial screenshot of a Flagged view")](./images/2023-12-15-best-practices/flagged_images.png)
+
+It's also good practice to continue adding a few ground truth labels here and there by clicking on the “Keep labeling” button 
 on the detector details page, in order to get tighter confidence bounds on your detector’s performance metrics.
 
 ---
