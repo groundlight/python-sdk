@@ -100,7 +100,7 @@ Our labeling staff will be notified whenever you make changes to your notes so t
 
 ## [Ready to start?](https://app.groundlight.ai)
 
-We hope these tips give you a great start. If you haven’t already, you can sign up for a free account at https://app.groundlight.ai. Dive into Groundlight Pi-Gen for a hassle-free introduction to AI-powered computer vision on Raspberry Pi.
+We hope these tips give you a great start. If you haven’t already, you can sign up for a free account at https://app.groundlight.ai. Dive into [Groundlight Pi-Gen](https://github.com/groundlight/groundlight-pi-gen) for a hassle-free introduction to AI-powered computer vision on Raspberry Pi.
 
-If you have any questions, please reach out to us on the in-application chat or via email to support@groundlight.ai. 
+If you have any questions, please reach out to us on the in-application chat or via email to support@groundlight.ai.
 
