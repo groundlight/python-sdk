@@ -7,6 +7,8 @@ authors:
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/932933bc26/varshap.jpg
   - name: Sunil Kumar
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/a265e322bd/kumars.jpg
+  - name: Blake Thorne
+    image_url: https://a-us.storyblok.com/f/1015187/1000x1000/daf4a78ec3/thorneb.jpg
 
 tags: [how-to, best-practices]
 image: https://i.imgur.com/mErPwqL.png
