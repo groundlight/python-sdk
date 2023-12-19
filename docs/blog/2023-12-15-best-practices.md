@@ -4,10 +4,8 @@ description: How to be a gold-star Groundlight customer
 slug: best-practices
 authors:
   - name: Paulina Varshavskaya
-    title: Head of R&D at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/932933bc26/varshap.jpg
   - name: Sunil Kumar
-    title: ML Engineer at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/a265e322bd/kumars.jpg
 
 tags: [how-to, best-practices]
@@ -15,14 +13,12 @@ image: https://i.imgur.com/mErPwqL.png
 hide_table_of_contents: false
 ---
 
-
-<!-- truncate -->
-
 What should you do to ensure the best chance of success for your new Groundlight detectors? 
 
 Come at it from the point of view of making answering your image query question as easy as possible. 
 Pretend you’re explaining the task to a novice. What would you need to do to set them up for success?
 
+<!-- truncate -->
 
 ## Phrase the question right
 You will have more success asking questions that can in principle be answered by a reasonable person 
