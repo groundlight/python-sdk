@@ -13,7 +13,7 @@ image: https://i.imgur.com/mErPwqL.png
 hide_table_of_contents: false
 ---
 
-What should you do to ensure the best chance of success for your new Groundlight detectors? 
+Want to get the best chance of success from your new Groundlight detectors? Here are five suggestions from the Groundlight science team that can help you get the best performance possible. 
 
 Come at it from the point of view of making answering your image query question as easy as possible. 
 Pretend you’re explaining the task to a novice. What would you need to do to set them up for success?
@@ -73,7 +73,7 @@ Detailed notes on foreseeable edge cases will prevent confusion by backend label
 quicker learning for your detector at less cost to you. 
 
 ## Seed with a few examples
-Add a few labels yourself early on, in order to provide good examples for backend labelers and the 
+It helps to add a few labels yourself early on, in order to provide good examples for backend labelers and the 
 new ML model. For best results, if you have example images for both YES and NO answers, send 
 them through early on, and add the corresponding labels. Having at least 2 customer “ground truth” 
 answers for each class of Yes or No will also give you ML performance metrics on your detector.
@@ -81,9 +81,8 @@ answers for each class of Yes or No will also give you ML performance metrics on
 ![Blue button before 2 examples of each class are provided](./images/2023-12-15-best-practices/label_button_before.png "")
 
 ## Only you know the truth
-Continue adding a few ground truth labels here and there by clicking on the “Keep labeling” button 
-on the detector details page, in order to get tighter confidence bounds on your detector’s performance 
-metrics.
+It's good practice to continue adding a few ground truth labels here and there by clicking on the “Keep labeling” button 
+on the detector details page, in order to get tighter confidence bounds on your detector’s performance metrics.
 
 ---
 > :mortar_board: *Watch this space for a forthcoming in-depth discussion of confidence bounds*
@@ -95,5 +94,7 @@ Our labeling staff will be notified whenever you make changes to your notes so t
 
 ## [Ready to start?](https://app.groundlight.ai)
 
-Try it for free or sign in at https://app.groundlight.ai.
+We hope these tips give you a great start. If you haven’t already, you can sign up for a free account at https://app.groundlight.ai. Dive into Groundlight Pi-Gen for a hassle-free introduction to AI-powered computer vision on Raspberry Pi.
+
+If you have any questions, please reach out to us on the in-application chat or via email to support@groundlight.ai. 
 
