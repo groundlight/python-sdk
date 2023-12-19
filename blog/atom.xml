@@ -2,11 +2,91 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://www.groundlight.ai/python-sdk/blog</id>
     <title>Groundlight Blog</title>
-    <updated>2023-12-06T00:00:00.000Z</updated>
+    <updated>2023-12-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://www.groundlight.ai/python-sdk/blog"/>
     <subtitle>Groundlight Blog</subtitle>
     <icon>https://www.groundlight.ai/python-sdk/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Best practices for best results with Groundlight]]></title>
+        <id>https://www.groundlight.ai/python-sdk/blog/best-practices</id>
+        <link href="https://www.groundlight.ai/python-sdk/blog/best-practices"/>
+        <updated>2023-12-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[How to get the best chance of success from Groundlight detectors]]></summary>
+        <content type="html"><![CDATA[<p>Want to get the best chance of success from your new Groundlight detectors? Here are five suggestions from the Groundlight science team that can help you get the best performance possible.</p>
+<p>Come at it from the point of view of making answering your image query question as easy as possible.
+Pretend you’re explaining the task to a novice. What would you need to do to set them up for success?</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="phrase-the-question-right">Phrase the question right<a href="https://www.groundlight.ai/python-sdk/blog/best-practices#phrase-the-question-right" class="hash-link" aria-label="Direct link to Phrase the question right" title="Direct link to Phrase the question right">​</a></h2>
+<p>You will have more success asking questions that can in principle be answered by a reasonable person
+simply by looking at a single image from the detector.</p>
+<p>✅<!-- --> <strong>DO:</strong> "Is there a part staged in front of the robot ready for picking up?"<br>
+<!-- -->❌<!-- --> <strong>DON'T:</strong> "Am I awesome?"</p>
+<p>Think about how you will use the output of your detector, so the Yes and No answers align with your expectations. A technically correct answer to a vague question may be of no use to you. For example, if you have a camera pointing down on a kitchen range and would like to get an alert if there's a fire, phrase the query so that normal gas burner flames are excluded.</p>
+<p>✅<!-- --> <strong>DO:</strong> "Is there a fire in the pan? (Ignore normal gas burner flames)"<br>
+<!-- -->❌<!-- --> <strong>DON'T:</strong> "Is there a fire?"</p>
+<hr>
+<blockquote>
+<p>🎓<!-- --> <em><strong>Pro Tip:</strong> If you want an alert on a rare event, it is better if the rare event corresponds to the answer of NO, not YES.</em></p>
+<p>✅<!-- --> “Are indicator lights all green?” YES = correct operation, NO = alert<br>
+<!-- -->❌<!-- --> “Is there at least one red indicator light?” YES = alert, NO = correct operation</p>
+<p>Here’s a <em>DON’T DO THIS</em> example of a detector where the rare event (blocked fire extinguisher corresponds to the Yes class, which is less likely to result in good performance.</p>
+<p><a target="_blank" href="https://www.groundlight.ai/python-sdk/assets/files/fire_extinguisher_blocked_yes-c8fc8eaf7c27b1f820cde8924b0f3d0f.png"><img loading="lazy" alt="Screenshot for a detector answering Yes when the fire extinguisher is blocked" src="https://www.groundlight.ai/python-sdk/assets/images/fire_extinguisher_blocked_yes-c8fc8eaf7c27b1f820cde8924b0f3d0f.png" title="A detector where the rare event (blocked fire extinguisher) corresponds to the Yes class, which is less likely to result in good performance" width="1396" height="264" class="img_wQsy"></a></p>
+</blockquote>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="put-details-in-the-notes">Put details in the notes<a href="https://www.groundlight.ai/python-sdk/blog/best-practices#put-details-in-the-notes" class="hash-link" aria-label="Direct link to Put details in the notes" title="Direct link to Put details in the notes">​</a></h2>
+<p>Is any specialized knowledge required to answer your query?
+Use the notes dialog to provide explanations of any assumed knowledge or definitions of technical terms.
+Like in the fire extinguisher example above, consider adding short definitions inside the text of the query.</p>
+<p>✅<!-- --> <strong>DO:</strong> “Is the fiducial (etched arrow on the gear surface) aligned with the painted chain link?”<br>
+<!-- -->✅<!-- --> <strong>DO:</strong> “Is the fence fully closed? (Metal bar on the fence must be touching the plywood wall)”</p>
+<p>Here’s an example of detailed notes for a detector asking “Is there a streetcar visible? READ NOTES”:</p>
+<p><a target="_blank" href="https://www.groundlight.ai/python-sdk/assets/files/streetcar_visible_notes-139b16dc89faa933e71265525ae12574.png"><img loading="lazy" alt="Screenshot of detailed notes for a detector" src="https://www.groundlight.ai/python-sdk/assets/images/streetcar_visible_notes-139b16dc89faa933e71265525ae12574.png" title="Detailed notes for a detector asking &amp;quot;Is there a streetcar visible? READ NOTES&amp;quot;" width="1209" height="833" class="img_wQsy"></a></p>
+<p>In this case, the customer even drew on the example images to point out where the street car might appear.
+Detailed notes may be especially useful if the question is about a smaller region of the scene in the image.</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="think-of-edge-cases">Think of edge cases<a href="https://www.groundlight.ai/python-sdk/blog/best-practices#think-of-edge-cases" class="hash-link" aria-label="Direct link to Think of edge cases" title="Direct link to Think of edge cases">​</a></h2>
+<p>How do you want to treat unclear or edge cases?
+Sometimes it’s impossible to answer the question based on the image, for example, when it’s too dark
+at night to tell, or the view is temporarily obstructed by something moving in front of the camera.
+Do you know how you’d like to treat those cases?</p>
+<p>✅<!-- --> <strong>DO:</strong> Add notes like “If the image is too dark to tell, the answer should be YES.”</p>
+<p>In the fire extinguisher example above, the customer wrote “If you can’t see the fire extinguisher,
+it is blocked” inside the query text, drawing attention to the most important potential edge case.</p>
+<p>Detailed notes on foreseeable edge cases will prevent confusion by backend labelers and result in
+quicker learning for your detector at less cost to you.</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="seed-with-a-few-examples">Seed with a few examples<a href="https://www.groundlight.ai/python-sdk/blog/best-practices#seed-with-a-few-examples" class="hash-link" aria-label="Direct link to Seed with a few examples" title="Direct link to Seed with a few examples">​</a></h2>
+<p>It helps to add a few labels yourself early on, in order to provide good examples for backend labelers and the
+new ML model. For best results, if you have example images for both YES and NO answers, send
+them through early on, and add the corresponding labels. Having at least 2 customer “ground truth”
+answers for each class of Yes or No will also give you ML performance metrics on your detector.</p>
+<p><img loading="lazy" alt="Blue button before 2 examples of each class are provided" src="https://www.groundlight.ai/python-sdk/assets/images/label_button_before-e721de4cbaffbc4a25a69e88094fff76.png" width="215" height="144" class="img_wQsy"></p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="only-you-know-the-truth">Only you know the truth<a href="https://www.groundlight.ai/python-sdk/blog/best-practices#only-you-know-the-truth" class="hash-link" aria-label="Direct link to Only you know the truth" title="Direct link to Only you know the truth">​</a></h2>
+<p>Check periodically under the Flagged tab on your detector's detail page to see if any images may still be confusing. Click on the "Override Label" button to provide the correct answer in those cases.</p>
+<p><a target="_blank" href="https://www.groundlight.ai/python-sdk/assets/files/flagged_images-f12e3efb68a3c2a072a25847fcbaaf37.png"><img loading="lazy" alt="Screenshot of image flagged as needing better examples" src="https://www.groundlight.ai/python-sdk/assets/images/flagged_images-f12e3efb68a3c2a072a25847fcbaaf37.png" title="Partial screenshot of a Flagged view" width="1011" height="255" class="img_wQsy"></a></p>
+<p>It's also good practice to continue adding a few ground truth labels here and there by clicking on the “Keep labeling” button
+on the detector details page, in order to get tighter confidence bounds on your detector’s performance metrics.</p>
+<hr>
+<blockquote>
+<p>🎓<!-- --> <em>Watch this space for a forthcoming in-depth discussion of confidence bounds</em></p>
+</blockquote>
+<hr>
+<p>If you notice labeling mistakes, correct them by providing your own answer. Then consider adding
+extra instructions in the notes. You can upload screenshots or images inside the notes dialog too.
+Our labeling staff will be notified whenever you make changes to your notes so they stay up to date with how you want your detector to behave and can quickly address misconceptions.</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="ready-to-start"><a href="https://app.groundlight.ai/" target="_blank" rel="noopener noreferrer">Ready to start?</a><a href="https://www.groundlight.ai/python-sdk/blog/best-practices#ready-to-start" class="hash-link" aria-label="Direct link to ready-to-start" title="Direct link to ready-to-start">​</a></h2>
+<p>We hope these tips give you a great start. If you haven’t already, you can sign up for a free account at <a href="https://app.groundlight.ai/" target="_blank" rel="noopener noreferrer">https://app.groundlight.ai</a>. Dive into <a href="https://github.com/groundlight/groundlight-pi-gen" target="_blank" rel="noopener noreferrer">Groundlight Pi-Gen</a> for a hassle-free introduction to AI-powered computer vision on Raspberry Pi.</p>
+<p>If you have any questions, please reach out to us on the in-application chat or via email to <a href="mailto:support@groundlight.ai" target="_blank" rel="noopener noreferrer">support@groundlight.ai</a>.</p>]]></content>
+        <author>
+            <name>Paulina Varshavskaya</name>
+        </author>
+        <author>
+            <name>Sunil Kumar</name>
+        </author>
+        <author>
+            <name>Blake Thorne</name>
+        </author>
+        <category label="how-to" term="how-to"/>
+        <category label="best-practices" term="best-practices"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Introducing Groundlight's FrameGrab Library]]></title>
         <id>https://www.groundlight.ai/python-sdk/blog/introducing-framegrab</id>
