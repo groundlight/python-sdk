@@ -21,7 +21,7 @@ authors:
 
 
 tags: [groundlight-extensions, framegrab]
-image: https://i.imgur.com/mErPwqL.png
+image: /img/gl-icon400.png
 hide_table_of_contents: false
 ---
 

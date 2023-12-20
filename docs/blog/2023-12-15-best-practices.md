@@ -11,7 +11,7 @@ authors:
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/daf4a78ec3/thorneb.jpg
 
 tags: [how-to, best-practices]
-image: https://i.imgur.com/mErPwqL.png
+image: /img/gl-icon400.png
 hide_table_of_contents: false
 ---
 
