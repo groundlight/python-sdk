@@ -9,7 +9,7 @@ Go to the [releases](https://github.com/groundlight/groundlight-pi-gen/releases)
 
 These include a fast, modern version of python (3.11), along with key libraries like [OpenCV](https://opencv.org/), [Numpy](https://numpy.org/), [FrameGrab](https://pypi.org/project/framegrab/), and of course [Groundlight](https://pypi.org/project/groundlight/).
 
-There are several flavors of OS image available.  The smaller ones are suitable for headless use, while the larger ones include a desktop GUI with a browser.  The key differences are the size of the download, and the amount of time it takes to flash the image onto a microSD card.  The available flavors are:
+There are several flavors of OS image available.  The smaller ones are suitable for headless use, while the larger ones include a desktop GUI with a browser.  The key differences are the size of the download and the amount of time it takes to flash the image onto a microSD card.  The available flavors are:
 
 - `sdk`: Minimal image with the Python SDK and core libraries.  Suitable for headless use on smaller Raspberry Pi models such as the Pi Zero.
 - `mns`: Image with Groundlight Monitoring Notification Server (MNS) for headless use.
