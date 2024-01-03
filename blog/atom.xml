@@ -2,11 +2,64 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://code.groundlight.ai/python-sdk/blog</id>
     <title>Groundlight Blog</title>
-    <updated>2023-12-15T00:00:00.000Z</updated>
+    <updated>2024-01-02T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://code.groundlight.ai/python-sdk/blog"/>
     <subtitle>Groundlight Blog</subtitle>
     <icon>https://code.groundlight.ai/python-sdk/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Linux OS Images for Computer Vision on Raspberry Pi]]></title>
+        <id>https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision</id>
+        <link href="https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision"/>
+        <updated>2024-01-02T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Groundlight simplifies the setup process by providing ready-to-use OS images for Raspberry Pi]]></summary>
+        <content type="html"><![CDATA[<p>Happy New Year everybody!  If you got a fancy new Raspberry Pi 5 for Christmas, you might be wondering what to do with it.  Well, we have a suggestion:  build a computer vision application with it!  And we have all the tools you need to get started.</p>
+<p>Raspberry Pi offers a great platform for computer vision (CV), ranging from home hobby projects to serious industrial applications. However, setting up a Raspberry Pi for computer vision can be a time-consuming process. <a href="https://github.com/groundlight/groundlight-pi-gen" target="_blank" rel="noopener noreferrer">Groundlight Pi-Gen</a>, simplifies the setup process by providing ready-to-use OS images for Raspberry Pi.</p>
+<p>(Note that here, when we say "image" we mean an OS image, which is a file containing a snapshot of an operating system - linux - that can be installed onto a new machine.  These are not photos or pictures, which are also of course important in computer vision.  Oh jargon...)</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="raspberry-pi-os-images-pre-built-with-computer-vision-software">Raspberry Pi OS Images pre-built with Computer Vision Software<a href="https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision#raspberry-pi-os-images-pre-built-with-computer-vision-software" class="hash-link" aria-label="Direct link to Raspberry Pi OS Images pre-built with Computer Vision Software" title="Direct link to Raspberry Pi OS Images pre-built with Computer Vision Software">​</a></h2>
+<p>To download a Linux image for your Raspberry Pi, loaded with all the software you need for computer vision,
+go to the <a href="https://github.com/groundlight/groundlight-pi-gen/releases" target="_blank" rel="noopener noreferrer">releases</a> section in Groundlight Pi-Gen to find Raspberry Pi OS images (<code>.img.xz</code> files) that have pre-configured software environments for computer vision. These images are ready to be flashed onto a Raspberry Pi.</p>
+<p>These include a fast, modern version of python (3.11), along with key libraries like <a href="https://opencv.org/" target="_blank" rel="noopener noreferrer">OpenCV</a> for classic algorithms and device management, <a href="https://numpy.org/" target="_blank" rel="noopener noreferrer">Numpy</a> for fast math, <a href="https://code.groundlight.ai/python-sdk/blog/introducing-framegrab" target="_blank" rel="noopener noreferrer">FrameGrab</a> for declarative access to image sources, and of course <a href="https://pypi.org/project/groundlight/" target="_blank" rel="noopener noreferrer">Groundlight</a> for fully-managed visual understanding models.  We've set up a <code>venv</code> for you to avoid the dreaded "externally-managed-environment" error which plagues many newer python versions, while still letting you use good-old <code>pip</code> to add more.  (We like <code>poetry</code> and <code>conda</code>, and these will also work fine if you prefer them.)</p>
+<p>There are several flavors of OS image available.  The smaller ones are suitable for headless use, while the larger ones include a desktop GUI with a browser.  The key differences are the size of the download and the amount of time it takes to flash the image onto a microSD card.  The <a href="https://github.com/groundlight/groundlight-pi-gen/releases" target="_blank" rel="noopener noreferrer">available flavors in the current release</a> are:</p>
+<p><img loading="lazy" alt="Comparison of Groundlight Pi-Gen OS image flavors" src="https://code.groundlight.ai/python-sdk/assets/images/download-assets-86ee9b658158239e80bba62f01c5c84d.png" title="Comparison of Groundlight Pi-Gen OS image flavors" width="756" height="229" class="img_wQsy"></p>
+<ul>
+<li><code>desktop</code>: Image with Groundlight MNS and a desktop GUI with a browser.  Appropriate for a Raspberry Pi with a screen attached.</li>
+<li><code>mns-headless</code>: Image with Groundlight Monitoring Notification Server (MNS) for headless use.</li>
+<li><code>sdk-only</code>: Minimal image with the Python SDK and core libraries.  Suitable for headless use on smaller Raspberry Pi models such as the Pi Zero.</li>
+</ul>
+<p>A couple more flavors you might be interested in: We're planning a <a href="https://github.com/groundlight/groundlight-pi-gen/issues/15" target="_blank" rel="noopener noreferrer">kiosk mode</a> for the desktop image, so that you can run a Groundlight MNS instance on a Raspberry Pi with a screen attached, and have it automatically start up in a browser.<br>
+<!-- -->Also note that the <code>edge</code> version which will download and run the ML models locally is not yet supported on Raspberry Pi, because the edge models requires a CUDA GPU.</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="flashing-the-os-image-onto-a-microsd-card">Flashing the OS Image onto a microSD Card<a href="https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision#flashing-the-os-image-onto-a-microsd-card" class="hash-link" aria-label="Direct link to Flashing the OS Image onto a microSD Card" title="Direct link to Flashing the OS Image onto a microSD Card">​</a></h2>
+<p>Once you have <a href="https://github.com/groundlight/groundlight-pi-gen/releases" target="_blank" rel="noopener noreferrer">downloaded your image file</a>, the next step is to flash it onto a microSD card.  To do this,
+download the <a href="https://www.raspberrypi.com/software/" target="_blank" rel="noopener noreferrer">Raspberry Pi Imager</a> software.</p>
+<p><img loading="lazy" alt="Raspberry Pi Imager home screen" src="https://code.groundlight.ai/python-sdk/assets/images/rpi-imager-1-d738296f119f954f0ca471bef0285ef6.png" title="Raspberry Pi Imager home screen" width="792" height="590" class="img_wQsy"></p>
+<p>After selecting your hardware type under "Choose Device", click "Choose OS" and scroll to the bottom to "Use custom".</p>
+<p><img loading="lazy" alt="Raspberry Pi Imager use custom OS" src="https://code.groundlight.ai/python-sdk/assets/images/rpi-imager-2-fb4df452d3827613ed12c4b987d1860d.png" title="Raspberry Pi Imager use custom OS" width="792" height="590" class="img_wQsy"></p>
+<p>Then select the <code>.img.xz</code> file you downloaded.</p>
+<p><img loading="lazy" alt="Raspberry Pi Imager pick OS file" src="https://code.groundlight.ai/python-sdk/assets/images/rpi-imager-3-b1b43de59a5facb701f256795a1e47fe.png" title="Raspberry Pi Imager pick OS file" width="683" height="481" class="img_wQsy"></p>
+<p>Then choose your microSD card with the "Choose Storage" button, and then click "Next".<br>
+<!-- -->You'll get a prompt asking "Use OS customization?" which is optional, but very cool.  Choose "Edit settings", and you
+can set your Wi-Fi credentials, enable SSH login with a public key.</p>
+<p><img loading="lazy" alt="Rasterberry Pi Imager OS customization" src="https://code.groundlight.ai/python-sdk/assets/images/rpi-imager-4-90702b146493c946266686450054a278.png" title="Rasterberry Pi Imager OS customization" width="651" height="766" class="img_wQsy"></p>
+<p>When you're done configuring settings, click "Save" and then "Yes" to confirm.  Writing the image to the microSD card will take a few minutes.  When it's done, just pop the SD card into your pi, and power it up!  If it all works properly, you'll be able to access your Raspberry Pi over the network without needing to plug in a keyboard, mouse, or monitor.  (We like to plug it into Ethernet for the first boot, because we find that the Raspberry Pi's Wi-Fi can be a bit finicky, even if properly configured.)</p>
+<h3 class="anchor anchorWithStickyNavbar_FNw8" id="no-code-machine-vision-with-monitoring-notification-server-mns">No-code machine vision with Monitoring Notification Server (MNS)<a href="https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision#no-code-machine-vision-with-monitoring-notification-server-mns" class="hash-link" aria-label="Direct link to No-code machine vision with Monitoring Notification Server (MNS)" title="Direct link to No-code machine vision with Monitoring Notification Server (MNS)">​</a></h3>
+<p>If you opted to install the <code>desktop</code> or <code>mns-headless</code> image, you'll have a web application called the <a href="https://github.com/groundlight/monitoring-notification-server" target="_blank" rel="noopener noreferrer">Groundlight Monitoring Notification Server (MNS)</a>,
+which is a web application that allows you set up a computer vision pipeline without writing any code, and have it notify you when it detects something of interest.</p>
+<p>After setting up your Raspberry Pi with Groundlight OS, wait a few minutes for it to finish downloading everything, and then access the MNS by navigating to <code>http://[your-raspberry-pi's-IP-address]:3000</code> in a web browser, or if you're running the desktop version, open <a href="http://localhost:3000/" target="_blank" rel="noopener noreferrer"><code>http://localhost:3000/</code></a>.</p>
+<p><img loading="lazy" alt="MNS sample home screen" src="https://code.groundlight.ai/python-sdk/assets/images/mns-home-eb7c2b2cf6dfe022125a039681be0faf.png" title="MNS sample home screen" width="3104" height="1974" class="img_wQsy"></p>
+<p>It will prompt you for your <a href="http://localhost:3000/python-sdk/docs/getting-started/api-tokens" target="_blank" rel="noopener noreferrer">Groundlight API token</a>, which you can get with a free account at <a href="https://app.groundlight.ai/" target="_blank" rel="noopener noreferrer">app.groundlight.ai</a>.  Then you can describe your visual query in natural language, and how you want the MNS to notify you when it detects something of interest.  For best-practices on how to describe your visual query, see <a href="https://code.groundlight.ai/python-sdk/blog/best-practices" target="_blank" rel="noopener noreferrer">this blog post</a>.</p>
+<h2 class="anchor anchorWithStickyNavbar_FNw8" id="get-started-for-free">Get Started for Free<a href="https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision#get-started-for-free" class="hash-link" aria-label="Direct link to Get Started for Free" title="Direct link to Get Started for Free">​</a></h2>
+<p>To start building your own computer vision solutions, sign up for a free account at <a href="https://app.groundlight.ai/" target="_blank" rel="noopener noreferrer">app.groundlight.ai</a>. Dive into Groundlight Pi-Gen for a hassle-free introduction to AI-powered computer vision on Raspberry Pi.</p>
+<p>If you have any questions, please reach out to us on the in-application chat at <a href="https://app.groundlight.ai/" target="_blank" rel="noopener noreferrer">app.groundlight.ai</a> or on <a href="https://github.com/groundlight/python-sdk/issues" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>]]></content>
+        <author>
+            <name>Blaise Munyampirwa</name>
+        </author>
+        <author>
+            <name>Leo Dirac</name>
+        </author>
+        <category label="raspberry-pi" term="raspberry-pi"/>
+        <category label="mns" term="mns"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Best practices for best results with Groundlight]]></title>
         <id>https://code.groundlight.ai/python-sdk/blog/best-practices</id>
