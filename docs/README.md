@@ -17,6 +17,8 @@ make develop-docs-comprehensive
 
 and then open [http://localhost:3000/python-sdk](http://localhost:3000/python-sdk).
 
+Or if you're feeling luck, you can try `./start_docs_server.sh` which also rebuilds the sphinx docs on every change.
+This script is tested on MacOS with [homebrew](https://brew.sh/) installed, but could work elsewhere too.
 
 ## Running docs tests
 
