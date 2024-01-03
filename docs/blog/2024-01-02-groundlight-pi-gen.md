@@ -70,7 +70,7 @@ After setting up your Raspberry Pi with Groundlight OS, wait a few minutes for i
 
 ![MNS sample home screen](./images/2024-01-02-groundlight-pi-gen/mns-home.png "MNS sample home screen")
 
-It will prompt you for your [Groundlight API token](http://localhost:3000/python-sdk/docs/getting-started/api-tokens), which you can get with a free account at [app.groundlight.ai](https://app.groundlight.ai).  Then you can describe your visual query in natural language, and how you want the MNS to notify you when it detects something of interest.  For best-practices on how to describe your visual query, see [this blog post](https://code.groundlight.ai/python-sdk/blog/best-practices).
+It will prompt you for your [Groundlight API token](docs/getting-started/api-tokens), which you can get with a free account at [app.groundlight.ai](https://app.groundlight.ai).  Then you can describe your visual query in natural language, and how you want the MNS to notify you when it detects something of interest.  For best-practices on how to describe your visual query, see [this blog post](https://code.groundlight.ai/python-sdk/blog/best-practices).
 
 ## Get Started for Free
 To start building your own computer vision solutions, sign up for a free account at [app.groundlight.ai](https://app.groundlight.ai). Dive into Groundlight Pi-Gen for a hassle-free introduction to AI-powered computer vision on Raspberry Pi.
