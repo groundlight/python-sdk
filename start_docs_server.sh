@@ -24,7 +24,7 @@ check_dependencies() {
 
 check_dependencies
 
-cd "$(dirname "$0")"/..
+cd "$(dirname "$0")"
 # Only watch the python files, because the npm server will live reload the markdown docs.
 WATCH_PATH="./src/"
 START_SERVER_CMD="make develop-docs-comprehensive"
