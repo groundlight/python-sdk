@@ -1,6 +1,9 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+
 // Options: https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes
 const lightCodeTheme = require("prism-react-renderer").themes.github;
 const darkCodeTheme = require("prism-react-renderer").themes.vsDark;
@@ -48,21 +51,13 @@ const config = {
           // the first "docs" is the branch
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
       }),
-    ],
-    [
-      '@docusaurus/preset-classic',
-      {
-        docs: {
-          path: 'docs',
-          remarkPlugins: [remarkMath],
-          rehypePlugins: [rehypeKatex],
-        },
-      },
     ],
   ],
 
