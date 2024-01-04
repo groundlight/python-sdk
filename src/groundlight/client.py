@@ -165,7 +165,7 @@ class Groundlight:
         :param confidence_threshold: the confidence threshold
 
         :param pipeline_config: the pipeline config
-        
+
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the detector (limited to 1KB). You can retrieve this metadata later by calling
             `get_detector()`.
@@ -178,7 +178,7 @@ class Groundlight:
         if pipeline_config is not None:
             detector_creation_input.pipeline_config = pipeline_config
         if metadata is not None:
-            detector_creation_input.metadata = metadata 
+            detector_creation_input.metadata = metadata
         obj = self.detectors_api.create_detector(detector_creation_input)
         return Detector.parse_obj(obj.to_dict())
 
@@ -203,7 +203,7 @@ class Groundlight:
         :param confidence_threshold: the confidence threshold
 
         :param pipeline_config: the pipeline config
-        
+
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the detector (limited to 1KB). You can retrieve this metadata later by calling
             `get_detector()`.

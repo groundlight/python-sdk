@@ -250,7 +250,8 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
         assert is_valid_display_result(_image_query.result)
-        
+
+
 def test_create_detector_with_metadata(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
