@@ -37,7 +37,8 @@ release = version
 # sphinx.ext.autodoc is a Sphinx extension that automatically documents Python modules.
 # We are using the `reStructuredText` format for docstrings instead of google style.
 extensions = [
-    'sphinx.ext.mathjax',
+    #"sphinx.ext.pngmath",
+    "sphinx.ext.mathjax",
     "sphinx.ext.autodoc",
     "sphinxcontrib.autodoc_pydantic",
 ]

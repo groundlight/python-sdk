@@ -36,7 +36,6 @@ To estimate and construct confidence intervals for balanced accuracy, we first n
 
 Recall that plain old accuracy is just the fraction of correct predictions that a classifier makes. To define this fraction rigorously, we make the assumption that there's a fixed distribution over the set of possible examples that our classifier might encounter. This distributional assumption helps us talk meaningfully about the classifier's "true accuracy". And to make it clear why it's needed, consider the case that our classifier performs well on daytime images but poorly on nighttime images. If the underlying distribution consists mainly of daytime images, then our classifier's accuracy will be high, but if it's mostly nighttime images, the accuracy will be low. Thus, the classifier's true accuracy is implicitly a function of the distribution of examples it's applied to. We almost never know what this distribution is (in fact, it's mainly a mathematical fiction, but a useful one). But for our classifier to possess something like a Platonic "true accuracy" that is immutable, we assume a distribution over examples that remains static and fixed.
 
-.. math::
-
-  f(x)=\int_{0}^{t} f^{n}(t) d t
-
+$$
+    \pi = 3
+$$
