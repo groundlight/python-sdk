@@ -153,6 +153,7 @@ class Groundlight:
         *,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
         Create a new detector with a given name and query
@@ -164,6 +165,10 @@ class Groundlight:
         :param confidence_threshold: the confidence threshold
 
         :param pipeline_config: the pipeline config
+        
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the detector (limited to 1KB). You can retrieve this metadata later by calling
+            `get_detector()`.
 
         :return: Detector
         """
@@ -172,6 +177,8 @@ class Groundlight:
             detector_creation_input.confidence_threshold = confidence_threshold
         if pipeline_config is not None:
             detector_creation_input.pipeline_config = pipeline_config
+        if metadata is not None:
+            detector_creation_input.metadata = metadata 
         obj = self.detectors_api.create_detector(detector_creation_input)
         return Detector.parse_obj(obj.to_dict())
 
@@ -182,6 +189,7 @@ class Groundlight:
         *,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
         Tries to look up the detector by name.  If a detector with that name, query, and
@@ -195,6 +203,10 @@ class Groundlight:
         :param confidence_threshold: the confidence threshold
 
         :param pipeline_config: the pipeline config
+        
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the detector (limited to 1KB). You can retrieve this metadata later by calling
+            `get_detector()`.
 
         :return: Detector
         """
@@ -207,6 +219,7 @@ class Groundlight:
                 query=query,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
+                metadata=metadata,
             )
 
         # TODO: We may soon allow users to update the retrieved detector's fields.

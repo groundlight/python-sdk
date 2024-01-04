@@ -250,6 +250,16 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
         assert is_valid_display_result(_image_query.result)
+        
+def test_create_detector_with_metadata(gl: Groundlight):
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+    _detector = gl.create_detector(name=name, query=query, metadata=metadata)
+    assert _detector.metadata == metadata
+
+    # Test that we can retrieve the metadata from the server at a later time
+    retrieved_detector = gl.get_detector(id=_detector.id)
+    assert retrieved_detector.metadata == metadata
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing metadata.")
