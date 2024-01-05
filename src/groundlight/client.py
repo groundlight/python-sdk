@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Callable, Optional, Union
@@ -10,9 +11,10 @@ from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.model.detector_creation_input import DetectorCreationInput
+from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME
+from groundlight.config import API_TOKEN_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
@@ -49,14 +51,16 @@ class Groundlight:
                         detector=detector,
                         image="path/to/image.jpeg",
                         wait=0.0,
-                        human_review="ALWAYS")
+                        human_review="ALWAYS"
+                    )
         print(f"Image query confidence = {image_query.result.confidence}")
 
         # Poll the backend service for a confident answer
         image_query = gl.wait_for_confident_result(
                         image_query=image_query,
                         confidence_threshold=0.9,
-                        timeout_sec=60.0)
+                        timeout_sec=60.0
+                    )
 
         # Examine new confidence after a continuously trained ML model has re-evaluated the image query
         print(f"Image query confidence = {image_query.result.confidence}")
@@ -68,7 +72,12 @@ class Groundlight:
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        endpoint: Optional[str] = None,
+        api_token: Optional[str] = None,
+        disable_tls_verification: Optional[bool] = None,
+    ) -> None:
         """
         Constructs a Groundlight client.
 
@@ -76,6 +85,16 @@ class Groundlight:
 
         :param api_token: use this API token for your API calls.
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
+
+        :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
+                                        when calling API from https server. If unset, the fallback will check
+                                        the environment variable "DISABLE_TLS_VERIFY" for `1` or `0`. By default,
+                                        certificates are verified.
+
+                                        Disable verification if using a self-signed TLS certificate with a Groundlight
+                                        Edge Endpoint.  It is unadvised to disable verification  if connecting directly
+                                        to the Groundlight cloud service.
+        :type disable_tls_verification: Optional[bool]
 
         :return: Groundlight client
         """
@@ -89,6 +108,21 @@ class Groundlight:
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
                 raise ApiTokenError(API_TOKEN_HELP_MESSAGE) from e
+
+        should_disable_tls_verification = disable_tls_verification
+
+        if should_disable_tls_verification is None:
+            should_disable_tls_verification = bool(int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0)))
+
+        if should_disable_tls_verification:
+            logger.warning(
+                "Disabling SSL/TLS certificate verification.  This should only be used when connecting to an endpoint"
+                " with a self-signed certificate."
+            )
+            warnings.simplefilter("ignore", InsecureRequestWarning)
+
+            configuration.verify_ssl = False
+            configuration.assert_hostname = False
 
         configuration.api_key["ApiToken"] = api_token
 

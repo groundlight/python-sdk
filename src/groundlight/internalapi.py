@@ -211,7 +211,7 @@ class GroundlightApiClient(ApiClient):
         headers = self._headers()
 
         logger.info(f"Posting label={label} to image_query {image_query_id} ...")
-        response = requests.request("POST", url, json=data, headers=headers)
+        response = requests.request("POST", url, json=data, headers=headers, verify=self.configuration.verify_ssl)
         elapsed = 1000 * (time.time() - start_time)
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
@@ -232,7 +232,7 @@ class GroundlightApiClient(ApiClient):
         """
         url = f"{self.configuration.host}/v1/detectors?name={name}"
         headers = self._headers()
-        response = requests.request("GET", url, headers=headers)
+        response = requests.request("GET", url, headers=headers, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(status=response.status_code, http_resp=response)
@@ -281,7 +281,9 @@ class GroundlightApiClient(ApiClient):
         headers = self._headers()
         headers["Content-Type"] = "image/jpeg"
 
-        response = requests.request("POST", url, headers=headers, params=params, data=body.read())
+        response = requests.request(
+            "POST", url, headers=headers, params=params, data=body.read(), verify=self.configuration.verify_ssl
+        )
 
         if not is_ok(response.status_code):
             logger.info(response)
@@ -300,7 +302,7 @@ class GroundlightApiClient(ApiClient):
 
         headers = self._headers()
 
-        response = requests.request("POST", url, headers=headers, json={})
+        response = requests.request("POST", url, headers=headers, json={}, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
@@ -331,7 +333,7 @@ class GroundlightApiClient(ApiClient):
         # Get inspection in order to find out:
         # 1) if user_provided_id_key has been set
         # 2) if the inspection is closed
-        response = requests.request("GET", url, headers=headers)
+        response = requests.request("GET", url, headers=headers, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
@@ -358,7 +360,7 @@ class GroundlightApiClient(ApiClient):
         # Submit the new metadata
         metadata[user_provided_key] = user_provided_value
         payload["user_metadata_json"] = json.dumps(metadata)
-        response = requests.request("PATCH", url, headers=headers, json=payload)
+        response = requests.request("PATCH", url, headers=headers, json=payload, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
@@ -378,7 +380,7 @@ class GroundlightApiClient(ApiClient):
 
         # Closing an inspection generates a new inspection PDF. Therefore, if the inspection
         # is already closed, just return "COMPLETE" to avoid unnecessarily generating a new PDF.
-        response = requests.request("GET", url, headers=headers)
+        response = requests.request("GET", url, headers=headers, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
@@ -392,7 +394,7 @@ class GroundlightApiClient(ApiClient):
 
         payload = {"status": "COMPLETE"}
 
-        response = requests.request("PATCH", url, headers=headers, json=payload)
+        response = requests.request("PATCH", url, headers=headers, json=payload, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
@@ -418,7 +420,7 @@ class GroundlightApiClient(ApiClient):
 
         payload = {"confidence_threshold": confidence_threshold}
 
-        response = requests.request("PATCH", url, headers=headers, json=payload)
+        response = requests.request("PATCH", url, headers=headers, json=payload, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(
