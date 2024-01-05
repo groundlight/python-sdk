@@ -1,3 +1,19 @@
+SDK Client
+=====================
+
+.. autoclass:: groundlight.Groundlight 
+   :members:
+   :special-members: __init__
+
+
+Groundlight Client
+==================
+
+.. automodule:: groundlight.client 
+   :members:
+   :special-members: __init__
+   :exclude-members: ApiTokenError
+
 
 API Response Objects
 =====================

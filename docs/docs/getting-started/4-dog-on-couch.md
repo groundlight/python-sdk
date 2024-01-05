@@ -79,7 +79,7 @@ def play_sound(file_path):
 ```python notest
 gl = Groundlight()
 
-detector = gl.get_detector("Dog on Couch Detector")
+detector = gl.get_or_create_detector("Dog on Couch Detector")
 
 while True:
     image = capture_image()

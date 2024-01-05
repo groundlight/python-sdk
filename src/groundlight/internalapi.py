@@ -4,6 +4,7 @@ import os
 import random
 import time
 import uuid
+from enum import Enum
 from functools import wraps
 from typing import Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
@@ -14,6 +15,7 @@ from openapi_client.api_client import ApiClient, ApiException
 
 from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
+from groundlight.version import get_version
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -154,6 +156,12 @@ class RequestsRetryDecorator:
         return decorated
 
 
+# ReviewReasons are reasons a label was created. A review reason is a required field when posting a human label
+# to the API. The only review reason currently supported on the SDK is CUSTOMER_INITIATED.
+class ReviewReason(str, Enum):  # noqa: N801
+    CUSTOMER_INITIATED = "CUSTOMER_INITIATED"
+
+
 class GroundlightApiClient(ApiClient):
     """Subclassing the OpenAPI-generated ApiClient to add a bit of custom functionality.
     Not crazy about using polymorphism, but this is simpler than modifying the moustache
@@ -186,6 +194,9 @@ class GroundlightApiClient(ApiClient):
             "Content-Type": "application/json",
             "x-api-token": self.configuration.api_key["ApiToken"],
             "X-Request-Id": request_id,
+            # This metadata helps us debug issues with specific SDK versions.
+            "x-sdk-version": get_version(),
+            "x-sdk-language": "python",
         }
 
     @RequestsRetryDecorator()
@@ -195,10 +206,7 @@ class GroundlightApiClient(ApiClient):
         start_time = time.time()
         url = f"{self.configuration.host}/labels"
 
-        data = {
-            "label": label,
-            "posicheck_id": image_query_id,
-        }
+        data = {"label": label, "posicheck_id": image_query_id, "review_reason": ReviewReason.CUSTOMER_INITIATED}
 
         headers = self._headers()
 

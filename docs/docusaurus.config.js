@@ -2,8 +2,8 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 // Options: https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
+const lightCodeTheme = require("prism-react-renderer").themes.github;
+const darkCodeTheme = require("prism-react-renderer").themes.vsDark;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -12,7 +12,7 @@ const config = {
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: "https://www.groundlight.ai",
+  url: "https://code.groundlight.ai",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/python-sdk/",
@@ -77,8 +77,8 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: "img/docusaurus-social-card.jpg",
+      // image is expected to be a "social card".  Logo for now.
+      image: "img/gl-icon400.png",
       navbar: {
         title: "Groundlight",
         logo: {
@@ -100,7 +100,7 @@ const config = {
           },
           {
             href: "pathname:///python-sdk/api-reference-docs/",
-            label: 'API Reference',
+            label: "API Reference",
             position: "left",
           },
           {
@@ -108,6 +108,11 @@ const config = {
             label: "GitHub",
             position: "right",
           },
+          {
+            to: 'blog', 
+            label: 'Blog', 
+            position: 'left', 
+          }, 
         ],
       },
       footer: {
