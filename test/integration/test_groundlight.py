@@ -3,6 +3,8 @@
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 import json
 import time
+import string
+import random
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
@@ -26,6 +28,27 @@ def is_valid_display_result(result: Any) -> bool:
     if not is_valid_display_label(result.label):
         return False
     return True
+
+
+def generate_random_dict(target_size_bytes=1024, key_length=8, value_length=10) -> Dict[str, str]:
+    """
+    Generate a random dictionary with an approximate size in bytes.
+    """
+    key_chars = string.ascii_lowercase + string.digits
+    value_chars = string.ascii_letters + string.digits
+
+    random_dict = {}
+    while len(json.dumps(random_dict).encode("utf-8")) < target_size_bytes:
+        key = "".join(random.choice(key_chars) for _ in range(key_length))
+        value = "".join(random.choice(value_chars) for _ in range(value_length))
+        random_dict[key] = value
+
+        # Check if adding another pair would likely exceed the size
+        # The 4 is for the quotes around the key and value, and the colon and comma
+        if len(json.dumps(random_dict).encode("utf-8")) + key_length + value_length + 4 > target_size_bytes:
+            break
+
+    return random_dict
 
 
 def is_valid_display_label(label: str) -> bool:
@@ -250,19 +273,52 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
         assert is_valid_display_result(_image_query.result)
-        
+
+
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
 def test_create_detector_with_metadata(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
+    metadata = generate_random_dict(target_size_bytes=200)
     _detector = gl.create_detector(name=name, query=query, metadata=metadata)
     assert _detector.metadata == metadata
 
-    # Test that we can retrieve the metadata from the server at a later time
     retrieved_detector = gl.get_detector(id=_detector.id)
     assert retrieved_detector.metadata == metadata
 
 
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing metadata.")
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
+def test_get_or_create_detector_with_metadata(gl: Groundlight):
+    unique_name = f"Unique name {datetime.utcnow()}"
+    query = "Is there a dog?"
+    metadata = generate_random_dict(target_size_bytes=200)
+    detector = gl.get_or_create_detector(name=unique_name, query=query, metadata=metadata)
+    assert detector.metadata == metadata
+
+    retrieved_detector = gl.get_or_create_detector(name=unique_name, query=query, metadata=metadata)
+    assert retrieved_detector.id == detector.id
+    assert retrieved_detector.metadata == metadata
+
+
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
+@pytest.mark.parametrize(
+    "metadata_list",
+    [
+        [generate_random_dict(target_size_bytes=3000)],
+        ["this is not valid JSON"],
+        [""],
+    ],
+)
+def test_create_detector_with_invalid_metadata(gl: Groundlight, metadata_list: Any):
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+
+    for metadata in metadata_list:
+        with pytest.raises((TypeError, ValueError)):
+            gl.create_detector(name=name, query=query, metadata=metadata)
+
+
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing image query metadata.")
 @pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
 def test_submit_image_query_with_metadata(
     gl: Groundlight, detector: Detector, image: str, metadata: Union[Dict, str, None]

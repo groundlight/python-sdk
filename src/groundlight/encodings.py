@@ -29,12 +29,12 @@ def url_encode_dict(maybe_dict: Union[Dict, str], name: str, size_limit_bytes: O
             raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}") from e
 
     if not isinstance(maybe_dict, dict):
-        raise TypeError(f"`{name}` must be a dictionary or JSON string: got {original_type}")
+        raise TypeError(f"`{name}` must be a dictionary or JSON string: gottt {original_type}")
 
     data_json = json.dumps(maybe_dict)
 
     if size_limit_bytes is not None:
-        size_bytes = sys.getsizeof(data_json)
+        size_bytes = len(data_json)
         if size_bytes > size_limit_bytes:
             raise ValueError(f"`{name}` is too large: {size_bytes} bytes > {size_limit_bytes} bytes limit.")
 
