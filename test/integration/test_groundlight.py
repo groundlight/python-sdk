@@ -37,7 +37,7 @@ def generate_random_dict(target_size_bytes=1024, key_length=8, value_length=10) 
     key_chars = string.ascii_lowercase + string.digits
     value_chars = string.ascii_letters + string.digits
 
-    random_dict = {}
+    random_dict: Dict[str, str] = {}
     while len(json.dumps(random_dict).encode("utf-8")) < target_size_bytes:
         key = "".join(random.choice(key_chars) for _ in range(key_length))
         value = "".join(random.choice(value_chars) for _ in range(value_length))
