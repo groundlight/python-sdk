@@ -77,15 +77,6 @@ simply by looking at a single image from the detector.</p>
 <p>Think about how you will use the output of your detector, so the Yes and No answers align with your expectations. A technically correct answer to a vague question may be of no use to you. For example, if you have a camera pointing down on a kitchen range and would like to get an alert if there's a fire, phrase the query so that normal gas burner flames are excluded.</p>
 <p>✅<!-- --> <strong>DO:</strong> "Is there a fire in the pan? (Ignore normal gas burner flames)"<br>
 <!-- -->❌<!-- --> <strong>DON'T:</strong> "Is there a fire?"</p>
-<hr>
-<blockquote>
-<p>🎓<!-- --> <em><strong>Pro Tip:</strong> If you want an alert on a rare event, it is better if the rare event corresponds to the answer of NO, not YES.</em></p>
-<p>✅<!-- --> “Are indicator lights all green?” YES = correct operation, NO = alert<br>
-<!-- -->❌<!-- --> “Is there at least one red indicator light?” YES = alert, NO = correct operation</p>
-<p>Here’s a <em>DON’T DO THIS</em> example of a detector where the rare event (blocked fire extinguisher corresponds to the Yes class, which is less likely to result in good performance.</p>
-<p><a target="_blank" href="https://code.groundlight.ai/python-sdk/assets/files/fire_extinguisher_blocked_yes-c8fc8eaf7c27b1f820cde8924b0f3d0f.png"><img loading="lazy" alt="Screenshot for a detector answering Yes when the fire extinguisher is blocked" src="https://code.groundlight.ai/python-sdk/assets/images/fire_extinguisher_blocked_yes-c8fc8eaf7c27b1f820cde8924b0f3d0f.png" title="A detector where the rare event (blocked fire extinguisher) corresponds to the Yes class, which is less likely to result in good performance" width="1396" height="264" class="img_wQsy"></a></p>
-</blockquote>
-<hr>
 <h2 class="anchor anchorWithStickyNavbar_FNw8" id="put-details-in-the-notes">Put details in the notes<a href="https://code.groundlight.ai/python-sdk/blog/best-practices#put-details-in-the-notes" class="hash-link" aria-label="Direct link to Put details in the notes" title="Direct link to Put details in the notes">​</a></h2>
 <p>Is any specialized knowledge required to answer your query?
 Use the notes dialog to provide explanations of any assumed knowledge or definitions of technical terms.
@@ -102,8 +93,9 @@ Sometimes it’s impossible to answer the question based on the image, for examp
 at night to tell, or the view is temporarily obstructed by something moving in front of the camera.
 Do you know how you’d like to treat those cases?</p>
 <p>✅<!-- --> <strong>DO:</strong> Add notes like “If the image is too dark to tell, the answer should be YES.”</p>
-<p>In the fire extinguisher example above, the customer wrote “If you can’t see the fire extinguisher,
+<p>In the fire extinguisher example below, the customer wrote “If you can’t see the fire extinguisher,
 it is blocked” inside the query text, drawing attention to the most important potential edge case.</p>
+<p><a target="_blank" href="https://code.groundlight.ai/python-sdk/assets/files/fire_extinguisher_blocked_yes-c8fc8eaf7c27b1f820cde8924b0f3d0f.png"><img loading="lazy" alt="Screenshot for a detector with edge case in query" src="https://code.groundlight.ai/python-sdk/assets/images/fire_extinguisher_blocked_yes-c8fc8eaf7c27b1f820cde8924b0f3d0f.png" title="A detector with a detailed query including a likely potential edge case (fire extinguisher not visible)." width="1396" height="264" class="img_wQsy"></a></p>
 <p>Detailed notes on foreseeable edge cases will prevent confusion by backend labelers and result in
 quicker learning for your detector at less cost to you.</p>
 <h2 class="anchor anchorWithStickyNavbar_FNw8" id="seed-with-a-few-examples">Seed with a few examples<a href="https://code.groundlight.ai/python-sdk/blog/best-practices#seed-with-a-few-examples" class="hash-link" aria-label="Direct link to Seed with a few examples" title="Direct link to Seed with a few examples">​</a></h2>
