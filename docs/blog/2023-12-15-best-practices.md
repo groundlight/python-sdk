@@ -34,17 +34,6 @@ Think about how you will use the output of your detector, so the Yes and No answ
 :white_check_mark: **DO:** "Is there a fire in the pan? (Ignore normal gas burner flames)"  
 :x: **DON'T:** "Is there a fire?"
 
----
-> :mortar_board: ***Pro Tip:** If you want an alert on a rare event, it is better if the rare event corresponds to the answer of NO, not YES.*
->
-> :white_check_mark: “Are indicator lights all green?” YES = correct operation, NO = alert  
-> :x: “Is there at least one red indicator light?” YES = alert, NO = correct operation 
-> 
-> Here’s a *DON’T DO THIS* example of a detector where the rare event (blocked fire extinguisher corresponds to the Yes class, which is less likely to result in good performance.  
->
-> [![Screenshot for a detector answering Yes when the fire extinguisher is blocked](./images/2023-12-15-best-practices/fire_extinguisher_blocked_yes.png "A detector where the rare event (blocked fire extinguisher) corresponds to the Yes class, which is less likely to result in good performance")](./images/2023-12-15-best-practices/fire_extinguisher_blocked_yes.png)
----
-
 ## Put details in the notes
 Is any specialized knowledge required to answer your query? 
 Use the notes dialog to provide explanations of any assumed knowledge or definitions of technical terms. 
@@ -68,8 +57,10 @@ Do you know how you’d like to treat those cases?
 
 :white_check_mark: **DO:** Add notes like “If the image is too dark to tell, the answer should be YES.”
 
-In the fire extinguisher example above, the customer wrote “If you can’t see the fire extinguisher, 
+In the fire extinguisher example below, the customer wrote “If you can’t see the fire extinguisher, 
 it is blocked” inside the query text, drawing attention to the most important potential edge case.
+
+[![Screenshot for a detector with edge case in query](./images/2023-12-15-best-practices/fire_extinguisher_blocked_yes.png "A detector with a detailed query including a likely potential edge case (fire extinguisher not visible).")](./images/2023-12-15-best-practices/fire_extinguisher_blocked_yes.png)
 
 Detailed notes on foreseeable edge cases will prevent confusion by backend labelers and result in 
 quicker learning for your detector at less cost to you. 
