@@ -17,14 +17,3 @@ jobs:
       name: randomly assign reviewer
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        group: |
-          name: dependabot-reviewers
-          reviewers: 1
-          usernames:
-            - mjvogelsong
-            - robotrapta
-            - tyler-romero
-            - sunildkumar
-            - roxanne-o
-            - blaise-muhirwa
-            - brandon-groundlight
