@@ -280,10 +280,12 @@ def test_create_detector_with_metadata(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     metadata = generate_random_dict(target_size_bytes=200)
-    _detector = gl.create_detector(name=name, query=query, metadata=metadata)
-    assert _detector.metadata == metadata
+    detector = gl.create_detector(name=name, query=query, metadata=metadata)
+    
+    print(f"Detector = {detector}")
+    assert detector.metadata == metadata
 
-    retrieved_detector = gl.get_detector(id=_detector.id)
+    retrieved_detector = gl.get_detector(id=detector.id)
     assert retrieved_detector.metadata == metadata
 
 

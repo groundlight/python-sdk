@@ -50,6 +50,7 @@ class DetectorsApi(object):
             params_map={
                 "all": [
                     "detector_creation_input",
+                    "metadata",
                 ],
                 "required": [
                     "detector_creation_input",
@@ -63,10 +64,14 @@ class DetectorsApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_creation_input": (DetectorCreationInput,),
+                    "metadata": (str,),
                 },
-                "attribute_map": {},
+                "attribute_map": {
+                    "metadata": "metadata",
+                },
                 "location_map": {
                     "detector_creation_input": "body",
+                    "metadata": "query",
                 },
                 "collection_format_map": {},
             },
@@ -173,6 +178,7 @@ class DetectorsApi(object):
             detector_creation_input (DetectorCreationInput):
 
         Keyword Args:
+            metadata (str): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB).. [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object

@@ -40,6 +40,15 @@ paths:
       description: Create a new detector.
       tags:
         - detectors
+      parameters:
+        - in: query
+          name: metadata
+          schema:
+            type: string
+          required: false
+          description:
+            A dictionary of custom key/value metadata to associate with the detector
+            (limited to 1KB).
       requestBody:
         content:
           application/json:

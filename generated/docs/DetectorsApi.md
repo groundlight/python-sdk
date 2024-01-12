@@ -55,10 +55,19 @@ with openapi_client.ApiClient(configuration) as api_client:
         confidence_threshold=0.9,
         pipeline_config="pipeline_config_example",
     ) # DetectorCreationInput | 
+    metadata = "metadata_example" # str | A dictionary of custom key/value metadata to associate with the detector (limited to 1KB). (optional)
 
     # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.create_detector(detector_creation_input)
+        pprint(api_response)
+    except openapi_client.ApiException as e:
+        print("Exception when calling DetectorsApi->create_detector: %s\n" % e)
+
+    # example passing only required values which don't have defaults set
+    # and optional values
+    try:
+        api_response = api_instance.create_detector(detector_creation_input, metadata=metadata)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling DetectorsApi->create_detector: %s\n" % e)
@@ -70,6 +79,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_creation_input** | [**DetectorCreationInput**](DetectorCreationInput.md)|  |
+ **metadata** | **str**| A dictionary of custom key/value metadata to associate with the detector (limited to 1KB). | [optional]
 
 ### Return type
 
