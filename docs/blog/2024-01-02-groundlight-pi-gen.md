@@ -19,6 +19,8 @@ Happy New Year everybody!  If you got a fancy new Raspberry Pi 5 for Christmas, 
 
 Raspberry Pi offers a great platform for computer vision (CV), ranging from home hobby projects to serious industrial applications. However, setting up a Raspberry Pi for computer vision can be a time-consuming process. [Groundlight Pi-Gen](https://github.com/groundlight/groundlight-pi-gen), simplifies the setup process by providing ready-to-use OS images for Raspberry Pi.
 
+<!-- truncate -->
+
 (Note that here, when we say "image" we mean an OS image, which is a file containing a snapshot of an operating system - linux - that can be installed onto a new machine.  These are not photos or pictures, which are also of course important in computer vision.  Oh jargon...)
 
 ## Raspberry Pi OS Images pre-built with Computer Vision Software

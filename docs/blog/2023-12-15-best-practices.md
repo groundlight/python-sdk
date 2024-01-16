@@ -4,10 +4,13 @@ description: How to get the best chance of success from Groundlight detectors
 slug: best-practices
 authors:
   - name: Paulina Varshavskaya
+    title: Head of R&D at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/932933bc26/varshap.jpg
   - name: Sunil Kumar
+    title: ML Engineer at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/a265e322bd/kumars.jpg
   - name: Blake Thorne
+    title: Head of Marketing at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/daf4a78ec3/thorneb.jpg
 
 tags: [how-to, best-practices]
@@ -82,7 +85,8 @@ It's also good practice to continue adding a few ground truth labels here and th
 on the detector details page, in order to get tighter confidence bounds on your detector’s performance metrics.
 
 ---
-> :mortar_board: *Watch this space for a forthcoming in-depth discussion of confidence bounds*
+> :mortar_board: *Read an in-depth discussion of how we assess detector accuracy and the confidence bounds reported for your detector's performance:*
+[Tales from the Binomial Tail: Confidence intervals for balanced accuracy](2024-01-16-binomial-tails.md)
 ---
 
 If you notice labeling mistakes, correct them by providing your own answer. Then consider adding 
