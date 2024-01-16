@@ -10,7 +10,7 @@ authors:
     title: CTO and Co-founder at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/284x281/602a9c95c5/diracl.png
 tags: [metrics, math, deep dive]
-image: ./images/binomial-tails/balanced-accuracy-bound.png
+image: ./images/binomial-tails/binomial_confidence_intervals__muted_theme__social.png
 hide_table_of_contents: false
 ---
 
