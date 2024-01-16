@@ -81,11 +81,11 @@ with openapi_client.ApiClient(configuration) as api_client:
         group_name="group_name_example",
         confidence_threshold=0.9,
         pipeline_config="pipeline_config_example",
+        metadata="metadata_example",
     ) # DetectorCreationInput | 
-metadata = "metadata_example" # str | A dictionary of custom key/value metadata to associate with the detector (limited to 1KB). (optional)
 
     try:
-        api_response = api_instance.create_detector(detector_creation_input, metadata=metadata)
+        api_response = api_instance.create_detector(detector_creation_input)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling DetectorsApi->create_detector: %s\n" % e)

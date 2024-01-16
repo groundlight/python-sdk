@@ -177,11 +177,9 @@ class Groundlight:
             detector_creation_input.confidence_threshold = confidence_threshold
         if pipeline_config is not None:
             detector_creation_input.pipeline_config = pipeline_config
-        # if metadata is not None:
-        #     detector_creation_input.metadata = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
         if metadata is not None:
-            metadata = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
-        obj = self.detectors_api.create_detector(detector_creation_input, metadata=metadata)
+            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        obj = self.detectors_api.create_detector(detector_creation_input)
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(

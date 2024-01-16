@@ -281,7 +281,7 @@ def test_create_detector_with_metadata(gl: Groundlight):
     query = "Is there a dog?"
     metadata = generate_random_dict(target_size_bytes=200)
     detector = gl.create_detector(name=name, query=query, metadata=metadata)
-    
+
     print(f"Detector = {detector}")
     assert detector.metadata == metadata
 

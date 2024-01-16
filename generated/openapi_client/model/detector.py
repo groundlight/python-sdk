@@ -122,6 +122,10 @@ class Detector(ModelNormal):
             "query": (str,),  # noqa: E501
             "group_name": (str,),  # noqa: E501
             "confidence_threshold": (float,),  # noqa: E501
+            "metadata": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -136,6 +140,7 @@ class Detector(ModelNormal):
         "query": "query",  # noqa: E501
         "group_name": "group_name",  # noqa: E501
         "confidence_threshold": "confidence_threshold",  # noqa: E501
+        "metadata": "metadata",  # noqa: E501
     }
 
     read_only_vars = {
@@ -193,6 +198,7 @@ class Detector(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -287,6 +293,7 @@ class Detector(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

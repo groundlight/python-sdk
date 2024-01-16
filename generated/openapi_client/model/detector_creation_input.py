@@ -114,6 +114,10 @@ class DetectorCreationInput(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "metadata": (
+                str,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -126,6 +130,7 @@ class DetectorCreationInput(ModelNormal):
         "group_name": "group_name",  # noqa: E501
         "confidence_threshold": "confidence_threshold",  # noqa: E501
         "pipeline_config": "pipeline_config",  # noqa: E501
+        "metadata": "metadata",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -175,6 +180,7 @@ class DetectorCreationInput(ModelNormal):
             group_name (str): Which group should this detector be part of?. [optional]  # noqa: E501
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
             pipeline_config (str, none_type): (Advanced usage) Configuration to instantiate a specific prediction pipeline.. [optional]  # noqa: E501
+            metadata (str, none_type): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -270,6 +276,7 @@ class DetectorCreationInput(ModelNormal):
             group_name (str): Which group should this detector be part of?. [optional]  # noqa: E501
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
             pipeline_config (str, none_type): (Advanced usage) Configuration to instantiate a specific prediction pipeline.. [optional]  # noqa: E501
+            metadata (str, none_type): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
