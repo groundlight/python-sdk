@@ -188,7 +188,7 @@ In words, $\bar{p}$ is the maximum accuracy for which there exists at least $\de
 
 We can easily implement this definition in code. The binomial CDF is available in python through the **[scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html)** module as **[binom.cdf](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binom.html#scipy.stats.binom)**. And we can use it to find the largest value of $p$ for which $F_{N,p}(k) \ge \delta$. However the CDF isn't directly invertible, so we can't just plug in $\delta$ and get $\bar{p}$ out. Instead we need to search over possible values of $p$ until we find the largest one that satisfies the inequality.  This can be done efficiently using the interval bisection method which we implement below.
 
-```python
+```python notest
 from scipy.stats import binom
 
 def binomial_upper_bound(N, k, delta):
