@@ -98,7 +98,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
+      // image is expected to be a "social card".  Logo for now.
       image: "img/gl-icon400.png",
       navbar: {
         title: "Groundlight",
