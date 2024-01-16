@@ -11,7 +11,7 @@ jobs:
     if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       name: checkout code
     - uses: uesteibar/reviewer-lottery@v3
       name: randomly assign reviewer
