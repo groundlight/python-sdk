@@ -4,7 +4,7 @@ description: How we assess and report detector accuracy
 slug: confidence-intervals-for-balanced-accuracy
 authors:
   - name: Ted Sandler
-    title: Senior Applied Scientist
+    title: Senior Applied Scientist at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/efc35da152/sandlert.jpg
   - name: Leo Dirac
     title: CTO and Co-founder at Groundlight

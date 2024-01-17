@@ -13,10 +13,10 @@ authors:
     title: CTO and Co-founder at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/284x281/602a9c95c5/diracl.png
   - name: Tyler Romero 
-    title: Senior Machine Learning Engineer
+    title: Senior ML Engineer at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/368053d79a/romerot.jpg 
   - name: Michael Vogelsong 
-    title: Chief ML Scientist 
+    title: Chief ML Engineer at Groundlight
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/c87b9d30f4/vogelsongm.jpg
 
 
