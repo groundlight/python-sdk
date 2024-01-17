@@ -283,7 +283,8 @@ answers for each class of Yes or No will also give you ML performance metrics on
 on the detector details page, in order to get tighter confidence bounds on your detector’s performance metrics.</p>
 <hr>
 <blockquote>
-<p>🎓<!-- --> <em>Watch this space for a forthcoming in-depth discussion of confidence bounds</em></p>
+<p>🎓<!-- --> <em>Read an in-depth discussion of how we assess detector accuracy and the confidence bounds reported for your detector's performance:</em>
+<a href="https://code.groundlight.ai/python-sdk/blog/confidence-intervals-for-balanced-accuracy">Tales from the Binomial Tail: Confidence intervals for balanced accuracy</a></p>
 </blockquote>
 <hr>
 <p>If you notice labeling mistakes, correct them by providing your own answer. Then consider adding
