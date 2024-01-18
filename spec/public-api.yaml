@@ -270,7 +270,7 @@ components:
           nullable: true
           description:
             A dictionary of custom key/value metadata to associate with the detector
-            (limited to 1KB).
+            (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.
       required:
         - created_at
         - group_name
@@ -314,7 +314,7 @@ components:
           nullable: true
           description:
             A dictionary of custom key/value metadata to associate with the detector
-            (limited to 1KB).
+            (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.
       required:
         # TODO: make name optional - that's how the web version is going.
         - name
