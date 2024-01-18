@@ -265,6 +265,12 @@ components:
           description:
             If the detector's prediction is below this confidence threshold,
             send the image query for human review.
+        metadata:
+          type: object 
+          nullable: true
+          description:
+            A dictionary of custom key/value metadata to associate with the detector
+            (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.
       required:
         - created_at
         - group_name
@@ -303,6 +309,12 @@ components:
           nullable: true
           description: (Advanced usage) Configuration to instantiate a specific prediction pipeline.
           maxLength: 8192
+        metadata:
+          type: string 
+          nullable: true
+          description:
+            A dictionary of custom key/value metadata to associate with the detector
+            (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.
       required:
         # TODO: make name optional - that's how the web version is going.
         - name
