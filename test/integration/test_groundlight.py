@@ -776,21 +776,22 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
     with pytest.raises(ValueError):
         gl.update_detector_confidence_threshold(detector.id, -1)  # too low
 
+
 def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, detector: Detector):
     inspection_id = gl.start_inspection()
-    metadata = {'key': 'value'}
-    iq = gl.submit_image_query(detector=detector.id, 
-                               image="test/assets/dog.jpeg", 
-                               human_review="NEVER", 
-                               inspection_id=inspection_id,
-                               metadata=metadata,
-                               want_async=True,
-                               wait=0,
-                               )
-    
+    metadata = {"key": "value"}
+    iq = gl.submit_image_query(
+        detector=detector.id,
+        image="test/assets/dog.jpeg",
+        human_review="NEVER",
+        inspection_id=inspection_id,
+        metadata=metadata,
+        want_async=True,
+        wait=0,
+    )
+
     iq = gl.get_image_query(iq.id)
     iq = gl.wait_for_confident_result(iq.id)
 
     assert iq.metadata == metadata
     assert iq.result.label == Label.YES
-
