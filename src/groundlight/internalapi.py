@@ -264,12 +264,14 @@ class GroundlightApiClient(ApiClient):
 
         url = f"{self.configuration.host}/posichecks"
 
-        params: Dict[str, Union[str, float, bool, None]] = {
+        params: Dict[str, Union[str, float, bool]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
-            "metadata": metadata,
             "want_async": want_async,
         }
+
+        if metadata is not None:
+            params["metadata"] = metadata
         if patience_time is not None:
             params["patience_time"] = float(patience_time)
 
