@@ -255,6 +255,8 @@ class GroundlightApiClient(ApiClient):
         inspection_id: str,
         patience_time: Optional[float] = None,
         human_review: str = "DEFAULT",
+        metadata: Optional[dict] = None,
+        want_async: Optional[bool] = False,
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
@@ -265,6 +267,8 @@ class GroundlightApiClient(ApiClient):
         params: Dict[str, Union[str, float, bool]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
+            "metadata": metadata,
+            "want_async": want_async,
         }
         if patience_time is not None:
             params["patience_time"] = float(patience_time)
