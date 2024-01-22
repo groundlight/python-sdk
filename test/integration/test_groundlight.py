@@ -776,6 +776,7 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
     with pytest.raises(ValueError):
         gl.update_detector_confidence_threshold(detector.id, -1)  # too low
 
+
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
 def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, detector: Detector):
     inspection_id = gl.start_inspection()
