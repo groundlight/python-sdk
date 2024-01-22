@@ -6,7 +6,7 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, Optional, Union, Any
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
@@ -264,7 +264,7 @@ class GroundlightApiClient(ApiClient):
 
         url = f"{self.configuration.host}/posichecks"
 
-        params: Dict[str, Union[str, float, bool]] = {
+        params: Dict[str, Union[str, float, bool, Dict[Any, Any]]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
             "want_async": want_async,
