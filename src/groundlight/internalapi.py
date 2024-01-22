@@ -6,7 +6,7 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
-from typing import Callable, Dict, Optional, Union, Any
+from typing import Any, Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
