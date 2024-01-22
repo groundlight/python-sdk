@@ -778,9 +778,7 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
-def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, 
-                                                                       detector: Detector,
-                                                                       image: str):
+def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, detector: Detector, image: str):
     inspection_id = gl.start_inspection()
     metadata = {"key": "value"}
     iq = gl.submit_image_query(
