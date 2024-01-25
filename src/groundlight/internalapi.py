@@ -6,7 +6,7 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
-from typing import Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
@@ -255,6 +255,8 @@ class GroundlightApiClient(ApiClient):
         inspection_id: str,
         patience_time: Optional[float] = None,
         human_review: str = "DEFAULT",
+        metadata: Optional[dict] = None,
+        want_async: Optional[bool] = False,
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
@@ -262,10 +264,14 @@ class GroundlightApiClient(ApiClient):
 
         url = f"{self.configuration.host}/posichecks"
 
-        params: Dict[str, Union[str, float, bool]] = {
+        params: Dict[str, Union[str, float, bool, Dict[Any, Any], None]] = {
             "inspection_id": inspection_id,
             "predictor_id": detector_id,
+            "want_async": want_async,
         }
+
+        if metadata is not None:
+            params["metadata"] = metadata
         if patience_time is not None:
             params["patience_time"] = float(patience_time)
 
