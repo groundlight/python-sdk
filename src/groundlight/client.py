@@ -14,7 +14,8 @@ from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.config import DISABLE_TLS_VARIABLE_NAME
+from groundlight.credentials import get_api_token
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
@@ -37,7 +38,15 @@ class Groundlight:
     """
     Client for accessing the Groundlight cloud service.
 
-    The API token (auth) is specified through the **GROUNDLIGHT_API_TOKEN** environment variable by default.
+    You can set the API token (auth) in the following places:
+    1. Pass it to the constructor as the `api_token` argument.
+    2. Set the environment variable "GROUNDLIGHT_API_TOKEN".
+    3. Set the [default] `api_token` field in $HOME/.groundlight.toml. E.g.:
+
+    ```toml
+    [default]
+    api_token = "api_..."
+    ```
 
     **Example usage**::
 
@@ -103,11 +112,7 @@ class Groundlight:
         configuration = Configuration(host=self.endpoint)
 
         if api_token is None:
-            try:
-                # Retrieve the API token from environment variable
-                api_token = os.environ[API_TOKEN_VARIABLE_NAME]
-            except KeyError as e:
-                raise ApiTokenError(API_TOKEN_HELP_MESSAGE) from e
+            api_token = get_api_token()
 
         should_disable_tls_verification = disable_tls_verification
 
@@ -259,18 +264,14 @@ class Groundlight:
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                    f" The existing query is '{existing_detector.query}'."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                f" The existing query is '{existing_detector.query}'.",
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                    " thresholds don't match. The existing confidence threshold is"
-                    f" {existing_detector.confidence_threshold}."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                " thresholds don't match. The existing confidence threshold is"
+                f" {existing_detector.confidence_threshold}.",
             )
         return existing_detector
 
