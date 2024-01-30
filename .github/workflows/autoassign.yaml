@@ -2,8 +2,11 @@
 name: auto-assign
 
 on:
-  pull_request_target:
-    types: [opened, ready_for_review, reopened]
+  push:
+
+# on:
+#   pull_request_target:
+#     types: [opened, ready_for_review, reopened]
 
 jobs:
   assign-pr-reviewer:
