@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[9278],{7828:s=>{s.exports=JSON.parse('{"label":"Raspberry Pi","permalink":"/python-sdk/blog/tags/raspberry-pi","allTagsPath":"/python-sdk/blog/tags","count":2,"unlisted":false}')}}]);

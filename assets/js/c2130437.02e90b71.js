@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[8321],{7137:e=>{e.exports=JSON.parse('{"label":"State Management","permalink":"/python-sdk/blog/tags/state-management","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);
