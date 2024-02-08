@@ -262,7 +262,7 @@ class GroundlightApiClient(ApiClient):
         The image query will be associated to the inspection_id provided.
         """
 
-        url = f"{self.configuration.host}/posichecks"
+        url = f"{self.configuration.host}/v1/image-queries"
 
         params: Dict[str, Union[str, float, bool, Dict[Any, Any], None]] = {
             "inspection_id": inspection_id,
