@@ -10,11 +10,12 @@ from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQue
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.exceptions import UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
@@ -29,7 +30,11 @@ from groundlight.optional_imports import Image, np
 logger = logging.getLogger("groundlight.sdk")
 
 
-class ApiTokenError(Exception):
+class GroundlightClientException(Exception):
+    pass
+
+
+class ApiTokenError(GroundlightClientException):
     pass
 
 
@@ -107,7 +112,8 @@ class Groundlight:
                 # Retrieve the API token from environment variable
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
-                raise ApiTokenError(API_TOKEN_HELP_MESSAGE) from e
+                raise ApiTokenError(API_TOKEN_MISSING_HELP_MESSAGE) from e
+        self.api_token_prefix = api_token[:12]
 
         should_disable_tls_verification = disable_tls_verification
 
@@ -129,6 +135,28 @@ class Groundlight:
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+        self._verify_connectivity()
+
+    def _verify_connectivity(self) -> None:
+        """
+        Verify that the client can connect to the Groundlight service, and raise a helpful
+        exception if it cannot.
+        """
+        try:
+            # a simple query to confirm that the endpoint & API token are working
+            self.list_detectors(page=1, page_size=1)
+        except UnauthorizedException as e:
+            msg = (
+                f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
+                f"'{self.endpoint}'.  Endpoint is responding, but API token is probably invalid."
+            )
+            raise ApiTokenError(msg) from e
+        except Exception as e:
+            msg = (
+                f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
+                f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or offline?"
+            )
+            raise GroundlightClientException(msg) from e
 
     @staticmethod
     def _fixup_image_query(iq: ImageQuery) -> ImageQuery:

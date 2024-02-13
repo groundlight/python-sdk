@@ -6,7 +6,7 @@ from typing_extensions import get_origin
 
 from groundlight import Groundlight
 from groundlight.client import ApiTokenError
-from groundlight.config import API_TOKEN_HELP_MESSAGE
+from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE
 
 cli_app = typer.Typer(
     no_args_is_help=True,
@@ -56,7 +56,7 @@ def groundlight():
                 cli_app.command()(cli_func)
         cli_app()
     except ApiTokenError:
-        print(API_TOKEN_HELP_MESSAGE)
+        print(API_TOKEN_MISSING_HELP_MESSAGE)
 
 
 if __name__ == "__main__":
