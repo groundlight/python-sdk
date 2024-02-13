@@ -6,7 +6,6 @@ from typing_extensions import get_origin
 
 from groundlight import Groundlight
 from groundlight.client import ApiTokenError
-from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE
 
 cli_app = typer.Typer(
     no_args_is_help=True,
