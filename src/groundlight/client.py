@@ -107,12 +107,14 @@ class Groundlight:
         self.endpoint = sanitize_endpoint_url(endpoint)
         configuration = Configuration(host=self.endpoint)
 
-        if api_token is None:
+        if not api_token:
             try:
                 # Retrieve the API token from environment variable
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
                 raise ApiTokenError(API_TOKEN_MISSING_HELP_MESSAGE) from e
+            if not api_token:
+                raise ApiTokenError("No API token found.  GROUNDLIGHT_API_TOKEN environment variable is set but blank")
         self.api_token_prefix = api_token[:12]
 
         should_disable_tls_verification = disable_tls_verification

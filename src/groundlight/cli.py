@@ -55,8 +55,8 @@ def groundlight():
                 cli_func = class_func_to_cli(method)
                 cli_app.command()(cli_func)
         cli_app()
-    except ApiTokenError:
-        print(API_TOKEN_MISSING_HELP_MESSAGE)
+    except ApiTokenError as e:
+        print(e)
 
 
 if __name__ == "__main__":
