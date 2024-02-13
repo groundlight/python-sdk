@@ -30,11 +30,11 @@ from groundlight.optional_imports import Image, np
 logger = logging.getLogger("groundlight.sdk")
 
 
-class GroundlightClientException(Exception):
+class GroundlightClientError(Exception):
     pass
 
 
-class ApiTokenError(GroundlightClientException):
+class ApiTokenError(GroundlightClientError):
     pass
 
 
@@ -156,7 +156,7 @@ class Groundlight:
                 f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
                 f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or offline?"
             )
-            raise GroundlightClientException(msg) from e
+            raise GroundlightClientError(msg) from e
 
     @staticmethod
     def _fixup_image_query(iq: ImageQuery) -> ImageQuery:
