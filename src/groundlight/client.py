@@ -156,7 +156,7 @@ class Groundlight:
         except Exception as e:
             msg = (
                 f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
-                f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or offline?"
+                f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or unreachable?"
             )
             raise GroundlightClientError(msg) from e
 
