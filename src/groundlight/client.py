@@ -157,7 +157,7 @@ class Groundlight:
             msg = (
                 f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
                 f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or unreachable? "
-                f"Check https://status.groundlight.ai/ for service status."
+                "Check https://status.groundlight.ai/ for service status."
             )
             raise GroundlightClientError(msg) from e
 
