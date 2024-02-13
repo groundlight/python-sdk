@@ -79,12 +79,12 @@ class Groundlight:
         disable_tls_verification: Optional[bool] = None,
     ) -> None:
         """
-        Constructs a Groundlight client.
-
-        :param endpoint: optionally specify a different endpoint
+        Constructs a Groundlight SDK client.
 
         :param api_token: use this API token for your API calls.
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
+
+        :param endpoint: optionally specify a different endpoint, such as for an Edge device
 
         :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
                                         when calling API from https server. If unset, the fallback will check
@@ -142,11 +142,17 @@ class Groundlight:
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
+    def whoami(self) -> dict[str, str]:
+        """
+        Return info about the currently logged in user, based on the API token.
+        """
+        return self.api_client.whoami()
+
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
         Get a detector by id
 
-        :param id: the detector id
+        :param id: the detector id as a string, or a Detector object
 
         :return: Detector
         """
