@@ -129,7 +129,7 @@ class RequestsRetryDecorator:
 
             while retry_count <= self.max_retries:
                 try:
-                    friendly_datestamp = datetime.now().isoformat()
+                    datetime.now().isoformat()
                     return function(*args, **kwargs)
                 except ApiException as e:
                     is_retryable = (e.status is not None) and (e.status in self.status_code_range)
