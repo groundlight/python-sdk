@@ -21,7 +21,7 @@ image queries will not appear in the cloud dashboard.
 
 To configure the Groundlight SDK to use the edge endpoint, you can either pass the endpoint URL to the Groundlight constructor like:
 
-```python
+```python notest
 from groundlight import Groundlight
 gl = Groundlight(endpoint="http://localhost:6717")
 ```
