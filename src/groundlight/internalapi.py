@@ -258,6 +258,7 @@ class GroundlightApiClient(ApiClient):
         human_review: str = "DEFAULT",
         metadata: Optional[dict] = None,
         want_async: Optional[bool] = False,
+        _request_timeout: Optional[float] = None,
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
@@ -289,7 +290,13 @@ class GroundlightApiClient(ApiClient):
         headers["Content-Type"] = "image/jpeg"
 
         response = requests.request(
-            "POST", url, headers=headers, params=params, data=body.read(), verify=self.configuration.verify_ssl
+            "POST",
+            url,
+            headers=headers,
+            params=params,
+            data=body.read(),
+            verify=self.configuration.verify_ssl,
+            timeout=_request_timeout,
         )
 
         if not is_ok(response.status_code):
