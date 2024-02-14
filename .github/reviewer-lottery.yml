@@ -1,6 +1,6 @@
 groups:
   - name: dependabot-reviewers
-    reviewers: 3
+    reviewers: 1
     usernames:
       - mjvogelsong
       - robotrapta
