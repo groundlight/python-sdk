@@ -9,7 +9,7 @@ on:
 jobs:
   assign-pr-reviewer:
     # Only run this on Dependabot PRs
-    # if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
