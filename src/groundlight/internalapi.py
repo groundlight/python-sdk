@@ -139,15 +139,16 @@ class RequestsRetryDecorator:
                     if is_retryable:
                         status_code = e.status
                         if status_code in self.status_code_range:
+                            # This is implementing a full jitter strategy
+                            random_delay = random.uniform(0, delay)
                             logger.warning(
                                 (
                                     f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}"
+                                    f"Remaining retries: {self.max_retries - retry_count}. "
+                                    f"Delaying {random_delay:.1f}s before retrying."
                                 ),
                                 exc_info=True,
                             )
-                            # This is implementing a full jitter strategy
-                            random_delay = random.uniform(0, delay)
                             time.sleep(random_delay)
 
                 retry_count += 1
@@ -257,6 +258,7 @@ class GroundlightApiClient(ApiClient):
         human_review: str = "DEFAULT",
         metadata: Optional[dict] = None,
         want_async: Optional[bool] = False,
+        _request_timeout: Optional[float] = None,
     ) -> str:
         """Submits an image query to the API and returns the ID of the image query.
         The image query will be associated to the inspection_id provided.
@@ -288,7 +290,13 @@ class GroundlightApiClient(ApiClient):
         headers["Content-Type"] = "image/jpeg"
 
         response = requests.request(
-            "POST", url, headers=headers, params=params, data=body.read(), verify=self.configuration.verify_ssl
+            "POST",
+            url,
+            headers=headers,
+            params=params,
+            data=body.read(),
+            verify=self.configuration.verify_ssl,
+            timeout=_request_timeout,
         )
 
         if not is_ok(response.status_code):
