@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 import os
@@ -128,6 +129,8 @@ class RequestsRetryDecorator:
 
             while retry_count <= self.max_retries:
                 try:
+                    friendly_datestamp = datetime.now().isoformat()
+                    print(f"{friendly_datestamp} Trying {function.__name__} with args={args} kwargs={kwargs}")
                     return function(*args, **kwargs)
                 except ApiException as e:
                     is_retryable = (e.status is not None) and (e.status in self.status_code_range)
@@ -139,15 +142,16 @@ class RequestsRetryDecorator:
                     if is_retryable:
                         status_code = e.status
                         if status_code in self.status_code_range:
+                            # This is implementing a full jitter strategy
+                            random_delay = random.uniform(0, delay)
                             logger.warning(
                                 (
                                     f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}"
+                                    f"Remaining retries: {self.max_retries - retry_count}. "
+                                    f"Delaying {random_delay:.1f}s before retrying."
                                 ),
                                 exc_info=True,
                             )
-                            # This is implementing a full jitter strategy
-                            random_delay = random.uniform(0, delay)
                             time.sleep(random_delay)
 
                 retry_count += 1
