@@ -107,11 +107,15 @@ jobs:
 
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
+  # This tests runs on 
+  # - merges to main
+  # - releases
+  # - branch names ending with "-fulltest"
   test-comprehensive:
     if: >-
-      github.ref == 'refs/heads/main' ||   # merges to main
-      startsWith(github.ref, 'refs/tags/v') ||   # releases
-      endsWith(github.head_ref, '-full')  # branch names requesting full testing.
+      github.ref == 'refs/heads/main' ||
+      startsWith(github.ref, 'refs/tags/v') ||
+      endsWith(github.head_ref, '-fulltest')
     needs:
       - test-simple
       - test-docs
