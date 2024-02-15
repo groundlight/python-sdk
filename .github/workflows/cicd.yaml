@@ -5,15 +5,15 @@ on:
   push:
 
 env:
-  PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.5.1"
+  PYTHON_VERSION: "3.11"
+  POETRY_VERSION: "1.7.1"
 jobs:
   # Run our linter on every push to the repository.
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -72,7 +72,7 @@ jobs:
         working-directory: docs/
     steps:
       - name: Get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code 
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -122,6 +122,7 @@ jobs:
       # Failing slow is clearer about what's going on.
       #    This is pretty unambiguous, so we're going with it for now.
       fail-fast: false
+      max-attempts: 3
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
@@ -130,11 +131,12 @@ jobs:
             "3.9",
             "3.10",
             "3.11",
+            "3.12",
           ]
         install_extras: [true, false]
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -170,7 +172,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
       - name: install python
@@ -219,7 +221,7 @@ jobs:
         working-directory: docs/
     steps:
       - name: Get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install poetry 
         uses: snok/install-poetry@v1
         with:
@@ -268,7 +270,7 @@ jobs:
       POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
