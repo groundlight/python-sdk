@@ -138,15 +138,16 @@ class RequestsRetryDecorator:
                     if is_retryable:
                         status_code = e.status
                         if status_code in self.status_code_range:
+                            # This is implementing a full jitter strategy
+                            random_delay = random.uniform(0, delay)
                             logger.warning(
                                 (
                                     f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}"
+                                    f"Remaining retries: {self.max_retries - retry_count}. "
+                                    f"Delaying {random_delay:.1f}s before retrying."
                                 ),
                                 exc_info=True,
                             )
-                            # This is implementing a full jitter strategy
-                            random_delay = random.uniform(0, delay)
                             time.sleep(random_delay)
 
                 retry_count += 1
@@ -246,7 +247,6 @@ class GroundlightApiClient(ApiClient):
             )
         return Detector.parse_obj(parsed["results"][0])
 
-    @RequestsRetryDecorator()
     def start_inspection(self) -> str:
         """Starts an inspection, returns the ID."""
         url = f"{self.configuration.host}/inspections"

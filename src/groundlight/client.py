@@ -10,11 +10,12 @@ from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQue
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.exceptions import UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
@@ -28,8 +29,17 @@ from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
 
+# Set urllib3 request timeout to something modern and fast.
+# The system defaults can be stupidly long
+# It used to take >8 min to timeout to a bad IP address
+DEFAULT_REQUEST_TIMEOUT = 5
 
-class ApiTokenError(Exception):
+
+class GroundlightClientError(Exception):
+    pass
+
+
+class ApiTokenError(GroundlightClientError):
     pass
 
 
@@ -102,12 +112,15 @@ class Groundlight:
         self.endpoint = sanitize_endpoint_url(endpoint)
         configuration = Configuration(host=self.endpoint)
 
-        if api_token is None:
+        if not api_token:
             try:
                 # Retrieve the API token from environment variable
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
-                raise ApiTokenError(API_TOKEN_HELP_MESSAGE) from e
+                raise ApiTokenError(API_TOKEN_MISSING_HELP_MESSAGE) from e
+            if not api_token:
+                raise ApiTokenError("No API token found.  GROUNDLIGHT_API_TOKEN environment variable is set but blank")
+        self.api_token_prefix = api_token[:12]
 
         should_disable_tls_verification = disable_tls_verification
 
@@ -129,6 +142,29 @@ class Groundlight:
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+        self._verify_connectivity()
+
+    def _verify_connectivity(self) -> None:
+        """
+        Verify that the client can connect to the Groundlight service, and raise a helpful
+        exception if it cannot.
+        """
+        try:
+            # a simple query to confirm that the endpoint & API token are working
+            self.list_detectors(page=1, page_size=1)
+        except UnauthorizedException as e:
+            msg = (
+                f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
+                f"'{self.endpoint}'.  Endpoint is responding, but API token is probably invalid."
+            )
+            raise ApiTokenError(msg) from e
+        except Exception as e:
+            msg = (
+                f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
+                f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or unreachable? "
+                "Check https://status.groundlight.ai/ for service status."
+            )
+            raise GroundlightClientError(msg) from e
 
     @staticmethod
     def _fixup_image_query(iq: ImageQuery) -> ImageQuery:
@@ -154,7 +190,7 @@ class Groundlight:
         if isinstance(id, Detector):
             # Short-circuit
             return id
-        obj = self.detectors_api.get_detector(id=id)
+        obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
@@ -177,7 +213,9 @@ class Groundlight:
 
         :return: PaginatedDetectorList
         """
-        obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
+        obj = self.detectors_api.list_detectors(
+            page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
+        )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
     def create_detector(
@@ -213,7 +251,7 @@ class Groundlight:
             detector_creation_input.pipeline_config = pipeline_config
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
-        obj = self.detectors_api.create_detector(detector_creation_input)
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(
@@ -282,7 +320,7 @@ class Groundlight:
 
         :return: ImageQuery
         """
-        obj = self.image_queries_api.get_image_query(id=id)
+        obj = self.image_queries_api.get_image_query(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         iq = ImageQuery.parse_obj(obj.to_dict())
         return self._fixup_image_query(iq)
 
@@ -296,7 +334,9 @@ class Groundlight:
 
         :return: PaginatedImageQueryList
         """
-        obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
+        obj = self.image_queries_api.list_image_queries(
+            page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
+        )
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
