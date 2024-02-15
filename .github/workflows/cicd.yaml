@@ -114,14 +114,9 @@ jobs:
       - test-docs
     runs-on: ubuntu-latest
     strategy:
-      # It's totally debatable which is better here: fail-fast or not.
-      # Failing fast will use fewer cloud resources, in theory.
-      #    But if the tests are slightly flaky (fail to pip install something)
-      #    Then one flaky install kills lots of jobs that need to be redone.
-      #    So the efficiency argument has its limits
-      # Failing slow is clearer about what's going on.
-      #    This is pretty unambiguous, so we're going with it for now.
-      fail-fast: false
+      # We're hoping that fail-fast plus max-attempts lets each of the matrix options
+      # try 3 times before it stops the whole thing.
+      fail-fast: true
       max-attempts: 3
       matrix:
         python-version: [
