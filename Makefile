@@ -14,7 +14,7 @@ install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
 install-generator: install ## Install dependencies for SDK code generator
-	npm install
+	npm install --save remark-math@6 rehype-katex@7
 
 generate: install-generator  ## Generate the SDK from our public openapi spec
 	node_modules/.bin/openapi-generator-cli generate -i spec/public-api.yaml \
@@ -30,20 +30,26 @@ PYTEST=poetry run pytest -v
 # 	`make test TEST_ARGS="-k some_filter"`
 TEST_ARGS=
 
+CLOUD_FILTERS = -m "not run_only_for_edge_endpoint"
+EDGE_FILTERS = -m "not skip_for_edge_endpoint"
+
 test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} ${TEST_ARGS} test
+	${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+
+test-4edge: install  ## Run tests against the prod API via the edge-endpoint (needs GROUNDLIGHT_API_TOKEN)
+	${PYTEST} ${TEST_ARGS} ${EDGE_FILTERS} test
 
 test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API_TOKEN and a local API server)
-	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" ${PYTEST} ${TEST_ARGS} test
+	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} test
+	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
+	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 test-docs-integ: install  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" poetry run pytest -v --markdown-docs ${TEST_ARGS} docs README.md
+	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
 LINT_PATHS="src test bin samples"
@@ -94,6 +100,7 @@ docs-comprehensive: apidocs
 	cd docs && npm run build
 
 apidocs:
+	cd docs && npm install --save remark-math@6 rehype-katex@7
 	poetry run make html
 
 html:

@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Callable, Optional, Union
@@ -9,10 +10,13 @@ from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQue
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.exceptions import UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
+from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME
+from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
     GroundlightApiClient,
@@ -25,8 +29,17 @@ from groundlight.optional_imports import Image, np
 
 logger = logging.getLogger("groundlight.sdk")
 
+# Set urllib3 request timeout to something modern and fast.
+# The system defaults can be stupidly long
+# It used to take >8 min to timeout to a bad IP address
+DEFAULT_REQUEST_TIMEOUT = 5
 
-class ApiTokenError(Exception):
+
+class GroundlightClientError(Exception):
+    pass
+
+
+class ApiTokenError(GroundlightClientError):
     pass
 
 
@@ -48,14 +61,16 @@ class Groundlight:
                         detector=detector,
                         image="path/to/image.jpeg",
                         wait=0.0,
-                        human_review="ALWAYS")
+                        human_review="ALWAYS"
+                    )
         print(f"Image query confidence = {image_query.result.confidence}")
 
         # Poll the backend service for a confident answer
         image_query = gl.wait_for_confident_result(
                         image_query=image_query,
                         confidence_threshold=0.9,
-                        timeout_sec=60.0)
+                        timeout_sec=60.0
+                    )
 
         # Examine new confidence after a continuously trained ML model has re-evaluated the image query
         print(f"Image query confidence = {image_query.result.confidence}")
@@ -67,36 +82,89 @@ class Groundlight:
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        endpoint: Optional[str] = None,
+        api_token: Optional[str] = None,
+        disable_tls_verification: Optional[bool] = None,
+    ) -> None:
         """
         Constructs a Groundlight client.
 
         :param endpoint: optionally specify a different endpoint
-        :type endpoint: str
 
         :param api_token: use this API token for your API calls.
                         If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
-        :type api_token: str
+
+        :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
+                                        when calling API from https server. If unset, the fallback will check
+                                        the environment variable "DISABLE_TLS_VERIFY" for `1` or `0`. By default,
+                                        certificates are verified.
+
+                                        Disable verification if using a self-signed TLS certificate with a Groundlight
+                                        Edge Endpoint.  It is unadvised to disable verification  if connecting directly
+                                        to the Groundlight cloud service.
+        :type disable_tls_verification: Optional[bool]
 
         :return: Groundlight client
-        :rtype: Groundlight
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
         configuration = Configuration(host=self.endpoint)
 
-        if api_token is None:
+        if not api_token:
             try:
                 # Retrieve the API token from environment variable
                 api_token = os.environ[API_TOKEN_VARIABLE_NAME]
             except KeyError as e:
-                raise ApiTokenError(API_TOKEN_HELP_MESSAGE) from e
+                raise ApiTokenError(API_TOKEN_MISSING_HELP_MESSAGE) from e
+            if not api_token:
+                raise ApiTokenError("No API token found.  GROUNDLIGHT_API_TOKEN environment variable is set but blank")
+        self.api_token_prefix = api_token[:12]
+
+        should_disable_tls_verification = disable_tls_verification
+
+        if should_disable_tls_verification is None:
+            should_disable_tls_verification = bool(int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0)))
+
+        if should_disable_tls_verification:
+            logger.warning(
+                "Disabling SSL/TLS certificate verification.  This should only be used when connecting to an endpoint"
+                " with a self-signed certificate."
+            )
+            warnings.simplefilter("ignore", InsecureRequestWarning)
+
+            configuration.verify_ssl = False
+            configuration.assert_hostname = False
 
         configuration.api_key["ApiToken"] = api_token
 
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+        self._verify_connectivity()
+
+    def _verify_connectivity(self) -> None:
+        """
+        Verify that the client can connect to the Groundlight service, and raise a helpful
+        exception if it cannot.
+        """
+        try:
+            # a simple query to confirm that the endpoint & API token are working
+            self.list_detectors(page=1, page_size=1)
+        except UnauthorizedException as e:
+            msg = (
+                f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
+                f"'{self.endpoint}'.  Endpoint is responding, but API token is probably invalid."
+            )
+            raise ApiTokenError(msg) from e
+        except Exception as e:
+            msg = (
+                f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
+                f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or unreachable? "
+                "Check https://status.groundlight.ai/ for service status."
+            )
+            raise GroundlightClientError(msg) from e
 
     @staticmethod
     def _fixup_image_query(iq: ImageQuery) -> ImageQuery:
@@ -115,16 +183,14 @@ class Groundlight:
         Get a detector by id
 
         :param id: the detector id
-        :type id: str or Detector
 
         :return: Detector
-        :rtype: Detector
         """
 
         if isinstance(id, Detector):
             # Short-circuit
             return id
-        obj = self.detectors_api.get_detector(id=id)
+        obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
@@ -132,10 +198,8 @@ class Groundlight:
         Get a detector by name
 
         :param name: the detector name
-        :type name: str
 
         :return: Detector
-        :rtype: Detector
         """
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
@@ -144,15 +208,14 @@ class Groundlight:
         List out detectors you own
 
         :param page: the page number
-        :type page: int
 
         :param page_size: the page size
-        :type page_size: int
 
         :return: PaginatedDetectorList
-        :rtype: PaginatedDetectorList
         """
-        obj = self.detectors_api.list_detectors(page=page, page_size=page_size)
+        obj = self.detectors_api.list_detectors(
+            page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
+        )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
     def create_detector(
@@ -162,31 +225,33 @@ class Groundlight:
         *,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
         Create a new detector with a given name and query
 
         :param name: the detector name
-        :type name: str
 
         :param query: the detector query
-        :type query: str
 
         :param confidence_threshold: the confidence threshold
-        :type confidence_threshold: float
 
         :param pipeline_config: the pipeline config
-        :type pipeline_config: str
+
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the detector (limited to 1KB). You can retrieve this metadata later by calling
+            `get_detector()`.
 
         :return: Detector
-        :rtype: Detector
         """
         detector_creation_input = DetectorCreationInput(name=name, query=query)
         if confidence_threshold is not None:
             detector_creation_input.confidence_threshold = confidence_threshold
         if pipeline_config is not None:
             detector_creation_input.pipeline_config = pipeline_config
-        obj = self.detectors_api.create_detector(detector_creation_input)
+        if metadata is not None:
+            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(
@@ -196,6 +261,7 @@ class Groundlight:
         *,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
         Tries to look up the detector by name.  If a detector with that name, query, and
@@ -203,19 +269,18 @@ class Groundlight:
         config.
 
         :param name: the detector name
-        :type name: str
 
         :param query: the detector query
-        :type query: str
 
         :param confidence_threshold: the confidence threshold
-        :type confidence_threshold: float
 
         :param pipeline_config: the pipeline config
-        :type pipeline_config: str
+
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the detector (limited to 1KB). You can retrieve this metadata later by calling
+            `get_detector()`.
 
         :return: Detector
-        :rtype: Detector
         """
         try:
             existing_detector = self.get_detector_by_name(name)
@@ -226,6 +291,7 @@ class Groundlight:
                 query=query,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
+                metadata=metadata,
             )
 
         # TODO: We may soon allow users to update the retrieved detector's fields.
@@ -251,12 +317,10 @@ class Groundlight:
         Get an image query by id
 
         :param id: the image query id
-        :type id: str
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
-        obj = self.image_queries_api.get_image_query(id=id)
+        obj = self.image_queries_api.get_image_query(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         iq = ImageQuery.parse_obj(obj.to_dict())
         return self._fixup_image_query(iq)
 
@@ -265,15 +329,14 @@ class Groundlight:
         List out image queries you own
 
         :param page: the page number
-        :type page: int
 
         :param page_size: the page size
-        :type page_size: int
 
         :return: PaginatedImageQueryList
-        :rtype: PaginatedImageQueryList
         """
-        obj = self.image_queries_api.list_image_queries(page=page, page_size=page_size)
+        obj = self.image_queries_api.list_image_queries(
+            page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
+        )
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
@@ -289,12 +352,12 @@ class Groundlight:
         human_review: Optional[str] = None,
         want_async: bool = False,
         inspection_id: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight.
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-        :type detector: Detector or str
 
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
@@ -303,39 +366,35 @@ class Groundlight:
             (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
           - PIL Image: Any binary format must be JPEG-encoded already.
             Any pixel format will get converted to JPEG at high quality before sending to service.
-        :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
         :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout.
-        :type wait: float
 
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
             The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
             Within patience_time, Groundlight will update ML predictions based on stronger findings,
             and, additionally, Groundlight will prioritize human review of the image query if necessary.
             This is a soft server-side timeout. If not set, use the detector's patience_time.
-        :type patience_time: float
 
         :param confidence_threshold: The confidence threshold to wait for.
             If not set, use the detector's confidence threshold.
-        :type confidence_threshold: float
 
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
             If set to `ALWAYS`, always send the image query for human review.
             If set to `NEVER`, never send the image query for human review.
-        :type human_review: str
 
         :param want_async: If True, the client will return as soon as the image query is submitted and will not wait for
             an ML/human prediction. The returned `ImageQuery` will have a `result` of None. Must set `wait` to 0 to use
             want_async.
-        :type want_async: bool
 
         :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
                             this is the ID of the inspection to associate with the image query.
-        :type inspection_id: str
+
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
+            `get_image_query()`.
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
@@ -360,6 +419,14 @@ class Groundlight:
                 )
             params["want_async"] = str(bool(want_async))
 
+        if metadata is not None:
+            # Currently, our backend server puts the image in the body data of the API request,
+            # which means we need to put the metadata in the query string. To do that safely, we
+            # url- and base64-encode the metadata.
+            params["metadata"] = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
+
+        params["_request_timeout"] = DEFAULT_REQUEST_TIMEOUT
+
         # If no inspection_id is provided, we submit the image query using image_queries_api (autogenerated via OpenAPI)
         # However, our autogenerated code does not currently support inspection_id, so if an inspection_id was
         # provided, we use the private API client instead.
@@ -380,19 +447,19 @@ class Groundlight:
 
         return self._fixup_image_query(image_query)
 
-    def ask_confident(
+    def ask_confident(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         confidence_threshold: Optional[float] = None,
         wait: Optional[float] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight waiting until an answer above the confidence threshold
         of the detector is reached or the wait period has passed.
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-        :type detector: Detector or str
 
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
@@ -402,17 +469,17 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
-        :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
         :param confidence_threshold: The confidence threshold to wait for.
             If not set, use the detector's confidence threshold.
-        :type confidence_threshold: float
 
         :param wait: How long to wait (in seconds) for a confident answer.
-        :type wait: float
+
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
+            `get_image_query()`.
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
         return self.submit_image_query(
             detector,
@@ -421,6 +488,7 @@ class Groundlight:
             wait=wait,
             patience_time=wait,
             human_review=None,
+            metadata=metadata,
         )
 
     def ask_ml(
@@ -428,12 +496,12 @@ class Groundlight:
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-        :type detector: Detector or str
 
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
@@ -443,18 +511,20 @@ class Groundlight:
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
-        :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
         :param wait: How long to wait (in seconds) for any answer.
-        :type wait: float
+
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
+            `get_image_query()`.
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
         iq = self.submit_image_query(
             detector,
             image,
             wait=0,
+            metadata=metadata,
         )
         if iq_is_answered(iq):
             return iq
@@ -468,6 +538,7 @@ class Groundlight:
         patience_time: Optional[float] = None,
         confidence_threshold: Optional[float] = None,
         human_review: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> ImageQuery:
         """
         Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
@@ -475,7 +546,6 @@ class Groundlight:
         ImageQuery.
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-        :type detector: Detector or str
 
         :param image: The image, in several possible formats:
 
@@ -486,31 +556,29 @@ class Groundlight:
           - PIL Image: Any binary format must be JPEG-encoded already.
             Any pixel format will get converted to JPEG at high quality before sending to service.
 
-        :type image: str or bytes or Image.Image or BytesIO or BufferedReader or np.ndarray
 
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
             The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
             Within patience_time, Groundlight will update ML predictions based on stronger findings,
             and, additionally, Groundlight will prioritize human review of the image query if necessary.
             This is a soft server-side timeout. If not set, use the detector's patience_time.
-        :type patience_time: float
 
         :param confidence_threshold: The confidence threshold to wait for.
             If not set, use the detector's confidence threshold.
-        :type confidence_threshold: float
 
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
             only if the ML prediction is not confident.
             If set to `ALWAYS`, always send the image query for human review.
             If set to `NEVER`, never send the image query for human review.
-        :type human_review: str
 
         :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
                             this is the ID of the inspection to associate with the image query.
-        :type inspection_id: str
+
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
+            `get_image_query()`.
 
         :return: ImageQuery
-        :rtype: ImageQuery
 
 
         **Example usage**::
@@ -552,6 +620,7 @@ class Groundlight:
             confidence_threshold=confidence_threshold,
             human_review=human_review,
             want_async=True,
+            metadata=metadata,
         )
 
     def wait_for_confident_result(
@@ -565,17 +634,13 @@ class Groundlight:
         Currently this is done by polling with an exponential back-off.
 
         :param image_query: An ImageQuery object to poll
-        :type image_query: ImageQuery or str
 
         :param confidence_threshold: The confidence threshold to wait for.
             If not set, use the detector's confidence threshold.
-        :type confidence_threshold: float
 
         :param timeout_sec: The maximum number of seconds to wait.
-        :type timeout_sec: float
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
         if confidence_threshold is None:
             if isinstance(image_query, str):
@@ -590,13 +655,10 @@ class Groundlight:
         Currently this is done by polling with an exponential back-off.
 
         :param image_query: An ImageQuery object to poll
-        :type image_query: ImageQuery or str
 
         :param timeout_sec: The maximum number of seconds to wait.
-        :type timeout_sec: float
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
         return self._wait_for_result(image_query, condition=iq_is_answered, timeout_sec=timeout_sec)
 
@@ -606,17 +668,13 @@ class Groundlight:
         """Performs polling with exponential back-off until the condition is met for the image query.
 
         :param image_query: An ImageQuery object to poll
-        :type image_query: ImageQuery or str
 
         :param condition: A callable that takes an ImageQuery and returns True or False
             whether to keep waiting for a better result.
-        :type condition: Callable
 
         :param timeout_sec: The maximum number of seconds to wait.
-        :type timeout_sec: float
 
         :return: ImageQuery
-        :rtype: ImageQuery
         """
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
@@ -648,13 +706,10 @@ class Groundlight:
 
         :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
                             or an image_query id as a string.
-        :type image_query: ImageQuery or str
 
         :param label: The string "YES" or the string "NO" in answer to the query.
-        :type label: Label or str
 
         :return: None
-        :rtype: None
         """
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
@@ -674,7 +729,6 @@ class Groundlight:
         Starts an inspection report and returns the id of the inspection.
 
         :return: The unique identifier of the inspection.
-        :rtype: str
         """
         return self.api_client.start_inspection()
 
@@ -684,16 +738,12 @@ class Groundlight:
         Add/update inspection metadata with the user_provided_key and user_provided_value.
 
         :param inspection_id: The unique identifier of the inspection.
-        :type inspection_id: str
 
         :param user_provided_key: the key in the key/value pair for the inspection metadata.
-        :type user_provided_key: str
 
         :param user_provided_value: the value in the key/value pair for the inspection metadata.
-        :type user_provided_value: str
 
         :return: None
-        :rtype: None
         """
         self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
@@ -704,10 +754,8 @@ class Groundlight:
         indicates that the inspection was not successfully stopped.
 
         :param inspection_id: The unique identifier of the inspection.
-        :type inspection_id: str
 
         :return: "PASS" or "FAIL" depending on the result of the inspection.
-        :rtype: str
         """
         return self.api_client.stop_inspection(inspection_id)
 
@@ -716,10 +764,8 @@ class Groundlight:
         Updates the confidence threshold of a detector given a detector_id.
 
         :param detector_id: The id of the detector to update.
-        :type detector_id: str
 
         :param confidence_threshold: The new confidence threshold for the detector.
-        :type confidence_threshold: float
 
         :return None
         :rtype None

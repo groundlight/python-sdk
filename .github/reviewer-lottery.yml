@@ -1,0 +1,12 @@
+groups:
+  - name: dependabot-reviewers
+    reviewers: 1
+    usernames:
+      - mjvogelsong
+      - robotrapta
+      - tyler-romero
+      - sunildkumar
+      - roxanne-o
+      - blaise-muhirwa
+      - brandon-groundlight
+      - tomfaulhaber

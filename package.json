@@ -1,6 +1,6 @@
 {
   "name": "groundlight-sdk-generator",
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.7.0"
+    "@openapitools/openapi-generator-cli": "^2.9.0"
   }
 }

@@ -1,9 +1,13 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+// Libraries that support mathematics in documentation
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+
 // Options: https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/vsDark");
+const lightCodeTheme = require("prism-react-renderer").themes.github;
+const darkCodeTheme = require("prism-react-renderer").themes.vsDark;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -12,7 +16,7 @@ const config = {
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: "https://www.groundlight.ai",
+  url: "https://code.groundlight.ai",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/python-sdk/",
@@ -49,11 +53,28 @@ const config = {
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
         },
+        blog: {
+          showReadingTime: true,
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+          editUrl:
+            "https://github.com/groundlight/python-sdk/tree/main/docs/blog/",
+        },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
       }),
     ],
+  ],
+
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      crossorigin: 'anonymous',
+    },
   ],
 
   themes: [
@@ -77,8 +98,8 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: "img/docusaurus-social-card.jpg",
+      // image is expected to be a "social card".  Logo for now.
+      image: "img/gl-icon400.png",
       navbar: {
         title: "Groundlight",
         logo: {
@@ -100,13 +121,18 @@ const config = {
           },
           {
             href: "pathname:///python-sdk/api-reference-docs/",
-            label: 'API Reference',
+            label: "API Reference",
             position: "left",
           },
           {
             href: "https://github.com/groundlight/python-sdk",
             label: "GitHub",
             position: "right",
+          },
+          {
+            to: 'blog',
+            label: 'Blog',
+            position: 'left',
           },
         ],
       },
