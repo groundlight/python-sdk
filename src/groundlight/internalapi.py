@@ -18,8 +18,10 @@ from groundlight.version import get_version
 
 logger = logging.getLogger("groundlight.sdk")
 
+
 class NotFoundError(Exception):
     pass
+
 
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
