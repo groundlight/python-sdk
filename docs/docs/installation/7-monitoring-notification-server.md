@@ -4,7 +4,7 @@ This is the easiest way to deploy your Groundlight detectors on a linux computer
 
 ## Prerequisites
 
-1. Internet connected linux computer
+1. Internet-    connected linux computer
 2. Video source (USB camera or RTSP stream)
 3. Groundlight API Key (available from [groundlight.ai](https://www.groundlight.ai/))
 
@@ -14,7 +14,7 @@ Our Monitoring Notification Server is a server you can deploy anywhere to easily
 
 The Monitoring Notification Server has a simple web interface (depected below) that allows you to configure your detector(s), and a backend that runs on your device to pull images from your camera and post notifications.
 
-### Intro Page
+### MNS Home Page
 
 ![Intro Page](/img/docker-img-frontpage.png)
 
@@ -62,7 +62,7 @@ Before creating the component, run `sudo usermod -aG docker ggc_user` on your Gr
 
 We recommend a minimal Kubernetes install like [k3s](https://k3s.io/).
 
-> Use the file [`kubernetes.yaml`](https://github.com/groundlight/monitoring-notification-server/blob/main/deploy/kubernetes.yaml).
+> Use [`kubernetes.yaml`](https://github.com/groundlight/monitoring-notification-server/blob/main/deploy/kubernetes.yaml) manifest.
 
 1. Create a Kubernetes cluster and install `kubectl` on your machine.
 2. Run `kubectl apply -f kubernetes.yaml` in the same directory as the `kubernetes.yaml` file.
