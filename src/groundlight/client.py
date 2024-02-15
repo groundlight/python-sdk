@@ -446,7 +446,7 @@ class Groundlight:
             inspection_id=inspection_id,
         )
 
-    def ask_ml(
+    def ask_ml( # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],

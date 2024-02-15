@@ -6,14 +6,13 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
 
-from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
 
