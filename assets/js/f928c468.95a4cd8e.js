@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[2003],{506:s=>{s.exports=JSON.parse('{"label":"Groundlight Python SDK","permalink":"/python-sdk/blog/tags/groundlight-python-sdk","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);
