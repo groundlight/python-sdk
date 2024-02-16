@@ -5,7 +5,7 @@ on:
   push:
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.10"
   POETRY_VERSION: "1.7.1"
 jobs:
   # Run our linter on every push to the repository.
