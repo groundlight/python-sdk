@@ -33,7 +33,7 @@ Our [getting started repository](https://github.com/groundlight/getting_started)
 
 The `main.py` file could hardly be simpler.  First you just initialize the camera and your Groundlight detector:
 
-```python
+```python notest
 camera = setup_camera()
 
 gl = Groundlight()
@@ -50,7 +50,7 @@ detector = gl.get_or_create_detector(
 
 and then a simple infinite loop to send images from the camera to your detector:
 
-```python
+```python notest
 try:
     while True:
         image = camera.grab()
