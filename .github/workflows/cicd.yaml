@@ -121,10 +121,10 @@ jobs:
       - test-docs
     runs-on: ubuntu-latest
     strategy:
-      # We're hoping that fail-fast plus max-attempts lets each of the matrix options
-      # try 3 times before it stops the whole thing.
-      fail-fast: true
-      max-attempts: 3
+      # fail-fast=false works best for flaky tests with manual "retry failed".
+      # Of course we should get rid of the race conditions that make these tests flaky.
+      # Some AI lied to me and said I could just put "max-retry" here but you can't.
+      fail-fast: false
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
