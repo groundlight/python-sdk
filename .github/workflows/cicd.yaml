@@ -6,7 +6,8 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.7.1"
+  #POETRY_VERSION: "1.7.1"  Note 1.7.1 won't load on py3.7 in matrix
+  POETRY_VERSION: "1.6.0"
 jobs:
   # Run our linter on every push to the repository.
   lint:
