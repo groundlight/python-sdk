@@ -149,6 +149,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: show python version ${{ matrix.python-version }}
         run: |
+          poetry env use python${{ matrix.python-version }}
           poetry run python --version
       - name: install dependencies
         run: make install
