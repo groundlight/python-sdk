@@ -5,6 +5,7 @@ on:
   push:
 
 env:
+  PYTHON_VERSION: "3.10"
   POETRY_VERSION: "1.7.1"
 jobs:
   # Run our linter on every push to the repository.
@@ -137,11 +138,15 @@ jobs:
       - name: install python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: show python version ${{ matrix.python-version }}
         run: |
           poetry run python --version
