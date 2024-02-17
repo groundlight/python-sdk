@@ -4,6 +4,11 @@ import subprocess
 from datetime import datetime
 from unittest.mock import patch
 
+def test_whoami():
+    completed_process = subprocess.run(
+        ["groundlight", "whoami"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    assert completed_process.returncode == 0
 
 def test_list_detector():
     completed_process = subprocess.run(

@@ -10,6 +10,7 @@ from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQue
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.api.user_api import UserApi
 from openapi_client.exceptions import UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
@@ -137,6 +138,7 @@ class Groundlight:
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+        self.user_api = UserApi(self.api_client)
         self._verify_connectivity()
 
     def _verify_connectivity(self) -> None:
@@ -172,6 +174,15 @@ class Groundlight:
         if iq.result is not None:
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
+
+    def whoami(self) -> str:
+        """
+        Return the username associated with the API token.
+
+        :return: str
+        """
+        obj = self.user_api.who_am_i()
+        return obj["username"]
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """

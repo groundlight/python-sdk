@@ -103,6 +103,7 @@ Class | Method | HTTP request | Description
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
+*UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /me | 
 
 
 ## Documentation For Models
@@ -116,6 +117,7 @@ Class | Method | HTTP request | Description
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
+ - [User](docs/User.md)
 
 
 ## Documentation For Authorization

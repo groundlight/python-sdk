@@ -18,3 +18,4 @@ from openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
 from openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from openapi_client.model.result_type_enum import ResultTypeEnum
+from openapi_client.model.user import User
