@@ -6,8 +6,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  #POETRY_VERSION: "1.7.1"  Note 1.7.1 won't load on py3.7 in matrix
-  POETRY_VERSION: "1.6.0"
+  POETRY_VERSION: "1.7.1"
 jobs:
   # Run our linter on every push to the repository.
   lint:
@@ -140,14 +139,25 @@ jobs:
     steps:
       - name: get code
         uses: actions/checkout@v4
-      - name: install python
+      - name: install modern python for poetry
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          # We use this python to install poetry -- we choose a modern version
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
+      - name: install python for python-sdk venv
+        uses: actions/setup-python@v4
+        with:
+          # We use this python for the sdk venv
+          python-version: ${{ matrix.python-version }}
+      - name: choose python version ${{ matrix.python-version }}
+        run: |
+          # set the environment to use the matrix python version
+          poetry env use python${{ matrix.python-version }}
+          poetry run python --version
       - name: show python version ${{ matrix.python-version }}
         run: |
           poetry run python --version
