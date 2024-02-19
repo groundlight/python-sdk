@@ -247,6 +247,7 @@ class GroundlightApiClient(ApiClient):
             )
         return Detector.parse_obj(parsed["results"][0])
 
+    @RequestsRetryDecorator()
     def start_inspection(self) -> str:
         """Starts an inspection, returns the ID."""
         url = f"{self.configuration.host}/inspections"
