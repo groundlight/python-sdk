@@ -6,14 +6,14 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.5.1"
+  POETRY_VERSION: "1.7.1"
 jobs:
   # Run our linter on every push to the repository.
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -72,7 +72,7 @@ jobs:
         working-directory: docs/
     steps:
       - name: Get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code 
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -107,42 +107,57 @@ jobs:
 
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
+  # This tests runs on 
+  # - merges to main
+  # - releases
+  # - branch names ending with "-fulltest"
   test-comprehensive:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: >-
+      github.ref == 'refs/heads/main' ||
+      startsWith(github.ref, 'refs/tags/v') ||
+      endsWith(github.ref, '-fulltest')
     needs:
       - test-simple
       - test-docs
     runs-on: ubuntu-latest
     strategy:
-      # It's totally debatable which is better here: fail-fast or not.
-      # Failing fast will use fewer cloud resources, in theory.
-      #    But if the tests are slightly flaky (fail to pip install something)
-      #    Then one flaky install kills lots of jobs that need to be redone.
-      #    So the efficiency argument has its limits
-      # Failing slow is clearer about what's going on.
-      #    This is pretty unambiguous, so we're going with it for now.
+      # fail-fast=false works best for flaky tests with manual "retry failed".
+      # Of course we should get rid of the race conditions that make these tests flaky.
+      # Some AI lied to me and said I could just put "max-retry" here but you can't.
       fail-fast: false
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
-            "3.7",
+            "3.7",  # EOL but we're still supporting it for now.
             "3.8",
             "3.9",
             "3.10",
             "3.11",
+            "3.12",
           ]
         install_extras: [true, false]
     steps:
       - name: get code
-        uses: actions/checkout@v3
-      - name: install python
+        uses: actions/checkout@v4
+      - name: install modern python for poetry
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          # We use this python to install poetry -- we choose a modern version
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
+      - name: install python for python-sdk venv
+        uses: actions/setup-python@v4
+        with:
+          # We use this python for the sdk venv
+          python-version: ${{ matrix.python-version }}
+      - name: choose python version ${{ matrix.python-version }}
+        run: |
+          # set the environment to use the matrix python version
+          poetry env use python${{ matrix.python-version }}
+          poetry run python --version
       - name: show python version ${{ matrix.python-version }}
         run: |
           poetry run python --version
@@ -170,7 +185,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
       - name: install python
@@ -219,7 +234,7 @@ jobs:
         working-directory: docs/
     steps:
       - name: Get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install poetry 
         uses: snok/install-poetry@v1
         with:
@@ -268,7 +283,7 @@ jobs:
       POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
       - name: get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
