@@ -131,6 +131,7 @@ class ImageQueriesApi(object):
             params_map={
                 "all": [
                     "detector_id",
+                    "inspection_id",
                     "human_review",
                     "patience_time",
                     "want_async",
@@ -149,6 +150,7 @@ class ImageQueriesApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
+                    "inspection_id": (str,),
                     "human_review": (str,),
                     "patience_time": (float,),
                     "want_async": (str,),
@@ -157,6 +159,7 @@ class ImageQueriesApi(object):
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
+                    "inspection_id": "inspection_id",
                     "human_review": "human_review",
                     "patience_time": "patience_time",
                     "want_async": "want_async",
@@ -164,6 +167,7 @@ class ImageQueriesApi(object):
                 },
                 "location_map": {
                     "detector_id": "query",
+                    "inspection_id": "query",
                     "human_review": "query",
                     "patience_time": "query",
                     "want_async": "query",
@@ -305,6 +309,7 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
+            inspection_id (str): Associate the image query with an inspection.. [optional]
             human_review (str): If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident. . [optional]
             patience_time (float): How long to wait for a confident response.. [optional]
             want_async (str): If \"true\" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.. [optional]
