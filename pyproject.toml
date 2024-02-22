@@ -53,6 +53,7 @@ pillow = "^9.0.0"
 
 [tool.poetry.scripts]
 groundlight = "groundlight.cli:groundlight"
+
 [tool.pytest]
 
 [tool.pytest.ini_options]
