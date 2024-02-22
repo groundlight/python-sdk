@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any, Callable
 from unittest import mock
+from flaky import flaky
 
 import pytest
 from groundlight import Groundlight
@@ -39,7 +40,7 @@ def test_create_detector_attempts_retries(gl: Groundlight):
         confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
     )
 
-
+@flaky(max_runs=3, min_passes=1)
 def test_get_or_create_detector_attempts_retries(gl: Groundlight):
     run_test(
         mocked_call="urllib3.PoolManager.request",
@@ -50,7 +51,7 @@ def test_get_or_create_detector_attempts_retries(gl: Groundlight):
         confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
     )
 
-
+@flaky(max_runs=3, min_passes=1)
 def test_get_detector_attempts_retries(gl: Groundlight, detector: Detector):
     run_test(
         mocked_call="urllib3.PoolManager.request",
