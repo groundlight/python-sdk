@@ -53,6 +53,12 @@ pillow = "^9.0.0"
 [tool.poetry.scripts]
 groundlight = "groundlight.cli:groundlight"
 
+[tool.pytest.ini_options]
+markers = [
+    "skip_for_edge_endpoint: marks tests to be skipped for edge endpoints."
+]
+
+
 # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
 [tool.black]
 line-length = 120
