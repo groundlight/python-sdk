@@ -132,10 +132,10 @@ class RequestsRetryDecorator:
                     is_retryable = (e.status is not None) and (e.status in self.status_code_range)
                     if not is_retryable:
                         raise e
-                    
-                    # Log the exception 
+
+                    # Log the exception
                     logger.info("Exception occurred in RequestsRetryDecorator", exc_info=True)
-                    
+
                     if retry_count == self.max_retries:
                         raise InternalApiError(reason="Maximum retries reached") from e
 
