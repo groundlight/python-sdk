@@ -128,7 +128,7 @@ def run_test(mocked_call: str, api_method: Callable[..., Any], expected_call_cou
     with mock.patch(mocked_call) as mock_request:
         for status_code in STATUS_CODES:
             mock_request.return_value.status = status_code
-            
+
             with pytest.raises(InternalApiError):
                 api_method(**kwargs)
             assert mock_request.call_count == expected_call_counts
