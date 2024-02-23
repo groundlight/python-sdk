@@ -1,14 +1,15 @@
+import logging
 from datetime import datetime
 from typing import Any, Callable
 from unittest import mock
 
 import pytest
+
 # from flaky import flaky
 from groundlight import Groundlight
 from groundlight.binary_labels import Label
 from groundlight.internalapi import InternalApiError
 from model import Detector
-import logging 
 
 logging.basicConfig(level=logging.DEBUG)
 

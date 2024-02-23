@@ -141,9 +141,7 @@ class RequestsRetryDecorator:
                         raise InternalApiError(reason="Maximum retries reached") from e
 
                     if is_retryable:
-                        logger.warning(
-                            f"HTTP response status: {e.status}."
-                        )
+                        logger.warning(f"HTTP response status: {e.status}.")
                         status_code = e.status
                         if status_code in self.status_code_range:
                             # This is implementing a full jitter strategy
