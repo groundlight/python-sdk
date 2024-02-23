@@ -28,6 +28,26 @@ def detector_fixture(gl: Groundlight) -> Detector:
     return gl.get_or_create_detector(
         name=DETECTOR_NAME, query="Is there a dog?", confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD
     )
+    
+# @flaky(max_runs=4, min_passes=1)
+def test_get_or_create_detector_attempts_retries(gl: Groundlight):
+    run_test(
+        mocked_call="urllib3.PoolManager.request",
+        api_method=gl.get_or_create_detector,
+        expected_call_counts=TOTAL_RETRIES + 1,
+        name=DETECTOR_NAME,
+        query="Is there a dog?",
+        confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
+    )
+
+# @flaky(max_runs=4, min_passes=1)
+def test_get_detector_attempts_retries(gl: Groundlight, detector: Detector):
+    run_test(
+        mocked_call="urllib3.PoolManager.request",
+        api_method=gl.get_detector,
+        expected_call_counts=TOTAL_RETRIES + 1,
+        id=detector.id,
+    )
 
 
 def test_create_detector_attempts_retries(gl: Groundlight):
@@ -39,27 +59,6 @@ def test_create_detector_attempts_retries(gl: Groundlight):
         query="Is there a dog?",
         confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
     )
-
-@flaky(max_runs=4, min_passes=1)
-def test_get_or_create_detector_attempts_retries(gl: Groundlight):
-    run_test(
-        mocked_call="urllib3.PoolManager.request",
-        api_method=gl.get_or_create_detector,
-        expected_call_counts=TOTAL_RETRIES + 1,
-        name=DETECTOR_NAME,
-        query="Is there a dog?",
-        confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
-    )
-
-@flaky(max_runs=4, min_passes=1)
-def test_get_detector_attempts_retries(gl: Groundlight, detector: Detector):
-    run_test(
-        mocked_call="urllib3.PoolManager.request",
-        api_method=gl.get_detector,
-        expected_call_counts=TOTAL_RETRIES + 1,
-        id=detector.id,
-    )
-
 
 def test_get_detector_by_name_attempts_retries(gl: Groundlight):
     run_test(
