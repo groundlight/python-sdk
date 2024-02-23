@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-# from flaky import flaky
+from flaky import flaky
 from groundlight import Groundlight
 from groundlight.binary_labels import Label
 from groundlight.internalapi import InternalApiError
@@ -35,7 +35,7 @@ def detector_fixture(gl: Groundlight) -> Detector:
     )
 
 
-# @flaky(max_runs=4, min_passes=1)
+@flaky(max_runs=4, min_passes=1)
 def test_get_or_create_detector_attempts_retries(gl: Groundlight):
     run_test(
         mocked_call="urllib3.PoolManager.request",
@@ -47,7 +47,7 @@ def test_get_or_create_detector_attempts_retries(gl: Groundlight):
     )
 
 
-# @flaky(max_runs=4, min_passes=1)
+@flaky(max_runs=4, min_passes=1)
 def test_get_detector_attempts_retries(gl: Groundlight, detector: Detector):
     run_test(
         mocked_call="urllib3.PoolManager.request",
