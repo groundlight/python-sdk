@@ -131,15 +131,19 @@ class RequestsRetryDecorator:
                 except ApiException as e:
                     is_retryable = (e.status is not None) and (e.status in self.status_code_range)
                     if not is_retryable:
+                        logger.warning(f"Non-retryable ApiException occurred: {e}")
                         raise e
 
                     # Log the exception
-                    logger.info("Exception occurred in RequestsRetryDecorator", exc_info=True)
-
+                    logger.warning("Exception occurred in RequestsRetryDecorator", exc_info=True)
+                    logger.warning(f"Retrying request. Retry count: {retry_count}")
                     if retry_count == self.max_retries:
                         raise InternalApiError(reason="Maximum retries reached") from e
 
                     if is_retryable:
+                        logger.warning(
+                            f"HTTP response status: {e.status}."
+                        )
                         status_code = e.status
                         if status_code in self.status_code_range:
                             # This is implementing a full jitter strategy
