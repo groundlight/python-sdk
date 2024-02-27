@@ -22,6 +22,7 @@ from openapi_client.model_utils import (  # noqa: F401
     none_type,
     validate_and_convert_types,
 )
+from openapi_client.model.bongo import Bongo
 from openapi_client.model.detector import Detector
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from openapi_client.model.paginated_detector_list import PaginatedDetectorList

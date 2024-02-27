@@ -2,6 +2,7 @@
 .gitlab-ci.yml
 .travis.yml
 README.md
+docs/Bongo.md
 docs/ClassificationResult.md
 docs/Detector.md
 docs/DetectorCreationInput.md
@@ -26,6 +27,7 @@ openapi_client/apis/__init__.py
 openapi_client/configuration.py
 openapi_client/exceptions.py
 openapi_client/model/__init__.py
+openapi_client/model/bongo.py
 openapi_client/model/classification_result.py
 openapi_client/model/detector.py
 openapi_client/model/detector_creation_input.py
@@ -44,4 +46,5 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_bongo.py
 tox.ini

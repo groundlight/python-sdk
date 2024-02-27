@@ -9,6 +9,7 @@
 # import sys
 # sys.setrecursionlimit(n)
 
+from openapi_client.model.bongo import Bongo
 from openapi_client.model.classification_result import ClassificationResult
 from openapi_client.model.detector import Detector
 from openapi_client.model.detector_creation_input import DetectorCreationInput

@@ -50,6 +50,7 @@ import time
 import openapi_client
 from pprint import pprint
 from openapi_client.api import detectors_api
+from openapi_client.model.bongo import Bongo
 from openapi_client.model.detector import Detector
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from openapi_client.model.paginated_detector_list import PaginatedDetectorList
@@ -108,6 +109,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Bongo](docs/Bongo.md)
  - [ClassificationResult](docs/ClassificationResult.md)
  - [Detector](docs/Detector.md)
  - [DetectorCreationInput](docs/DetectorCreationInput.md)
