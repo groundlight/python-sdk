@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Any, Callable
 from unittest import mock
 
-# from flaky import flaky
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import Label
@@ -41,7 +40,6 @@ def test_create_detector_attempts_retries(gl: Groundlight):
     )
 
 
-# @flaky(max_runs=4, min_passes=1)
 def test_get_or_create_detector_attempts_retries(gl: Groundlight):
     run_test(
         mocked_call="requests.request",
