@@ -7,6 +7,21 @@ info:
     name: Questions?
     email: support@groundlight.ai
 paths:
+  /me:
+    get:
+      operationId: Who am I
+      description: Retrieve the current user.
+      tags:
+        - user
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
   /v1/detectors:
     get:
       operationId: List detectors
@@ -133,6 +148,11 @@ paths:
           description: Choose a detector by its ID.
           required: true
         - in: query
+          name: inspection_id
+          schema:
+            type: string
+          description: Associate the image query with an inspection.
+        - in: query
           name: human_review
           schema:
             type: string
@@ -206,6 +226,15 @@ paths:
           description: ""
 components:
   schemas:
+    User:
+      type: object
+      description: Spec for serializing a user object in the public API
+      properties:
+        username:
+          type: string
+          description: The user's username.
+      required:
+        - username
     ClassificationResult:
       type: object
       description:
@@ -266,7 +295,7 @@ components:
             If the detector's prediction is below this confidence threshold,
             send the image query for human review.
         metadata:
-          type: object 
+          type: object
           nullable: true
           description:
             A dictionary of custom key/value metadata to associate with the detector
@@ -310,7 +339,7 @@ components:
           description: (Advanced usage) Configuration to instantiate a specific prediction pipeline.
           maxLength: 8192
         metadata:
-          type: string 
+          type: string
           nullable: true
           description:
             A dictionary of custom key/value metadata to associate with the detector
