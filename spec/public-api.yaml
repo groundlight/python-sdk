@@ -182,6 +182,11 @@ paths:
           description: Choose a detector by its ID.
           required: true
         - in: query
+          name: inspection_id
+          schema:
+            type: string
+          description: Associate the image query with an inspection.
+        - in: query
           name: human_review
           schema:
             type: string

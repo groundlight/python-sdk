@@ -6,14 +6,13 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from model import Detector, ImageQuery
 from openapi_client.api_client import ApiClient, ApiException
 
-from groundlight.images import ByteStreamWrapper
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
 
@@ -247,67 +246,6 @@ class GroundlightApiClient(ApiClient):
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
         return Detector.parse_obj(parsed["results"][0])
-
-    @RequestsRetryDecorator()
-    def submit_image_query_with_inspection(  # noqa: PLR0913 # pylint: disable=too-many-arguments
-        self,
-        detector_id: str,
-        body: ByteStreamWrapper,
-        inspection_id: str,
-        patience_time: Optional[float] = None,
-        human_review: str = "DEFAULT",
-        metadata: Optional[dict] = None,
-        want_async: Optional[bool] = False,
-        _request_timeout: Optional[float] = None,
-    ) -> str:
-        """Submits an image query to the API and returns the ID of the image query.
-        The image query will be associated to the inspection_id provided.
-        """
-
-        url = f"{self.configuration.host}/posichecks"
-
-        params: Dict[str, Union[str, float, bool, Dict[Any, Any], None]] = {
-            "inspection_id": inspection_id,
-            "predictor_id": detector_id,
-            "want_async": want_async,
-        }
-
-        if metadata is not None:
-            params["metadata"] = metadata
-        if patience_time is not None:
-            params["patience_time"] = float(patience_time)
-
-        # In the API, 'send_notification' is used to control human_review escalation. This will eventually
-        # be deprecated, but for now we need to support it in the following manner:
-        if human_review == "ALWAYS":
-            params["send_notification"] = True
-        elif human_review == "NEVER":
-            params["send_notification"] = False
-        else:
-            pass  # don't send the send_notifications param, allow "DEFAULT" behavior
-
-        headers = self._headers()
-        headers["Content-Type"] = "image/jpeg"
-
-        response = requests.request(
-            "POST",
-            url,
-            headers=headers,
-            params=params,
-            data=body.read(),
-            verify=self.configuration.verify_ssl,
-            timeout=_request_timeout,
-        )
-
-        if not is_ok(response.status_code):
-            logger.info(response)
-            raise InternalApiError(
-                status=response.status_code,
-                reason=f"Error submitting image query with inspection ID {inspection_id} on detector {detector_id}",
-                http_resp=response,
-            )
-
-        return response.json()["id"]
 
     @RequestsRetryDecorator()
     def start_inspection(self) -> str:

@@ -42,7 +42,7 @@ def test_create_detector_attempts_retries(gl: Groundlight):
 
 def test_get_or_create_detector_attempts_retries(gl: Groundlight):
     run_test(
-        mocked_call="urllib3.PoolManager.request",
+        mocked_call="requests.request",
         api_method=gl.get_or_create_detector,
         expected_call_counts=TOTAL_RETRIES + 1,
         name=DETECTOR_NAME,
