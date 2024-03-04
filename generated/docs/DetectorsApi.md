@@ -109,7 +109,6 @@ Retrieve a detector by its ID.
 import time
 import openapi_client
 from openapi_client.api import detectors_api
-from openapi_client.model.bongo import Bongo
 from openapi_client.model.detector import Detector
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
@@ -169,7 +168,6 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
-**404** | Not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

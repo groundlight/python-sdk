@@ -13,11 +13,18 @@ import sys
 import unittest
 
 import openapi_client
-from openapi_client.model.bongo import Bongo
+from openapi_client.model.action import Action
+from openapi_client.model.condition import Condition
+from openapi_client.model.rule_base import RuleBase
+
+globals()["Action"] = Action
+globals()["Condition"] = Condition
+globals()["RuleBase"] = RuleBase
+from openapi_client.model.rule import Rule
 
 
-class TestBongo(unittest.TestCase):
-    """Bongo unit test stubs"""
+class TestRule(unittest.TestCase):
+    """Rule unit test stubs"""
 
     def setUp(self):
         pass
@@ -25,10 +32,10 @@ class TestBongo(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testBongo(self):
-        """Test Bongo"""
+    def testRule(self):
+        """Test Rule"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = Bongo()  # noqa: E501
+        # model = Rule()  # noqa: E501
         pass
 
 

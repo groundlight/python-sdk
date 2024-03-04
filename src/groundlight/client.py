@@ -6,11 +6,21 @@ from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Callable, Optional, Union
 
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import (
+    Detector,
+    ImageQuery,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+    Rule,
+    RuleCreationInput,
+    Action,
+    Condition,
+)
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
 from openapi_client.api.user_api import UserApi
+from openapi_client.api.rules_api import RulesApi
 from openapi_client.exceptions import NotFoundException, UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
@@ -143,6 +153,7 @@ class Groundlight:
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+        self.rules_api = RulesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
         self._verify_connectivity()
 
@@ -191,6 +202,53 @@ class Groundlight:
         """
         obj = self.user_api.who_am_i()
         return obj["username"]
+
+    def add_action(  # TODO: create_action?
+        self,
+        detector: Union[str, Detector],
+        rule_name: str,
+        enabled: bool,
+        channel: str,
+        recipient: str,
+        alert_on: str,
+        *,
+        include_image: Optional[bool] = None,
+        condition_parameters: Optional[dict] = None,
+        snooze_time_enabled: Optional[bool] = None,
+        snooze_time_value: Optional[int] = None,
+        snooze_time_unit: Optional[str] = None,
+    ) -> Rule:
+        """
+        Adds a notification action to the given detector
+
+        :param detector: the detector to add the action to
+        :param rule_name: a name to uniquely identify the rule
+        :param enabled: whether the rule is enabled initially
+        :param channel: what channel to send the notification over. Currently Email or SMS #TODO verify options
+        :param recipient: the address or number to send the notification to
+        :param alert_on: what to alert on #TODO verify options
+        :param include_image: whether to include the image in the notification
+        :param condition_parameters: additional information needed for the condition. i.e. if the condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
+        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification will be delivered until the snooze time has passed #TODO make sure this agrees
+        :param snooze_time_value:
+        :param snooze_time_unit: # TODO fuse this with the above
+
+        :return: a Rule object corresponding to the new rule
+        """
+        action = Action(channel=channel, recipient=recipient, include_image=include_image)
+        condition = Condition(verb=alert_on, parameters=condition_parameters)
+        det_id = detector.id if isinstance(detector, Detector) else detector
+        rule_input = RuleCreationInput(
+            detector_id=det_id,
+            name=rule_name,
+            enabled=enabled,
+            action=action,
+            condition=condition,
+            snooze_time_enabled=snooze_time_enabled,
+            snooze_time_value=snooze_time_value,
+            snooze_time_unit=snooze_time_unit,
+        )
+        self.rules_api.create_rule(det_id, rule_input)
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
