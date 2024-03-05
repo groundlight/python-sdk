@@ -4,6 +4,8 @@ from openapi_client import ApiException
 
 # Imports from our code
 from .client import Groundlight
+from .client import GroundlightClientError
+from .client import ApiTokenError
 from .binary_labels import Label
 from .version import get_version
 
