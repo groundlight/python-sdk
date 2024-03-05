@@ -112,8 +112,8 @@ class Rule(ModelComposed):
             "snooze_time_enabled": (bool,),  # noqa: E501
             "snooze_time_value": (int,),  # noqa: E501
             "snooze_time_unit": (str,),  # noqa: E501
-            "action": ({str: (bool, date, datetime, dict, float, int, list, str, none_type)},),  # noqa: E501
-            "condition": ({str: (bool, date, datetime, dict, float, int, list, str, none_type)},),  # noqa: E501
+            "action": (Action,),  # noqa: E501
+            "condition": (Condition,),  # noqa: E501
         }
 
     @cached_property
@@ -134,7 +134,6 @@ class Rule(ModelComposed):
 
     read_only_vars = {
         "detector_name",  # noqa: E501
-        "detector_id",  # noqa: E501
     }
 
     @classmethod
@@ -180,8 +179,8 @@ class Rule(ModelComposed):
             snooze_time_enabled (bool): Is this rule snooze time enabled?. [optional] if omitted the server will use the default value of False  # noqa: E501
             snooze_time_value (int): How long to snooze the rule for (in seconds).. [optional] if omitted the server will use the default value of 1  # noqa: E501
             snooze_time_unit (str): What unit of time to use for the snooze time.. [optional] if omitted the server will use the default value of "DAYS"  # noqa: E501
-            action ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): What action should be taken when the rule is triggered?. [optional]  # noqa: E501
-            condition ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): What condition should trigger the rule?. [optional]  # noqa: E501
+            action (Action): [optional]  # noqa: E501
+            condition (Condition): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -292,8 +291,8 @@ class Rule(ModelComposed):
             snooze_time_enabled (bool): Is this rule snooze time enabled?. [optional] if omitted the server will use the default value of False  # noqa: E501
             snooze_time_value (int): How long to snooze the rule for (in seconds).. [optional] if omitted the server will use the default value of 1  # noqa: E501
             snooze_time_unit (str): What unit of time to use for the snooze time.. [optional] if omitted the server will use the default value of "DAYS"  # noqa: E501
-            action ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): What action should be taken when the rule is triggered?. [optional]  # noqa: E501
-            condition ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): What condition should trigger the rule?. [optional]  # noqa: E501
+            action (Action): [optional]  # noqa: E501
+            condition (Condition): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

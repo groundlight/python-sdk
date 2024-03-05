@@ -13,8 +13,6 @@ from model import (
     PaginatedImageQueryList,
     Rule,
     RuleCreationInput,
-    Action,
-    Condition,
 )
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
@@ -23,6 +21,9 @@ from openapi_client.api.user_api import UserApi
 from openapi_client.api.rules_api import RulesApi
 from openapi_client.exceptions import NotFoundException, UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
+from openapi_client.model.action import Action
+from openapi_client.model.condition import Condition
+from openapi_client.model.rule_creation_input import RuleCreationInput
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
@@ -212,11 +213,11 @@ class Groundlight:
         recipient: str,
         alert_on: str,
         *,
-        include_image: Optional[bool] = None,
-        condition_parameters: Optional[dict] = None,
-        snooze_time_enabled: Optional[bool] = None,
-        snooze_time_value: Optional[int] = None,
-        snooze_time_unit: Optional[str] = None,
+        include_image: bool = False,
+        condition_parameters: dict = {},
+        snooze_time_enabled: bool = False,
+        snooze_time_value: int = 3600,
+        snooze_time_unit: str = "SECONDS",
     ) -> Rule:
         """
         Adds a notification action to the given detector

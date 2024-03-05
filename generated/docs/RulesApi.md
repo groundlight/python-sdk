@@ -4,7 +4,7 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create_rule**](RulesApi.md#create_rule) | **POST** /reef-api/actions/detector/{id}/rules | 
+[**create_rule**](RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
 
 
 # **create_rule**

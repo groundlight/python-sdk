@@ -41,7 +41,7 @@ class RulesApi(object):
             settings={
                 "response_type": (Rule,),
                 "auth": ["ApiToken"],
-                "endpoint_path": "/reef-api/actions/detector/{id}/rules",
+                "endpoint_path": "/v1/actions/detector/{id}/rules",
                 "operation_id": "create_rule",
                 "http_method": "POST",
                 "servers": None,

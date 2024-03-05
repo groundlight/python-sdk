@@ -22,8 +22,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
           description: ""
-  /reef-api/actions/detector/{id}/rules:
-  # /v1/actions/detector/{id}/rules:
+  /v1/actions/detector/{id}/rules:
     # TODO: leaving the GET endpoint out, to be consistent with detectors we probably want to paginate, but we'd need a backend change
     post:
       operationId: Create rule
@@ -395,7 +394,6 @@ components:
       properties:
         detector_id:
           type: string
-          readOnly: true
           description: Which detector should this rule be associated with?
         name:
           type: string
@@ -418,15 +416,11 @@ components:
           default: "DAYS"
           description: What unit of time to use for the snooze time.
         action:
-          type: object
+          $ref: "#/components/schemas/Action"
           description: What action should be taken when the rule is triggered?
-          allOf:
-            - $ref: "#/components/schemas/Action"
         condition:
-          type: object
+          $ref: "#/components/schemas/Condition"
           description: What condition should trigger the rule?
-          allOf:
-            - $ref: "#/components/schemas/Condition"
       x-internal: true
     RuleCreationInput:
       type: object
