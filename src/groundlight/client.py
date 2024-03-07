@@ -17,8 +17,8 @@ from model import (
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
-from openapi_client.api.user_api import UserApi
 from openapi_client.api.rules_api import RulesApi
+from openapi_client.api.user_api import UserApi
 from openapi_client.exceptions import NotFoundException, UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
