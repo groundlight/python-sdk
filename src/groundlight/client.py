@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import time
@@ -13,7 +12,6 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
@@ -200,8 +198,6 @@ class Groundlight:
         """
         obj = self.user_api.who_am_i()
         return obj["username"]
-
-
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
