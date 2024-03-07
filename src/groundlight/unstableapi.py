@@ -6,18 +6,20 @@ This module is part of our evolving SDK. While these functions are designed to p
 import json
 from typing import Union
 
-from groundlight import Groundlight
 from model import (
+    Channel,
     Detector,
     Rule,
     RuleCreationInput,
-    Verb,
-    Channel,
     SnoozeTimeUnit,
+    Verb,
 )
 from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
 from openapi_client.model.rule_creation_input import RuleCreationInput
+
+from groundlight import Groundlight
+
 
 class UnstableApi(Groundlight):
     def __init__(self):
