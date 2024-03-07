@@ -64,7 +64,14 @@ class RuleCreationInput(ModelComposed):
           as additional properties values.
     """
 
-    allowed_values = {}
+    allowed_values = {
+        ("snooze_time_unit",): {
+            "SECONDS": "SECONDS",
+            "MINUTES": "MINUTES",
+            "HOURS": "HOURS",
+            "DAYS": "DAYS",
+        },
+    }
 
     validations = {
         ("name",): {

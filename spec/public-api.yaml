@@ -414,6 +414,11 @@ components:
         snooze_time_unit:
           type: string
           default: "DAYS"
+          enum:
+            - "SECONDS"
+            - "MINUTES"
+            - "HOURS"
+            - "DAYS"
           description: What unit of time to use for the snooze time.
         action:
           $ref: "#/components/schemas/Action"
@@ -445,6 +450,9 @@ components:
       properties:
         channel:
           type: string
+          enum:
+            - EMAIL
+            - TEXT
           description: The channel to send the action to.
         include_image:
           type: boolean
@@ -459,6 +467,12 @@ components:
       properties:
         verb:
           type: string
+          enum:
+            - "ANSWERED_CONSECUTIVELY"
+            - "ANSWERED_WITHIN_TIME"
+            - "CHANGED_TO"
+            - "NO_CHANGE"
+            - "NO_QUERIES"
           description: The verb to use in the condition.
         parameters:
           type: object

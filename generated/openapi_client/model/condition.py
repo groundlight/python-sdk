@@ -54,7 +54,15 @@ class Condition(ModelNormal):
           as additional properties values.
     """
 
-    allowed_values = {}
+    allowed_values = {
+        ("verb",): {
+            "ANSWERED_CONSECUTIVELY": "ANSWERED_CONSECUTIVELY",
+            "ANSWERED_WITHIN_TIME": "ANSWERED_WITHIN_TIME",
+            "CHANGED_TO": "CHANGED_TO",
+            "NO_CHANGE": "NO_CHANGE",
+            "NO_QUERIES": "NO_QUERIES",
+        },
+    }
 
     validations = {}
 

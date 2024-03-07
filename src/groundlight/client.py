@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import time
@@ -13,6 +14,9 @@ from model import (
     PaginatedImageQueryList,
     Rule,
     RuleCreationInput,
+    Verb,
+    Channel,
+    SnoozeTimeUnit,
 )
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
@@ -204,40 +208,46 @@ class Groundlight:
         obj = self.user_api.who_am_i()
         return obj["username"]
 
-    def add_action(  # TODO: create_action?
+    def create_action(
         self,
         detector: Union[str, Detector],
         rule_name: str,
-        enabled: bool,
-        channel: str,
+        channel: Union[str, Channel],
         recipient: str,
-        alert_on: str,
         *,
+        alert_on: Union[str, Verb] = "CHANGED_TO",
+        enabled: bool = True,
         include_image: bool = False,
-        condition_parameters: dict = {},
+        condition_parameters: Union[str, dict] = {"label": "NO", "num_consecutive_labels": "2"},
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
-        snooze_time_unit: str = "SECONDS",
+        snooze_time_unit: Union[str, SnoozeTimeUnit] = "SECONDS",
     ) -> Rule:
         """
         Adds a notification action to the given detector
 
         :param detector: the detector to add the action to
         :param rule_name: a name to uniquely identify the rule
-        :param enabled: whether the rule is enabled initially
-        :param channel: what channel to send the notification over. Currently Email or SMS #TODO verify options
+        :param channel: what channel to send the notification over. Currently EMAIL or TEXT
         :param recipient: the address or number to send the notification to
-        :param alert_on: what to alert on #TODO verify options
+        :param alert_on: what to alert on. One of ANSWERED_CONSECUTIVELY, ANSWERED_WITHIN_TIME, CHANGED_TO, NO_CHANGE, NO_QUERIES
+        :param enabled: whether the rule is enabled initially
         :param include_image: whether to include the image in the notification
         :param condition_parameters: additional information needed for the condition. i.e. if the condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
         :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification will be delivered until the snooze time has passed #TODO make sure this agrees
-        :param snooze_time_value:
-        :param snooze_time_unit: # TODO fuse this with the above
+        :param snooze_time_value: The value of the snooze time
+        :param snooze_time_unit: The unit of the snooze time
 
         :return: a Rule object corresponding to the new rule
         """
-        action = Action(channel=channel, recipient=recipient, include_image=include_image)
-        condition = Condition(verb=alert_on, parameters=condition_parameters)
+        if type(alert_on) is str:
+            alert_on = Verb(alert_on.upper())
+        if type(channel) is str:
+            channel = Channel(channel.upper())
+        if type(condition_parameters) is str:
+            condition_parameters = json.loads(condition_parameters)
+        action = Action(channel=channel.value, recipient=recipient, include_image=include_image)
+        condition = Condition(verb=alert_on.value, parameters=condition_parameters)
         det_id = detector.id if isinstance(detector, Detector) else detector
         rule_input = RuleCreationInput(
             detector_id=det_id,

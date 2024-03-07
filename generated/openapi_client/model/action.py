@@ -54,7 +54,12 @@ class Action(ModelNormal):
           as additional properties values.
     """
 
-    allowed_values = {}
+    allowed_values = {
+        ("channel",): {
+            "EMAIL": "EMAIL",
+            "TEXT": "TEXT",
+        },
+    }
 
     validations = {}
 
