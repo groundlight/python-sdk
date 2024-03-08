@@ -21,7 +21,7 @@ from openapi_client.model.rule_creation_input import RuleCreationInput
 from groundlight import Groundlight
 
 
-class UnstableApi(Groundlight):
+class ExperimentalApi(Groundlight):
     def __init__(self):
         super().__init__()
 
