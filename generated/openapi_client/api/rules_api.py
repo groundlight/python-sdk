@@ -22,7 +22,7 @@ from openapi_client.model_utils import (  # noqa: F401
     none_type,
     validate_and_convert_types,
 )
-from openapi_client.model.pagginated_rule_list import PagginatedRuleList
+from openapi_client.model.paginated_rule_list import PaginatedRuleList
 from openapi_client.model.rule import Rule
 from openapi_client.model.rule_creation_input import RuleCreationInput
 
@@ -164,7 +164,7 @@ class RulesApi(object):
         )
         self.list_rules_endpoint = _Endpoint(
             settings={
-                "response_type": (PagginatedRuleList,),
+                "response_type": (PaginatedRuleList,),
                 "auth": ["ApiToken"],
                 "endpoint_path": "/v1/actions/rules",
                 "operation_id": "list_rules",
@@ -423,7 +423,7 @@ class RulesApi(object):
             async_req (bool): execute request asynchronously
 
         Returns:
-            PagginatedRuleList
+            PaginatedRuleList
                 If the method is called asynchronously, returns the request
                 thread.
         """

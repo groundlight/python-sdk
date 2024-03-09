@@ -48,7 +48,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PagginatedRuleList"
+                $ref: "#/components/schemas/PaginatedRuleList"
           description: ""
   /v1/actions/rules/{id}:
     get:
@@ -602,7 +602,7 @@ components:
       enum:
         - image_query
       type: string
-    PagginatedRuleList:
+    PaginatedRuleList:
       type: object
       properties:
         count:

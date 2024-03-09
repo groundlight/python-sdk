@@ -16,11 +16,11 @@ import openapi_client
 from openapi_client.model.rule import Rule
 
 globals()["Rule"] = Rule
-from openapi_client.model.inline_response200 import InlineResponse200
+from openapi_client.model.paginated_rule_list import PaginatedRuleList
 
 
-class TestInlineResponse200(unittest.TestCase):
-    """InlineResponse200 unit test stubs"""
+class TestPaginatedRuleList(unittest.TestCase):
+    """PaginatedRuleList unit test stubs"""
 
     def setUp(self):
         pass
@@ -28,10 +28,10 @@ class TestInlineResponse200(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testInlineResponse200(self):
-        """Test InlineResponse200"""
+    def testPaginatedRuleList(self):
+        """Test PaginatedRuleList"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = InlineResponse200()  # noqa: E501
+        # model = PaginatedRuleList()  # noqa: E501
         pass
 
 

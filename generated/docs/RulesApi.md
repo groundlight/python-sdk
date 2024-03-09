@@ -243,7 +243,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **list_rules**
-> PagginatedRuleList list_rules()
+> PaginatedRuleList list_rules()
 
 
 
@@ -257,7 +257,7 @@ Retrieve a list of rules.
 import time
 import openapi_client
 from openapi_client.api import rules_api
-from openapi_client.model.pagginated_rule_list import PagginatedRuleList
+from openapi_client.model.paginated_rule_list import PaginatedRuleList
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -302,7 +302,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PagginatedRuleList**](PagginatedRuleList.md)
+[**PaginatedRuleList**](PaginatedRuleList.md)
 
 ### Authorization
 

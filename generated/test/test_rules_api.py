@@ -28,6 +28,18 @@ class TestRulesApi(unittest.TestCase):
         """Test case for create_rule"""
         pass
 
+    def test_delete_rule(self):
+        """Test case for delete_rule"""
+        pass
+
+    def test_get_rule(self):
+        """Test case for get_rule"""
+        pass
+
+    def test_list_rules(self):
+        """Test case for list_rules"""
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()
