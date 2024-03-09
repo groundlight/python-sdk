@@ -4,8 +4,7 @@ unstableapi.py
 This module is part of our evolving SDK. While these functions are designed to provide valuable functionality to enhance your projects, it's important to note that they are considered unstable. This means they may undergo significant modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
-from typing import Union
-from typing import Optional
+from typing import Optional, Union
 
 from model import (
     Channel,
