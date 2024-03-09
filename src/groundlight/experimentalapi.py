@@ -10,7 +10,6 @@ from model import (
     Channel,
     Detector,
     Rule,
-    RuleCreationInput,
     SnoozeTimeUnit,
     Verb,
 )
@@ -63,7 +62,11 @@ class ExperimentalApi(Groundlight):
             channel = Channel(channel.upper())
         if type(condition_parameters) is str:
             condition_parameters = json.loads(condition_parameters)
-        action = Action(channel=channel.value, recipient=recipient, include_image=include_image)
+        action = Action(
+            channel=channel.value,
+            recipient=recipient,
+            include_image=include_image,
+        )
         condition = Condition(verb=alert_on.value, parameters=condition_parameters)
         det_id = detector.id if isinstance(detector, Detector) else detector
         rule_input = RuleCreationInput(
