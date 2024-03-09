@@ -22,6 +22,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
           description: ""
+  /v1/actions/rules:
+    get:
+      operationId: List rules
+      description: Retrieve a list of rules.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: A page number within the paginated result set.
+          schema:
+            type: integer
+        - name: page_size
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+      tags:
+        - rules
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagginatedRuleList"
+          description: ""
   /v1/actions/rules/{id}:
     get:
       operationId: Get rule
@@ -574,6 +602,15 @@ components:
       enum:
         - image_query
       type: string
+    PagginatedRuleList:
+      type: object
+      properties:
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rule"
     PaginatedDetectorList:
       type: object
       properties:

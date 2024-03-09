@@ -22,6 +22,7 @@ from openapi_client.model_utils import (  # noqa: F401
     none_type,
     validate_and_convert_types,
 )
+from openapi_client.model.pagginated_rule_list import PagginatedRuleList
 from openapi_client.model.rule import Rule
 from openapi_client.model.rule_creation_input import RuleCreationInput
 
@@ -152,6 +153,48 @@ class RulesApi(object):
                 },
                 "location_map": {
                     "id": "path",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.list_rules_endpoint = _Endpoint(
+            settings={
+                "response_type": (PagginatedRuleList,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/actions/rules",
+                "operation_id": "list_rules",
+                "http_method": "GET",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "page",
+                    "page_size",
+                ],
+                "required": [],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "page": (int,),
+                    "page_size": (int,),
+                },
+                "attribute_map": {
+                    "page": "page",
+                    "page_size": "page_size",
+                },
+                "location_map": {
+                    "page": "query",
+                    "page_size": "query",
                 },
                 "collection_format_map": {},
             },
@@ -337,3 +380,60 @@ class RulesApi(object):
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["id"] = id
         return self.get_rule_endpoint.call_with_http_info(**kwargs)
+
+    def list_rules(self, **kwargs):
+        """list_rules  # noqa: E501
+
+        Retrieve a list of rules.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.list_rules(async_req=True)
+        >>> result = thread.get()
+
+
+        Keyword Args:
+            page (int): A page number within the paginated result set.. [optional]
+            page_size (int): Number of results to return per page.. [optional]
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            PagginatedRuleList
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        return self.list_rules_endpoint.call_with_http_info(**kwargs)

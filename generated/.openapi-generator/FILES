@@ -12,6 +12,7 @@ docs/DetectorsApi.md
 docs/ImageQueriesApi.md
 docs/ImageQuery.md
 docs/ImageQueryTypeEnum.md
+docs/PagginatedRuleList.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/ResultTypeEnum.md
@@ -41,6 +42,7 @@ openapi_client/model/detector_creation_input.py
 openapi_client/model/detector_type_enum.py
 openapi_client/model/image_query.py
 openapi_client/model/image_query_type_enum.py
+openapi_client/model/pagginated_rule_list.py
 openapi_client/model/paginated_detector_list.py
 openapi_client/model/paginated_image_query_list.py
 openapi_client/model/result_type_enum.py
@@ -56,4 +58,5 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_pagginated_rule_list.py
 tox.ini

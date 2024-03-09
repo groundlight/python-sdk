@@ -95,3 +95,26 @@ class ExperimentalApi(Groundlight):
         :param action_id: the id of the action to delete
         """
         self.rules_api.delete_rule(action_id)
+
+    def get_rules_list(self) -> list[Rule]:
+        """
+        Gets a list of all rules
+
+        :return: a list of all rules
+        """
+        return [Rule.model_validate(rule.to_dict()) for rule in self.rules_api.list_rules()["results"]]
+
+    def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> None:
+        """
+        Deletes all rules associated with the given detector
+
+        :param detector: the detector to delete the rules from
+        """
+        if detector is None:
+            for rule in self.get_rules_list():
+                self.delete_action(rule.id)
+        else:
+            det_id = detector.id if isinstance(detector, Detector) else detector
+            for rule in self.get_rules_list():
+                if rule.detector_id == det_id:
+                    self.delete_action(rule.id)

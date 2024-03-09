@@ -106,6 +106,7 @@ Class | Method | HTTP request | Description
 *RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
 *RulesApi* | [**delete_rule**](docs/RulesApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
 *RulesApi* | [**get_rule**](docs/RulesApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
+*RulesApi* | [**list_rules**](docs/RulesApi.md#list_rules) | **GET** /v1/actions/rules | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /me | 
 
 
@@ -119,6 +120,7 @@ Class | Method | HTTP request | Description
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
+ - [PagginatedRuleList](docs/PagginatedRuleList.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
