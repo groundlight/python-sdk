@@ -22,8 +22,46 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
           description: ""
+  /v1/actions/rules/{id}:
+    get:
+      operationId: Get rule
+      description: Retrieve a rule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: Get a rule by its ID.
+          required: true
+      tags:
+        - rules
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
+    delete:
+      operationId: Delete rule
+      description: Delete a rule
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: Delete a rule by its ID.
+          required: true
+      tags:
+        - rules
+      security:
+        - ApiToken: []
+      responses:
+        "204":
+          description: ""
   /v1/actions/detector/{id}/rules:
-    # TODO: leaving the GET endpoint out, to be consistent with detectors we probably want to paginate, but we'd need a backend change
     post:
       operationId: Create rule
       description: Create a new rule for a detector.
@@ -439,6 +477,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/RuleBase"
       properties:
+        id:
+          type: integer
+          readOnly: true
+          description: A unique ID for this object.
         detector_name:
           type: string
           readOnly: true

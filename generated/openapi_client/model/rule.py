@@ -112,6 +112,7 @@ class Rule(ModelComposed):
         """
         lazy_import()
         return {
+            "id": (int,),  # noqa: E501
             "detector_name": (str,),  # noqa: E501
             "detector_id": (str,),  # noqa: E501
             "name": (str,),  # noqa: E501
@@ -128,6 +129,7 @@ class Rule(ModelComposed):
         return None
 
     attribute_map = {
+        "id": "id",  # noqa: E501
         "detector_name": "detector_name",  # noqa: E501
         "detector_id": "detector_id",  # noqa: E501
         "name": "name",  # noqa: E501
@@ -140,6 +142,7 @@ class Rule(ModelComposed):
     }
 
     read_only_vars = {
+        "id",  # noqa: E501
         "detector_name",  # noqa: E501
     }
 
@@ -179,6 +182,7 @@ class Rule(ModelComposed):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            id (int): A unique ID for this object.. [optional]  # noqa: E501
             detector_name (str): The name of the detector this rule is associated with.. [optional]  # noqa: E501
             detector_id (str): Which detector should this rule be associated with?. [optional]  # noqa: E501
             name (str): A short, descriptive name for the rule.. [optional]  # noqa: E501
@@ -291,6 +295,7 @@ class Rule(ModelComposed):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            id (int): A unique ID for this object.. [optional]  # noqa: E501
             detector_name (str): The name of the detector this rule is associated with.. [optional]  # noqa: E501
             detector_id (str): Which detector should this rule be associated with?. [optional]  # noqa: E501
             name (str): A short, descriptive name for the rule.. [optional]  # noqa: E501

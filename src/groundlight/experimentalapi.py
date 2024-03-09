@@ -5,6 +5,7 @@ This module is part of our evolving SDK. While these functions are designed to p
 """
 import json
 from typing import Union
+from typing import Optional
 
 from model import (
     Channel,
@@ -22,8 +23,8 @@ from groundlight import Groundlight
 
 
 class ExperimentalApi(Groundlight):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None):
+        super().__init__(endpoint=endpoint, api_token=api_token)
 
     def create_action(
         self,
@@ -35,7 +36,7 @@ class ExperimentalApi(Groundlight):
         alert_on: Union[str, Verb] = "CHANGED_TO",
         enabled: bool = True,
         include_image: bool = False,
-        condition_parameters: Union[str, dict] = {"label": "NO", "num_consecutive_labels": "2"},
+        condition_parameters: Union[str, dict] = {"label": "YES"},
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
         snooze_time_unit: Union[str, SnoozeTimeUnit] = "SECONDS",
@@ -51,7 +52,7 @@ class ExperimentalApi(Groundlight):
         :param enabled: whether the rule is enabled initially
         :param include_image: whether to include the image in the notification
         :param condition_parameters: additional information needed for the condition. i.e. if the condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
-        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification will be delivered until the snooze time has passed #TODO make sure this agrees
+        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification will be delivered until the snooze time has passed
         :param snooze_time_value: The value of the snooze time
         :param snooze_time_unit: The unit of the snooze time
 
@@ -76,4 +77,21 @@ class ExperimentalApi(Groundlight):
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
         )
-        self.rules_api.create_rule(det_id, rule_input)
+        return Rule.model_validate(self.rules_api.create_rule(det_id, rule_input).to_dict())
+
+    def get_action(self, action_id: int) -> Action:
+        """
+        Gets the action with the given id
+
+        :param action_id: the id of the action to get
+        :return: the action with the given id
+        """
+        return Rule.model_validate(self.rules_api.get_rule(action_id).to_dict())
+
+    def delete_action(self, action_id: int) -> None:
+        """
+        Deletes the action with the given id
+
+        :param action_id: the id of the action to delete
+        """
+        self.rules_api.delete_rule(action_id)
