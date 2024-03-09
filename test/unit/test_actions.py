@@ -3,7 +3,6 @@ import unittest
 from groundlight import ExperimentalApi
 
 
-
 class TestActions(unittest.TestCase):
     def setUp(self) -> None:
         self.gl = ExperimentalApi()
