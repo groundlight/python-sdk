@@ -68,13 +68,11 @@ class ExperimentalApi(Groundlight):
         if type(condition_parameters) is str:
             condition_parameters = json.loads(condition_parameters)
         action = Action(
-            channel=channel.value, # type: ignore
+            channel=channel.value,  # type: ignore
             recipient=recipient,
             include_image=include_image,
         )
-        condition = Condition(
-            verb=alert_on.value, parameters=condition_parameters # type: ignore
-        )
+        condition = Condition(verb=alert_on.value, parameters=condition_parameters)  # type: ignore
         det_id = detector.id if isinstance(detector, Detector) else detector
         rule_input = RuleCreationInput(
             detector_id=det_id,
