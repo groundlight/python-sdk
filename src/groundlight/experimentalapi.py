@@ -19,7 +19,7 @@ from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
 from openapi_client.model.rule_creation_input import RuleCreationInput
 
-from groundlight import Groundlight
+from .client import Groundlight
 
 
 class ExperimentalApi(Groundlight):
@@ -40,7 +40,7 @@ class ExperimentalApi(Groundlight):
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
         snooze_time_unit: Union[str, SnoozeTimeUnit] = "SECONDS",
-    ) -> Rule:
+    ) -> Rule:  # pylint: disable=too-many-arguments
         """
         Adds a notification action to the given detector
 
@@ -61,12 +61,12 @@ class ExperimentalApi(Groundlight):
 
         :return: a Rule object corresponding to the new rule
         """
-        if type(alert_on) is str:
+        if isinstance(alert_on, str):
             alert_on = Verb(alert_on.upper())
-        if type(channel) is str:
+        if isinstance(snooze_time_unit, str):
             channel = Channel(channel.upper())
-        if type(condition_parameters) is str:
-            condition_parameters = json.loads(condition_parameters)
+        if isinstance(snooze_time_unit, str):
+            condition_parameters = json.loads(condition_parameters)  # type: ignore
         action = Action(
             channel=channel.value,  # type: ignore
             recipient=recipient,
