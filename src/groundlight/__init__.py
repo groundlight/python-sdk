@@ -7,7 +7,7 @@ from model import *
 
 # Imports from our code
 from .client import Groundlight
-from .unstableapi import UnstableApi
+from .experimentalapi import ExperimentalApiApi
 from .binary_labels import Label
 from .version import get_version
 
