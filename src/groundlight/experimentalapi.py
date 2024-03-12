@@ -26,7 +26,7 @@ class ExperimentalApi(Groundlight):
     def __init__(self):
         super().__init__()
 
-    def create_action(
+    def create_action( # pylint: disable=too-many-locals
         self,
         detector: Union[str, Detector],
         rule_name: str,
@@ -40,7 +40,7 @@ class ExperimentalApi(Groundlight):
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
         snooze_time_unit: Union[str, SnoozeTimeUnit] = "SECONDS",
-    ) -> Rule:  # pylint: disable=too-many-arguments
+    ) -> Rule:
         """
         Adds a notification action to the given detector
 
