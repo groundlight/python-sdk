@@ -1,7 +1,9 @@
 """
 experimentalapi.py
 
-This module is part of our evolving SDK. While these functions are designed to provide valuable functionality to enhance your projects, it's important to note that they are considered unstable. This means they may undergo significant modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
+This module is part of our evolving SDK. While these functions are designed to provide valuable functionality to enhance
+your projects, it's important to note that they are considered unstable. This means they may undergo significant
+modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
 from typing import Union
@@ -10,7 +12,6 @@ from model import (
     Channel,
     Detector,
     Rule,
-    RuleCreationInput,
     SnoozeTimeUnit,
     Verb,
 )
@@ -35,7 +36,7 @@ class ExperimentalApi(Groundlight):
         alert_on: Union[str, Verb] = "CHANGED_TO",
         enabled: bool = True,
         include_image: bool = False,
-        condition_parameters: Union[str, dict] = None,
+        condition_parameters: Union[str, dict, None] = None,
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
         snooze_time_unit: Union[str, SnoozeTimeUnit] = "SECONDS",
@@ -47,11 +48,14 @@ class ExperimentalApi(Groundlight):
         :param rule_name: a name to uniquely identify the rule
         :param channel: what channel to send the notification over. Currently EMAIL or TEXT
         :param recipient: the address or number to send the notification to
-        :param alert_on: what to alert on. One of ANSWERED_CONSECUTIVELY, ANSWERED_WITHIN_TIME, CHANGED_TO, NO_CHANGE, NO_QUERIES
+        :param alert_on: what to alert on. One of ANSWERED_CONSECUTIVELY, ANSWERED_WITHIN_TIME,
+            CHANGED_TO, NO_CHANGE, NO_QUERIES
         :param enabled: whether the rule is enabled initially
         :param include_image: whether to include the image in the notification
-        :param condition_parameters: additional information needed for the condition. i.e. if the condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
-        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification will be delivered until the snooze time has passed #TODO make sure this agrees
+        :param condition_parameters: additional information needed for the condition. i.e. if the
+            condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
+        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification
+            will be delivered until the snooze time has passed #TODO make sure this agrees
         :param snooze_time_value: The value of the snooze time
         :param snooze_time_unit: The unit of the snooze time
 
@@ -63,8 +67,14 @@ class ExperimentalApi(Groundlight):
             channel = Channel(channel.upper())
         if type(condition_parameters) is str:
             condition_parameters = json.loads(condition_parameters)
-        action = Action(channel=channel.value, recipient=recipient, include_image=include_image)
-        condition = Condition(verb=alert_on.value, parameters=condition_parameters)
+        action = Action(
+            channel=channel.value, # type: ignore
+            recipient=recipient,
+            include_image=include_image,
+        )
+        condition = Condition(
+            verb=alert_on.value, parameters=condition_parameters # type: ignore
+        )
         det_id = detector.id if isinstance(detector, Detector) else detector
         rule_input = RuleCreationInput(
             detector_id=det_id,
