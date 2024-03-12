@@ -13,30 +13,36 @@ fi
 
 # Args
 TARGET_PATHS="$@"
+errors=0
+
 echo "Linting paths: $TARGET_PATHS ..."
 
-errors=0
+echo "-----------------------------------------------------------------------------------------------------------------"
 
 # https://toml-sort.readthedocs.io/en/latest/
 echo "Linting with toml-sort (checks pyproject.toml formatting) ..."
-poetry run toml-sort --check pyproject.toml || ((errors++))
+poetry run toml-sort --check pyproject.toml || { ((errors++)) ; echo "toml-sort found errors that need to be fixed to merge" ;}
+echo "-----------------------------------------------------------------------------------------------------------------"
 
 # https://beta.ruff.rs/docs/
 echo "Linting with ruff (isort / flake8 / autoflake issues) ..."
-poetry run ruff check $TARGET_PATHS || ((errors++))
+poetry run ruff check $TARGET_PATHS || { ((errors++)) ; echo "ruff found errors that need to be fixed to merge" ;}
+echo "-----------------------------------------------------------------------------------------------------------------"
 
 # Tradeoff: Pylint is useful, but it is also stricter and slower than other linters. TBD on whether
 # we want to keep it.
 # https://pylint.readthedocs.io/en/latest/index.html
 echo "Linting with pylint ..."
-poetry run pylint $TARGET_PATHS || ((errors++))
+poetry run pylint $TARGET_PATHS || { ((errors++)) ; echo "pylint found errors that need to be fixed to merge" ;}
+echo "-----------------------------------------------------------------------------------------------------------------"
 
 # https://mypy.readthedocs.io/en/stable/index.html
 echo "Linting with mypy (type checking) ..."
-poetry run mypy $TARGET_PATHS || ((errors++))
+poetry run mypy $TARGET_PATHS || { ((errors++)) ; echo "mypy found errors that need to be fixed to merge";}
+echo "-----------------------------------------------------------------------------------------------------------------"
 
 if [[ $errors -gt 0 ]]; then
-  echo "🚨 $errors linters found errors!"
+  echo "🚨 linters found $errors errors! "
   exit $errors
 fi
 
