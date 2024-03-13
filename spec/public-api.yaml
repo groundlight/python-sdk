@@ -101,13 +101,13 @@ paths:
   /v1/image:
     get:
       operationId: Get image
-      description: Retrieve an image by its image ID.
+      description: Retrieve an image by its  id.
       parameters:
-        - in: id
+        - in: query
           name: id
           schema:
             type: string
-          description: Choose an image by its image ID.
+          description: Choose an image by its id.
           required: true
       tags:
         - images
