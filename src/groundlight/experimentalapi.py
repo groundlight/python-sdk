@@ -52,8 +52,10 @@ class ExperimentalApi(Groundlight):
             CHANGED_TO, NO_CHANGE, NO_QUERIES
         :param enabled: whether the rule is enabled initially
         :param include_image: whether to include the image in the notification
-        :param condition_parameters: additional information needed for the condition. i.e. if the condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
-        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification will be delivered until the snooze time has passed
+        :param condition_parameters: additional information needed for the condition. i.e. if the
+            condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
+        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification
+            will be delivered until the snooze time has passed
         :param snooze_time_value: The value of the snooze time
         :param snooze_time_unit: The unit of the snooze time
 
