@@ -70,10 +70,7 @@ class DetectorsApi(object):
                 },
                 "collection_format_map": {},
             },
-            headers_map={
-                "accept": ["application/json"],
-                "content_type": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data"],
-            },
+            headers_map={"accept": ["application/json"], "content_type": ["application/json"]},
             api_client=api_client,
         )
         self.get_detector_endpoint = _Endpoint(
