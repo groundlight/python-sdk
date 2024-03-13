@@ -161,12 +161,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/DetectorCreationInput"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/DetectorCreationInput"
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/DetectorCreationInput"
         required: true
       security:
         - ApiToken: []
