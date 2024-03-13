@@ -103,12 +103,15 @@ Class | Method | HTTP request | Description
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
+*RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /me | 
 
 
 ## Documentation For Models
 
+ - [Action](docs/Action.md)
  - [ClassificationResult](docs/ClassificationResult.md)
+ - [Condition](docs/Condition.md)
  - [Detector](docs/Detector.md)
  - [DetectorCreationInput](docs/DetectorCreationInput.md)
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
@@ -117,6 +120,9 @@ Class | Method | HTTP request | Description
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
+ - [Rule](docs/Rule.md)
+ - [RuleBase](docs/RuleBase.md)
+ - [RuleCreationInput](docs/RuleCreationInput.md)
  - [User](docs/User.md)
 
 

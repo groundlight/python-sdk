@@ -22,6 +22,41 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
           description: ""
+  /v1/actions/detector/{id}/rules:
+    # TODO: leaving the GET endpoint out, to be consistent with detectors we probably want to paginate, but we'd need a backend change
+    post:
+      operationId: Create rule
+      description: Create a new rule for a detector.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Choose a detector by its ID.
+          required: true
+      tags:
+        - rules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuleCreationInput"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/RuleCreationInput"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RuleCreationInput"
+        required: true
+      security:
+        - ApiToken: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+          description: ""
   /v1/detectors:
     get:
       operationId: List detectors
@@ -58,12 +93,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/DetectorCreationInput"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/DetectorCreationInput"
-          multipart/form-data:
             schema:
               $ref: "#/components/schemas/DetectorCreationInput"
         required: true
@@ -376,6 +405,96 @@ components:
       enum:
         - detector
       type: string
+    RuleBase:
+      type: object
+      description: Base spec for serializing a rule object in the public API.
+      properties:
+        detector_id:
+          type: string
+          description: Which detector should this rule be associated with?
+        name:
+          type: string
+          description: A short, descriptive name for the rule.
+          maxLength: 200
+        enabled:
+          type: boolean
+          default: true
+          description: Is this rule enabled?
+        snooze_time_enabled:
+          type: boolean
+          default: false
+          description: Is this rule snooze time enabled?
+        snooze_time_value:
+          type: integer
+          default: 1
+          description: How long to snooze the rule for (in seconds).
+        snooze_time_unit:
+          type: string
+          default: "DAYS"
+          enum:
+            - "SECONDS"
+            - "MINUTES"
+            - "HOURS"
+            - "DAYS"
+          description: What unit of time to use for the snooze time.
+        action:
+          $ref: "#/components/schemas/Action"
+          description: What action should be taken when the rule is triggered?
+        condition:
+          $ref: "#/components/schemas/Condition"
+          description: What condition should trigger the rule?
+      x-internal: true
+    RuleCreationInput:
+      type: object
+      description: Helper serializer for structuring POST request to actions
+      allOf:
+        - $ref: "#/components/schemas/RuleBase"
+      x-internal: true
+    Rule:
+      type: object
+      description: Spec for serializing a rule object in the public API.
+      allOf:
+        - $ref: "#/components/schemas/RuleBase"
+      properties:
+        detector_name:
+          type: string
+          readOnly: true
+          description: The name of the detector this rule is associated with.
+      x-internal: true
+    Action:
+      type: object
+      description: What action should be taken when the rule is triggered?
+      properties:
+        channel:
+          type: string
+          enum:
+            - EMAIL
+            - TEXT
+          description: The channel to send the action to.
+        include_image:
+          type: boolean
+          description: Should the image be included in the action?
+        recipient:
+          type: string
+          description: The recipient of the action.
+      x-internal: true
+    Condition:
+      type: object
+      description: What condition should trigger the rule?
+      properties:
+        verb:
+          type: string
+          enum:
+            - "ANSWERED_CONSECUTIVELY"
+            - "ANSWERED_WITHIN_TIME"
+            - "CHANGED_TO"
+            - "NO_CHANGE"
+            - "NO_QUERIES"
+          description: The verb to use in the condition.
+        parameters:
+          type: object
+          description: The parameters to use in the condition.
+      x-internal: true
     ImageQuery:
       type: object
       description: Spec for serializing a image-query object in the public API.
