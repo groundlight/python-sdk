@@ -26,7 +26,7 @@ class ExperimentalApi(Groundlight):
     def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None):
         super().__init__(endpoint=endpoint, api_token=api_token)
 
-    def create_action( # pylint: disable=too-many-locals
+    def create_action(  # pylint: disable=too-many-locals
         self,
         detector: Union[str, Detector],
         rule_name: str,
