@@ -103,6 +103,7 @@ Class | Method | HTTP request | Description
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
+*NotesApi* | [**get_notes**](docs/NotesApi.md#get_notes) | **GET** /v1/notes | 
 *RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /me | 
 
@@ -117,6 +118,7 @@ Class | Method | HTTP request | Description
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
+ - [Note](docs/Note.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)

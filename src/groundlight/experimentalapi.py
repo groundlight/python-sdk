@@ -85,3 +85,24 @@ class ExperimentalApi(Groundlight):
             snooze_time_unit=snooze_time_unit,
         )
         return self.rules_api.create_rule(det_id, rule_input)
+
+    def get_notes(self, detector: Union[str, Detector]) -> list[Rule]:
+        """
+        Gets the notes for a given detector
+
+        :param detector: the detector to get the notes for
+
+        :return: a list of Rule objects corresponding to the notes for the detector
+        """
+        det_id = detector.id if isinstance(detector, Detector) else detector
+        return self.notes_api.get_notes(det_id)
+
+    def create_note(self, detector: Union[str, Detector]) -> None:
+        """
+        Adds a note to a given detector
+
+        :param detector: the detector to add the note to
+        :param rule: the rule to add to the detector
+        """
+        det_id = detector.id if isinstance(detector, Detector) else detector
+        self.notes_api.create_note(det_id)

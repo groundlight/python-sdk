@@ -57,6 +57,57 @@ paths:
               schema:
                 $ref: "#/components/schemas/Rule"
           description: ""
+  /v1/notes:
+    get:
+      operationId: get notes
+      description: Retrieve notes for a detector
+      parameters:
+        - name: detector
+          required: true
+          in: query
+          description: the detector whose notes to retrieve
+          schema:
+            type: string
+      tags:
+        - notes
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+          description: ""
+    # post:
+    #   operationId: Create note
+    #   description: Create a new note.
+    #   parameters:
+    #     - name: detector
+    #       required: true
+    #       in: query
+    #       description: the detector to associate the note with
+    #       schema:
+    #         type: string
+    #   tags:
+    #     - notes
+    #   requestBody:
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: "#/components/schemas/NoteCreationInput"
+    #     required: true
+    #   security:
+    #     - ApiToken: []
+    #   responses:
+    #     "201":
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: "#/components/schemas/NoteList"
+          # description: ""
   /v1/detectors:
     get:
       operationId: List detectors
@@ -455,6 +506,18 @@ components:
           type: string
           description: The recipient of the action.
       x-internal: true
+    Note:
+      type: object
+      properties:
+        content:
+          type: string
+          description: The text inside the note
+        note_type:
+          type: string
+          enum:
+            - "CUSTOMER"
+            - "USER"
+          description: The type of note
     Condition:
       type: object
       description: What condition should trigger the rule?

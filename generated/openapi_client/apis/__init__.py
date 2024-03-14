@@ -15,5 +15,6 @@
 # Import APIs into API package:
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.api.notes_api import NotesApi
 from openapi_client.api.rules_api import RulesApi
 from openapi_client.api.user_api import UserApi
