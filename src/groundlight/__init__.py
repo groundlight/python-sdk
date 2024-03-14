@@ -2,10 +2,14 @@
 # Add useful imports from the generated code here at the top level, as a convenience.
 from openapi_client import ApiException
 
+# Incorporate models for the open_api spec
+from model import *
+
 # Imports from our code
 from .client import Groundlight
 from .client import GroundlightClientError
 from .client import ApiTokenError
+from .experimentalapi import ExperimentalApi
 from .binary_labels import Label
 from .version import get_version
 

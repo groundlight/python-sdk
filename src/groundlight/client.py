@@ -6,12 +6,18 @@ from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Callable, Optional, Union
 
-from model import Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import (
+    Detector,
+    ImageQuery,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+)
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
+from openapi_client.api.rules_api import RulesApi
 from openapi_client.api.user_api import UserApi
-from openapi_client.exceptions import UnauthorizedException
+from openapi_client.exceptions import NotFoundException, UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -143,8 +149,12 @@ class Groundlight:
         self.api_client = GroundlightApiClient(configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
+        self.rules_api = RulesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
         self._verify_connectivity()
+
+    def __repr__(self) -> str:
+        return f"Logged in as {self.whoami()} to Groundlight at {self.endpoint}"
 
     def _verify_connectivity(self) -> None:
         """
@@ -153,7 +163,7 @@ class Groundlight:
         """
         try:
             # a simple query to confirm that the endpoint & API token are working
-            self.list_detectors(page=1, page_size=1)
+            self.whoami()
         except UnauthorizedException as e:
             msg = (
                 f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
@@ -201,7 +211,10 @@ class Groundlight:
         if isinstance(id, Detector):
             # Short-circuit
             return id
-        obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        try:
+            obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        except NotFoundException as e:
+            raise NotFoundError(f"Detector with id '{id}' not found") from e
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
