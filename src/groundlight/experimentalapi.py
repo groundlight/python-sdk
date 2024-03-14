@@ -6,7 +6,7 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from model import (
     Channel,
@@ -103,7 +103,7 @@ class ExperimentalApi(Groundlight):
         """
         self.rules_api.delete_rule(action_id)
 
-    def get_rules_list(self) -> list[Rule]:
+    def get_rules_list(self) -> List[Rule]:
         """
         Gets a list of all rules
 
