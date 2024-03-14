@@ -1,6 +1,6 @@
 import unittest
-import PIL
 
+import PIL
 from groundlight import ExperimentalApi
 
 

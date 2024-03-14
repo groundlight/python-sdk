@@ -15,8 +15,8 @@ from model import (
     SnoozeTimeUnit,
     Verb,
 )
-from openapi_client.api.rules_api import RulesApi
 from openapi_client.api.images_api import ImagesApi
+from openapi_client.api.rules_api import RulesApi
 from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
 from openapi_client.model.rule_creation_input import RuleCreationInput
