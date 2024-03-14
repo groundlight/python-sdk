@@ -53,6 +53,9 @@ const config = {
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
         },
+        googleTagManager: {
+          containerId: "GTM-5MV4R9FV",
+        },
         blog: {
           showReadingTime: true,
           remarkPlugins: [remarkMath],
@@ -63,14 +66,8 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-
       }),
-      {
-        googleTagManager: {
-          containerId: 'GTM-5MV4R9FV',
-        },
-      },
-    ]
+    ],
   ],
 
   stylesheets: [
