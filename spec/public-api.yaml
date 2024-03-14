@@ -130,7 +130,7 @@ paths:
   /v1/image:
     get:
       operationId: Get image
-      description: Retrieve an image by its  id.
+      description: Retrieve an image by its id.
       parameters:
         - in: query
           name: id

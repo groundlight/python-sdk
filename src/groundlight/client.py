@@ -15,7 +15,6 @@ from model import (
 from openapi_client import Configuration
 from openapi_client.api.detectors_api import DetectorsApi
 from openapi_client.api.image_queries_api import ImageQueriesApi
-from openapi_client.api.rules_api import RulesApi
 from openapi_client.api.user_api import UserApi
 from openapi_client.exceptions import NotFoundException, UnauthorizedException
 from openapi_client.model.detector_creation_input import DetectorCreationInput
@@ -117,7 +116,7 @@ class Groundlight:
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
-        configuration = Configuration(host=self.endpoint)
+        self.configuration = Configuration(host=self.endpoint)
 
         if not api_token:
             try:
@@ -141,15 +140,14 @@ class Groundlight:
             )
             warnings.simplefilter("ignore", InsecureRequestWarning)
 
-            configuration.verify_ssl = False
-            configuration.assert_hostname = False
+            self.configuration.verify_ssl = False
+            self.configuration.assert_hostname = False
 
-        configuration.api_key["ApiToken"] = api_token
+        self.configuration.api_key["ApiToken"] = api_token
 
-        self.api_client = GroundlightApiClient(configuration)
+        self.api_client = GroundlightApiClient(self.configuration)
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
-        self.rules_api = RulesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
         self._verify_connectivity()
 

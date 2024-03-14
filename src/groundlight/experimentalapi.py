@@ -15,6 +15,8 @@ from model import (
     SnoozeTimeUnit,
     Verb,
 )
+from openapi_client.api.rules_api import RulesApi
+from openapi_client.api.images_api import ImagesApi
 from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
 from openapi_client.model.rule_creation_input import RuleCreationInput
@@ -23,8 +25,10 @@ from .client import Groundlight
 
 
 class ExperimentalApi(Groundlight):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, endpoint: str = None, api_token: str = None):
+        super().__init__(endpoint=endpoint, api_token=api_token)
+        self.rules_api = RulesApi(self.api_client)
+        self.images_api = ImagesApi(self.api_client)
 
     def create_action(  # pylint: disable=too-many-locals
         self,
@@ -85,3 +89,13 @@ class ExperimentalApi(Groundlight):
             snooze_time_unit=snooze_time_unit,
         )
         return self.rules_api.create_rule(det_id, rule_input)
+
+    def get_image(self, iq_id: str) -> bytes:
+        """
+        Get the image associated with the given image ID
+        If you have PIL installed, you can instantiate the pill image as PIL.Image.open(gl.get_image(iq.id))
+
+        :param image_id: the ID of the image to get
+        :return: the image as a byte array
+        """
+        return self.images_api.get_image(iq_id)
