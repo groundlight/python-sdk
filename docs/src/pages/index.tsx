@@ -7,7 +7,6 @@ import clsx from "clsx";
 // import React from "react";
 // VSCode might try to delete it, but that will break the site.
 import React from "react";
-
 import styles from "./index.module.css";
 
 function HomepageHeader() {
@@ -32,6 +31,7 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
+
   return (
     <Layout
       title={`${siteConfig.title}`}
