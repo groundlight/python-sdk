@@ -796,3 +796,14 @@ def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groun
 
     assert iq.metadata == metadata
     assert iq.result.label == Label.YES
+
+def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: Detector, image: str):
+    """The URCap submits the inspection_id as an empty string when there is no active inspection.
+    This test ensures that this behavior is allowed and does not raise an exception.
+    """
+    gl.submit_image_query(
+        detector=detector.id,
+        image=image,
+        human_review="NEVER",
+        inspection_id='',
+    )
