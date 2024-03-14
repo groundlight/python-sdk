@@ -40,8 +40,6 @@ const useIntercom = () => {
       window.Intercom("boot", {
         api_base: "https://api-iam.intercom.io",
         app_id: "fu9pkks5",
-        // name: `${user?.username}`,
-        // email: `${user?.email}`,
       });
     }
 
