@@ -6,8 +6,7 @@ from groundlight import ExperimentalApi
 
 class TestImages(unittest.TestCase):
     def setUp(self) -> None:
-        # self.gl = ExperimentalApi()
-        self.gl = ExperimentalApi("https://api.dev.groundlight.ai/")
+        self.gl = ExperimentalApi()
         return super().setUp()
 
     def test_get_image(self):
