@@ -65,6 +65,14 @@ const config = {
         },
       }),
     ],
+    [
+      '@docusaurus/preset-classic',
+      {
+        googleTagManager: {
+          containerId: 'GTM-5MV4R9FV',
+        },
+      },
+    ],
   ],
 
   stylesheets: [
