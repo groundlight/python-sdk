@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 @pytest.fixture(name="gl")
 def _gl() -> ExperimentalApi:
-    return ExperimentalApi(endpoint="https://api.dev.groundlight.ai")
+    return ExperimentalApi()
 
 
 def test_notes(gl: ExperimentalApi):

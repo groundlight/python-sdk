@@ -5,7 +5,7 @@ from groundlight import ExperimentalApi
 
 @pytest.fixture(name="gl")
 def _gl() -> ExperimentalApi:
-    return ExperimentalApi("https://api.dev.groundlight.ai")
+    return ExperimentalApi()
 
 
 def test_get_image(gl: ExperimentalApi):
