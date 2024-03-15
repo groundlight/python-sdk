@@ -97,7 +97,7 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector]) -> None:
+    def create_note(self, detector: Union[str, Detector], note: str) -> None:
         """
         Adds a note to a given detector
 
@@ -105,4 +105,4 @@ class ExperimentalApi(Groundlight):
         :param rule: the rule to add to the detector
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
-        self.notes_api.create_note(det_id)
+        self.notes_api.create_note(det_id, note)

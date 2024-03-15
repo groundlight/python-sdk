@@ -1,15 +1,12 @@
-import unittest
-
-import PIL
+import pytest
 from groundlight import ExperimentalApi
 
+@pytest.fixture(name="gl")
+def _gl() -> ExperimentalApi:
+    return ExperimentalApi(endpoint = "https://api.dev.groundlight.ai")
 
-class TestNotes(unittest.TestCase):
-    def setUp(self) -> None:
-        self.gl = ExperimentalApi()
-        return super().setUp()
-
-    def test_notes(self):
-        det = self.gl.get_or_create_detector("test_detector", "test_query")
-        iq = self.gl.submit_image_query(det, image="test/assets/dog.jpeg", wait=10)
-        # TODO
+def test_notes(gl: ExperimentalApi):
+    det = gl.get_or_create_detector("test_detector", "test_query")
+    gl.create_note(det, "test_note")
+    note = gl.get_notes(det)
+    assert note.message == "test_note"
