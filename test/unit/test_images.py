@@ -1,5 +1,5 @@
-import pytest
 import PIL
+import pytest
 from groundlight import ExperimentalApi
 
 

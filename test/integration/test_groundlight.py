@@ -90,6 +90,7 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
 def fixture_image() -> str:
     return "test/assets/dog.jpeg"
 
+
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.now(timezone.utc)}"  # Need a unique name
     query = "Is there a dog?"
