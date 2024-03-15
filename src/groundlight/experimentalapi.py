@@ -6,18 +6,17 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
-from typing import List, Optional, Union
+from typing import List, Union
 
 from model import (
     Channel,
     Detector,
     Rule,
-    SnoozeTimeUnit,
     Verb,
 )
 from openapi_client.api.images_api import ImagesApi
-from openapi_client.api.rules_api import RulesApi
 from openapi_client.api.notes_api import NotesApi
+from openapi_client.api.rules_api import RulesApi
 from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
 from openapi_client.model.note_creation_input import NoteCreationInput
