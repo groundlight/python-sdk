@@ -30,7 +30,7 @@ class ExperimentalApi(Groundlight):
         self.rules_api = RulesApi(self.api_client)
         self.images_api = ImagesApi(self.api_client)
 
-    def create_action(  # pylint: disable=too-many-locals
+    def create_rule(  # pylint: disable=too-many-locals
         self,
         detector: Union[str, Detector],
         rule_name: str,
@@ -43,7 +43,7 @@ class ExperimentalApi(Groundlight):
         condition_parameters: Union[str, dict, None] = None,
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
-        snooze_time_unit: Union[str, SnoozeTimeUnit] = "SECONDS",
+        snooze_time_unit: str = "SECONDS",
     ) -> Rule:
         """
         Adds a notification action to the given detector
@@ -65,11 +65,13 @@ class ExperimentalApi(Groundlight):
 
         :return: a Rule object corresponding to the new rule
         """
+        if condition_parameters is None:
+            condition_parameters = {}
         if isinstance(alert_on, str):
             alert_on = Verb(alert_on.upper())
-        if isinstance(snooze_time_unit, str):
+        if isinstance(channel, str):
             channel = Channel(channel.upper())
-        if isinstance(snooze_time_unit, str):
+        if isinstance(condition_parameters, str):
             condition_parameters = json.loads(condition_parameters)  # type: ignore
         action = Action(
             channel=channel.value,  # type: ignore
@@ -90,7 +92,7 @@ class ExperimentalApi(Groundlight):
         )
         return Rule.model_validate(self.rules_api.create_rule(det_id, rule_input).to_dict())
 
-    def get_action(self, action_id: int) -> Action:
+    def get_rule(self, action_id: int) -> Action:
         """
         Gets the action with the given id
 
@@ -99,7 +101,7 @@ class ExperimentalApi(Groundlight):
         """
         return Rule.model_validate(self.rules_api.get_rule(action_id).to_dict())
 
-    def delete_action(self, action_id: int) -> None:
+    def delete_rule(self, action_id: int) -> None:
         """
         Deletes the action with the given id
 
@@ -123,9 +125,9 @@ class ExperimentalApi(Groundlight):
         """
         if detector is None:
             for rule in self.get_rules_list():
-                self.delete_action(rule.id)
+                self.delete_rule(rule.id)
         else:
             det_id = detector.id if isinstance(detector, Detector) else detector
             for rule in self.get_rules_list():
                 if rule.detector_id == det_id:
-                    self.delete_action(rule.id)
+                    self.delete_rule(rule.id)

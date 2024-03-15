@@ -107,12 +107,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/RuleCreationInput"
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: "#/components/schemas/RuleCreationInput"
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/RuleCreationInput"
         required: true
       security:
         - ApiToken: []
