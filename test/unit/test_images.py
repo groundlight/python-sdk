@@ -7,6 +7,7 @@ from groundlight import ExperimentalApi
 def _gl() -> ExperimentalApi:
     return ExperimentalApi("https://api.dev.groundlight.ai")
 
+
 def test_get_image(gl: ExperimentalApi):
     det = gl.get_or_create_detector("test_detector", "test_query")
     iq = gl.submit_image_query(det, image="test/assets/dog.jpeg", wait=10)

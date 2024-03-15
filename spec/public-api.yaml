@@ -187,16 +187,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Detector"
           description: ""
-  /v1/image:
+  /v1/images/{iq_id}:
     get:
       operationId: Get image
-      description: Retrieve an image by its id.
+      description: Retrieve an image by its iq_id.
       parameters:
-        - in: query
-          name: id
+        - in: path
+          name: iq_id
           schema:
             type: string
-          description: Choose an image by its id.
+          description: Choose an image by its iq_id.
           required: true
       tags:
         - images

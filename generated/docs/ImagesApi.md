@@ -4,15 +4,15 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**get_image**](ImagesApi.md#get_image) | **GET** /v1/image | 
+[**get_image**](ImagesApi.md#get_image) | **GET** /v1/images/{iq_id} | 
 
 
 # **get_image**
-> file_type get_image(id)
+> file_type get_image(iq_id)
 
 
 
-Retrieve an image by its id.
+Retrieve an image by its iq_id.
 
 ### Example
 
@@ -44,11 +44,11 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = images_api.ImagesApi(api_client)
-    id = "id_example" # str | Choose an image by its id.
+    iq_id = "iq_id_example" # str | Choose an image by its iq_id.
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.get_image(id)
+        api_response = api_instance.get_image(iq_id)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling ImagesApi->get_image: %s\n" % e)
@@ -59,7 +59,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**| Choose an image by its id. |
+ **iq_id** | **str**| Choose an image by its iq_id. |
 
 ### Return type
 

@@ -131,3 +131,13 @@ class ExperimentalApi(Groundlight):
             for rule in self.get_rules_list():
                 if rule.detector_id == det_id:
                     self.delete_rule(rule.id)
+
+    def get_image(self, iq_id: str) -> bytes:
+        """
+        Get the image associated with the given image ID
+        If you have PIL installed, you can instantiate the pill image as PIL.Image.open(gl.get_image(iq.id))
+
+        :param image_id: the ID of the image to get
+        :return: the image as a byte array
+        """
+        return self.images_api.get_image(iq_id)
