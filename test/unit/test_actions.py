@@ -19,12 +19,13 @@ def test_create_action(gl: ExperimentalApi):
 
 
 def test_get_all_rules(gl: ExperimentalApi):
+    num_test_rules = 10
     det = gl.get_or_create_detector("test_detector", "test_query")
     gl.delete_all_rules()
     for i in range(10):
         _ = gl.create_rule(det, f"test_rule_{i}", "EMAIL", "test@example.com")
     rules = gl.get_rules_list()
-    assert len(rules) == 10
+    assert len(rules) == num_test_rules
     gl.delete_all_rules()
     rules = gl.get_rules_list()
     assert len(rules) == 0

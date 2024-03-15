@@ -6,7 +6,7 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 from model import (
     Channel,
@@ -26,7 +26,7 @@ from .client import Groundlight
 
 
 class ExperimentalApi(Groundlight):
-    def __init__(self, endpoint: str = None, api_token: str = None):
+    def __init__(self, endpoint: Union[str, None] = None, api_token: Union[str, None] = None):
         super().__init__(endpoint=endpoint, api_token=api_token)
         self.rules_api = RulesApi(self.api_client)
         self.images_api = ImagesApi(self.api_client)
@@ -143,9 +143,8 @@ class ExperimentalApi(Groundlight):
         :return: the image as a byte array
         """
         return self.images_api.get_image(iq_id)
-        return self.rules_api.create_rule(det_id, rule_input)
 
-    def get_notes(self, detector: Union[str, Detector]) -> list[Rule]:
+    def get_notes(self, detector: Union[str, Detector]) -> Dict[str, Any]:
         """
         Gets the notes for a given detector
 
