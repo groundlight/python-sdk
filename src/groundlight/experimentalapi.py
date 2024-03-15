@@ -15,6 +15,8 @@ from model import (
     SnoozeTimeUnit,
     Verb,
 )
+from openapi_client.api.images_api import ImagesApi
+from openapi_client.api.rules_api import RulesApi
 from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
 from openapi_client.model.rule_creation_input import RuleCreationInput
@@ -23,8 +25,10 @@ from .client import Groundlight
 
 
 class ExperimentalApi(Groundlight):
-    def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None):
+    def __init__(self, endpoint: str = None, api_token: str = None):
         super().__init__(endpoint=endpoint, api_token=api_token)
+        self.rules_api = RulesApi(self.api_client)
+        self.images_api = ImagesApi(self.api_client)
 
     def create_action(  # pylint: disable=too-many-locals
         self,

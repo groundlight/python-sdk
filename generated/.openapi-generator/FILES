@@ -12,6 +12,7 @@ docs/DetectorsApi.md
 docs/ImageQueriesApi.md
 docs/ImageQuery.md
 docs/ImageQueryTypeEnum.md
+docs/ImagesApi.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/PaginatedRuleList.md
@@ -27,6 +28,7 @@ openapi_client/__init__.py
 openapi_client/api/__init__.py
 openapi_client/api/detectors_api.py
 openapi_client/api/image_queries_api.py
+openapi_client/api/images_api.py
 openapi_client/api/rules_api.py
 openapi_client/api/user_api.py
 openapi_client/api_client.py
@@ -58,5 +60,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_rules_api.py
 tox.ini

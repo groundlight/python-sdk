@@ -193,6 +193,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Detector"
           description: ""
+  /v1/image:
+    get:
+      operationId: Get image
+      description: Retrieve an image by its id.
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: Choose an image by its id.
+          required: true
+      tags:
+        - images
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+          description: ""
   /v1/image-queries:
     get:
       operationId: List image queries
