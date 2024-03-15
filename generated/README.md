@@ -104,6 +104,9 @@ Class | Method | HTTP request | Description
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
 *RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
+*RulesApi* | [**delete_rule**](docs/RulesApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
+*RulesApi* | [**get_rule**](docs/RulesApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
+*RulesApi* | [**list_rules**](docs/RulesApi.md#list_rules) | **GET** /v1/actions/rules | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /me | 
 
 
@@ -119,6 +122,7 @@ Class | Method | HTTP request | Description
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
+ - [PaginatedRuleList](docs/PaginatedRuleList.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
  - [Rule](docs/Rule.md)
  - [RuleBase](docs/RuleBase.md)

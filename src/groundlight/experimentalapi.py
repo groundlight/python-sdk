@@ -6,7 +6,7 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
-from typing import Union
+from typing import List, Optional, Union
 
 from model import (
     Channel,
@@ -23,8 +23,8 @@ from .client import Groundlight
 
 
 class ExperimentalApi(Groundlight):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, endpoint: Optional[str] = None, api_token: Optional[str] = None):
+        super().__init__(endpoint=endpoint, api_token=api_token)
 
     def create_action(  # pylint: disable=too-many-locals
         self,
@@ -55,7 +55,7 @@ class ExperimentalApi(Groundlight):
         :param condition_parameters: additional information needed for the condition. i.e. if the
             condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
         :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification
-            will be delivered until the snooze time has passed #TODO make sure this agrees
+            will be delivered until the snooze time has passed
         :param snooze_time_value: The value of the snooze time
         :param snooze_time_unit: The unit of the snooze time
 
@@ -84,4 +84,44 @@ class ExperimentalApi(Groundlight):
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
         )
-        return self.rules_api.create_rule(det_id, rule_input)
+        return Rule.model_validate(self.rules_api.create_rule(det_id, rule_input).to_dict())
+
+    def get_action(self, action_id: int) -> Action:
+        """
+        Gets the action with the given id
+
+        :param action_id: the id of the action to get
+        :return: the action with the given id
+        """
+        return Rule.model_validate(self.rules_api.get_rule(action_id).to_dict())
+
+    def delete_action(self, action_id: int) -> None:
+        """
+        Deletes the action with the given id
+
+        :param action_id: the id of the action to delete
+        """
+        self.rules_api.delete_rule(action_id)
+
+    def get_rules_list(self) -> List[Rule]:
+        """
+        Gets a list of all rules
+
+        :return: a list of all rules
+        """
+        return [Rule.model_validate(rule.to_dict()) for rule in self.rules_api.list_rules()["results"]]
+
+    def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> None:
+        """
+        Deletes all rules associated with the given detector
+
+        :param detector: the detector to delete the rules from
+        """
+        if detector is None:
+            for rule in self.get_rules_list():
+                self.delete_action(rule.id)
+        else:
+            det_id = detector.id if isinstance(detector, Detector) else detector
+            for rule in self.get_rules_list():
+                if rule.detector_id == det_id:
+                    self.delete_action(rule.id)
