@@ -17,8 +17,10 @@ from model import (
 )
 from openapi_client.api.images_api import ImagesApi
 from openapi_client.api.rules_api import RulesApi
+from openapi_client.api.notes_api import NotesApi
 from openapi_client.model.action import Action
 from openapi_client.model.condition import Condition
+from openapi_client.model.note_creation_input import NoteCreationInput
 from openapi_client.model.rule_creation_input import RuleCreationInput
 
 from .client import Groundlight
@@ -29,6 +31,7 @@ class ExperimentalApi(Groundlight):
         super().__init__(endpoint=endpoint, api_token=api_token)
         self.rules_api = RulesApi(self.api_client)
         self.images_api = ImagesApi(self.api_client)
+        self.notes_api = NotesApi(self.api_client)
 
     def create_rule(  # pylint: disable=too-many-locals
         self,
@@ -149,17 +152,19 @@ class ExperimentalApi(Groundlight):
 
         :param detector: the detector to get the notes for
 
-        :return: a list of Rule objects corresponding to the notes for the detector
+        :return: a dictionary with two keys "CUSTOMER" and "GL" to indicate who added the note to
+            the detector, and values that are lists of notes
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: str) -> None:
+    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteCreationInput]) -> None:
         """
         Adds a note to a given detector
 
         :param detector: the detector to add the note to
-        :param rule: the rule to add to the detector
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
+        if isinstance(note, str):
+            note = NoteCreationInput(content=note)
         self.notes_api.create_note(det_id, note)

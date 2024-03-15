@@ -13,7 +13,9 @@ docs/ImageQueriesApi.md
 docs/ImageQuery.md
 docs/ImageQueryTypeEnum.md
 docs/ImagesApi.md
+docs/InlineResponse200.md
 docs/Note.md
+docs/NoteCreationInput.md
 docs/NotesApi.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
@@ -47,7 +49,9 @@ openapi_client/model/detector_creation_input.py
 openapi_client/model/detector_type_enum.py
 openapi_client/model/image_query.py
 openapi_client/model/image_query_type_enum.py
+openapi_client/model/inline_response200.py
 openapi_client/model/note.py
+openapi_client/model/note_creation_input.py
 openapi_client/model/paginated_detector_list.py
 openapi_client/model/paginated_image_query_list.py
 openapi_client/model/paginated_rule_list.py

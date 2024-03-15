@@ -1,6 +1,6 @@
 import pytest
 from groundlight import ExperimentalApi
-
+from datetime import datetime, timezone
 
 @pytest.fixture(name="gl")
 def _gl() -> ExperimentalApi:
@@ -8,7 +8,12 @@ def _gl() -> ExperimentalApi:
 
 
 def test_notes(gl: ExperimentalApi):
-    det = gl.get_or_create_detector("test_detector", "test_query")
+    name = f"Test {datetime.now(timezone.utc)}"
+    det = gl.create_detector(name, "test_query")
     gl.create_note(det, "test_note")
-    note = gl.get_notes(det)
-    assert note.message == "test_note"
+    notes = gl.get_notes(det)["customer"]
+    found_note = False
+    for i in range(len(notes)):
+        if notes[i].content == "test_note":
+            found_note = True
+    assert found_note

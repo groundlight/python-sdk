@@ -122,7 +122,7 @@ paths:
       operationId: get notes
       description: Retrieve notes for a detector
       parameters:
-        - name: detector
+        - name: detector_id
           required: true
           in: query
           description: the detector whose notes to retrieve
@@ -137,37 +137,49 @@ paths:
           content:
             application/json:
               schema:
+                type: object
+                properties:
+                  CUSTOMER:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Note"
+                  GL:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Note"
+                required:
+                  - CUSTOMER
+                  - GL
+          description: ""
+    post:
+      operationId: Create note
+      description: Create a new note.
+      parameters:
+        - name: detector_id
+          required: true
+          in: query
+          description: the detector to associate the note with
+          schema:
+            type: string
+      tags:
+        - notes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteCreationInput"
+        required: true
+      security:
+        - ApiToken: []
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Note"
           description: ""
-    # post:
-    #   operationId: Create note
-    #   description: Create a new note.
-    #   parameters:
-    #     - name: detector
-    #       required: true
-    #       in: query
-    #       description: the detector to associate the note with
-    #       schema:
-    #         type: string
-    #   tags:
-    #     - notes
-    #   requestBody:
-    #     content:
-    #       application/json:
-    #         schema:
-    #           $ref: "#/components/schemas/NoteCreationInput"
-    #     required: true
-    #   security:
-    #     - ApiToken: []
-    #   responses:
-    #     "201":
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: "#/components/schemas/NoteList"
-          # description: ""
   /v1/detectors:
     get:
       operationId: List detectors
@@ -605,6 +617,15 @@ components:
             - "CUSTOMER"
             - "USER"
           description: The type of note
+    NoteCreationInput:
+      type: object
+      properties:
+        content:
+          type: string
+          description: The text inside the note
+      required:
+        - content
+        - detector_id
     Condition:
       type: object
       description: What condition should trigger the rule?
