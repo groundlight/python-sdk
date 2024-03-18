@@ -39,17 +39,17 @@ class ImagesApi(object):
             settings={
                 "response_type": (file_type,),
                 "auth": ["ApiToken"],
-                "endpoint_path": "/v1/images/{iq_id}",
+                "endpoint_path": "/v1/image-queries/{id}/image",
                 "operation_id": "get_image",
                 "http_method": "GET",
                 "servers": None,
             },
             params_map={
                 "all": [
-                    "iq_id",
+                    "id",
                 ],
                 "required": [
-                    "iq_id",
+                    "id",
                 ],
                 "nullable": [],
                 "enum": [],
@@ -59,13 +59,13 @@ class ImagesApi(object):
                 "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
-                    "iq_id": (str,),
+                    "id": (str,),
                 },
                 "attribute_map": {
-                    "iq_id": "iq_id",
+                    "id": "id",
                 },
                 "location_map": {
-                    "iq_id": "path",
+                    "id": "path",
                 },
                 "collection_format_map": {},
             },
@@ -76,18 +76,18 @@ class ImagesApi(object):
             api_client=api_client,
         )
 
-    def get_image(self, iq_id, **kwargs):
+    def get_image(self, id, **kwargs):
         """get_image  # noqa: E501
 
-        Retrieve an image by its iq_id.  # noqa: E501
+        Retrieve an image by its image query id.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.get_image(iq_id, async_req=True)
+        >>> thread = api.get_image(id, async_req=True)
         >>> result = thread.get()
 
         Args:
-            iq_id (str): Choose an image by its iq_id.
+            id (str): Choose an image by its image query id.
 
         Keyword Args:
             _return_http_data_only (bool): response data without head status
@@ -131,5 +131,5 @@ class ImagesApi(object):
         kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
-        kwargs["iq_id"] = iq_id
+        kwargs["id"] = id
         return self.get_image_endpoint.call_with_http_info(**kwargs)

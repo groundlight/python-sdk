@@ -1,8 +1,6 @@
-from datetime import datetime, timezone
-
 import pytest
 from groundlight import ExperimentalApi
-
+from datetime import datetime, timezone
 
 @pytest.fixture(name="gl")
 def _gl() -> ExperimentalApi:
