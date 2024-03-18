@@ -702,6 +702,14 @@ components:
       properties:
         count:
           type: integer
+        next:
+          type: string
+          nullable: true
+          format: uri
+        previous:
+          type: string
+          nullable: true
+          format: uri
         results:
           type: array
           items:

@@ -8,12 +8,7 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, List, Union
 
-from model import (
-    Channel,
-    Detector,
-    Rule,
-    Verb,
-)
+from model import Channel, Detector, Rule, Verb, PaginatedRuleList
 from openapi_client.api.images_api import ImagesApi
 from openapi_client.api.notes_api import NotesApi
 from openapi_client.api.rules_api import RulesApi
@@ -111,13 +106,14 @@ class ExperimentalApi(Groundlight):
         """
         self.rules_api.delete_rule(action_id)
 
-    def get_rules_list(self) -> List[Rule]:
+    def list_rules(self, page=1, page_size=10) -> PaginatedRuleList:
         """
         Gets a list of all rules
 
         :return: a list of all rules
         """
-        return [Rule.model_validate(rule.to_dict()) for rule in self.rules_api.list_rules()["results"]]
+        obj = self.rules_api.list_rules(page=page, page_size=page_size)
+        return PaginatedRuleList.parse_obj(obj.to_dict())
 
     def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> None:
         """
@@ -125,14 +121,18 @@ class ExperimentalApi(Groundlight):
 
         :param detector: the detector to delete the rules from
         """
-        if detector is None:
-            for rule in self.get_rules_list():
-                self.delete_rule(rule.id)
-        else:
-            det_id = detector.id if isinstance(detector, Detector) else detector
-            for rule in self.get_rules_list():
-                if rule.detector_id == det_id:
-                    self.delete_rule(rule.id)
+        det_id = detector.id if isinstance(detector, Detector) else detector
+        # we collect a list of all the rules to delete, then delete them
+        ids_to_delete = []
+        num_rules = self.list_rules().count
+        for page in range(1, (num_rules // 10) + 2):
+            for rule in self.list_rules(page=page, page_size=10).results:
+                if det_id is None:
+                    ids_to_delete.append(rule.id)
+                elif rule.detector_id == det_id:
+                    ids_to_delete.append(rule.id)
+        for rule_id in ids_to_delete:
+            self.delete_rule(rule_id)
 
     def get_image(self, iq_id: str) -> bytes:
         """

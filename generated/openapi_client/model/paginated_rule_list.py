@@ -98,6 +98,14 @@ class PaginatedRuleList(ModelNormal):
         lazy_import()
         return {
             "count": (int,),  # noqa: E501
+            "next": (
+                str,
+                none_type,
+            ),  # noqa: E501
+            "previous": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "results": ([Rule],),  # noqa: E501
         }
 
@@ -107,6 +115,8 @@ class PaginatedRuleList(ModelNormal):
 
     attribute_map = {
         "count": "count",  # noqa: E501
+        "next": "next",  # noqa: E501
+        "previous": "previous",  # noqa: E501
         "results": "results",  # noqa: E501
     }
 
@@ -151,6 +161,8 @@ class PaginatedRuleList(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             count (int): [optional]  # noqa: E501
+            next (str, none_type): [optional]  # noqa: E501
+            previous (str, none_type): [optional]  # noqa: E501
             results ([Rule]): [optional]  # noqa: E501
         """
 
@@ -239,6 +251,8 @@ class PaginatedRuleList(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             count (int): [optional]  # noqa: E501
+            next (str, none_type): [optional]  # noqa: E501
+            previous (str, none_type): [optional]  # noqa: E501
             results ([Rule]): [optional]  # noqa: E501
         """
 

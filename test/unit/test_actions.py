@@ -5,7 +5,7 @@ from openapi_client.exceptions import NotFoundException
 
 @pytest.fixture(name="gl")
 def _gl() -> ExperimentalApi:
-    return ExperimentalApi()
+    return ExperimentalApi("https://api.dev.groundlight.ai")
 
 
 def test_create_action(gl: ExperimentalApi):
@@ -19,13 +19,16 @@ def test_create_action(gl: ExperimentalApi):
 
 
 def test_get_all_rules(gl: ExperimentalApi):
-    num_test_rules = 10
+    num_test_rules = 15
+    num_rules_per_page = 10
+    assert num_rules_per_page < num_test_rules
     det = gl.get_or_create_detector("test_detector", "test_query")
     gl.delete_all_rules()
-    for i in range(10):
+    for i in range(num_test_rules):
         _ = gl.create_rule(det, f"test_rule_{i}", "EMAIL", "test@example.com")
-    rules = gl.get_rules_list()
-    assert len(rules) == num_test_rules
+    rules = gl.list_rules(page_size=num_rules_per_page)
+    assert rules.count == num_test_rules
+    assert len(rules.results) == num_rules_per_page
     gl.delete_all_rules()
-    rules = gl.get_rules_list()
-    assert len(rules) == 0
+    rules = gl.list_rules()
+    assert rules.count == 0
