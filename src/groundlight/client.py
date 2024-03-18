@@ -39,7 +39,7 @@ logger = logging.getLogger("groundlight.sdk")
 # Set urllib3 request timeout to something modern and fast.
 # The system defaults can be stupidly long
 # It used to take >8 min to timeout to a bad IP address
-DEFAULT_REQUEST_TIMEOUT = 5
+DEFAULT_REQUEST_TIMEOUT = 10 # seconds
 
 
 class GroundlightClientError(Exception):
