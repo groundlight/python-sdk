@@ -5,7 +5,7 @@ from openapi_client.exceptions import NotFoundException
 
 @pytest.fixture(name="gl")
 def _gl() -> ExperimentalApi:
-    return ExperimentalApi("https://api.dev.groundlight.ai")
+    return ExperimentalApi()
 
 
 def test_create_action(gl: ExperimentalApi):
