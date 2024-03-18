@@ -6,9 +6,9 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 import json
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Union
 
-from model import Channel, Detector, Rule, Verb, PaginatedRuleList
+from model import Channel, Detector, PaginatedRuleList, Rule, Verb
 from openapi_client.api.images_api import ImagesApi
 from openapi_client.api.notes_api import NotesApi
 from openapi_client.api.rules_api import RulesApi
