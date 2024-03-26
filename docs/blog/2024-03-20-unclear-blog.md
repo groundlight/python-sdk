@@ -54,7 +54,7 @@ Although encountering unclear images might seem like a setback, it actually open
 
 1. **Clarify your queries** : It's crucial to formulate your questions to the system with precision, avoiding any vagueness. For instance, instead of asking, “Is the light ON?” opt for a more detailed inquiry such as, “Can you clearly see the red LED on the right panel turned ON?” This approach ensures your queries are direct and specific.
 2. **Customize Yes/ No classifications**: You can specify how the model should interpret and deal with unclear images by reframing your queries and notes. For instance, by specifying “If the garage door is not visible, mark it as a NO” in your notes, you can make the detector sort unclear images into the “NO” class. You can refer to our [previous blog post](https://code.groundlight.ai/python-sdk/blog/best-practices) for best practices while refining your queries and notes.
-3. **Flagging “Unclear” images**: Should you prefer to classify an obstructed view or irrelevant imagery as “Unclear”, simply add a couple of labels as “UNCLEAR” or provide instructions in the notes. Groundlight's Machine Learning system will adapt to your preference and continue to flag them as "Unclear" for you.
+3. **Flagging “Unclear” images**: Should you prefer to classify an obstructed view or irrelevant imagery as “Unclear”, simply add a couple of labels as “UNCLEAR” or provide instructions in the notes. Groundlight's machine learning systems will adapt to your preference and continue to flag them as "Unclear" for you.
 <figure style={{ textAlign: 'center' }}>
     <img src={require('./images/unclear_blog/unclear_label.png').default} width="350px" class="center"/>
     <figcaption>
