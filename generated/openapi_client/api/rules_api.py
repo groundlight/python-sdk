@@ -42,18 +42,18 @@ class RulesApi(object):
             settings={
                 "response_type": (Rule,),
                 "auth": ["ApiToken"],
-                "endpoint_path": "/v1/actions/detector/{id}/rules",
+                "endpoint_path": "/v1/actions/detector/{detector_id}/rules",
                 "operation_id": "create_rule",
                 "http_method": "POST",
                 "servers": None,
             },
             params_map={
                 "all": [
-                    "id",
+                    "detector_id",
                     "rule_creation_input",
                 ],
                 "required": [
-                    "id",
+                    "detector_id",
                     "rule_creation_input",
                 ],
                 "nullable": [],
@@ -64,14 +64,14 @@ class RulesApi(object):
                 "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
-                    "id": (str,),
+                    "detector_id": (str,),
                     "rule_creation_input": (RuleCreationInput,),
                 },
                 "attribute_map": {
-                    "id": "id",
+                    "detector_id": "detector_id",
                 },
                 "location_map": {
-                    "id": "path",
+                    "detector_id": "path",
                     "rule_creation_input": "body",
                 },
                 "collection_format_map": {},
@@ -202,18 +202,18 @@ class RulesApi(object):
             api_client=api_client,
         )
 
-    def create_rule(self, id, rule_creation_input, **kwargs):
+    def create_rule(self, detector_id, rule_creation_input, **kwargs):
         """create_rule  # noqa: E501
 
         Create a new rule for a detector.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.create_rule(id, rule_creation_input, async_req=True)
+        >>> thread = api.create_rule(detector_id, rule_creation_input, async_req=True)
         >>> result = thread.get()
 
         Args:
-            id (str): Choose a detector by its ID.
+            detector_id (str): Choose a detector by its ID.
             rule_creation_input (RuleCreationInput):
 
         Keyword Args:
@@ -258,7 +258,7 @@ class RulesApi(object):
         kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
-        kwargs["id"] = id
+        kwargs["detector_id"] = detector_id
         kwargs["rule_creation_input"] = rule_creation_input
         return self.create_rule_endpoint.call_with_http_info(**kwargs)
 

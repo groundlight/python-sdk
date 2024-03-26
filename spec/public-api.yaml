@@ -89,13 +89,13 @@ paths:
       responses:
         "204":
           description: ""
-  /v1/actions/detector/{id}/rules:
+  /v1/actions/detector/{detector_id}/rules:
     post:
       operationId: Create rule
       description: Create a new rule for a detector.
       parameters:
         - in: path
-          name: id
+          name: detector_id
           schema:
             type: string
           description: Choose a detector by its ID.

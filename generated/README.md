@@ -106,7 +106,7 @@ Class | Method | HTTP request | Description
 *ImagesApi* | [**get_image**](docs/ImagesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /v1/notes | 
 *NotesApi* | [**get_notes**](docs/NotesApi.md#get_notes) | **GET** /v1/notes | 
-*RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
+*RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{detector_id}/rules | 
 *RulesApi* | [**delete_rule**](docs/RulesApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
 *RulesApi* | [**get_rule**](docs/RulesApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
 *RulesApi* | [**list_rules**](docs/RulesApi.md#list_rules) | **GET** /v1/actions/rules | 

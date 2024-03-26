@@ -4,14 +4,14 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create_rule**](RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
+[**create_rule**](RulesApi.md#create_rule) | **POST** /v1/actions/detector/{detector_id}/rules | 
 [**delete_rule**](RulesApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
 [**get_rule**](RulesApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
 [**list_rules**](RulesApi.md#list_rules) | **GET** /v1/actions/rules | 
 
 
 # **create_rule**
-> Rule create_rule(id, rule_creation_input)
+> Rule create_rule(detector_id, rule_creation_input)
 
 
 
@@ -49,12 +49,12 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = rules_api.RulesApi(api_client)
-    id = "id_example" # str | Choose a detector by its ID.
+    detector_id = "detector_id_example" # str | Choose a detector by its ID.
     rule_creation_input = RuleCreationInput() # RuleCreationInput | 
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.create_rule(id, rule_creation_input)
+        api_response = api_instance.create_rule(detector_id, rule_creation_input)
         pprint(api_response)
     except openapi_client.ApiException as e:
         print("Exception when calling RulesApi->create_rule: %s\n" % e)
@@ -65,7 +65,7 @@ with openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**| Choose a detector by its ID. |
+ **detector_id** | **str**| Choose a detector by its ID. |
  **rule_creation_input** | [**RuleCreationInput**](RuleCreationInput.md)|  |
 
 ### Return type

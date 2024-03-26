@@ -24,6 +24,10 @@ class TestNotesApi(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_create_note(self):
+        """Test case for create_note"""
+        pass
+
     def test_get_notes(self):
         """Test case for get_notes"""
         pass

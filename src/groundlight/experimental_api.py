@@ -1,5 +1,5 @@
 """
-experimentalapi.py
+experimental_t api.py
 
 This module is part of our evolving SDK. While these functions are designed to provide valuable functionality to enhance
 your projects, it's important to note that they are considered unstable. This means they may undergo significant
@@ -26,6 +26,8 @@ class ExperimentalApi(Groundlight):
         self.rules_api = RulesApi(self.api_client)
         self.images_api = ImagesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
+
+    ITEMS_PER_PAGE = 100
 
     def create_rule(  # pylint: disable=too-many-locals
         self,
@@ -115,24 +117,27 @@ class ExperimentalApi(Groundlight):
         obj = self.rules_api.list_rules(page=page, page_size=page_size)
         return PaginatedRuleList.parse_obj(obj.to_dict())
 
-    def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> None:
+    def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
         """
         Deletes all rules associated with the given detector
 
         :param detector: the detector to delete the rules from
+
+        :return: the number of rules deleted
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
         # we collect a list of all the rules to delete, then delete them
         ids_to_delete = []
         num_rules = self.list_rules().count
-        for page in range(1, (num_rules // 10) + 2):
-            for rule in self.list_rules(page=page, page_size=10).results:
+        for page in range(1, (num_rules // self.ITEMS_PER_PAGE) + 2):
+            for rule in self.list_rules(page=page, page_size=self.ITEMS_PER_PAGE).results:
                 if det_id is None:
                     ids_to_delete.append(rule.id)
                 elif rule.detector_id == det_id:
                     ids_to_delete.append(rule.id)
         for rule_id in ids_to_delete:
             self.delete_rule(rule_id)
+        return num_rules
 
     def get_image(self, iq_id: str) -> bytes:
         """
