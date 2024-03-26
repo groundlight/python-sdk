@@ -6,14 +6,16 @@ authors:
   - name: Sharmila Reddy Nangi
     title: Applied ML Scientist
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/b66d1cddeb/nangis.jpg
-tags: [unclears, real world ambiguity ]
+tags: [unclears, real-world ambiguity ]
 image: ./images/unclear_blog/unclear_label.png
 hide_table_of_contents: false
 ---
 
 When you first explore the capabilities of our Groundlight AI detectors, you'll quickly notice that they excel at answering binary questions. These are queries expecting a straightforward "Yes" or "No" response. However, the world around us rarely conforms to such black-and-white distinctions, particularly when analyzing images. In reality, many scenarios present challenges that defy a simple binary answer.
 
-## Exploring the Gray Areas: Real-World Examples:
+<!-- truncate -->
+
+## Exploring the Gray Areas: Real-World Examples
 
 Consider the following scenarios that highlight the complexity of interpreting real-world images:
 
@@ -48,7 +50,7 @@ Consider the following scenarios that highlight the complexity of interpreting r
 </figure>
 
 
-## Strategies for Navigating Ambiguity:
+## Strategies for Navigating Ambiguity
 
 Although encountering unclear images might seem like a setback, it actually opens up avenues for improvement and customization. Our detectors are designed to identify and flag these ambiguous cases, empowering you to steer their interpretation. Here are some strategies you can employ to enhance the process:
 
