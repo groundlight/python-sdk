@@ -5,7 +5,7 @@ import json
 import random
 import string
 import time
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 import openapi_client
