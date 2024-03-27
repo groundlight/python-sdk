@@ -57,7 +57,7 @@ class Note(ModelNormal):
     allowed_values = {
         ("note_type",): {
             "CUSTOMER": "CUSTOMER",
-            "USER": "USER",
+            "GL": "GL",
         },
     }
 

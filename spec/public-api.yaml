@@ -615,7 +615,7 @@ components:
           type: string
           enum:
             - "CUSTOMER"
-            - "USER"
+            - "GL"
           description: The type of note
     NoteCreationInput:
       type: object
