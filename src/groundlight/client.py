@@ -38,7 +38,7 @@ logger = logging.getLogger("groundlight.sdk")
 # Set urllib3 request timeout to something modern and fast.
 # The system defaults can be stupidly long
 # It used to take >8 min to timeout to a bad IP address
-DEFAULT_REQUEST_TIMEOUT = 5
+DEFAULT_REQUEST_TIMEOUT = 10  # seconds
 
 
 class GroundlightClientError(Exception):
@@ -425,14 +425,15 @@ class Groundlight:
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        params = {"detector_id": detector_id, "body": image_bytesio}
+        params = {"detector_id": detector_id, "body": image_bytesio, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+
         if patience_time is not None:
             params["patience_time"] = patience_time
 
         if human_review is not None:
             params["human_review"] = human_review
 
-        if inspection_id is not None:
+        if inspection_id:  # consider an empty string to mean there is no inspection
             params["inspection_id"] = inspection_id
 
         if want_async is True:
