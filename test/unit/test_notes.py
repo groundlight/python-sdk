@@ -22,7 +22,7 @@ def test_notes(gl: ExperimentalApi):
             if notes[i].content == "test_note":
                 found_note = True
         assert found_note
-    except (AssertionError, ApiAttributeError) as e:
+    except (AssertionError, ApiAttributeError):
         notes = gl.get_notes(det)["customer"]
         found_note = False
         for i in range(len(notes)):
