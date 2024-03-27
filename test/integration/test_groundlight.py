@@ -68,7 +68,7 @@ def fixture_gl() -> Groundlight:
 @pytest.fixture(name="detector")
 def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
-    name = f"Test {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     pipeline_config = "never-review"
     return gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
@@ -92,7 +92,7 @@ def fixture_image() -> str:
 
 
 def test_create_detector(gl: Groundlight):
-    name = f"Test {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     _detector = gl.create_detector(name=name, query=query)
     assert str(_detector)
@@ -105,7 +105,7 @@ def test_create_detector(gl: Groundlight):
 def test_create_detector_with_pipeline_config(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
-    name = f"Test never-review {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test never-review {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog (always-pass)?"
     pipeline_config = "never-review"
     _detector = gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
@@ -116,7 +116,7 @@ def test_create_detector_with_pipeline_config(gl: Groundlight):
 def test_create_detector_with_confidence_threshold(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
-    name = f"Test with confidence {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test with confidence {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog in the image?"
     pipeline_config = "never-review"
     confidence_threshold = 0.825
@@ -166,7 +166,7 @@ def test_list_detectors(gl: Groundlight):
 
 def test_get_or_create_detector(gl: Groundlight):
     # With a unique name, we should be creating a new detector.
-    unique_name = f"Unique name {datetime.now(timezone.utc)}"
+    unique_name = f"Unique name {datetime.utcnow()}"
     query = "Is there a dog?"
     detector = gl.get_or_create_detector(name=unique_name, query=query)
     assert str(detector)
@@ -277,7 +277,7 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
 def test_create_detector_with_metadata(gl: Groundlight):
-    name = f"Test {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     metadata = generate_random_dict(target_size_bytes=200)
     detector = gl.create_detector(name=name, query=query, metadata=metadata)
@@ -289,7 +289,7 @@ def test_create_detector_with_metadata(gl: Groundlight):
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
 def test_get_or_create_detector_with_metadata(gl: Groundlight):
-    unique_name = f"Unique name {datetime.now(timezone.utc)}"
+    unique_name = f"Unique name {datetime.utcnow()}"
     query = "Is there a dog?"
     metadata = generate_random_dict(target_size_bytes=200)
     detector = gl.get_or_create_detector(name=unique_name, query=query, metadata=metadata)
@@ -310,7 +310,7 @@ def test_get_or_create_detector_with_metadata(gl: Groundlight):
     ],
 )
 def test_create_detector_with_invalid_metadata(gl: Groundlight, metadata_list: Any):
-    name = f"Test {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
 
     for metadata in metadata_list:
@@ -608,7 +608,7 @@ def test_detector_improvement(gl: Groundlight):
 
     random.seed(2741)
 
-    name = f"Test test_detector_improvement {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query)
 
@@ -673,7 +673,7 @@ def test_ask_method_quality(gl: Groundlight, detector: Detector):
     # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
     fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
     assert iq_is_answered(fast_always_yes_iq)
-    name = f"Test {datetime.now(timezone.utc)}"  # Need a unique name
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
     fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
