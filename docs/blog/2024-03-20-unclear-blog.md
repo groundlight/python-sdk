@@ -1,5 +1,5 @@
 ---
-title: "Navigating the Ambiguity with Groundlight AI Detectors"
+title: "Navigating Ambiguity with Groundlight AI Detectors"
 description: Let's talk more about ambiguous image queries
 slug: dealing-with-unclear-images
 authors:
