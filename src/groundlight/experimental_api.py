@@ -1,5 +1,5 @@
 """
-experimental_t api.py
+experimental_api.py
 
 This module is part of our evolving SDK. While these functions are designed to provide valuable functionality to enhance
 your projects, it's important to note that they are considered unstable. This means they may undergo significant
@@ -45,7 +45,7 @@ class ExperimentalApi(Groundlight):
         snooze_time_unit: str = "SECONDS",
     ) -> Rule:
         """
-        Adds a notification action to the given detector
+        Adds a notification rule to the given detector
 
         :param detector: the detector to add the action to
         :param rule_name: a name to uniquely identify the rule

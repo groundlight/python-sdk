@@ -3,11 +3,6 @@ from groundlight import ExperimentalApi
 from openapi_client.exceptions import NotFoundException
 
 
-@pytest.fixture(name="gl")
-def _gl() -> ExperimentalApi:
-    return ExperimentalApi()
-
-
 def test_create_action(gl: ExperimentalApi):
     det = gl.get_or_create_detector("testing_detector", "test_query")
     rule = gl.create_rule(det, "test_rule", "EMAIL", "test@example.com")
@@ -19,7 +14,8 @@ def test_create_action(gl: ExperimentalApi):
 
 
 def test_get_all_actions(gl: ExperimentalApi):
-    num_test_rules = 103  # needs to be larger than the default page size
+    num_test_rules = 13  # needs to be larger than the default page size
+    gl.ITEMS_PER_PAGE = 10
     assert gl.ITEMS_PER_PAGE < num_test_rules
     det = gl.get_or_create_detector("test_detector", "test_query")
     gl.delete_all_rules()
