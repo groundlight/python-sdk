@@ -13,11 +13,11 @@ import sys
 import unittest
 
 import openapi_client
-from openapi_client.model.error import Error
+from openapi_client.model.note import Note
 
 
-class TestError(unittest.TestCase):
-    """Error unit test stubs"""
+class TestNote(unittest.TestCase):
+    """Note unit test stubs"""
 
     def setUp(self):
         pass
@@ -25,10 +25,10 @@ class TestError(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testError(self):
-        """Test Error"""
+    def testNote(self):
+        """Test Note"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = Error()  # noqa: E501
+        # model = Note()  # noqa: E501
         pass
 
 

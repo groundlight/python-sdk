@@ -5,6 +5,7 @@ Spec for serializing a rule object in the public API.
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**id** | **int** | A unique ID for this object. | [optional] [readonly] 
 **detector_name** | **str** | The name of the detector this rule is associated with. | [optional] [readonly] 
 **detector_id** | **str** | Which detector should this rule be associated with? | [optional] 
 **name** | **str** | A short, descriptive name for the rule. | [optional] 

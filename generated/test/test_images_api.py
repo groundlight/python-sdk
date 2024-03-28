@@ -9,26 +9,23 @@
 """
 
 
-import sys
 import unittest
 
 import openapi_client
-from openapi_client.model.result_type_enum import ResultTypeEnum
+from openapi_client.api.images_api import ImagesApi  # noqa: E501
 
 
-class TestResultTypeEnum(unittest.TestCase):
-    """ResultTypeEnum unit test stubs"""
+class TestImagesApi(unittest.TestCase):
+    """ImagesApi unit test stubs"""
 
     def setUp(self):
-        pass
+        self.api = ImagesApi()  # noqa: E501
 
     def tearDown(self):
         pass
 
-    def testResultTypeEnum(self):
-        """Test ResultTypeEnum"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = ResultTypeEnum()  # noqa: E501
+    def test_get_image(self):
+        """Test case for get_image"""
         pass
 
 

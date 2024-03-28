@@ -9,26 +9,27 @@
 """
 
 
-import sys
 import unittest
 
 import openapi_client
-from openapi_client.model.result_type_enum import ResultTypeEnum
+from openapi_client.api.notes_api import NotesApi  # noqa: E501
 
 
-class TestResultTypeEnum(unittest.TestCase):
-    """ResultTypeEnum unit test stubs"""
+class TestNotesApi(unittest.TestCase):
+    """NotesApi unit test stubs"""
 
     def setUp(self):
-        pass
+        self.api = NotesApi()  # noqa: E501
 
     def tearDown(self):
         pass
 
-    def testResultTypeEnum(self):
-        """Test ResultTypeEnum"""
-        # FIXME: construct object with mandatory attributes with example values
-        # model = ResultTypeEnum()  # noqa: E501
+    def test_create_note(self):
+        """Test case for create_note"""
+        pass
+
+    def test_get_notes(self):
+        """Test case for get_notes"""
         pass
 
 

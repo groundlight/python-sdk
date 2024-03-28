@@ -103,7 +103,13 @@ Class | Method | HTTP request | Description
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
-*RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{id}/rules | 
+*ImagesApi* | [**get_image**](docs/ImagesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
+*NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /v1/notes | 
+*NotesApi* | [**get_notes**](docs/NotesApi.md#get_notes) | **GET** /v1/notes | 
+*RulesApi* | [**create_rule**](docs/RulesApi.md#create_rule) | **POST** /v1/actions/detector/{detector_id}/rules | 
+*RulesApi* | [**delete_rule**](docs/RulesApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
+*RulesApi* | [**get_rule**](docs/RulesApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
+*RulesApi* | [**list_rules**](docs/RulesApi.md#list_rules) | **GET** /v1/actions/rules | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /me | 
 
 
@@ -117,8 +123,12 @@ Class | Method | HTTP request | Description
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
+ - [InlineResponse200](docs/InlineResponse200.md)
+ - [Note](docs/Note.md)
+ - [NoteCreationInput](docs/NoteCreationInput.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
+ - [PaginatedRuleList](docs/PaginatedRuleList.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
  - [Rule](docs/Rule.md)
  - [RuleBase](docs/RuleBase.md)

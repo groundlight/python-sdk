@@ -9,7 +9,7 @@ from model import *
 from .client import Groundlight
 from .client import GroundlightClientError
 from .client import ApiTokenError
-from .experimentalapi import ExperimentalApi
+from .experimental_api import ExperimentalApi
 from .binary_labels import Label
 from .version import get_version
 
