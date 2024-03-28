@@ -16,7 +16,7 @@ def test_notes(gl: ExperimentalApi):
     gl.create_note(det, "test_note")
     # test runner could be either a customer or GL
     try:
-        notes = gl.get_notes(det)["GL"]
+        notes = gl.get_notes(det)["gl"]
         found_note = False
         for i in range(len(notes)):
             if notes[i].content == "test_note":
