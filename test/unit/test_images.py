@@ -1,6 +1,7 @@
+from datetime import datetime
+
 import PIL
 from groundlight import ExperimentalApi
-from datetime import datetime
 
 
 def test_get_image(gl: ExperimentalApi):
