@@ -2,6 +2,7 @@
 # to pypi.
 name: cicd
 on:
+  workflow_dispatch:
   push:
 
 env:
@@ -87,18 +88,18 @@ jobs:
   test-api-reference-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: get code 
+      - name: get code
         uses: actions/checkout@v4
       - name: install python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - name: install poetry 
+      - name: install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
 
-      - name: Install dependencies 
+      - name: Install dependencies
         run: make install-sphinx-deps
 
       - name: Build API documentation
@@ -107,7 +108,7 @@ jobs:
 
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
-  # This tests runs on 
+  # This tests runs on
   # - merges to main
   # - releases
   # - branch names ending with "-fulltest"
@@ -235,7 +236,7 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v4
-      - name: Install poetry 
+      - name: Install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
@@ -248,12 +249,12 @@ jobs:
         run: npm install
       - name: Install sphinx dependencies
         run: |
-          cd .. 
+          cd ..
           make install-sphinx-deps
       - name: Build website
         run: |
           cd ..
-          make docs-comprehensive 
+          make docs-comprehensive
       - name: Deploy website (if on main branch)
         # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
         uses: peaceiris/actions-gh-pages@v3
