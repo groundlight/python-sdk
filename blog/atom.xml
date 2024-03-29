@@ -8,7 +8,7 @@
     <subtitle>Groundlight Blog</subtitle>
     <icon>https://code.groundlight.ai/python-sdk/img/favicon.ico</icon>
     <entry>
-        <title type="html"><![CDATA[Navigating the Ambiguity with Groundlight AI Detectors]]></title>
+        <title type="html"><![CDATA[Navigating Ambiguity with Groundlight AI Detectors]]></title>
         <id>https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images</id>
         <link href="https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images"/>
         <updated>2024-03-20T00:00:00.000Z</updated>
