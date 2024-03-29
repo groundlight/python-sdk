@@ -13,6 +13,7 @@ def test_create_action(gl: ExperimentalApi):
         gl.get_rule(rule.id)
 
 
+@pytest.mark.skip(reason="actions are global on an account, the test matrix will run multiple tests that collide")  # type: ignore
 def test_get_all_actions(gl: ExperimentalApi):
     num_test_rules = 13  # needs to be larger than the default page size
     gl.ITEMS_PER_PAGE = 10
