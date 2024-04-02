@@ -205,6 +205,7 @@ class GroundlightApiClient(ApiClient):
             # This metadata helps us debug issues with specific SDK versions.
             "x-sdk-version": get_version(),
             "x-sdk-language": "python",
+            "User-Agent": self.user_agent,
         }
 
     @RequestsRetryDecorator()
