@@ -418,6 +418,10 @@ class Groundlight:
 
         :return: ImageQuery
         """
+        
+        value = 1 / 0
+        
+        
         if wait is None:
             wait = self.DEFAULT_WAIT
 
