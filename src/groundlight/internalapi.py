@@ -168,8 +168,8 @@ class GroundlightApiClient(ApiClient):
     templates in the generator to add the functionality.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.user_agent = f"Groundlight-Python-SDK/{get_version()}"
 
     REQUEST_ID_HEADER = "X-Request-Id"
