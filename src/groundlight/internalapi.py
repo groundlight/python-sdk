@@ -186,10 +186,10 @@ class GroundlightApiClient(ApiClient):
         elif not header_param.get(self.REQUEST_ID_HEADER, None):
             header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
             # Note that we have updated the actual dict in args, so we don't have to put it back in
-            
+
         logger.info(f"Args: {args}")
         logger.info(f"Kwargs: {kwargs}")
-        
+
         return super().call_api(*args, **kwargs)
 
     #
