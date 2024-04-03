@@ -168,6 +168,10 @@ class GroundlightApiClient(ApiClient):
     templates in the generator to add the functionality.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user_agent = f"Groundlight-Python-SDK/{get_version()}"
+
     REQUEST_ID_HEADER = "X-Request-Id"
 
     @RequestsRetryDecorator()
@@ -197,6 +201,7 @@ class GroundlightApiClient(ApiClient):
             # This metadata helps us debug issues with specific SDK versions.
             "x-sdk-version": get_version(),
             "x-sdk-language": "python",
+            "User-Agent": self.user_agent,
         }
 
     @RequestsRetryDecorator()
