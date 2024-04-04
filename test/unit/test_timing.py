@@ -3,7 +3,7 @@ from groundlight import Groundlight
 
 def test_mocked_image_query(mocker):
     # mocker is a fixture defined by pytest-mock
-    mocker.patch("openapi_client.api.image_queries_api.ImageQueriesApi.submit_image_query")
+    mocker.patch("groundlight_openapi_client.api.image_queries_api.ImageQueriesApi.submit_image_query")
     Groundlight()
     # TODO: submit an image query and check that it gets called
 
