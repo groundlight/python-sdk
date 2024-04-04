@@ -12,15 +12,15 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.classification_result import ClassificationResult
-from openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
-from openapi_client.model.result_type_enum import ResultTypeEnum
+import groundlight_openapi_client
+from groundlight_openapi_client.model.classification_result import ClassificationResult
+from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
+from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
 
 globals()["ClassificationResult"] = ClassificationResult
 globals()["ImageQueryTypeEnum"] = ImageQueryTypeEnum
 globals()["ResultTypeEnum"] = ResultTypeEnum
-from openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.image_query import ImageQuery
 
 
 class TestImageQuery(unittest.TestCase):

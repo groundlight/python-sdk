@@ -1,4 +1,4 @@
-# openapi_client.UserApi
+# groundlight_openapi_client.UserApi
 
 All URIs are relative to *https://api.groundlight.ai/device-api*
 
@@ -20,13 +20,13 @@ Retrieve the current user.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import user_api
-from openapi_client.model.user import User
+import groundlight_openapi_client
+from groundlight_openapi_client.api import user_api
+from groundlight_openapi_client.model.user import User
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -42,7 +42,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = user_api.UserApi(api_client)
 
@@ -50,7 +50,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.who_am_i()
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling UserApi->who_am_i: %s\n" % e)
 ```
 

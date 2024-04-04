@@ -12,8 +12,8 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.note import Note
+import groundlight_openapi_client
+from groundlight_openapi_client.model.note import Note
 
 
 class TestNote(unittest.TestCase):

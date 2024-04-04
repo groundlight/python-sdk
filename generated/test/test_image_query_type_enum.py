@@ -12,8 +12,8 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
+import groundlight_openapi_client
+from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
 
 
 class TestImageQueryTypeEnum(unittest.TestCase):

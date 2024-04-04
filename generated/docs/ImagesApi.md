@@ -1,4 +1,4 @@
-# openapi_client.ImagesApi
+# groundlight_openapi_client.ImagesApi
 
 All URIs are relative to *https://api.groundlight.ai/device-api*
 
@@ -20,12 +20,12 @@ Retrieve an image by its image query id.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import images_api
+import groundlight_openapi_client
+from groundlight_openapi_client.api import images_api
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -41,7 +41,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = images_api.ImagesApi(api_client)
     id = "id_example" # str | Choose an image by its image query id.
@@ -50,7 +50,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.get_image(id)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ImagesApi->get_image: %s\n" % e)
 ```
 

@@ -11,8 +11,8 @@
 
 import unittest
 
-import openapi_client
-from openapi_client.api.notes_api import NotesApi  # noqa: E501
+import groundlight_openapi_client
+from groundlight_openapi_client.api.notes_api import NotesApi  # noqa: E501
 
 
 class TestNotesApi(unittest.TestCase):
