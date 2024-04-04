@@ -11,8 +11,8 @@
 
 import unittest
 
-import openapi_client
-from openapi_client.api.image_queries_api import ImageQueriesApi  # noqa: E501
+import groundlight_openapi_client
+from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi  # noqa: E501
 
 
 class TestImageQueriesApi(unittest.TestCase):

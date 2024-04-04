@@ -12,11 +12,11 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.image_query import ImageQuery
+import groundlight_openapi_client
+from groundlight_openapi_client.model.image_query import ImageQuery
 
 globals()["ImageQuery"] = ImageQuery
-from openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
+from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 
 
 class TestPaginatedImageQueryList(unittest.TestCase):

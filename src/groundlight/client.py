@@ -6,18 +6,18 @@ from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Callable, Optional, Union
 
+from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.api.detectors_api import DetectorsApi
+from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
+from groundlight_openapi_client.api.user_api import UserApi
+from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
+from groundlight_openapi_client.model.detector_creation_input import DetectorCreationInput
 from model import (
     Detector,
     ImageQuery,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-from openapi_client import Configuration
-from openapi_client.api.detectors_api import DetectorsApi
-from openapi_client.api.image_queries_api import ImageQueriesApi
-from openapi_client.api.user_api import UserApi
-from openapi_client.exceptions import NotFoundException, UnauthorizedException
-from openapi_client.model.detector_creation_input import DetectorCreationInput
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display

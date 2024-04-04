@@ -8,14 +8,14 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, Union
 
+from groundlight_openapi_client.api.images_api import ImagesApi
+from groundlight_openapi_client.api.notes_api import NotesApi
+from groundlight_openapi_client.api.rules_api import RulesApi
+from groundlight_openapi_client.model.action import Action
+from groundlight_openapi_client.model.condition import Condition
+from groundlight_openapi_client.model.note_creation_input import NoteCreationInput
+from groundlight_openapi_client.model.rule_creation_input import RuleCreationInput
 from model import Channel, Detector, PaginatedRuleList, Rule, Verb
-from openapi_client.api.images_api import ImagesApi
-from openapi_client.api.notes_api import NotesApi
-from openapi_client.api.rules_api import RulesApi
-from openapi_client.model.action import Action
-from openapi_client.model.condition import Condition
-from openapi_client.model.note_creation_input import NoteCreationInput
-from openapi_client.model.rule_creation_input import RuleCreationInput
 
 from .client import Groundlight
 

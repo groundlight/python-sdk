@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 from groundlight import ExperimentalApi
-from openapi_client.exceptions import NotFoundException
+from groundlight_openapi_client.exceptions import NotFoundException
 
 
 def test_create_action(gl: ExperimentalApi):

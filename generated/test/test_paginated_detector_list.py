@@ -12,11 +12,11 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.detector import Detector
+import groundlight_openapi_client
+from groundlight_openapi_client.model.detector import Detector
 
 globals()["Detector"] = Detector
-from openapi_client.model.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 
 
 class TestPaginatedDetectorList(unittest.TestCase):

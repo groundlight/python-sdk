@@ -1,6 +1,6 @@
 # ruff: noqa
 # Add useful imports from the generated code here at the top level, as a convenience.
-from openapi_client import ApiException
+from groundlight_openapi_client import ApiException
 
 # Incorporate models for the open_api spec
 from model import *

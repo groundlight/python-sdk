@@ -12,11 +12,11 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.rule import Rule
+import groundlight_openapi_client
+from groundlight_openapi_client.model.rule import Rule
 
 globals()["Rule"] = Rule
-from openapi_client.model.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
 
 
 class TestPaginatedRuleList(unittest.TestCase):

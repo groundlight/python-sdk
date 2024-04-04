@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
-import openapi_client
+import groundlight_openapi_client
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
@@ -369,7 +369,7 @@ def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: D
 @pytest.mark.run_only_for_edge_endpoint
 def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, detector: Detector, image: str):
     """On the edge-endpoint, we raise an exception if the user passes metadata."""
-    with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
+    with pytest.raises(groundlight_openapi_client.exceptions.ApiException) as exc_info:
         gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata={"a": 1})
     assert is_user_error(exc_info.value.status)
 
@@ -387,7 +387,7 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     jpeg_truncated = jpeg[:-500]  # Cut off the last 500 bytes
     # This is an extra difficult test because the header is valid.
     # So a casual check of the image will appear valid.
-    with pytest.raises(openapi_client.exceptions.ApiException) as exc_info:
+    with pytest.raises(groundlight_openapi_client.exceptions.ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated, human_review="NEVER")
     exc_value = exc_info.value
     assert is_user_error(exc_value.status)

@@ -1,4 +1,4 @@
-# openapi_client.RulesApi
+# groundlight_openapi_client.RulesApi
 
 All URIs are relative to *https://api.groundlight.ai/device-api*
 
@@ -23,14 +23,14 @@ Create a new rule for a detector.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import rules_api
-from openapi_client.model.rule_creation_input import RuleCreationInput
-from openapi_client.model.rule import Rule
+import groundlight_openapi_client
+from groundlight_openapi_client.api import rules_api
+from groundlight_openapi_client.model.rule import Rule
+from groundlight_openapi_client.model.rule_creation_input import RuleCreationInput
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -46,7 +46,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = rules_api.RulesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
@@ -56,7 +56,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.create_rule(detector_id, rule_creation_input)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling RulesApi->create_rule: %s\n" % e)
 ```
 
@@ -103,12 +103,12 @@ Delete a rule
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import rules_api
+import groundlight_openapi_client
+from groundlight_openapi_client.api import rules_api
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -124,7 +124,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = rules_api.RulesApi(api_client)
     id = 1 # int | Delete a rule by its ID.
@@ -132,7 +132,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     try:
         api_instance.delete_rule(id)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling RulesApi->delete_rule: %s\n" % e)
 ```
 
@@ -178,13 +178,13 @@ Retrieve a rule
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import rules_api
-from openapi_client.model.rule import Rule
+import groundlight_openapi_client
+from groundlight_openapi_client.api import rules_api
+from groundlight_openapi_client.model.rule import Rule
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -200,7 +200,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = rules_api.RulesApi(api_client)
     id = 1 # int | Get a rule by its ID.
@@ -209,7 +209,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.get_rule(id)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling RulesApi->get_rule: %s\n" % e)
 ```
 
@@ -255,13 +255,13 @@ Retrieve a list of rules.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import rules_api
-from openapi_client.model.paginated_rule_list import PaginatedRuleList
+import groundlight_openapi_client
+from groundlight_openapi_client.api import rules_api
+from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -277,7 +277,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = rules_api.RulesApi(api_client)
     page = 1 # int | A page number within the paginated result set. (optional)
@@ -288,7 +288,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.list_rules(page=page, page_size=page_size)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling RulesApi->list_rules: %s\n" % e)
 ```
 

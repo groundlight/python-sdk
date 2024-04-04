@@ -12,11 +12,11 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.detector_type_enum import DetectorTypeEnum
+import groundlight_openapi_client
+from groundlight_openapi_client.model.detector_type_enum import DetectorTypeEnum
 
 globals()["DetectorTypeEnum"] = DetectorTypeEnum
-from openapi_client.model.detector import Detector
+from groundlight_openapi_client.model.detector import Detector
 
 
 class TestDetector(unittest.TestCase):
