@@ -108,7 +108,7 @@ const config = {
         logo: {
           alt: "Groundlight Logo",
           src: "img/favicon-32x32.png",
-          to: "/python-sdk/",
+          href: "/python-sdk/",
         },
         items: [
           {
