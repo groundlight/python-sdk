@@ -94,8 +94,8 @@ class ClassificationResult(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "label": (str,),  # noqa: E501
             "confidence": (float,),  # noqa: E501
+            "label": (str,),  # noqa: E501
         }
 
     @cached_property
@@ -103,8 +103,8 @@ class ClassificationResult(ModelNormal):
         return None
 
     attribute_map = {
-        "label": "label",  # noqa: E501
         "confidence": "confidence",  # noqa: E501
+        "label": "label",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -113,10 +113,11 @@ class ClassificationResult(ModelNormal):
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(cls, label, *args, **kwargs):  # noqa: E501
+    def _from_openapi_data(cls, confidence, label, *args, **kwargs):  # noqa: E501
         """ClassificationResult - a model defined in OpenAPI
 
         Args:
+            confidence (float): On a scale of 0 to 1, how confident are we in the predicted label?
             label (str): What is the predicted label?
 
         Keyword Args:
@@ -150,7 +151,6 @@ class ClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): On a scale of 0 to 1, how confident are we in the predicted label?. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -179,6 +179,7 @@ class ClassificationResult(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.confidence = confidence
         self.label = label
         for var_name, var_value in kwargs.items():
             if (
@@ -204,10 +205,11 @@ class ClassificationResult(ModelNormal):
     )
 
     @convert_js_args_to_python_args
-    def __init__(self, label, *args, **kwargs):  # noqa: E501
+    def __init__(self, confidence, label, *args, **kwargs):  # noqa: E501
         """ClassificationResult - a model defined in OpenAPI
 
         Args:
+            confidence (float): On a scale of 0 to 1, how confident are we in the predicted label?
             label (str): What is the predicted label?
 
         Keyword Args:
@@ -241,7 +243,6 @@ class ClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): On a scale of 0 to 1, how confident are we in the predicted label?. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -268,6 +269,7 @@ class ClassificationResult(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.confidence = confidence
         self.label = label
         for var_name, var_value in kwargs.items():
             if (

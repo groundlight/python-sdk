@@ -427,6 +427,7 @@ components:
           type: string
           description: What is the predicted label?
       required:
+        - confidence
         - label
       x-internal: true
     Detector:
