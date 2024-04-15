@@ -4,6 +4,7 @@ from openapi_client.exceptions import NotFoundException
 
 
 def test_create_action(gl: ExperimentalApi):
+    # We first clear out any rules in case the account has any left over from a previous test
     gl.delete_all_rules()
     det = gl.get_or_create_detector("testing_detector", "test_query")
     rule = gl.create_rule(det, "test_rule", "EMAIL", "test@example.com")
