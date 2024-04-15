@@ -12,13 +12,13 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.action import Action
-from openapi_client.model.condition import Condition
+import groundlight_openapi_client
+from groundlight_openapi_client.model.action import Action
+from groundlight_openapi_client.model.condition import Condition
 
 globals()["Action"] = Action
 globals()["Condition"] = Condition
-from openapi_client.model.rule_base import RuleBase
+from groundlight_openapi_client.model.rule_base import RuleBase
 
 
 class TestRuleBase(unittest.TestCase):

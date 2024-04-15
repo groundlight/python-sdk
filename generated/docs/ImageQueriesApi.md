@@ -1,4 +1,4 @@
-# openapi_client.ImageQueriesApi
+# groundlight_openapi_client.ImageQueriesApi
 
 All URIs are relative to *https://api.groundlight.ai/device-api*
 
@@ -22,13 +22,13 @@ Retrieve an image-query by its ID.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import image_queries_api
-from openapi_client.model.image_query import ImageQuery
+import groundlight_openapi_client
+from groundlight_openapi_client.api import image_queries_api
+from groundlight_openapi_client.model.image_query import ImageQuery
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -44,7 +44,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     id = "id_example" # str | Choose an image query by its ID.
@@ -53,7 +53,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.get_image_query(id)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->get_image_query: %s\n" % e)
 ```
 
@@ -99,13 +99,13 @@ Retrieve a list of image-queries.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import image_queries_api
-from openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
+import groundlight_openapi_client
+from groundlight_openapi_client.api import image_queries_api
+from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -121,7 +121,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     page = 1 # int | A page number within the paginated result set. (optional)
@@ -132,7 +132,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.list_image_queries(page=page, page_size=page_size)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->list_image_queries: %s\n" % e)
 ```
 
@@ -179,13 +179,13 @@ Name | Type | Description  | Notes
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import image_queries_api
-from openapi_client.model.image_query import ImageQuery
+import groundlight_openapi_client
+from groundlight_openapi_client.api import image_queries_api
+from groundlight_openapi_client.model.image_query import ImageQuery
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -201,7 +201,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
@@ -216,7 +216,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.submit_image_query(detector_id)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
 
     # example passing only required values which don't have defaults set
@@ -224,7 +224,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.submit_image_query(detector_id, inspection_id=inspection_id, human_review=human_review, patience_time=patience_time, want_async=want_async, metadata=metadata, body=body)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
 ```
 

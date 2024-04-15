@@ -1,4 +1,4 @@
-# openapi_client.NotesApi
+# groundlight_openapi_client.NotesApi
 
 All URIs are relative to *https://api.groundlight.ai/device-api*
 
@@ -21,14 +21,14 @@ Create a new note.
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import notes_api
-from openapi_client.model.note import Note
-from openapi_client.model.note_creation_input import NoteCreationInput
+import groundlight_openapi_client
+from groundlight_openapi_client.api import notes_api
+from groundlight_openapi_client.model.note_creation_input import NoteCreationInput
+from groundlight_openapi_client.model.note import Note
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -44,7 +44,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = notes_api.NotesApi(api_client)
     detector_id = "detector_id_example" # str | the detector to associate the note with
@@ -56,7 +56,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.create_note(detector_id, note_creation_input)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling NotesApi->create_note: %s\n" % e)
 ```
 
@@ -103,13 +103,13 @@ Retrieve notes for a detector
 
 ```python
 import time
-import openapi_client
-from openapi_client.api import notes_api
-from openapi_client.model.inline_response200 import InlineResponse200
+import groundlight_openapi_client
+from groundlight_openapi_client.api import notes_api
+from groundlight_openapi_client.model.inline_response200 import InlineResponse200
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
-configuration = openapi_client.Configuration(
+configuration = groundlight_openapi_client.Configuration(
     host = "https://api.groundlight.ai/device-api"
 )
 
@@ -125,7 +125,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with openapi_client.ApiClient(configuration) as api_client:
+with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = notes_api.NotesApi(api_client)
     detector_id = "detector_id_example" # str | the detector whose notes to retrieve
@@ -134,7 +134,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         api_response = api_instance.get_notes(detector_id)
         pprint(api_response)
-    except openapi_client.ApiException as e:
+    except groundlight_openapi_client.ApiException as e:
         print("Exception when calling NotesApi->get_notes: %s\n" % e)
 ```
 

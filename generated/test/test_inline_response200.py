@@ -12,11 +12,11 @@
 import sys
 import unittest
 
-import openapi_client
-from openapi_client.model.note import Note
+import groundlight_openapi_client
+from groundlight_openapi_client.model.note import Note
 
 globals()["Note"] = Note
-from openapi_client.model.inline_response200 import InlineResponse200
+from groundlight_openapi_client.model.inline_response200 import InlineResponse200
 
 
 class TestInlineResponse200(unittest.TestCase):
