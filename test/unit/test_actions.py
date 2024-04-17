@@ -6,6 +6,8 @@ from groundlight_openapi_client.exceptions import NotFoundException
 
 
 def test_create_action(gl: ExperimentalApi):
+    # We first clear out any rules in case the account has any left over from a previous test
+    gl.delete_all_rules()
     name = f"Test {datetime.utcnow()}"
     det = gl.get_or_create_detector(name, "test_query")
     rule = gl.create_rule(det, "test_rule", "EMAIL", "test@example.com")
