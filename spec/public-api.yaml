@@ -426,6 +426,9 @@ components:
         label:
           type: string
           description: What is the predicted label?
+        source:
+          type: string
+          description: Where did this classification result come from?
       required:
         - confidence
         - label
@@ -677,6 +680,10 @@ components:
         result:
           allOf:
             - $ref: "#/components/schemas/ClassificationResult"
+          readOnly: true
+        confidence_threshold:
+          type: number
+          format: float
           readOnly: true
         metadata:
           type: object
