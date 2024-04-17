@@ -61,26 +61,21 @@ def _generate_request_id():
     return "req_uu" + uuid.uuid4().hex
 
 
-def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
+def iq_is_confident(iq: ImageQuery, confidence_threshold: Optional[float]) -> bool:
     """Returns True if the image query's confidence is above threshold.
     The only subtletie here is that currently confidence of None means
     human label, which is treated as confident.
     """
-    if iq.result.confidence is None:
-        # Human label
-        return True
-    return iq.result.confidence >= confidence_threshold
+    if confidence_threshold is None:
+        confidence_threshold = iq.confidence_threshold
+    return iq.result.confidence >= iq.confidence_threshold
 
 
 def iq_is_answered(iq: ImageQuery) -> bool:
     """Returns True if the image query has a ML or human label.
     Placeholder and special labels (out of domain) have confidences exactly 0.5
     """
-    if iq.result.confidence is None:
-        # Human label
-        return True
-    placeholder_confidence = 0.5
-    return iq.result.confidence > placeholder_confidence
+    return not iq.result.source == "Still Processing"
 
 
 class InternalApiError(ApiException, RuntimeError):
@@ -218,7 +213,7 @@ class GroundlightApiClient(ApiClient):
         logger.info(f"Posting label={label} to image_query {image_query_id} ...")
         response = requests.request("POST", url, json=data, headers=headers, verify=self.configuration.verify_ssl)
         elapsed = 1000 * (time.time() - start_time)
-        logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
+        logger.debug(f"Call to ImageQuery._add_label took {elapsed:.1f}ms response={response.text}")
 
         if not is_ok(response.status_code):
             raise InternalApiError(

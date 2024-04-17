@@ -13,7 +13,7 @@ install-dev: ## Only install the dev dependencies
 install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
-install-generator: install ## Install dependencies for SDK code generator
+install-generator: ## Install dependencies for SDK code generator
 	npm install --save remark-math@6 rehype-katex@7
 
 generate: install-generator  ## Generate the SDK from our public openapi spec

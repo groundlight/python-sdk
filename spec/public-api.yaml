@@ -420,14 +420,17 @@ components:
           type: number
           maximum: 1
           minimum: 0
-          nullable: true
           description:
             On a scale of 0 to 1, how confident are we in the predicted
             label?
         label:
           type: string
           description: What is the predicted label?
+        source:
+          type: string
+          description: Where did this classification result come from?
       required:
+        - confidence
         - label
       x-internal: true
     Detector:
@@ -677,6 +680,10 @@ components:
         result:
           allOf:
             - $ref: "#/components/schemas/ClassificationResult"
+          readOnly: true
+        confidence_threshold:
+          type: number
+          format: float
           readOnly: true
         metadata:
           type: object
