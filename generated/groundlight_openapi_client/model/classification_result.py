@@ -96,6 +96,7 @@ class ClassificationResult(ModelNormal):
         return {
             "confidence": (float,),  # noqa: E501
             "label": (str,),  # noqa: E501
+            "source": (str,),  # noqa: E501
         }
 
     @cached_property
@@ -105,6 +106,7 @@ class ClassificationResult(ModelNormal):
     attribute_map = {
         "confidence": "confidence",  # noqa: E501
         "label": "label",  # noqa: E501
+        "source": "source",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -151,6 +153,7 @@ class ClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            source (str): Where did this classification result come from?. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -243,6 +246,7 @@ class ClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            source (str): Where did this classification result come from?. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

@@ -138,6 +138,7 @@ class ImageQuery(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "confidence_threshold": (float,),  # noqa: E501
             "metadata": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
@@ -156,6 +157,7 @@ class ImageQuery(ModelNormal):
         "detector_id": "detector_id",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
         "result": "result",  # noqa: E501
+        "confidence_threshold": "confidence_threshold",  # noqa: E501
         "metadata": "metadata",  # noqa: E501
     }
 
@@ -167,6 +169,7 @@ class ImageQuery(ModelNormal):
         "detector_id",  # noqa: E501
         "result_type",  # noqa: E501
         "result",  # noqa: E501
+        "confidence_threshold",  # noqa: E501
         "metadata",  # noqa: E501
     }
 
@@ -217,6 +220,7 @@ class ImageQuery(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             result (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            confidence_threshold (float): [optional]  # noqa: E501
             metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).. [optional]  # noqa: E501
         """
 
@@ -311,6 +315,7 @@ class ImageQuery(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             result (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            confidence_threshold (float): [optional]  # noqa: E501
             metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).. [optional]  # noqa: E501
         """
 
