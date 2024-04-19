@@ -53,8 +53,8 @@ const config = {
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
         },
-        googleTagManager: {
-          containerId: "GTM-5MV4R9FV",
+        gtag: {
+          trackingID: 'G-G0XW52NM2K',
         },
         blog: {
           showReadingTime: true,
@@ -108,7 +108,7 @@ const config = {
         logo: {
           alt: "Groundlight Logo",
           src: "img/favicon-32x32.png",
-          href: "https://code.groundlight.ai/",
+          href: "/python-sdk/",
         },
         items: [
           {
