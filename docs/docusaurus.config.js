@@ -53,8 +53,8 @@ const config = {
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
         },
-        googleTagManager: {
-          containerId: "GTM-5MV4R9FV",
+        gtag: {
+          trackingID: 'G-G0XW52NM2K',
         },
         blog: {
           showReadingTime: true,
