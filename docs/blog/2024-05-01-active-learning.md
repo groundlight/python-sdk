@@ -1,6 +1,6 @@
 ---
 title: "Reducing Labeling Costs with Active Learning"
-description: filler
+description: How Groundlight uses active learning to train accurate vision models while saving on data labeling costs.
 slug: active-learning
 authors:
   - name: Ted Sandler
