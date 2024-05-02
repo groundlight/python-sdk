@@ -11,7 +11,7 @@ image: ./images/active-learning/social.png
 hide_table_of_contents: false
 ---
 
-At Groundlight, we train each detector's machine learning (ML) model on images that have been manually labeled with correct responses. However, these labels are expensive to collect because they require human review. Given that detectors are frequently applied to streams of images that change slowly over time, reviewing all images as they arrive is likely to result in wasted effort labeling images that are similar and add little new information to the training set.
+At Groundlight, we train each detector's machine learning (ML) model on images that have been manually labeled with correct responses. However, collecting labels at large scale becomes expensive because it requires human review. Given that detectors are frequently applied to streams of images that change slowly over time, reviewing all images as they arrive is likely to result in wasted effort labeling images that are similar and add little new information to the training set.
 
 To avoid unnecessary labeling and save customers money, Groundlight uses **[active learning](https://en.wikipedia.org/wiki/Active_learning_(machine_learning))**, a machine learning protocol in which an ML model plays an active role in determining which images get manually labeled for training. With active learning, only informative images are prioritized for review, making it possible to label small a subset of the available data but train a model that's roughly as good as one trained with all the data labeled [\[Settles, 2009\]](https://minds.wisconsin.edu/handle/1793/60660).
 
