@@ -7,11 +7,11 @@ authors:
     title: Senior Applied Scientist
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/efc35da152/sandlert.jpg
 tags: [active learning, uncertainty sampling, deep dive]
-image: ./images/active-learning/social.png
+image: ./images/active-learning/social-active-learning-flow.png
 hide_table_of_contents: false
 ---
 
-At Groundlight, we train each detector's machine learning (ML) model on images that have been manually labeled with correct responses. However, collecting labels at large scale becomes expensive because it requires human review. Given that detectors are frequently applied to streams of images that change slowly over time, reviewing all images as they arrive is likely to result in wasted effort labeling images that are similar and add little new information to the training set.
+At Groundlight, we train each detector's machine learning (ML) model on images that have been manually labeled with correct responses. However, collecting labels at scale becomes expensive because it requires human review. Given that detectors are frequently applied to streams of images that change slowly over time, reviewing all images as they arrive is likely to result in wasted effort labeling similar images that add little information to the training set.
 
 To avoid unnecessary labeling and save customers money, Groundlight uses **[active learning](https://en.wikipedia.org/wiki/Active_learning_(machine_learning))**, a machine learning protocol in which an ML model plays an active role in determining which images get manually labeled for training. With active learning, only informative images are prioritized for review, making it possible to label small a subset of the available data but train a model that's roughly as good as one trained with all the data labeled [\[Settles, 2009\]](https://minds.wisconsin.edu/handle/1793/60660).
 
@@ -21,7 +21,7 @@ The variant of active learning we use Groundlight is based on **[uncertainty sam
 
 Uncertainty sampling works as follows. Imagine we have a detector that processes a stream of images arriving one by one. The detector's ML model is trained on all previously labeled images from the stream. When a new image arrives, the model makes its best guess prediction for the image and also reports its confidence in its prediction. The confidence is expressed as a probability (a number between zero and one) that its prediction is correct. In uncertainty sampling, we escalate and label those images whose predictions have low confidence, and largely leave images with confident predictions unlabeled. In this way, we avoid most of the expense and effort of labeling images whose predictions are likely correct, but still continue to improve the model on images it's unsure of.
 
-As an example, the images shown below were sent to a detector that identifies the presence of dogs in and around an indoor swimming pool. The model reports with 95% confidence that there is a dog in the image on the left. But it is less confident in its response for the image on the right, saying there is no dog present with only 75% confidence. There is in fact a dog in that image, at the back left corner of the swimming pool, but it is difficult to see.
+As an example, the images shown below were sent to a detector that identifies the presence of dogs in and around a swimming pool at the [Dogmode Aquatic Center](https://dogmode.com/aquatic-fitness-center-pool-view/). The model reports with 95% confidence that there is a dog in the image on the left. But it is less confident in its response for the image on the right, saying there is no dog present with only 75% confidence. There is in fact a dog in this image, at the back left corner of the swimming pool, but it is difficult to see.
 <table cellspacing="0" cellpadding="0">
 <center>
 <tr>
@@ -49,7 +49,7 @@ Our results compare the performance of three models trained under different prot
 
 The training sets of all three models are initialized with the same 20 images, 10 labeled in each class.
 
-The plot below shows that the model trained with moderate uncertainty sampling (confidence threshold 95%) has an error rate similar to the model trained without any uncertainty sampling (confidence threshold 100%). This demonstrates that uncertainty sampling can be just as accurate as training models on all available data.
+The plot below shows that the model trained with moderate uncertainty sampling (confidence threshold 95%) has an error rate similar to the model trained without any uncertainty sampling. This demonstrates that uncertainty sampling can be just as accurate as training models on all available data.
 <img
  src={require('./images/active-learning/error-rate-over-time.png').default} 
  width="500 px"
