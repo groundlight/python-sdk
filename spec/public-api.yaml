@@ -718,27 +718,9 @@ components:
         content:
           type: string
           description: Text content of the note.
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Timestamp indicating when the note was created.
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Timestamp indicating the last time the note was updated.
-        created_by:
-          type: integer
-          readOnly: true
-          nullable: true
-          description: The owner of the note. Which is who created the note.
       required:
       - content
-      - created_at
-      - created_by
       - detector_id
-      - updated_at
     NoteRequest:
       type: object
       properties:

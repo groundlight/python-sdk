@@ -91,12 +91,6 @@ class Note(ModelNormal):
         return {
             "detector_id": (str,),  # noqa: E501
             "content": (str,),  # noqa: E501
-            "created_at": (datetime,),  # noqa: E501
-            "updated_at": (datetime,),  # noqa: E501
-            "created_by": (
-                int,
-                none_type,
-            ),  # noqa: E501
         }
 
     @cached_property
@@ -106,33 +100,22 @@ class Note(ModelNormal):
     attribute_map = {
         "detector_id": "detector_id",  # noqa: E501
         "content": "content",  # noqa: E501
-        "created_at": "created_at",  # noqa: E501
-        "updated_at": "updated_at",  # noqa: E501
-        "created_by": "created_by",  # noqa: E501
     }
 
     read_only_vars = {
         "detector_id",  # noqa: E501
-        "created_at",  # noqa: E501
-        "updated_at",  # noqa: E501
-        "created_by",  # noqa: E501
     }
 
     _composed_schemas = {}
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(
-        cls, detector_id, content, created_at, updated_at, created_by, *args, **kwargs
-    ):  # noqa: E501
+    def _from_openapi_data(cls, detector_id, content, *args, **kwargs):  # noqa: E501
         """Note - a model defined in OpenAPI
 
         Args:
             detector_id (str):
             content (str): Text content of the note.
-            created_at (datetime): Timestamp indicating when the note was created.
-            updated_at (datetime): Timestamp indicating the last time the note was updated.
-            created_by (int, none_type): The owner of the note. Which is who created the note.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -195,9 +178,6 @@ class Note(ModelNormal):
 
         self.detector_id = detector_id
         self.content = content
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.created_by = created_by
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -226,6 +206,7 @@ class Note(ModelNormal):
         """Note - a model defined in OpenAPI
 
             content (str): Text content of the note.
+
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
                                 will be type checked and a TypeError will be
