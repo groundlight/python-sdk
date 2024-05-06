@@ -4,11 +4,11 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**who_am_i**](UserApi.md#who_am_i) | **GET** /me | 
+[**who_am_i**](UserApi.md#who_am_i) | **GET** /v1/me | 
 
 
 # **who_am_i**
-> User who_am_i()
+> InlineResponse200 who_am_i()
 
 
 
@@ -22,7 +22,7 @@ Retrieve the current user.
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import user_api
-from groundlight_openapi_client.model.user import User
+from groundlight_openapi_client.model.inline_response200 import InlineResponse200
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -60,7 +60,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**User**](User.md)
+[**InlineResponse200**](InlineResponse200.md)
 
 ### Authorization
 
