@@ -1,283 +1,243 @@
 openapi: 3.0.3
 info:
   title: Groundlight API
-  version: 0.6.0
-  description: Easy Computer Vision powered by Natural Language
+  version: 0.15.1
+  description: Groundlight makes it simple to understand images. You can easily create
+    computer vision detectors just by describing what you want to know using natural
+    language.
   contact:
-    name: Questions?
+    name: support@groundlight.ai
     email: support@groundlight.ai
 paths:
-  /me:
+  /v1/actions/detector/{detector_id}/rules:
     get:
-      operationId: Who am I
-      description: Retrieve the current user.
+      operationId: List detector rules
+      description: List all rules for a detector
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
       tags:
-        - user
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-          description: ""
+                $ref: '#/components/schemas/PaginatedRuleList'
+          description: ''
+    post:
+      operationId: Create rule
+      description: Create a new rule for a detector
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - actions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RuleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RuleRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rule'
+          description: ''
   /v1/actions/rules:
     get:
       operationId: List rules
       description: Retrieve a list of rules.
       parameters:
-        - name: page
-          required: false
-          in: query
-          description: A page number within the paginated result set.
-          schema:
-            type: integer
-        - name: page_size
-          required: false
-          in: query
-          description: Number of results to return per page.
-          schema:
-            type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
-        - rules
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedRuleList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedRuleList'
+          description: ''
   /v1/actions/rules/{id}:
     get:
       operationId: Get rule
       description: Retrieve a rule
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: Get a rule by its ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
       tags:
-        - rules
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Rule"
-          description: ""
+                $ref: '#/components/schemas/Rule'
+          description: ''
     delete:
       operationId: Delete rule
       description: Delete a rule
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          description: Delete a rule by its ID.
-          required: true
-      tags:
-        - rules
-      security:
-        - ApiToken: []
-      responses:
-        "204":
-          description: ""
-  /v1/actions/detector/{detector_id}/rules:
-    post:
-      operationId: Create rule
-      description: Create a new rule for a detector.
-      parameters:
-        - in: path
-          name: detector_id
-          schema:
-            type: string
-          description: Choose a detector by its ID.
-          required: true
-      tags:
-        - rules
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RuleCreationInput"
+      - in: path
+        name: id
+        schema:
+          type: string
         required: true
-      security:
-        - ApiToken: []
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Rule"
-          description: ""
-  /v1/notes:
-    get:
-      operationId: get notes
-      description: Retrieve notes for a detector
-      parameters:
-        - name: detector_id
-          required: true
-          in: query
-          description: the detector whose notes to retrieve
-          schema:
-            type: string
       tags:
-        - notes
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  CUSTOMER:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Note"
-                  GL:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Note"
-                required:
-                  - CUSTOMER
-                  - GL
-          description: ""
-    post:
-      operationId: Create note
-      description: Create a new note.
-      parameters:
-        - name: detector_id
-          required: true
-          in: query
-          description: the detector to associate the note with
-          schema:
-            type: string
-      tags:
-        - notes
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NoteCreationInput"
-        required: true
-      security:
-        - ApiToken: []
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Note"
-          description: ""
+        '204':
+          description: No response body
   /v1/detectors:
     get:
       operationId: List detectors
       description: Retrieve a list of detectors.
       parameters:
-        - name: page
-          required: false
-          in: query
-          description: A page number within the paginated result set.
-          schema:
-            type: integer
-        - name: page_size
-          required: false
-          in: query
-          description: Number of results to return per page.
-          schema:
-            type: integer
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated result set.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of items to return per page.
       tags:
-        - detectors
+      - detectors
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedDetectorList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedDetectorList'
+          description: ''
     post:
       operationId: Create detector
       description: Create a new detector.
       tags:
-        - detectors
+      - detectors
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DetectorCreationInput"
+              $ref: '#/components/schemas/DetectorCreationInputRequest'
         required: true
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Detector"
-          description: ""
+                $ref: '#/components/schemas/Detector'
+          description: ''
   /v1/detectors/{id}:
     get:
       operationId: Get detector
       description: Retrieve a detector by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Choose a detector by its ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
       tags:
-        - detectors
+      - detectors
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Detector"
-          description: ""
+                $ref: '#/components/schemas/Detector'
+          description: ''
+    delete:
+      operationId: Delete detector
+      description: Delete a detector by its ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '204':
+          description: No response body
   /v1/image-queries:
     get:
       operationId: List image queries
       description: Retrieve a list of image-queries.
       parameters:
-        - name: page
-          required: false
-          in: query
-          description: A page number within the paginated result set.
-          schema:
-            type: integer
-        - name: page_size
-          required: false
-          in: query
-          description: Number of results to return per page.
-          schema:
-            type: integer
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated result set.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of items to return per page.
       tags:
-        - image-queries
+      - image-queries
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
-            application/json:
+            image/jpeg:
               schema:
-                $ref: "#/components/schemas/PaginatedImageQueryList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedImageQueryList'
+          description: ''
     post:
       operationId: Submit image query
       description: |2+
@@ -293,143 +253,259 @@ paths:
         ```
 
       parameters:
-        - in: query
-          name: detector_id
-          schema:
-            type: string
-          description: Choose a detector by its ID.
-          required: true
-        - in: query
-          name: inspection_id
-          schema:
-            type: string
-          description: Associate the image query with an inspection.
-        - in: query
-          name: human_review
-          schema:
-            type: string
-          description: >
-            If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
-            If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
-            If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
-          required: false
-        - in: query
-          name: patience_time
-          schema:
-            type: number
-            format: float
-          description: How long to wait for a confident response.
-          required: false
-        - in: query
-          name: want_async
-          schema:
-            type: string
-          description: If "true" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.
-        - in: query
-          name: metadata
-          schema:
-            type: string
-          required: false
-          description:
-            A dictionary of custom key/value metadata to associate with the image
-            query (limited to 1KB).
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
+      - in: query
+        name: human_review
+        schema:
+          type: string
+        description: |-
+          If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
+          If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
+          If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
+      - in: query
+        name: inspection_id
+        schema:
+          type: string
+        description: Associate the image query with an inspection.
+      - in: query
+        name: metadata
+        schema:
+          type: string
+        description: A dictionary of custom key/value metadata to associate with the
+          image query (limited to 1KB).
+      - in: query
+        name: patience_time
+        schema:
+          type: number
+          format: float
+        description: How long to wait for a confident response.
+      - in: query
+        name: want_async
+        schema:
+          type: boolean
+        description: If "true" then submitting an image query returns immediately
+          without a result. The result will be computed asynchronously and can be
+          retrieved later.
       tags:
-        - image-queries
+      - image-queries
       requestBody:
         content:
           image/jpeg:
             schema:
               type: string
               format: binary
-            examples:
-              JPEGBinaryImageData:
-                value: "@path/to/image.jpeg"
-                summary: JPEG binary image data
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
-            application/json:
+            image/jpeg:
               schema:
-                $ref: "#/components/schemas/ImageQuery"
-          description: ""
+                $ref: '#/components/schemas/ImageQuery'
+          description: ''
   /v1/image-queries/{id}:
     get:
       operationId: Get image query
       description: Retrieve an image-query by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Choose an image query by its ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose an image query by its ID.
+        required: true
       tags:
-        - image-queries
+      - image-queries
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImageQuery"
-          description: ""
+                $ref: '#/components/schemas/ImageQuery'
+          description: ''
   /v1/image-queries/{id}/image:
     get:
       operationId: Get image
-      description: Retrieve an image by its image query id.
+      description: Retrieve an image by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Choose an image by its image query id.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Retrieve the image associated with the image query ID.
+        required: true
       tags:
-        - images
+      - image-queries
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             image/jpeg:
               schema:
                 type: string
                 format: binary
-          description: ""
+          description: ''
+  /v1/me:
+    get:
+      operationId: Who am I
+      description: Retrieve the current user.
+      tags:
+      - user
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The user's username
+          description: ''
+  /v1/notes:
+    get:
+      operationId: get notes
+      description: Get all the notes from a given detector and return the answer in
+        lists, one for each note_category
+      parameters:
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: the detector whose notes to retrieve
+        required: true
+      tags:
+      - notes
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAllNotesList'
+          description: ''
+    post:
+      operationId: Create note
+      description: Create a new note
+      parameters:
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: the detector to associate the new note with
+        required: true
+      tags:
+      - notes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+          description: ''
 components:
   schemas:
-    User:
+    Action:
       type: object
-      description: Spec for serializing a user object in the public API
       properties:
-        username:
+        channel:
+          $ref: '#/components/schemas/ChannelEnum'
+        recipient:
           type: string
-          description: The user's username.
+        include_image:
+          type: boolean
       required:
-        - username
-    ClassificationResult:
+      - channel
+      - include_image
+      - recipient
+    ActionRequest:
       type: object
-      description:
-        Our classification result. This result can come from the detector,
-        or a human reviewer.
       properties:
-        confidence:
-          type: number
-          maximum: 1
-          minimum: 0
-          nullable: true
-          description:
-            On a scale of 0 to 1, how confident are we in the predicted
-            label?
-        label:
+        channel:
+          $ref: '#/components/schemas/ChannelEnum'
+        recipient:
           type: string
-          description: What is the predicted label?
+          minLength: 1
+        include_image:
+          type: boolean
       required:
-        - label
-      x-internal: true
+      - channel
+      - include_image
+      - recipient
+    AllNotes:
+      type: object
+      description: |-
+        Serializes all notes for a given detector, grouped by type as listed in UserProfile.NoteCategoryChoices
+        The fields must match whats in USERPROFILE.NoteCategoryChoices
+      properties:
+        CUSTOMER:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        GL:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+      required:
+      - CUSTOMER
+      - GL
+    ChannelEnum:
+      enum:
+      - EMAIL
+      - TEXT
+      type: string
+      description: |-
+        * `EMAIL` - EMAIL
+        * `TEXT` - TEXT
+    Condition:
+      type: object
+      properties:
+        verb:
+          $ref: '#/components/schemas/VerbEnum'
+        parameters:
+          type: object
+          additionalProperties: {}
+      required:
+      - parameters
+      - verb
+    ConditionRequest:
+      type: object
+      properties:
+        verb:
+          $ref: '#/components/schemas/VerbEnum'
+        parameters:
+          type: object
+          additionalProperties: {}
+      required:
+      - parameters
+      - verb
     Detector:
       type: object
       description: Spec for serializing a detector object in the public API.
@@ -440,7 +516,7 @@ components:
           description: A unique ID for this object.
         type:
           allOf:
-            - $ref: "#/components/schemas/DetectorTypeEnum"
+          - $ref: '#/components/schemas/DetectorTypeEnum'
           readOnly: true
           description: The type of this object.
         created_at:
@@ -454,8 +530,8 @@ components:
           maxLength: 200
         query:
           type: string
-          readOnly: true
           description: A question about the image.
+          readOnly: true
         group_name:
           type: string
           readOnly: true
@@ -466,37 +542,50 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description:
-            If the detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
         metadata:
           type: object
+          additionalProperties: {}
           nullable: true
-          description:
-            A dictionary of custom key/value metadata to associate with the detector
-            (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.
+          readOnly: true
+          description: Metadata about the detector.
+        mode:
+          type: string
+          readOnly: true
+        mode_configuration:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
       required:
-        - created_at
-        - group_name
-        - id
-        - name
-        - query
-        - type
+      - created_at
+      - group_name
+      - id
+      - metadata
+      - mode
+      - mode_configuration
+      - name
+      - query
+      - type
       x-internal: true
-    DetectorCreationInput:
+    DetectorCreationInputRequest:
       type: object
       description: Helper serializer for validating POST /detectors input.
       properties:
         name:
           type: string
+          minLength: 1
           description: A short, descriptive name for the detector.
           maxLength: 200
         query:
           type: string
+          minLength: 1
           description: A question about the image.
           maxLength: 300
         group_name:
           type: string
+          minLength: 1
           description: Which group should this detector be part of?
           maxLength: 100
         confidence_threshold:
@@ -505,144 +594,47 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description:
-            If the detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
+        patience_time:
+          type: number
+          format: double
+          minimum: 10
+          default: 30.0
+          description: How long Groundlight will attempt to generate a confident prediction
         pipeline_config:
           type: string
           nullable: true
-          description: (Advanced usage) Configuration to instantiate a specific prediction pipeline.
-          maxLength: 8192
+          description: (Advanced usage) Configuration needed to instantiate a prediction
+            pipeline.
+          maxLength: 100
         metadata:
           type: string
+          minLength: 1
+          description: Base64-encoded metadata for the detector. This should be a
+            JSON object with string keys. The size after encoding should not exceed
+            1362 bytes, corresponding to 1KiB before encoding.
+          maxLength: 1362
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/ModeEnum'
+          default: BINARY
+          description: |-
+            Mode in which this detector will work.
+
+            * `BINARY` - BINARY
+            * `COUNT` - COUNT
+        mode_configuration:
           nullable: true
-          description:
-            A dictionary of custom key/value metadata to associate with the detector
-            (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.
+          description: Configuration for each detector mode.
       required:
-        # TODO: make name optional - that's how the web version is going.
-        - name
-        - query
+      - name
+      - query
       x-internal: true
     DetectorTypeEnum:
       enum:
-        - detector
+      - detector
       type: string
-    RuleBase:
-      type: object
-      description: Base spec for serializing a rule object in the public API.
-      properties:
-        detector_id:
-          type: string
-          description: Which detector should this rule be associated with?
-        name:
-          type: string
-          description: A short, descriptive name for the rule.
-          maxLength: 200
-        enabled:
-          type: boolean
-          default: true
-          description: Is this rule enabled?
-        snooze_time_enabled:
-          type: boolean
-          default: false
-          description: Is this rule snooze time enabled?
-        snooze_time_value:
-          type: integer
-          default: 1
-          description: How long to snooze the rule for (in seconds).
-        snooze_time_unit:
-          type: string
-          default: "DAYS"
-          enum:
-            - "SECONDS"
-            - "MINUTES"
-            - "HOURS"
-            - "DAYS"
-          description: What unit of time to use for the snooze time.
-        action:
-          $ref: "#/components/schemas/Action"
-          description: What action should be taken when the rule is triggered?
-        condition:
-          $ref: "#/components/schemas/Condition"
-          description: What condition should trigger the rule?
-      x-internal: true
-    RuleCreationInput:
-      type: object
-      description: Helper serializer for structuring POST request to actions
-      allOf:
-        - $ref: "#/components/schemas/RuleBase"
-      x-internal: true
-    Rule:
-      type: object
-      description: Spec for serializing a rule object in the public API.
-      allOf:
-        - $ref: "#/components/schemas/RuleBase"
-      properties:
-        id:
-          type: integer
-          readOnly: true
-          description: A unique ID for this object.
-        detector_name:
-          type: string
-          readOnly: true
-          description: The name of the detector this rule is associated with.
-      x-internal: true
-    Action:
-      type: object
-      description: What action should be taken when the rule is triggered?
-      properties:
-        channel:
-          type: string
-          enum:
-            - EMAIL
-            - TEXT
-          description: The channel to send the action to.
-        include_image:
-          type: boolean
-          description: Should the image be included in the action?
-        recipient:
-          type: string
-          description: The recipient of the action.
-      x-internal: true
-    Note:
-      type: object
-      properties:
-        content:
-          type: string
-          description: The text inside the note
-        note_type:
-          type: string
-          enum:
-            - "CUSTOMER"
-            - "GL"
-          description: The type of note
-    NoteCreationInput:
-      type: object
-      properties:
-        content:
-          type: string
-          description: The text inside the note
-      required:
-        - content
-        - detector_id
-    Condition:
-      type: object
-      description: What condition should trigger the rule?
-      properties:
-        verb:
-          type: string
-          enum:
-            - "ANSWERED_CONSECUTIVELY"
-            - "ANSWERED_WITHIN_TIME"
-            - "CHANGED_TO"
-            - "NO_CHANGE"
-            - "NO_QUERIES"
-          description: The verb to use in the condition.
-        parameters:
-          type: object
-          description: The parameters to use in the condition.
-      x-internal: true
     ImageQuery:
       type: object
       description: Spec for serializing a image-query object in the public API.
@@ -653,7 +645,7 @@ components:
           description: A unique ID for this object.
         type:
           allOf:
-            - $ref: "#/components/schemas/ImageQueryTypeEnum"
+          - $ref: '#/components/schemas/ImageQueryTypeEnum'
           readOnly: true
           description: The type of this object.
         created_at:
@@ -671,51 +663,115 @@ components:
           description: Which detector was used on this image query?
         result_type:
           allOf:
-            - $ref: "#/components/schemas/ResultTypeEnum"
+          - $ref: '#/components/schemas/ResultTypeEnum'
           readOnly: true
           description: What type of result are we returning?
         result:
-          allOf:
-            - $ref: "#/components/schemas/ClassificationResult"
-          readOnly: true
-        metadata:
           type: object
-          readOnly: true
+          additionalProperties: {}
           nullable: true
-          description:
-            A dictionary of custom key/value metadata to associate with the image
-            query (limited to 1KB).
+          readOnly: true
+          description: The result of the image query.
+        patience_time:
+          type: number
+          format: double
+          readOnly: true
+          description: How long to wait for a confident response.
+        confidence_threshold:
+          type: number
+          format: double
+          maximum: 1
+          minimum: 0.5
+          description: Min confidence needed to accept the response of the image query.
       required:
-        - created_at
-        - detector_id
-        - id
-        - query
-        - result_type
-        - type
+      - created_at
+      - detector_id
+      - id
+      - patience_time
+      - query
+      - result
+      - result_type
+      - type
       x-internal: true
     ImageQueryTypeEnum:
       enum:
-        - image_query
+      - image_query
       type: string
-    PaginatedRuleList:
+    ModeEnum:
+      enum:
+      - BINARY
+      - COUNT
+      type: string
+      description: |-
+        * `BINARY` - BINARY
+        * `COUNT` - COUNT
+    Note:
       type: object
+      properties:
+        detector_id:
+          type: string
+          readOnly: true
+        content:
+          type: string
+          description: Text content of the note.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp indicating when the note was created.
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp indicating the last time the note was updated.
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: The owner of the note. Which is who created the note.
+      required:
+      - content
+      - created_at
+      - created_by
+      - detector_id
+      - updated_at
+    NoteRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 1
+          description: Text content of the note.
+      required:
+      - content
+    PaginatedAllNotesList:
+      type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
+          example: 123
         next:
           type: string
           nullable: true
           format: uri
+          example: http://api.example.org/accounts/?page=4
         previous:
           type: string
           nullable: true
           format: uri
+          example: http://api.example.org/accounts/?page=2
         results:
           type: array
           items:
-            $ref: "#/components/schemas/Rule"
+            $ref: '#/components/schemas/AllNotes'
     PaginatedDetectorList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -733,9 +789,12 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/Detector"
+            $ref: '#/components/schemas/Detector'
     PaginatedImageQueryList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -753,22 +812,153 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/ImageQuery"
+            $ref: '#/components/schemas/ImageQuery'
+    PaginatedRuleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
     ResultTypeEnum:
       enum:
-        - binary_classification
+      - binary_classification
       type: string
+    Rule:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        detector_id:
+          type: string
+          readOnly: true
+        detector_name:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 44
+        enabled:
+          type: boolean
+          default: true
+        snooze_time_enabled:
+          type: boolean
+          default: false
+        snooze_time_value:
+          type: integer
+          minimum: 0
+          default: 0
+        snooze_time_unit:
+          allOf:
+          - $ref: '#/components/schemas/SnoozeTimeUnitEnum'
+          default: DAYS
+        human_review_required:
+          type: boolean
+          default: false
+        condition:
+          $ref: '#/components/schemas/Condition'
+        action:
+          $ref: '#/components/schemas/Action'
+      required:
+      - action
+      - condition
+      - detector_id
+      - detector_name
+      - id
+      - name
+    RuleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 44
+        enabled:
+          type: boolean
+          default: true
+        snooze_time_enabled:
+          type: boolean
+          default: false
+        snooze_time_value:
+          type: integer
+          minimum: 0
+          default: 0
+        snooze_time_unit:
+          allOf:
+          - $ref: '#/components/schemas/SnoozeTimeUnitEnum'
+          default: DAYS
+        human_review_required:
+          type: boolean
+          default: false
+        condition:
+          $ref: '#/components/schemas/ConditionRequest'
+        action:
+          $ref: '#/components/schemas/ActionRequest'
+      required:
+      - action
+      - condition
+      - name
+    SnoozeTimeUnitEnum:
+      enum:
+      - DAYS
+      - HOURS
+      - MINUTES
+      - SECONDS
+      type: string
+      description: |-
+        * `DAYS` - DAYS
+        * `HOURS` - HOURS
+        * `MINUTES` - MINUTES
+        * `SECONDS` - SECONDS
+    VerbEnum:
+      enum:
+      - ANSWERED_CONSECUTIVELY
+      - ANSWERED_WITHIN_TIME
+      - CHANGED_TO
+      - NO_CHANGE
+      - NO_QUERIES
+      type: string
+      description: |-
+        * `ANSWERED_CONSECUTIVELY` - ANSWERED_CONSECUTIVELY
+        * `ANSWERED_WITHIN_TIME` - ANSWERED_WITHIN_TIME
+        * `CHANGED_TO` - CHANGED_TO
+        * `NO_CHANGE` - NO_CHANGE
+        * `NO_QUERIES` - NO_QUERIES
   securitySchemes:
     ApiToken:
       name: x-api-token
       type: apiKey
       in: header
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
 servers:
-  - url: https://api.groundlight.ai/device-api
-    description: Prod
-  - url: https://api.integ.groundlight.ai/device-api
-    description: Integ
-  - url: https://device.positronix.ai/device-api
-    description: Device Prod
-  - url: https://device.integ.positronix.ai/device-api
-    description: Device Integ
+- url: https://api.groundlight.ai/device-api
+  description: Prod
+- url: https://api.integ.groundlight.ai/device-api
+  description: Integ
+- url: https://device.positronix.ai/device-api
+  description: Device Prod
+- url: https://device.integ.positronix.ai/device-api
+  description: Device Integ

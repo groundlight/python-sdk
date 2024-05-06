@@ -11,13 +11,15 @@ from typing import Any, Dict, Union
 from groundlight_openapi_client.api.images_api import ImagesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.rules_api import RulesApi
+from model import VerbEnum, ChannelEnum
 from groundlight_openapi_client.model.action import Action
 from groundlight_openapi_client.model.condition import Condition
 from groundlight_openapi_client.model.note_creation_input import NoteCreationInput
 from groundlight_openapi_client.model.rule_creation_input import RuleCreationInput
-from model import Channel, Detector, PaginatedRuleList, Rule, Verb
+from model import Detector, PaginatedRuleList, Rule
 
 from .client import Groundlight
+
 
 
 class ExperimentalApi(Groundlight):
@@ -33,10 +35,10 @@ class ExperimentalApi(Groundlight):
         self,
         detector: Union[str, Detector],
         rule_name: str,
-        channel: Union[str, Channel],
+        channel: Union[str, ChannelEnum],
         recipient: str,
         *,
-        alert_on: Union[str, Verb] = "CHANGED_TO",
+        alert_on: Union[str, VerbEnum] = "CHANGED_TO",
         enabled: bool = True,
         include_image: bool = False,
         condition_parameters: Union[str, dict, None] = None,
@@ -67,9 +69,9 @@ class ExperimentalApi(Groundlight):
         if condition_parameters is None:
             condition_parameters = {}
         if isinstance(alert_on, str):
-            alert_on = Verb(alert_on.upper())
+            alert_on = VerbEnum(alert_on.upper())
         if isinstance(channel, str):
-            channel = Channel(channel.upper())
+            channel = ChannelEnum(channel.upper())
         if isinstance(condition_parameters, str):
             condition_parameters = json.loads(condition_parameters)  # type: ignore
         action = Action(

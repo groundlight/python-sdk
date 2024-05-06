@@ -4,11 +4,11 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**who_am_i**](UserApi.md#who_am_i) | **GET** /me | 
+[**who_am_i**](UserApi.md#who_am_i) | **GET** /v1/me | 
 
 
 # **who_am_i**
-> User who_am_i()
+> InlineResponse200 who_am_i()
 
 
 
@@ -16,13 +16,14 @@ Retrieve the current user.
 
 ### Example
 
-* Api Key Authentication (ApiToken):
+* Basic Authentication (basicAuth):
+* Api Key Authentication (cookieAuth):
 
 ```python
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import user_api
-from groundlight_openapi_client.model.user import User
+from groundlight_openapi_client.model.inline_response200 import InlineResponse200
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -35,11 +36,17 @@ configuration = groundlight_openapi_client.Configuration(
 # Examples for each auth method are provided below, use the example that
 # satisfies your auth use case.
 
-# Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+# Configure HTTP basic authorization: basicAuth
+configuration = groundlight_openapi_client.Configuration(
+    username = 'YOUR_USERNAME',
+    password = 'YOUR_PASSWORD'
+)
+
+# Configure API key authorization: cookieAuth
+configuration.api_key['cookieAuth'] = 'YOUR_API_KEY'
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiToken'] = 'Bearer'
+# configuration.api_key_prefix['cookieAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
@@ -60,11 +67,11 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**User**](User.md)
+[**InlineResponse200**](InlineResponse200.md)
 
 ### Authorization
 
-[ApiToken](../README.md#ApiToken)
+[basicAuth](../README.md#basicAuth), [cookieAuth](../README.md#cookieAuth)
 
 ### HTTP request headers
 
