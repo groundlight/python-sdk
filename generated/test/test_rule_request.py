@@ -13,8 +13,12 @@ import sys
 import unittest
 
 import groundlight_openapi_client
+from groundlight_openapi_client.model.action_request import ActionRequest
+from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
 
+globals()["ActionRequest"] = ActionRequest
+globals()["ConditionRequest"] = ConditionRequest
 globals()["SnoozeTimeUnitEnum"] = SnoozeTimeUnitEnum
 from groundlight_openapi_client.model.rule_request import RuleRequest
 

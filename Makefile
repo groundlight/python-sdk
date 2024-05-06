@@ -13,15 +13,17 @@ install-dev: ## Only install the dev dependencies
 install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
-install-generator: install ## Install dependencies for SDK code generator
+install-generator: ## Install dependencies for SDK code generator
 	npm install --save remark-math@6 rehype-katex@7
 
-generate: install-generator  ## Generate the SDK from our public openapi spec
+openapi_generate: install-generator
 	node_modules/.bin/openapi-generator-cli generate -i spec/public-api.yaml \
 		-g python \
 		-o ./generated \
 		--additional-properties=packageName=groundlight_openapi_client
-	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py
+
+generate: openapi_generate install  ## Generate the SDK from our public openapi spec
+	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py --strict-nullable
 	poetry run black .
 
 PYTEST=poetry run pytest -v

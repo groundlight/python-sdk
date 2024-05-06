@@ -24,32 +24,24 @@ class TestActionsApi(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_actions_detector_rules_create(self):
-        """Test case for actions_detector_rules_create"""
+    def test_create_rule(self):
+        """Test case for create_rule"""
         pass
 
-    def test_actions_detector_rules_list(self):
-        """Test case for actions_detector_rules_list"""
+    def test_delete_rule(self):
+        """Test case for delete_rule"""
         pass
 
-    def test_actions_rules_destroy(self):
-        """Test case for actions_rules_destroy"""
+    def test_get_rule(self):
+        """Test case for get_rule"""
         pass
 
-    def test_actions_rules_list(self):
-        """Test case for actions_rules_list"""
+    def test_list_detector_rules(self):
+        """Test case for list_detector_rules"""
         pass
 
-    def test_actions_rules_partial_update(self):
-        """Test case for actions_rules_partial_update"""
-        pass
-
-    def test_actions_rules_retrieve(self):
-        """Test case for actions_rules_retrieve"""
-        pass
-
-    def test_actions_rules_update(self):
-        """Test case for actions_rules_update"""
+    def test_list_rules(self):
+        """Test case for list_rules"""
         pass
 
 

@@ -23,12 +23,14 @@ logger = logging.getLogger("groundlight.sdk")
 class NotFoundError(Exception):
     pass
 
+
 # TODO: This should be modeled in the spec. Leaving this for now, because modeling it should be done at the same time we design what the wider range of results should look like
 class ClassificationResult(BaseModel):
     confidence: Optional[confloat(ge=0.0, le=1.0)] = Field(
         None, description="On a scale of 0 to 1, how confident are we in the predicted label?"
     )
     label: str = Field(..., description="What is the predicted label?")
+
 
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.

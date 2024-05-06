@@ -39,7 +39,7 @@ class UserApi(object):
         self.who_am_i_endpoint = _Endpoint(
             settings={
                 "response_type": (InlineResponse200,),
-                "auth": ["basicAuth", "cookieAuth"],
+                "auth": ["ApiToken"],
                 "endpoint_path": "/v1/me",
                 "operation_id": "who_am_i",
                 "http_method": "GET",

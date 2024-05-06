@@ -8,25 +8,24 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, Union
 
-from groundlight_openapi_client.api.images_api import ImagesApi
+from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
-from groundlight_openapi_client.api.rules_api import RulesApi
+from groundlight_openapi_client.api.actions_api import ActionsApi
 from model import VerbEnum, ChannelEnum
 from groundlight_openapi_client.model.action import Action
 from groundlight_openapi_client.model.condition import Condition
-from groundlight_openapi_client.model.note_creation_input import NoteCreationInput
-from groundlight_openapi_client.model.rule_creation_input import RuleCreationInput
+from groundlight_openapi_client.model.note_request import NoteRequest
+from groundlight_openapi_client.model.rule_request import RuleRequest
 from model import Detector, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
 
-
 class ExperimentalApi(Groundlight):
     def __init__(self, endpoint: Union[str, None] = None, api_token: Union[str, None] = None):
         super().__init__(endpoint=endpoint, api_token=api_token)
-        self.rules_api = RulesApi(self.api_client)
-        self.images_api = ImagesApi(self.api_client)
+        self.rules_api = ActionsApi(self.api_client)
+        self.images_api = ImageQueriesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
 
     ITEMS_PER_PAGE = 100
@@ -81,7 +80,7 @@ class ExperimentalApi(Groundlight):
         )
         condition = Condition(verb=alert_on.value, parameters=condition_parameters)  # type: ignore
         det_id = detector.id if isinstance(detector, Detector) else detector
-        rule_input = RuleCreationInput(
+        rule_input = RuleRequest(
             detector_id=det_id,
             name=rule_name,
             enabled=enabled,
@@ -163,7 +162,7 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteCreationInput]) -> None:
+    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteRequest]) -> None:
         """
         Adds a note to a given detector
 
@@ -171,5 +170,5 @@ class ExperimentalApi(Groundlight):
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
         if isinstance(note, str):
-            note = NoteCreationInput(content=note)
+            note = NoteRequest(content=note)
         self.notes_api.create_note(det_id, note)

@@ -165,18 +165,6 @@ Class | Method | HTTP request | Description
 - **Location**: HTTP header
 
 
-## basicAuth
-
-- **Type**: HTTP basic authentication
-
-
-## cookieAuth
-
-- **Type**: API key
-- **API key parameter name**: sessionid
-- **Location**: 
-
-
 ## Author
 
 support@groundlight.ai

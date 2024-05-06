@@ -360,9 +360,7 @@ paths:
       tags:
       - user
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - ApiToken: []
       responses:
         '200':
           content:
@@ -639,6 +637,11 @@ components:
       type: object
       description: Spec for serializing a image-query object in the public API.
       properties:
+        metadata:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
         id:
           type: string
           readOnly: true
@@ -687,6 +690,7 @@ components:
       - created_at
       - detector_id
       - id
+      - metadata
       - patience_time
       - query
       - result
@@ -946,13 +950,6 @@ components:
       name: x-api-token
       type: apiKey
       in: header
-    basicAuth:
-      type: http
-      scheme: basic
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
 servers:
 - url: https://api.groundlight.ai/device-api
   description: Prod

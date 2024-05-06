@@ -11,7 +11,7 @@ from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
-from groundlight_openapi_client.model.detector_creation_input import DetectorCreationInput
+from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from model import (
     Detector,
     ImageQuery,
@@ -30,6 +30,7 @@ from groundlight.internalapi import (
     iq_is_answered,
     iq_is_confident,
     sanitize_endpoint_url,
+    ClassificationResult,
 )
 from groundlight.optional_imports import Image, np
 
@@ -183,6 +184,10 @@ class Groundlight:
         """
         # Note: This might go away once we clean up the mapping logic server-side.
 
+        if not isinstance(iq.result, ClassificationResult):
+            # TODO: We're temporarily violating our promise to our pydantic model until we add ClassificationResult into the spec
+            iq.result = ClassificationResult(**iq.result)
+
         # we have to check that result is not None because the server will return a result of None if want_async=True
         if iq.result is not None:
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
@@ -266,7 +271,7 @@ class Groundlight:
 
         :return: Detector
         """
-        detector_creation_input = DetectorCreationInput(name=name, query=query)
+        detector_creation_input = DetectorCreationInputRequest(name=name, query=query)
         if confidence_threshold is not None:
             detector_creation_input.confidence_threshold = confidence_threshold
         if pipeline_config is not None:

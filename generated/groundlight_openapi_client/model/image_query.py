@@ -104,6 +104,10 @@ class ImageQuery(ModelNormal):
         """
         lazy_import()
         return {
+            "metadata": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
             "id": (str,),  # noqa: E501
             "type": (
                 bool,
@@ -143,6 +147,7 @@ class ImageQuery(ModelNormal):
         return None
 
     attribute_map = {
+        "metadata": "metadata",  # noqa: E501
         "id": "id",  # noqa: E501
         "type": "type",  # noqa: E501
         "created_at": "created_at",  # noqa: E501
@@ -155,6 +160,7 @@ class ImageQuery(ModelNormal):
     }
 
     read_only_vars = {
+        "metadata",  # noqa: E501
         "id",  # noqa: E501
         "type",  # noqa: E501
         "created_at",  # noqa: E501
@@ -170,11 +176,12 @@ class ImageQuery(ModelNormal):
     @classmethod
     @convert_js_args_to_python_args
     def _from_openapi_data(
-        cls, id, type, created_at, query, detector_id, result_type, result, patience_time, *args, **kwargs
+        cls, metadata, id, type, created_at, query, detector_id, result_type, result, patience_time, *args, **kwargs
     ):  # noqa: E501
         """ImageQuery - a model defined in OpenAPI
 
         Args:
+            metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type):
             id (str): A unique ID for this object.
             type (bool, date, datetime, dict, float, int, list, str, none_type): The type of this object.
             created_at (datetime): When was this detector created?
@@ -244,6 +251,7 @@ class ImageQuery(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.metadata = metadata
         self.id = id
         self.type = type
         self.created_at = created_at

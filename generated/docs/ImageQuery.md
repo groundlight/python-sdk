@@ -5,6 +5,7 @@ Spec for serializing a image-query object in the public API.
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**metadata** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** |  | [readonly] 
 **id** | **str** | A unique ID for this object. | [readonly] 
 **type** | **bool, date, datetime, dict, float, int, list, str, none_type** | The type of this object. | [readonly] 
 **created_at** | **datetime** | When was this detector created? | [readonly] 

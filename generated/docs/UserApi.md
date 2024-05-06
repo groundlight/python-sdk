@@ -16,8 +16,7 @@ Retrieve the current user.
 
 ### Example
 
-* Basic Authentication (basicAuth):
-* Api Key Authentication (cookieAuth):
+* Api Key Authentication (ApiToken):
 
 ```python
 import time
@@ -36,17 +35,11 @@ configuration = groundlight_openapi_client.Configuration(
 # Examples for each auth method are provided below, use the example that
 # satisfies your auth use case.
 
-# Configure HTTP basic authorization: basicAuth
-configuration = groundlight_openapi_client.Configuration(
-    username = 'YOUR_USERNAME',
-    password = 'YOUR_PASSWORD'
-)
-
-# Configure API key authorization: cookieAuth
-configuration.api_key['cookieAuth'] = 'YOUR_API_KEY'
+# Configure API key authorization: ApiToken
+configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['cookieAuth'] = 'Bearer'
+# configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
@@ -71,7 +64,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[basicAuth](../README.md#basicAuth), [cookieAuth](../README.md#cookieAuth)
+[ApiToken](../README.md#ApiToken)
 
 ### HTTP request headers
 

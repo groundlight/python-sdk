@@ -76,10 +76,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_action_request.py
-test/test_all_notes.py
-test/test_channel_enum.py
-test/test_condition_request.py
-test/test_paginated_all_notes_list.py
-test/test_verb_enum.py
 tox.ini
