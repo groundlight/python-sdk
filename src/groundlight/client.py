@@ -25,12 +25,12 @@ from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABL
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
 from groundlight.internalapi import (
+    ClassificationResult,
     GroundlightApiClient,
     NotFoundError,
     iq_is_answered,
     iq_is_confident,
     sanitize_endpoint_url,
-    ClassificationResult,
 )
 from groundlight.optional_imports import Image, np
 

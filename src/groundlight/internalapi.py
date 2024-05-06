@@ -9,10 +9,10 @@ from functools import wraps
 from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
-from pydantic import BaseModel, Field, confloat
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
 from model import Detector, ImageQuery
+from pydantic import BaseModel, Field, confloat
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
