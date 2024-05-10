@@ -5,6 +5,7 @@ This module is part of our evolving SDK. While these functions are designed to p
 your projects, it's important to note that they are considered unstable. This means they may undergo significant
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
+
 import json
 from typing import Any, Dict, Union
 
@@ -29,7 +30,7 @@ class ExperimentalApi(Groundlight):
 
     ITEMS_PER_PAGE = 100
 
-    def create_rule(  # pylint: disable=too-many-locals
+    def create_rule(  # pylint: disable=too-many-locals  # noqa: PLR0913
         self,
         detector: Union[str, Detector],
         rule_name: str,

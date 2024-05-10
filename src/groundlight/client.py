@@ -240,7 +240,7 @@ class Groundlight:
         )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(
+    def create_detector(  # noqa: PLR0913
         self,
         name: str,
         query: str,
@@ -276,7 +276,7 @@ class Groundlight:
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
-    def get_or_create_detector(
+    def get_or_create_detector(  # noqa: PLR0913
         self,
         name: str,
         query: str,
