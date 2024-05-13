@@ -27,7 +27,7 @@ For those unfamiliar, SOC 2 (Service Organization Control 2) is an auditing fram
 
 Achieving SOC 2 compliance is a marathon, not a sprint. It demands meticulous planning and dedication from teams across the entire organization. At Groundlight, we took a methodical approach by first establishing an audit timeline. From there, we worked backwards systematically to get our house in order.
 Teams across engineering, security, operations, and more collaborated to implement rigorous security policies and controls. We overhauled processes for everything from access management to incident response handling. Robust evidence collection and documentation mechanisms were put into place.
-Once we had thoroughly prepared, did we bring in external auditors to conduct their independent evaluation. This was the high-stakes final exam. Our policies, technical safeguards, and control operations were stress-tested and scrutinized over an extended period.
+Once we had thoroughly prepared, we brought in external auditors to conduct their independent evaluation. This was the high-stakes final exam. Our policies, technical safeguards, and control operations were stress-tested and scrutinized over an extended period.
 
 <!-- truncate -->
 
