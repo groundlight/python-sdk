@@ -5,6 +5,7 @@ slug: groundlight-ai-achieves-soc-2-type-2-compliance
 authors:
   - name: Phillipie Motley
     title: Operations Manager
+    image_url: https://a-us.storyblok.com/f/1015187/1000x1000/1902e83e56/motleyp.jpg
 tags: [soc-2]
 hide_table_of_contents: false
 ---
