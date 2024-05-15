@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 def test_whoami():
     completed_process = subprocess.run(
-        ["groundlight", "whoami"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ["groundlight", "whoami"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode == 0
 
@@ -18,6 +18,7 @@ def test_list_detector():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        check=False,
     )
     assert completed_process.returncode == 0
 
@@ -37,6 +38,7 @@ def test_detector_and_image_queries():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        check=False,
     )
     assert completed_process.returncode == 0
     det_id_on_create = re.search("id='([^']+)'", completed_process.stdout).group(1)
@@ -54,6 +56,7 @@ def test_detector_and_image_queries():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        check=False,
     )
     assert completed_process.returncode == 0
     det_id_on_get = re.search("id='([^']+)'", completed_process.stdout).group(1)
@@ -63,6 +66,7 @@ def test_detector_and_image_queries():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        check=False,
     )
     assert completed_process.returncode == 0
 
@@ -77,33 +81,38 @@ def test_detector_and_image_queries():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        check=False,
     )
     assert completed_process.returncode == 0
 
 
 @patch.dict(os.environ, {})
 def test_help():
-    completed_process = subprocess.run(["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    assert completed_process.returncode == 0
-    completed_process = subprocess.run(["groundlight", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    assert completed_process.returncode == 0
     completed_process = subprocess.run(
-        ["groundlight", "--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ["groundlight"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode == 0
     completed_process = subprocess.run(
-        ["groundlight", "get-detector", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ["groundlight", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
+    )
+    assert completed_process.returncode == 0
+    completed_process = subprocess.run(
+        ["groundlight", "--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
+    )
+    assert completed_process.returncode == 0
+    completed_process = subprocess.run(
+        ["groundlight", "get-detector", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode == 0
 
 
 def test_bad_commands():
     completed_process = subprocess.run(
-        ["groundlight", "wat"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ["groundlight", "wat"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode != 0
     # commands use dashes, not underscores
     completed_process = subprocess.run(
-        ["groundlight", "list_detectors"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        ["groundlight", "list_detectors"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode != 0
