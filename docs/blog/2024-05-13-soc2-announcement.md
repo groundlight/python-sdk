@@ -14,6 +14,8 @@ hide_table_of_contents: false
 
 At Groundlight, we take data security and privacy extremely seriously. From the very beginning, we recognized the importance of implementing stringent controls and processes to safeguard our clients' sensitive information. That's why we made the decision early on to pursue SOC 2 compliance.
 
+<!-- truncate -->
+
 ## What is SOC 2 Verification
 
 For those unfamiliar, SOC 2 (Service Organization Control 2) is an auditing framework established by the American Institute of Certified Public Accountants (AICPA). It involves an in-depth external review of an organization's security policies, procedures, and controls by an independent auditor. Achieving SOC 2 certification demonstrates our unwavering commitment to maintaining the highest standards of data protection and privacy.
@@ -29,8 +31,6 @@ For those unfamiliar, SOC 2 (Service Organization Control 2) is an auditing fram
 Achieving SOC 2 compliance is a marathon, not a sprint. It demands meticulous planning and dedication from teams across the entire organization. At Groundlight, we took a methodical approach by first establishing an audit timeline. From there, we worked backwards systematically to get our house in order.
 Teams across engineering, security, operations, and more collaborated to implement rigorous security policies and controls. We overhauled processes for everything from access management to incident response handling. Robust evidence collection and documentation mechanisms were put into place.
 Once we had thoroughly prepared, we brought in external auditors to conduct their independent evaluation. This was the high-stakes final exam. Our policies, technical safeguards, and control operations were stress-tested and scrutinized over an extended period.
-
-<!-- truncate -->
 
 ## What Does SOC 2 Verification Mean for Groundlight AI’s Data Security
 
