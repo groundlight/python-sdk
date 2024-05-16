@@ -1,5 +1,5 @@
 ---
-title: "Reducing Data Labeling Costs with Uncertainty Sampling Active Learning"
+title: "Reducing Data Labeling Costs with Uncertainty Sampling"
 description: How Groundlight uses active learning to train accurate vision models while saving on data labeling costs.
 slug: active-learning
 authors:
@@ -7,7 +7,7 @@ authors:
     title: Senior Applied Scientist
     image_url: https://a-us.storyblok.com/f/1015187/1000x1000/efc35da152/sandlert.jpg
 tags: [active learning, uncertainty sampling, deep dive]
-image: ./images/active-learning/social-active-learning-flow.png
+image: ./images/active-learning/dog-conf-high.png
 hide_table_of_contents: false
 ---
 
@@ -15,21 +15,21 @@ At Groundlight, we train each detector's machine learning (ML) model on images t
 
 <!-- truncate -->
 
-#### What is Active Learning in Machine Learning?
+## What is Active Learning in Machine Learning?
 
 To avoid unnecessary labeling and save customers money, Groundlight uses **[active learning](https://en.wikipedia.org/wiki/Active_learning_(machine_learning))**, a machine learning protocol in which the ML model plays an active role in determining which images get manually labeled for training. With active learning, only informative images are prioritized for review, making it possible to label small a subset of the available data but train a model that's roughly as good as one trained with all the data labeled [\[Settles, 2009\]](https://minds.wisconsin.edu/handle/1793/60660).
 
-#### What is Uncertainty Sampling in Active Learning?
+## What is Uncertainty Sampling?
 
 The variant of active learning we use at Groundlight is based on **[uncertainty sampling](https://lilianweng.github.io/posts/2022-02-20-active-learning/#uncertainty-sampling)**, a well studied and effective method that can be used in either the streaming setting or the pool-based setting in which there exists a large reservoir of unlabeled examples to draw from. We operate in the stream-based setting, where images arrive one at a time and it must be decided in the moment whether to escalate an image for review.
 
-#### How Does Uncertainty Sampling Work?
+## How Does Uncertainty Sampling Work?
 
 Imagine we have a detector that processes a stream of images arriving one by one. The detector's ML model is trained on all images labeled up to that point in time. When a new image arrives, the model makes its best guess prediction for the new image and also reports its confidence in that prediction. The confidence is expressed as a probability (a number between zero and one) that the prediction is correct.
 
 In uncertainty sampling, we escalate those images whose predictions have low confidence so they can be manually reviewed and labeled. Conversely, we largely leave images with confident predictions unescalated and therefore unlabled. In this way, we avoid the expense and effort of labeling images whose predictions are likely correct. But we still continue to label images the model is unsure of so it can be trained on them.
 
-### An Example of Uncertainty Sampling
+## An Example of Uncertainty Sampling
 
 As an example, the images shown below were sent to a detector that identifies the presence of dogs in and around a swimming pool at [Dogmode's Aquatic Center](https://dogmode.com/aquatic-fitness-center-pool-view/). The model reports with 95% confidence that there is a dog in the image on the left. But it is less confident in its response for the image on the right, saying there is no dog present with only 75% confidence. (There is in fact a dog, at the back left corner of the pool, but it’s difficult to see.)
 <table cellspacing="0" cellpadding="0">
@@ -48,7 +48,7 @@ Assuming the detector's confidence threshold is set to a value between 75% and 9
 <img src={require('./images/active-learning/confidence-threshold.png').default} />
 <br/>
 
-### Results of a Data Labeling Experiment using Active Learning
+## Experiment with Uncertainty Sampling
 
 We now present results from a time-series experiment of images collected and labeled for the purpose of measuring uncertainty sampling's impact on model accuracy and labeling cost. There are 500 images of a gate, and the task is to determine in every image if the gate has been left open or closed. All images in the experiment are labeled so we know the correct responses. But note[^1] that this would not be the case if we were running active learning in real life because, by design, active learning does not recruit labels on high confidence images.
 
@@ -76,11 +76,11 @@ Strikingly, plotting the number of images escalated by each model shows that act
  width="500 px"
 />
 
-### Conclusion
+## Conclusion
 
 At Groundlight, we use active learning to reduce labeling costs for our customers. In particular, we use a variant based on uncertainty sampling that is extremely effective and easy to explain. A small experiment on image time-series data shows that uncertainty sampling can dramatically reduce the number of images labeled without impacting model accuracy. To learn more about active learning and its various formulations, definitely check out the references below.
 
-### References
+## References
 
 1. [Settles, Burr. *Active learning literature survey*. University of Wisconsin-Madison Department of Computer Sciences, 2009.](https://minds.wisconsin.edu/handle/1793/60660)
 2. [Weng, Lilian. "Learning with not Enough Data Part 2: Active Learning." Lil'Log, February 20 2022. April 29 2024.](https://lilianweng.github.io/posts/2022-02-20-active-learning/)
