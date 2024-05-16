@@ -27,11 +27,11 @@ The variant of active learning we use at Groundlight is based on **[uncertainty 
 
 Imagine we have a detector that processes a stream of images arriving one by one. The detector's ML model is trained on all images labeled up to that point in time. When a new image arrives, the model makes its best guess prediction for the new image and also reports its confidence in that prediction. The confidence is expressed as a probability (a number between zero and one) that the prediction is correct.
 
-In uncertainty sampling, we escalate those images whose predictions have low confidence so they can be manually reviewed and labeled. Conversely, we largely leave images with confident predictions unescalated and therefore unlabled. In this way, we avoid the expense and effort of labeling images whose predictions are likely correct. But we still continue to label images the model is unsure of so it can be trained on them.
+In uncertainty sampling, we escalate those images whose predictions have low confidence so they can be manually reviewed and labeled. Conversely, we largely leave images with confident predictions unescalated and therefore unlabeled. In this way, we avoid the expense and effort of labeling images whose predictions are likely correct. But we still continue to label images the model is unsure of so it can improve on them.
 
 ## An Example of Uncertainty Sampling
 
-As an example, the images shown below were sent to a detector that identifies the presence of dogs in and around a swimming pool at [Dogmode's Aquatic Center](https://dogmode.com/aquatic-fitness-center-pool-view/). The model reports with 95% confidence that there is a dog in the image on the left. But it is less confident in its response for the image on the right, saying there is no dog present with only 75% confidence. (There is in fact a dog, at the back left corner of the pool, but it’s difficult to see.)
+As an example, the images shown below were sent to a detector that identifies the presence of dogs in and around a swimming pool at [Dogmode's Aquatic Center](https://dogmode.com/aquatic-fitness-center-pool-view/). The model reports with 95% confidence that there is a dog in the image on the left. But it is less confident in its response for the image on the right, saying there is no dog present with only 75% confidence. (There is in fact a dog at the back left corner of the pool, but it’s difficult to see.)
 <table cellspacing="0" cellpadding="0">
 <center>
 <tr>
@@ -50,9 +50,9 @@ Assuming the detector's confidence threshold is set to a value between 75% and 9
 
 ## Experiment with Uncertainty Sampling
 
-We now present results from a time-series experiment of images collected and labeled for the purpose of measuring uncertainty sampling's impact on model accuracy and labeling cost. There are 500 images of a gate, and the task is to determine in every image if the gate has been left open or closed. All images in the experiment are labeled so we know the correct responses. But note[^1] that this would not be the case if we were running active learning in real life because, by design, active learning does not recruit labels on high confidence images.
+We now present results from a time-series experiment on images collected and labeled for the purpose of measuring uncertainty sampling's impact on model accuracy and labeling cost. There are 500 images of a gate, and the task is to determine in every image if the gate has been left open or closed. All images in the experiment are labeled so we know the correct responses. But note[^1] that this would not be the case if we were running active learning in real life because, by design, active learning does not recruit labels on high confidence images.
 
-[^1]: In practice, we audit a constant fraction of unescalated images for review, and these serve as an additional source of labeled data.
+[^1]: In practice, we audit a constant fraction of confidently predicted images for review that serve as an additional source of labeled data.
 
 
 Our results compare the performance of three models trained under different protocols:
@@ -68,9 +68,9 @@ The plot below shows that the model trained with moderate uncertainty sampling (
  width="500 px"
 />
 
-On the other hand, aggressive uncertainty sampling (confidence threshold 75%) escalates too few images for labeling, resulting in a model trained on less data that makes more mistakes. This shows how the confidence threshold controls the trade off between model accuracy and manual labeling cost. Indirectly, it also demonstrates the need for calibrating models so their reported confidences reflect observed frequencies and can be used for deciding at what confidence level to escalate. We calibrate machine learning models at Groundlight, though the details are beyond the scope of this post.
+On the other hand, aggressive uncertainty sampling (confidence threshold 75%) escalates too few images for labeling, resulting in a model trained on less data which makes more mistakes. This shows how the confidence threshold controls the trade off between model accuracy and labeling costs from manual labeling. Indirectly, it also demonstrates the need for calibrating models so their reported confidences reflect observed frequencies and can be used for making decisions about when to escalate. We calibrate machine learning models at Groundlight though the details are beyond the scope of this post.
 
-Strikingly, plotting the number of images escalated by each model shows that active learning dramatically reduces labeling costs. The model trained without uncertainty sampling escalates all 500 of the images for review manual review. In contrast, the model trained with moderate uncertainty sampling escalates only 132 images in total. This is a nearly 75% reduction in manual labeling and cost with little change in model error. Aggressive uncertainty sampling escalates even fewer images, only 60, but the resulting model has noticeably higher error as observed in the plot above.
+Strikingly, plotting the number of images escalated by each model shows that active learning dramatically reduces labeling costs. The model trained without uncertainty sampling escalates all 500 images for review manual review. In contrast, the model trained with moderate uncertainty sampling escalates only 132 images in total. This is a nearly 75% reduction in manual labeling and cost with little change in model error. Aggressive uncertainty sampling escalates even fewer images, only 60, but the resulting model has noticeably higher error as observed in the plot above.
 <img
  src={require('./images/active-learning/labels-over-time.png').default}
  width="500 px"
@@ -78,7 +78,7 @@ Strikingly, plotting the number of images escalated by each model shows that act
 
 ## Conclusion
 
-At Groundlight, we use active learning to reduce labeling costs for our customers. In particular, we use a variant based on uncertainty sampling that is extremely effective and easy to explain. A small experiment on image time-series data shows that uncertainty sampling can dramatically reduce the number of images labeled without impacting model accuracy. To learn more about active learning and its various formulations, definitely check out the references below.
+At Groundlight, we use active learning to reduce labeling costs for our customers. In particular, we use a variant based on uncertainty sampling that is extremely effective and easy to explain. A small experiment on an image time-series dataset shows that uncertainty sampling can dramatically reduce the number of images labeled without impacting model accuracy. If you want to learn more about active learning and its various formulations, definitely check out the references below.
 
 ## References
 
