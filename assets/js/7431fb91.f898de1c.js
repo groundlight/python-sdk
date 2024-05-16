@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[8476],{7681:e=>{e.exports=JSON.parse('{"label":"active learning","permalink":"/python-sdk/blog/tags/active-learning","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);
