@@ -465,7 +465,7 @@ components:
           format: double
           maximum: 1.0
           minimum: 0.0
-          default: 0.9
+          default: 0.75
           description:
             If the detector's prediction is below this confidence threshold,
             send the image query for human review.
@@ -504,7 +504,7 @@ components:
           format: double
           maximum: 1.0
           minimum: 0.0
-          default: 0.9
+          default: 0.75
           description:
             If the detector's prediction is below this confidence threshold,
             send the image query for human review.

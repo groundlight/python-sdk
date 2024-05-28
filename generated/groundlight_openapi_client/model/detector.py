@@ -197,7 +197,7 @@ class Detector(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
+            confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.75  # noqa: E501
             metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.. [optional]  # noqa: E501
         """
 
@@ -292,7 +292,7 @@ class Detector(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
+            confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.75  # noqa: E501
             metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): A dictionary of custom key/value metadata to associate with the detector (limited to 1KB). This is encoded as a URL-safe, base64-encoded JSON string.. [optional]  # noqa: E501
         """
 
