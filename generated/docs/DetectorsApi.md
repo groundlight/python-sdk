@@ -52,7 +52,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
         name="name_example",
         query="query_example",
         group_name="group_name_example",
-        confidence_threshold=0.9,
+        confidence_threshold=0.75,
         pipeline_config="pipeline_config_example",
         metadata="metadata_example",
     ) # DetectorCreationInput | 
