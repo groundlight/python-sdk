@@ -11,9 +11,9 @@ from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
+from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from model import (
     Detector,
-    DetectorCreationInputRequest,
     ImageQuery,
     PaginatedDetectorList,
     PaginatedImageQueryList,
@@ -266,7 +266,8 @@ class Groundlight:
 
         :return: Detector
         """
-        metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        if metadata is not None:
+            metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
         detector_creation_input = DetectorCreationInputRequest(
             name=name,
             query=query,
