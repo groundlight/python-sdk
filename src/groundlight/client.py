@@ -274,7 +274,7 @@ class Groundlight:
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        #TODO: I don't think we need to parse the response here
+        # TODO: I don't think we need to parse the response here
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
