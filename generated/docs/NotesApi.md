@@ -9,11 +9,11 @@ Method | HTTP request | Description
 
 
 # **create_note**
-> [Note] create_note(detector_id, note_creation_input)
+> Note create_note(detector_id, note_request)
 
 
 
-Create a new note.
+Create a new note
 
 ### Example
 
@@ -23,7 +23,7 @@ Create a new note.
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import notes_api
-from groundlight_openapi_client.model.note_creation_input import NoteCreationInput
+from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.note import Note
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
@@ -47,14 +47,14 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = notes_api.NotesApi(api_client)
-    detector_id = "detector_id_example" # str | the detector to associate the note with
-    note_creation_input = NoteCreationInput(
+    detector_id = "detector_id_example" # str | the detector to associate the new note with
+    note_request = NoteRequest(
         content="content_example",
-    ) # NoteCreationInput | 
+    ) # NoteRequest | 
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.create_note(detector_id, note_creation_input)
+        api_response = api_instance.create_note(detector_id, note_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling NotesApi->create_note: %s\n" % e)
@@ -65,12 +65,12 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_id** | **str**| the detector to associate the note with |
- **note_creation_input** | [**NoteCreationInput**](NoteCreationInput.md)|  |
+ **detector_id** | **str**| the detector to associate the new note with |
+ **note_request** | [**NoteRequest**](NoteRequest.md)|  |
 
 ### Return type
 
-[**[Note]**](Note.md)
+[**Note**](Note.md)
 
 ### Authorization
 
@@ -78,7 +78,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
+ - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: application/json
 
 
@@ -91,11 +91,11 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_notes**
-> InlineResponse200 get_notes(detector_id)
+> PaginatedAllNotesList get_notes(detector_id)
 
 
 
-Retrieve notes for a detector
+Get all the notes from a given detector and return the answer in lists, one for each note_category
 
 ### Example
 
@@ -105,7 +105,7 @@ Retrieve notes for a detector
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import notes_api
-from groundlight_openapi_client.model.inline_response200 import InlineResponse200
+from groundlight_openapi_client.model.paginated_all_notes_list import PaginatedAllNotesList
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -147,7 +147,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**InlineResponse200**](InlineResponse200.md)
+[**PaginatedAllNotesList**](PaginatedAllNotesList.md)
 
 ### Authorization
 
