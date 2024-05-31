@@ -31,9 +31,13 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
+    from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
+    from groundlight_openapi_client.model.counting_result import CountingResult
     from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
     from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
 
+    globals()["BinaryClassificationResult"] = BinaryClassificationResult
+    globals()["CountingResult"] = CountingResult
     globals()["ImageQueryTypeEnum"] = ImageQueryTypeEnum
     globals()["ResultTypeEnum"] = ResultTypeEnum
 
@@ -135,7 +139,14 @@ class ImageQuery(ModelNormal):
                 none_type,
             ),  # noqa: E501
             "result": (
-                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
                 none_type,
             ),  # noqa: E501
             "patience_time": (float,),  # noqa: E501
@@ -188,7 +199,7 @@ class ImageQuery(ModelNormal):
             query (str): A question about the image.
             detector_id (str): Which detector was used on this image query?
             result_type (bool, date, datetime, dict, float, int, list, str, none_type): What type of result are we returning?
-            result ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): The result of the image query.
+            result (bool, date, datetime, dict, float, int, list, str, none_type): The result of the image query.
             patience_time (float): How long to wait for a confident response.
 
         Keyword Args:

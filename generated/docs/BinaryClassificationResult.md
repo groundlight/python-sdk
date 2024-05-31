@@ -1,4 +1,4 @@
-# ClassificationResult
+# BinaryClassificationResult
 
 
 ## Properties

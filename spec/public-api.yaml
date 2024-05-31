@@ -672,11 +672,13 @@ components:
           readOnly: true
           description: What type of result are we returning?
         result:
-          type: object
           additionalProperties: {}
           nullable: true
           readOnly: true
           description: The result of the image query.
+          oneOf:
+          - $ref: '#/components/schemas/BinaryClassificationResult'
+          - $ref: '#/components/schemas/CountingResult'
         patience_time:
           type: number
           format: double
@@ -827,6 +829,7 @@ components:
     ResultTypeEnum:
       enum:
       - binary_classification
+      - counting
       type: string
     Rule:
       type: object
@@ -929,6 +932,26 @@ components:
         * `CHANGED_TO` - CHANGED_TO
         * `NO_CHANGE` - NO_CHANGE
         * `NO_QUERIES` - NO_QUERIES
+    BinaryClassificationResult:
+      type: object
+      properties:
+        confidence:
+          type: float
+        label:
+          type: string
+      required:
+      - confidence
+      - label
+    CountingResult:
+      type: object
+      properties:
+        confidence:
+          type: float
+        value:
+          type: integer
+      required:
+      - confidence
+      - value
   securitySchemes:
     ApiToken:
       name: x-api-token

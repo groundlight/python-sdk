@@ -6,9 +6,11 @@ docs/Action.md
 docs/ActionRequest.md
 docs/ActionsApi.md
 docs/AllNotes.md
+docs/BinaryClassificationResult.md
 docs/ChannelEnum.md
 docs/Condition.md
 docs/ConditionRequest.md
+docs/CountingResult.md
 docs/Detector.md
 docs/DetectorCreationInputRequest.md
 docs/DetectorTypeEnum.md
@@ -47,9 +49,11 @@ groundlight_openapi_client/model/__init__.py
 groundlight_openapi_client/model/action.py
 groundlight_openapi_client/model/action_request.py
 groundlight_openapi_client/model/all_notes.py
+groundlight_openapi_client/model/binary_classification_result.py
 groundlight_openapi_client/model/channel_enum.py
 groundlight_openapi_client/model/condition.py
 groundlight_openapi_client/model/condition_request.py
+groundlight_openapi_client/model/counting_result.py
 groundlight_openapi_client/model/detector.py
 groundlight_openapi_client/model/detector_creation_input_request.py
 groundlight_openapi_client/model/detector_type_enum.py
@@ -76,4 +80,5 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_binary_classification_result.py
 tox.ini
