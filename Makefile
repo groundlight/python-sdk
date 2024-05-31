@@ -21,7 +21,7 @@ generate: install-generator  ## Generate the SDK from our public openapi spec
 		-g python \
 		-o ./generated \
 		--additional-properties=packageName=groundlight_openapi_client
-	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py
+	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py --strict-nullable
 	poetry run black .
 
 PYTEST=poetry run pytest -v
