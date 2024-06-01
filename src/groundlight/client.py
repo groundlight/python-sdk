@@ -275,7 +275,6 @@ class Groundlight:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
         if confidence_threshold:
             detector_creation_input.confidence_threshold = confidence_threshold
-        # TODO: I don't think we need to parse the response here
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
