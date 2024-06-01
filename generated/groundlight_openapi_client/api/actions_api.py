@@ -106,7 +106,7 @@ class ActionsApi(object):
                 "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
-                    "id": (str,),
+                    "id": (int,),
                 },
                 "attribute_map": {
                     "id": "id",
@@ -146,7 +146,7 @@ class ActionsApi(object):
                 "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
-                    "id": (str,),
+                    "id": (int,),
                 },
                 "attribute_map": {
                     "id": "id",
@@ -316,7 +316,7 @@ class ActionsApi(object):
         >>> result = thread.get()
 
         Args:
-            id (str):
+            id (int):
 
         Keyword Args:
             _return_http_data_only (bool): response data without head status
@@ -374,7 +374,7 @@ class ActionsApi(object):
         >>> result = thread.get()
 
         Args:
-            id (str):
+            id (int):
 
         Keyword Args:
             _return_http_data_only (bool): response data without head status

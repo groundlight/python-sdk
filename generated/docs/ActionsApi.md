@@ -146,7 +146,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = actions_api.ActionsApi(api_client)
-    id = "id_example" # str | 
+    id = 1 # int | 
 
     # example passing only required values which don't have defaults set
     try:
@@ -160,7 +160,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**|  |
+ **id** | **int**|  |
 
 ### Return type
 
@@ -222,7 +222,7 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = actions_api.ActionsApi(api_client)
-    id = "id_example" # str | 
+    id = 1 # int | 
 
     # example passing only required values which don't have defaults set
     try:
@@ -237,7 +237,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**|  |
+ **id** | **int**|  |
 
 ### Return type
 

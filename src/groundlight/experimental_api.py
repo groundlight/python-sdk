@@ -13,8 +13,13 @@ from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.model.action import Action
-from groundlight_openapi_client.model.condition import Condition
-from model import ChannelEnum, Detector, PaginatedRuleList, Rule, VerbEnum, NoteRequest, RuleRequest
+from groundlight_openapi_client.model.action_request import ActionRequest
+from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.note_request import NoteRequest
+from groundlight_openapi_client.model.rule_request import RuleRequest
+from groundlight_openapi_client.model.channel_enum import ChannelEnum
+from groundlight_openapi_client.model.verb_enum import VerbEnum
+from model import Detector, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
@@ -71,12 +76,12 @@ class ExperimentalApi(Groundlight):
             channel = ChannelEnum(channel.upper())
         if isinstance(condition_parameters, str):
             condition_parameters = json.loads(condition_parameters)  # type: ignore
-        action = Action(
-            channel=channel.value,  # type: ignore
+        action = ActionRequest(
+            channel=channel,  # type: ignore
             recipient=recipient,
             include_image=include_image,
         )
-        condition = Condition(verb=alert_on.value, parameters=condition_parameters)  # type: ignore
+        condition = ConditionRequest(verb=alert_on, parameters=condition_parameters)  # type: ignore
         det_id = detector.id if isinstance(detector, Detector) else detector
         rule_input = RuleRequest(
             detector_id=det_id,

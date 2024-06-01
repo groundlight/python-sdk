@@ -23,7 +23,6 @@ docs/ModeEnum.md
 docs/Note.md
 docs/NoteRequest.md
 docs/NotesApi.md
-docs/PaginatedAllNotesList.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/PaginatedRuleList.md
@@ -63,7 +62,6 @@ groundlight_openapi_client/model/inline_response200.py
 groundlight_openapi_client/model/mode_enum.py
 groundlight_openapi_client/model/note.py
 groundlight_openapi_client/model/note_request.py
-groundlight_openapi_client/model/paginated_all_notes_list.py
 groundlight_openapi_client/model/paginated_detector_list.py
 groundlight_openapi_client/model/paginated_image_query_list.py
 groundlight_openapi_client/model/paginated_rule_list.py
@@ -80,5 +78,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_binary_classification_result.py
 tox.ini

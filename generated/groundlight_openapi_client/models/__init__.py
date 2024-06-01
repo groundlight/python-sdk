@@ -26,7 +26,6 @@ from groundlight_openapi_client.model.inline_response200 import InlineResponse20
 from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.note import Note
 from groundlight_openapi_client.model.note_request import NoteRequest
-from groundlight_openapi_client.model.paginated_all_notes_list import PaginatedAllNotesList
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList

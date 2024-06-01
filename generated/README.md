@@ -146,7 +146,6 @@ Class | Method | HTTP request | Description
  - [ModeEnum](docs/ModeEnum.md)
  - [Note](docs/Note.md)
  - [NoteRequest](docs/NoteRequest.md)
- - [PaginatedAllNotesList](docs/PaginatedAllNotesList.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)

@@ -22,9 +22,8 @@ from groundlight_openapi_client.model_utils import (  # noqa: F401
     none_type,
     validate_and_convert_types,
 )
-from groundlight_openapi_client.model.note import Note
+from groundlight_openapi_client.model.all_notes import AllNotes
 from groundlight_openapi_client.model.note_request import NoteRequest
-from groundlight_openapi_client.model.paginated_all_notes_list import PaginatedAllNotesList
 
 
 class NotesApi(object):
@@ -40,7 +39,7 @@ class NotesApi(object):
         self.api_client = api_client
         self.create_note_endpoint = _Endpoint(
             settings={
-                "response_type": (Note,),
+                "response_type": None,
                 "auth": ["ApiToken"],
                 "endpoint_path": "/v1/notes",
                 "operation_id": "create_note",
@@ -77,14 +76,14 @@ class NotesApi(object):
                 "collection_format_map": {},
             },
             headers_map={
-                "accept": ["application/json"],
+                "accept": [],
                 "content_type": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data"],
             },
             api_client=api_client,
         )
         self.get_notes_endpoint = _Endpoint(
             settings={
-                "response_type": (PaginatedAllNotesList,),
+                "response_type": (AllNotes,),
                 "auth": ["ApiToken"],
                 "endpoint_path": "/v1/notes",
                 "operation_id": "get_notes",
@@ -166,7 +165,7 @@ class NotesApi(object):
             async_req (bool): execute request asynchronously
 
         Returns:
-            Note
+            None
                 If the method is called asynchronously, returns the request
                 thread.
         """
@@ -225,7 +224,7 @@ class NotesApi(object):
             async_req (bool): execute request asynchronously
 
         Returns:
-            PaginatedAllNotesList
+            AllNotes
                 If the method is called asynchronously, returns the request
                 thread.
         """

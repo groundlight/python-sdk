@@ -9,7 +9,7 @@ Method | HTTP request | Description
 
 
 # **create_note**
-> Note create_note(detector_id, note_request)
+> create_note(detector_id, note_request)
 
 
 
@@ -24,7 +24,6 @@ import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import notes_api
 from groundlight_openapi_client.model.note_request import NoteRequest
-from groundlight_openapi_client.model.note import Note
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -54,8 +53,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.create_note(detector_id, note_request)
-        pprint(api_response)
+        api_instance.create_note(detector_id, note_request)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling NotesApi->create_note: %s\n" % e)
 ```
@@ -70,7 +68,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Note**](Note.md)
+void (empty response body)
 
 ### Authorization
 
@@ -79,19 +77,19 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
- - **Accept**: application/json
+ - **Accept**: Not defined
 
 
 ### HTTP response details
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**201** |  |  -  |
+**204** | No response body |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_notes**
-> PaginatedAllNotesList get_notes(detector_id)
+> AllNotes get_notes(detector_id)
 
 
 
@@ -105,7 +103,7 @@ Get all the notes from a given detector and return the answer in lists, one for 
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import notes_api
-from groundlight_openapi_client.model.paginated_all_notes_list import PaginatedAllNotesList
+from groundlight_openapi_client.model.all_notes import AllNotes
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -147,7 +145,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PaginatedAllNotesList**](PaginatedAllNotesList.md)
+[**AllNotes**](AllNotes.md)
 
 ### Authorization
 
