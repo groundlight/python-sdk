@@ -97,10 +97,10 @@ rule_request = RuleRequest(
     ) # RuleRequest | 
 
     try:
-        api_response = api_instance.create_detector_rule(detector_id, rule_request)
+        api_response = api_instance.create_rule(detector_id, rule_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling ActionsApi->create_detector_rule: %s\n" % e)
+        print("Exception when calling ActionsApi->create_rule: %s\n" % e)
 ```
 
 ## Documentation for API Endpoints
@@ -109,11 +109,11 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ActionsApi* | [**create_detector_rule**](docs/ActionsApi.md#create_detector_rule) | **POST** /v1/actions/detector/{detector_id}/rules | 
+*ActionsApi* | [**create_rule**](docs/ActionsApi.md#create_rule) | **POST** /v1/actions/detector/{detector_id}/rules | 
 *ActionsApi* | [**delete_rule**](docs/ActionsApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
 *ActionsApi* | [**get_rule**](docs/ActionsApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
-*ActionsApi* | [**list_all_rules**](docs/ActionsApi.md#list_all_rules) | **GET** /v1/actions/rules | 
 *ActionsApi* | [**list_detector_rules**](docs/ActionsApi.md#list_detector_rules) | **GET** /v1/actions/detector/{detector_id}/rules | 
+*ActionsApi* | [**list_rules**](docs/ActionsApi.md#list_rules) | **GET** /v1/actions/rules | 
 *DetectorsApi* | [**create_detector**](docs/DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 

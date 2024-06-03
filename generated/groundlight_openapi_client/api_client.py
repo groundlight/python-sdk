@@ -770,10 +770,10 @@ class Endpoint(object):
         Example:
 
         api_instance = ActionsApi()
-        api_instance.create_detector_rule  # this is an instance of the class Endpoint
-        api_instance.create_detector_rule()  # this invokes api_instance.create_detector_rule.__call__()
+        api_instance.create_rule  # this is an instance of the class Endpoint
+        api_instance.create_rule()  # this invokes api_instance.create_rule.__call__()
         which then invokes the callable functions stored in that endpoint at
-        api_instance.create_detector_rule.callable or self.callable in this class
+        api_instance.create_rule.callable or self.callable in this class
 
         """
         return self.callable(self, *args, **kwargs)
