@@ -31,7 +31,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedRuleList'
           description: ''
     post:
-      operationId: Create rule
+      operationId: Create detector rule
       description: Create a new rule for a detector
       parameters:
       - in: path
@@ -64,8 +64,8 @@ paths:
           description: ''
   /v1/actions/rules:
     get:
-      operationId: List rules
-      description: Retrieve a list of rules.
+      operationId: List all rules
+      description: Lists all rules over all detectors owned by the requester.
       parameters:
       - name: page
         required: false

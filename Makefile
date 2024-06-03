@@ -21,6 +21,7 @@ generate: install-generator  ## Generate the SDK from our public openapi spec
 		-g python \
 		-o ./generated \
 		--additional-properties=packageName=groundlight_openapi_client
+# strict-nullable makes nullable fields Optional in the generated Pydantic classes: https://github.com/koxudaxi/datamodel-code-generator/issues/327
 	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py --strict-nullable
 	poetry run black .
 
