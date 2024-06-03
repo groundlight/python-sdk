@@ -15,7 +15,14 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Lab
 from groundlight.internalapi import InternalApiError, NotFoundError, iq_is_answered
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from model import (
+    BinaryClassificationResult,
+    CountingResult,
+    Detector,
+    ImageQuery,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+)
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -23,7 +30,7 @@ IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
-    if not isinstance(result, ClassificationResult):
+    if not isinstance(result, BinaryClassificationResult) and not isinstance(result, CountingResult):
         return False
     if not is_valid_display_label(result.label):
         return False

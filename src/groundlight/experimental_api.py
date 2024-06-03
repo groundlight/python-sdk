@@ -9,14 +9,17 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, Union
 
-from groundlight_openapi_client.api.images_api import ImagesApi
+from groundlight_openapi_client.api.actions_api import ActionsApi
+from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
-from groundlight_openapi_client.api.rules_api import RulesApi
 from groundlight_openapi_client.model.action import Action
-from groundlight_openapi_client.model.condition import Condition
-from groundlight_openapi_client.model.note_creation_input import NoteCreationInput
-from groundlight_openapi_client.model.rule_creation_input import RuleCreationInput
-from model import Channel, Detector, PaginatedRuleList, Rule, Verb
+from groundlight_openapi_client.model.action_request import ActionRequest
+from groundlight_openapi_client.model.channel_enum import ChannelEnum
+from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.note_request import NoteRequest
+from groundlight_openapi_client.model.rule_request import RuleRequest
+from groundlight_openapi_client.model.verb_enum import VerbEnum
+from model import Detector, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
@@ -24,8 +27,8 @@ from .client import Groundlight
 class ExperimentalApi(Groundlight):
     def __init__(self, endpoint: Union[str, None] = None, api_token: Union[str, None] = None):
         super().__init__(endpoint=endpoint, api_token=api_token)
-        self.rules_api = RulesApi(self.api_client)
-        self.images_api = ImagesApi(self.api_client)
+        self.actions_api = ActionsApi(self.api_client)
+        self.images_api = ImageQueriesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
 
     ITEMS_PER_PAGE = 100
@@ -34,10 +37,10 @@ class ExperimentalApi(Groundlight):
         self,
         detector: Union[str, Detector],
         rule_name: str,
-        channel: Union[str, Channel],
+        channel: Union[str, ChannelEnum],
         recipient: str,
         *,
-        alert_on: Union[str, Verb] = "CHANGED_TO",
+        alert_on: Union[str, VerbEnum] = "CHANGED_TO",
         enabled: bool = True,
         include_image: bool = False,
         condition_parameters: Union[str, dict, None] = None,
@@ -68,19 +71,19 @@ class ExperimentalApi(Groundlight):
         if condition_parameters is None:
             condition_parameters = {}
         if isinstance(alert_on, str):
-            alert_on = Verb(alert_on.upper())
+            alert_on = VerbEnum(alert_on.upper())
         if isinstance(channel, str):
-            channel = Channel(channel.upper())
+            channel = ChannelEnum(channel.upper())
         if isinstance(condition_parameters, str):
             condition_parameters = json.loads(condition_parameters)  # type: ignore
-        action = Action(
-            channel=channel.value,  # type: ignore
+        action = ActionRequest(
+            channel=channel,  # type: ignore
             recipient=recipient,
             include_image=include_image,
         )
-        condition = Condition(verb=alert_on.value, parameters=condition_parameters)  # type: ignore
+        condition = ConditionRequest(verb=alert_on, parameters=condition_parameters)  # type: ignore
         det_id = detector.id if isinstance(detector, Detector) else detector
-        rule_input = RuleCreationInput(
+        rule_input = RuleRequest(
             detector_id=det_id,
             name=rule_name,
             enabled=enabled,
@@ -90,7 +93,7 @@ class ExperimentalApi(Groundlight):
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
         )
-        return Rule.model_validate(self.rules_api.create_rule(det_id, rule_input).to_dict())
+        return Rule.model_validate(self.actions_api.create_rule(det_id, rule_input).to_dict())
 
     def get_rule(self, action_id: int) -> Action:
         """
@@ -99,7 +102,7 @@ class ExperimentalApi(Groundlight):
         :param action_id: the id of the action to get
         :return: the action with the given id
         """
-        return Rule.model_validate(self.rules_api.get_rule(action_id).to_dict())
+        return Rule.model_validate(self.actions_api.get_rule(action_id).to_dict())
 
     def delete_rule(self, action_id: int) -> None:
         """
@@ -107,7 +110,7 @@ class ExperimentalApi(Groundlight):
 
         :param action_id: the id of the action to delete
         """
-        self.rules_api.delete_rule(action_id)
+        self.actions_api.delete_rule(action_id)
 
     def list_rules(self, page=1, page_size=10) -> PaginatedRuleList:
         """
@@ -115,7 +118,7 @@ class ExperimentalApi(Groundlight):
 
         :return: a list of all rules
         """
-        obj = self.rules_api.list_rules(page=page, page_size=page_size)
+        obj = self.actions_api.list_rules(page=page, page_size=page_size)
         return PaginatedRuleList.parse_obj(obj.to_dict())
 
     def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
@@ -162,7 +165,7 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteCreationInput]) -> None:
+    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteRequest]) -> None:
         """
         Adds a note to a given detector
 
@@ -170,5 +173,5 @@ class ExperimentalApi(Groundlight):
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
         if isinstance(note, str):
-            note = NoteCreationInput(content=note)
+            note = NoteRequest(content=note)
         self.notes_api.create_note(det_id, note)

@@ -11,7 +11,7 @@ from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
-from groundlight_openapi_client.model.detector_creation_input import DetectorCreationInput
+from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from model import (
     Detector,
     ImageQuery,
@@ -266,13 +266,15 @@ class Groundlight:
 
         :return: Detector
         """
-        detector_creation_input = DetectorCreationInput(name=name, query=query)
-        if confidence_threshold is not None:
-            detector_creation_input.confidence_threshold = confidence_threshold
-        if pipeline_config is not None:
-            detector_creation_input.pipeline_config = pipeline_config
+        detector_creation_input = DetectorCreationInputRequest(
+            name=name,
+            query=query,
+            pipeline_config=pipeline_config,
+        )
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        if confidence_threshold:
+            detector_creation_input.confidence_threshold = confidence_threshold
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
