@@ -164,12 +164,13 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
         retrieved_detector.confidence_threshold == confidence_threshold
     ), "We expected to retrieve the existing detector's confidence, but got a different value."
 
+
 def test_create_detector_with_everything(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     group_name = "Test group"
     confidence_threshold = 0.825
-    patience_time = 300 # seconds
+    patience_time = 300  # seconds
     pipeline_config = "never-review"
     metadata = generate_random_dict(target_size_bytes=200)
     detector = gl.create_detector(
@@ -190,6 +191,7 @@ def test_create_detector_with_everything(gl: Groundlight):
     # assert detector.patience_time == patience_time
     # GL runs multiple models synchronously, and the active pipeline may change. Currently, we don't check the pipeline config here.
     assert detector.metadata == metadata
+
 
 def test_list_detectors(gl: Groundlight):
     detectors = gl.list_detectors()
