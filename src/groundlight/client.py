@@ -272,23 +272,22 @@ class Groundlight:
 
         :return: Detector
         """
-        if not isinstance(patience_time, float):
-            try:
-                patience_time = float(patience_time)
-            except TypeError as e:
-                raise TypeError(f"patience_time must be a float, not {type(patience_time)}") from e
 
         detector_creation_input = DetectorCreationInputRequest(
             name=name,
             query=query,
             pipeline_config=pipeline_config,
-            group_name=group_name,
-            patience_time=patience_time,
         )
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
         if confidence_threshold:
             detector_creation_input.confidence_threshold = confidence_threshold
+        if group_name:
+            detector_creation_input.group_name = group_name
+        if isinstance(patience_time, int):
+            patience_time = float(patience_time)
+        if patience_time:
+            detector_creation_input.patience_time = patience_time
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
