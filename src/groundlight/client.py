@@ -245,7 +245,9 @@ class Groundlight:
         name: str,
         query: str,
         *,
+        group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
@@ -256,7 +258,11 @@ class Groundlight:
 
         :param query: the detector query
 
+        :param group_name: the detector group that the new detector should belong to
+
         :param confidence_threshold: the confidence threshold
+
+        :param patience_time: the patience time, or how long Groundlight should work to generate a confident answer
 
         :param pipeline_config: the pipeline config
 
@@ -266,10 +272,18 @@ class Groundlight:
 
         :return: Detector
         """
+        if not isinstance(patience_time, float):
+            try:
+                patience_time = float(patience_time)
+            except TypeError as e:
+                raise TypeError(f"patience_time must be a float, not {type(patience_time)}") from e
+
         detector_creation_input = DetectorCreationInputRequest(
             name=name,
             query=query,
             pipeline_config=pipeline_config,
+            group_name=group_name,
+            patience_time=patience_time,
         )
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
