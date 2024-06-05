@@ -329,6 +329,7 @@ class Groundlight:
             return self.create_detector(
                 name=name,
                 query=query,
+                group_name=group_name,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
