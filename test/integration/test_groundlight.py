@@ -137,7 +137,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     assert isinstance(_detector, Detector)
     assert _detector.confidence_threshold == confidence_threshold
 
-    # If you retrieve an existing detector, we currently require the confidence and query to match
+    # If you retrieve an existing detector, we currently require the group_name, confidence, query to match
     # exactly. TODO: We may want to allow updating those fields through the SDK (and then we can
     # change this test).
     different_confidence = 0.7
@@ -156,6 +156,16 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
             query=different_query,
             confidence_threshold=confidence_threshold,
             pipeline_config=pipeline_config,
+        )
+
+    different_group_name = "Different group"
+    with pytest.raises(ValueError):
+        gl.get_or_create_detector(
+            name=name,
+            query=query,
+            confidence_threshold=confidence_threshold,
+            pipeline_config=pipeline_config,
+            group_name=different_group_name,
         )
 
     # If the confidence is not provided, we will use the existing detector's confidence.

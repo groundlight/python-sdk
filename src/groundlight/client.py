@@ -296,6 +296,7 @@ class Groundlight:
         name: str,
         query: str,
         *,
+        group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
@@ -308,6 +309,8 @@ class Groundlight:
         :param name: the detector name
 
         :param query: the detector query
+
+        :param group_name: the detector group that the new detector should belong to
 
         :param confidence_threshold: the confidence threshold
 
@@ -337,6 +340,13 @@ class Groundlight:
                 (
                     f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
                     f" The existing query is '{existing_detector.query}'."
+                ),
+            )
+        if group_name is not None and existing_detector.group_name != group_name:
+            raise ValueError(
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't match."
+                    f" The existing group name is '{existing_detector.group_name}'."
                 ),
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
