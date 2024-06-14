@@ -74,9 +74,7 @@ def convert_display_label_to_internal(
     if not isinstance(label, str):
         raise ValueError(f"Expected a string label, but got {label} of type {type(label)}")
     upper = label.upper()
-    if upper == Label.YES:
-        return DeprecatedLabel.PASS.value
-    if upper == Label.NO:
-        return DeprecatedLabel.FAIL.value
+    if upper in {Label.YES.value, Label.NO.value}:
+        return upper
 
     raise ValueError(f"Invalid label string '{label}'.  Must be one of '{Label.YES.value}','{Label.NO.value}'.")
