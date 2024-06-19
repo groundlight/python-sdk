@@ -37,10 +37,8 @@ def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
-            (
-                f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
-                " https://api.groundlight.ai/"
-            ),
+            f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
+            " https://api.groundlight.ai/",
         )
     if parts.query or parts.fragment:
         raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
@@ -141,11 +139,9 @@ class RequestsRetryDecorator:
                             # This is implementing a full jitter strategy
                             random_delay = random.uniform(0, delay)
                             logger.warning(
-                                (
-                                    f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}. "
-                                    f"Delaying {random_delay:.1f}s before retrying."
-                                ),
+                                f"Current HTTP response status: {status_code}. "
+                                f"Remaining retries: {self.max_retries - retry_count}. "
+                                f"Delaying {random_delay:.1f}s before retrying.",
                                 exc_info=True,
                             )
                             time.sleep(random_delay)

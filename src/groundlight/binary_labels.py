@@ -3,6 +3,7 @@ Provides methods to convert between them.
 
 This part of the API is kinda ugly right now.  So we'll encapsulate the ugliness in one place.
 """
+
 import logging
 from enum import Enum
 from typing import Union
