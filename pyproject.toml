@@ -17,7 +17,7 @@ certifi = ">=2023.7.22"
 frozendict = "^2.3.2"
 pillow = ">=9.0.0" # TODO: We may want to mark pillow (and numpy) as extra (https://python-poetry.org/docs/master/pyproject#extras)
 pydantic = ">=1.10,<3.0.0"
-python = ">=3.7,<4.0"
+python = ">=3.8,<4.0"
 python-dateutil = "^2.9.0"
 requests = "^2.28.2"
 typer = "^0.12.3"
@@ -62,7 +62,7 @@ target-version = ["py37"]
 # https://mypy.readthedocs.io/en/stable/config_file.html
 [tool.mypy]
 ignore_missing_imports = true
-python_version = "3.7"
+python_version = "3.8"
 
 # https://beta.ruff.rs/docs/configuration/#using-pyprojecttoml
 [tool.ruff]
