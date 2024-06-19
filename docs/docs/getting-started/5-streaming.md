@@ -1,15 +1,15 @@
-# A Quick Example: Live Stream Alert 
+# A Quick Example: Live Stream Alert
 
-A quick example to get used to setting up detectors and asking good questions: set up a monitor on a live stream. 
+A quick example to get used to setting up detectors and asking good questions: set up a monitor on a live stream.
 
 ## Requirements
 
-- [Groundlight SDK](/docs/installation/) with Python 3.7 or higher
+- [Groundlight SDK](/docs/installation/) with Python 3.8 or higher
 - The video ID of a YouTube live stream you'd like to monitor
 
 ## Installation
 
-Ensure you have Python 3.7 or higher installed, and then install the Groundlight SDK and OpenCV library:
+Ensure you have Python 3.8 or higher installed, and then install the Groundlight SDK and OpenCV library:
 
 ```bash
 # MacOS
@@ -29,15 +29,15 @@ pip install groundlight pillow ffmpeg yt-dlp typer
 #!/bin/bash
 
 ffmpeg -i "$(yt-dlp -g $1 | head -n 1)" -vframes 1 last.jpg -y
-``` 
+```
 
-This will download the most recent frame from a YouTube live stream and save it to a local file `last.jpg`. 
+This will download the most recent frame from a YouTube live stream and save it to a local file `last.jpg`.
 
 2. Ensure that the script has execute permissions. You can add execute permissions using the following command:
 
 ```
 chmod +x get_latest_frame.sh
-``` 
+```
 
 3. Log in to the [Groundlight application](https://app.groundlight.ai) and get an [API Token](api-tokens).
 
@@ -65,7 +65,7 @@ def main(*, video_id: str = None, detector_name: str = None, query: str = None, 
         p = subprocess.run(["./get_latest_frame.sh", video_id])
         if p.returncode != 0:
             raise RuntimeError(f"Could not get image from video ID: {video_id}. Process exited with return code {p.returncode}.")
-        
+
         image = Image.open("last.jpg").convert("RGB")
         response = gl.submit_image_query(detector=detector, image=image, wait=wait)
 

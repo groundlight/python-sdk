@@ -129,7 +129,7 @@ jobs:
       matrix:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
-            "3.7",  # EOL but we're still supporting it for now.
+            # "3.7",  # Removed support as of 0.17
             "3.8",
             "3.9",
             "3.10",
