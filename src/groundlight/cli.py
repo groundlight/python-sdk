@@ -26,13 +26,13 @@ def class_func_to_cli(method):
         pass
 
     fake_instance = FakeClass()
-    fake_method = method.__get__(fake_instance, FakeClass)
+    fake_method = method.__get__(fake_instance, FakeClass)  # pylint: disable=C2801
 
     @wraps(fake_method)
     def wrapper(*args, **kwargs):
         gl = Groundlight()
         gl_method = vars(Groundlight)[fake_method.__name__]
-        gl_bound_method = gl_method.__get__(gl, Groundlight)
+        gl_bound_method = gl_method.__get__(gl, Groundlight)  # pylint: disable=C2801
         print(gl_bound_method(*args, **kwargs))  # this is where we output to the console
 
     # not recommended practice to directly change annotations, but gets around Typer not supporting Union types
