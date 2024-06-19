@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDK Client &mdash; Groundlight Python SDK 0.16.0 documentation</title>
+  <title>SDK Client &mdash; Groundlight Python SDK 0.17.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7de89ed4"></script>
+        <script src="_static/documentation_options.js?v=0c3dd48d"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.16.0
+                0.17.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -85,6 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.Detector.name"><code class="docutils literal notranslate"><span class="pre">Detector.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Detector.query"><code class="docutils literal notranslate"><span class="pre">Detector.query</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.Detector.type"><code class="docutils literal notranslate"><span class="pre">Detector.type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.Detector.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">Detector.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#model.ImageQuery"><code class="docutils literal notranslate"><span class="pre">ImageQuery</span></code></a><ul>
@@ -98,6 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.result"><code class="docutils literal notranslate"><span class="pre">ImageQuery.result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.result_type"><code class="docutils literal notranslate"><span class="pre">ImageQuery.result_type</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.type"><code class="docutils literal notranslate"><span class="pre">ImageQuery.type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">ImageQuery.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#model.PaginatedDetectorList"><code class="docutils literal notranslate"><span class="pre">PaginatedDetectorList</span></code></a><ul>
@@ -105,6 +107,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.PaginatedDetectorList.next"><code class="docutils literal notranslate"><span class="pre">PaginatedDetectorList.next</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.PaginatedDetectorList.previous"><code class="docutils literal notranslate"><span class="pre">PaginatedDetectorList.previous</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.PaginatedDetectorList.results"><code class="docutils literal notranslate"><span class="pre">PaginatedDetectorList.results</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.PaginatedDetectorList.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">PaginatedDetectorList.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#model.PaginatedImageQueryList"><code class="docutils literal notranslate"><span class="pre">PaginatedImageQueryList</span></code></a><ul>
@@ -112,6 +115,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.PaginatedImageQueryList.next"><code class="docutils literal notranslate"><span class="pre">PaginatedImageQueryList.next</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.PaginatedImageQueryList.previous"><code class="docutils literal notranslate"><span class="pre">PaginatedImageQueryList.previous</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.PaginatedImageQueryList.results"><code class="docutils literal notranslate"><span class="pre">PaginatedImageQueryList.results</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.PaginatedImageQueryList.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">PaginatedImageQueryList.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -800,7 +804,11 @@ Currently this is done by polling with an exponential back-off.</p>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;DetectorTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;detector&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DetectorTypeEnum&quot;</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;detector&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DetectorTypeEnum&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -904,6 +912,12 @@ Currently this is done by polling with an exponential back-off.</p>
 <dt class="sig sig-object py" id="model.Detector.type">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DetectorTypeEnum</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.Detector.type" title="Link to this definition"></a></dt>
 <dd><p>The type of this object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.Detector.model_computed_fields">
+<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.Detector.model_computed_fields" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1038,7 +1052,11 @@ Currently this is done by polling with an exponential back-off.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;ImageQueryTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;image_query&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQueryTypeEnum&quot;</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;image_query&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQueryTypeEnum&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;ResultTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1137,6 +1155,12 @@ Currently this is done by polling with an exponential back-off.</p>
 <dt class="sig sig-object py" id="model.ImageQuery.type">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ImageQueryTypeEnum</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.ImageQuery.type" title="Link to this definition"></a></dt>
 <dd><p>The type of this object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.ImageQuery.model_computed_fields">
+<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.ImageQuery.model_computed_fields" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1282,7 +1306,11 @@ Currently this is done by polling with an exponential back-off.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DetectorTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;detector&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DetectorTypeEnum&quot;</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;detector&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DetectorTypeEnum&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1321,6 +1349,12 @@ Currently this is done by polling with an exponential back-off.</p>
 <dt class="sig sig-object py" id="model.PaginatedDetectorList.results">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.PaginatedDetectorList.results" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.PaginatedDetectorList.model_computed_fields">
+<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.PaginatedDetectorList.model_computed_fields" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1513,7 +1547,11 @@ Currently this is done by polling with an exponential back-off.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;ImageQueryTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;image_query&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQueryTypeEnum&quot;</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;image_query&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQueryTypeEnum&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;ResultTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1560,6 +1598,12 @@ Currently this is done by polling with an exponential back-off.</p>
 <dt class="sig sig-object py" id="model.PaginatedImageQueryList.results">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.PaginatedImageQueryList.results" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="model.PaginatedImageQueryList.model_computed_fields">
+<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#model.PaginatedImageQueryList.model_computed_fields" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
+</dd></dl>
 
 </dd></dl>
 
