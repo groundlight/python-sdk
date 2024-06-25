@@ -3,6 +3,7 @@ from datetime import datetime
 from groundlight import ExperimentalApi
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_notes(gl: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
     det = gl.create_detector(name, "test_query")

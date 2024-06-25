@@ -5,6 +5,7 @@ from groundlight import ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_create_action(gl: ExperimentalApi):
     # We first clear out any rules in case the account has any left over from a previous test
     gl.delete_all_rules()

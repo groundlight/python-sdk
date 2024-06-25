@@ -23,6 +23,7 @@ def test_list_detector():
     assert completed_process.returncode == 0
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_detector_and_image_queries():
     # test creating a detector
     test_detector_name = f"testdetector {datetime.utcnow()}"

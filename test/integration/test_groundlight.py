@@ -71,7 +71,7 @@ def fixture_gl() -> Groundlight:
     _gl.DEFAULT_WAIT = 10
     return _gl
 
-
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support creating detectors.")
 @pytest.fixture(name="detector")
 def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
@@ -109,6 +109,7 @@ def test_create_detector(gl: Groundlight):
     ), "We expected the default confidence threshold to be used."
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_create_detector_with_pipeline_config(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
@@ -120,6 +121,7 @@ def test_create_detector_with_pipeline_config(gl: Groundlight):
     assert isinstance(_detector, Detector)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_create_detector_with_confidence_threshold(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
@@ -171,6 +173,7 @@ def test_list_detectors(gl: Groundlight):
     assert isinstance(detectors, PaginatedDetectorList)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_or_create_detector(gl: Groundlight):
     # With a unique name, we should be creating a new detector.
     unique_name = f"Unique name {datetime.utcnow()}"
@@ -184,12 +187,14 @@ def test_get_or_create_detector(gl: Groundlight):
     assert retrieved_detector.id == detector.id
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_detector(gl: Groundlight, detector: Detector):
     _detector = gl.get_detector(id=detector.id)
     assert str(_detector)
     assert isinstance(_detector, Detector)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_detector_by_name(gl: Groundlight, detector: Detector):
     _detector = gl.get_detector_by_name(name=detector.name)
     assert str(_detector)
@@ -200,6 +205,7 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
         gl.get_detector_by_name(name="not a real name")
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_ask_confident(gl: Groundlight, detector: Detector):
     _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
@@ -207,6 +213,7 @@ def test_ask_confident(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_ask_ml(gl: Groundlight, detector: Detector):
     _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
@@ -214,6 +221,7 @@ def test_ask_ml(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query(gl: Groundlight, detector: Detector):
     def validate_image_query(_image_query: ImageQuery):
         assert str(_image_query)
@@ -241,6 +249,7 @@ def test_submit_image_query(gl: Groundlight, detector: Detector):
     assert _image_query.result.confidence >= IQ_IMPROVEMENT_THRESHOLD
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(
         detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
@@ -250,6 +259,7 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", pipeline_config="never-review")
@@ -257,6 +267,7 @@ def test_submit_image_query_returns_yes(gl: Groundlight):
     assert image_query.result.label == Label.YES
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     assert str(_image_query)
@@ -264,6 +275,7 @@ def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/cat.png", human_review="NEVER")
     assert str(_image_query)
@@ -271,6 +283,7 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: Detector):
     # For now, this just tests that the image query is submitted successfully.
     # There should probably be a better way to check whether the image query was escalated for human review.
@@ -373,6 +386,7 @@ def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: D
         )
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 @pytest.mark.run_only_for_edge_endpoint
 def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, detector: Detector, image: str):
     """On the edge-endpoint, we raise an exception if the user passes metadata."""
@@ -381,6 +395,7 @@ def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, de
     assert is_user_error(exc_info.value.status)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
     jpeg = open("test/assets/dog.jpeg", "rb").read()
     _image_query = gl.submit_image_query(detector=detector.id, image=jpeg, human_review="NEVER")
@@ -389,6 +404,7 @@ def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     jpeg = open("test/assets/dog.jpeg", "rb").read()
     jpeg_truncated = jpeg[:-500]  # Cut off the last 500 bytes
@@ -400,11 +416,13 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     assert is_user_error(exc_value.status)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_bad_filename(gl: Groundlight, detector: Detector):
     with pytest.raises(FileNotFoundError):
         _image_query = gl.submit_image_query(detector=detector.id, image="missing-file.jpeg", human_review="NEVER")
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     with pytest.raises(ValueError) as exc_info:
         _image_query = gl.submit_image_query(
@@ -413,6 +431,7 @@ def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
     assert "jpeg" in str(exc_info).lower()
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     # generates a pil image and submits it
@@ -425,6 +444,7 @@ def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=black, human_review="NEVER")
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight, detector: Detector):
     """
     Tests that attempting to use the wait and want_async parameters together causes an exception.
@@ -436,6 +456,7 @@ def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight
         )
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):
     """
     Tests the workflow for submitting an image query with the want_async parameter set to True.
@@ -460,6 +481,7 @@ def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: 
     assert _image_query.result.label in VALID_DISPLAY_LABELS
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_ask_async_workflow(gl: Groundlight, detector: Detector):
     """
     Tests the workflow for submitting an image query with ask_async.
@@ -495,6 +517,7 @@ def test_list_image_queries(gl: Groundlight):
             assert is_valid_display_result(image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     _image_query = gl.get_image_query(id=image_query_yes.id)
     assert str(_image_query)
@@ -502,23 +525,27 @@ def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_image_query_label_yes(gl: Groundlight, image_query_yes: ImageQuery):
     gl.add_label(image_query_yes, Label.YES)
     retrieved_iq = gl.get_image_query(id=image_query_yes.id)
     assert retrieved_iq.result.label == Label.YES
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_image_query_label_no(gl: Groundlight, image_query_no: ImageQuery):
     gl.add_label(image_query_no, Label.NO)
     retrieved_iq = gl.get_image_query(id=image_query_no.id)
     assert retrieved_iq.result.label == Label.NO
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_add_label_to_object(gl: Groundlight, image_query_yes: ImageQuery):
     assert isinstance(image_query_yes, ImageQuery)
     gl.add_label(image_query_yes, Label.YES)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_add_label_by_id(gl: Groundlight, image_query_no: ImageQuery):
     iqid = image_query_no.id
     # TODO: Fully deprecate chk_ prefix
@@ -526,6 +553,7 @@ def test_add_label_by_id(gl: Groundlight, image_query_no: ImageQuery):
     gl.add_label(iqid, Label.NO)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_query_no: ImageQuery):
     iqid_yes = image_query_yes.id
     iqid_no = image_query_no.id
@@ -738,6 +766,7 @@ def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query with the inspection ID that should pass, stops
     the inspection, checks the result.
@@ -749,6 +778,7 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     assert gl.stop_inspection(inspection_id) == "PASS"
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should fail, stops
     the inspection, checks the result.
@@ -768,11 +798,13 @@ def test_stop_inspection_with_invalid_id(gl: Groundlight):
         gl.stop_inspection(inspection_id)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_update_detector_confidence_threshold_success(gl: Groundlight, detector: Detector):
     """Updates the confidence threshold for a detector. This should succeed."""
     gl.update_detector_confidence_threshold(detector.id, 0.77)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector: Detector):
     """Attempts to update the confidence threshold for a detector to invalid values.
     Should raise ValueError exceptions.
@@ -805,6 +837,7 @@ def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groun
     assert iq.result.label == Label.YES
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: Detector, image: str):
     """The URCap submits the inspection_id as an empty string when there is no active inspection.
     This test ensures that this behavior is allowed and does not raise an exception.
