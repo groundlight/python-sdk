@@ -86,6 +86,7 @@ def test_submit_image_query_attempts_retries(gl: Groundlight):
         wait=1,
     )
 
+
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint isn't compatible with the latest sdk version")
 def test_get_image_query_attempts_retries(gl: Groundlight, detector: Detector):
     image_query = gl.submit_image_query(detector=detector.id, image=IMAGE_FILE)

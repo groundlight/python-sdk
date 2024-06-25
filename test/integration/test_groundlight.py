@@ -71,6 +71,7 @@ def fixture_gl() -> Groundlight:
     _gl.DEFAULT_WAIT = 10
     return _gl
 
+
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support creating detectors.")
 @pytest.fixture(name="detector")
 def fixture_detector(gl: Groundlight) -> Detector:
