@@ -1,9 +1,10 @@
 import os
 import re
 import subprocess
-import pytest
 from datetime import datetime
 from unittest.mock import patch
+
+import pytest
 
 
 def test_whoami():
