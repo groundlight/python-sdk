@@ -99,6 +99,7 @@ def fixture_image() -> str:
     return "test/assets/dog.jpeg"
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support creating detectors.")
 def test_create_detector(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
