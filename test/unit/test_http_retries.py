@@ -139,6 +139,7 @@ def run_test(mocked_call: str, api_method: Callable[..., Any], expected_call_cou
             mock_request.reset_mock()
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support creating detectors.")
 def test_submit_image_query_succeeds_after_retry(gl: Groundlight, detector: Detector):
     # TODO: figure out a good way to test `submit_image_query` such that it fails
     # the first few times, but eventually succeeds.
