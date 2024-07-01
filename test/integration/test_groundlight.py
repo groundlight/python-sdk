@@ -689,6 +689,7 @@ def test_ask_method_quality(gl: Groundlight, detector: Detector):
     assert confident_iq.result.confidence is None or (confident_iq.result.confidence > IQ_IMPROVEMENT_THRESHOLD)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_start_inspection(gl: Groundlight):
     inspection_id = gl.start_inspection()
 
@@ -696,6 +697,7 @@ def test_start_inspection(gl: Groundlight):
     assert "inspect_" in inspection_id
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_update_inspection_metadata_success(gl: Groundlight):
     """Starts an inspection and adds a couple pieces of metadata to it.
     This should succeed. If there are any errors, an exception will be raised.
@@ -711,6 +713,7 @@ def test_update_inspection_metadata_success(gl: Groundlight):
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_update_inspection_metadata_failure(gl: Groundlight):
     """Attempts to add metadata to an inspection after it is closed.
     Should raise an exception.
@@ -725,6 +728,7 @@ def test_update_inspection_metadata_failure(gl: Groundlight):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """Attempt to update metadata for an inspection that doesn't exist.
     Should raise an InternalApiError.
@@ -738,6 +742,7 @@ def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query with the inspection ID that should pass, stops
     the inspection, checks the result.
@@ -749,6 +754,7 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     assert gl.stop_inspection(inspection_id) == "PASS"
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should fail, stops
     the inspection, checks the result.
@@ -761,6 +767,7 @@ def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     assert gl.stop_inspection(inspection_id) == "FAIL"
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_stop_inspection_with_invalid_id(gl: Groundlight):
     inspection_id = "some_invalid_inspection_id"
 
