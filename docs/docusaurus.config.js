@@ -2,8 +2,8 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 // Libraries that support mathematics in documentation
-import rehypeKatex from 'rehype-katex';
-import remarkMath from 'remark-math';
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
 
 // Options: https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes
 const lightCodeTheme = require("prism-react-renderer").themes.github;
@@ -54,7 +54,7 @@ const config = {
           // there will be a third one for real URLs.  :)
         },
         gtag: {
-          trackingID: 'G-G0XW52NM2K',
+          trackingID: "G-T3TVWD5269",
         },
         blog: {
           showReadingTime: true,
@@ -72,11 +72,11 @@ const config = {
 
   stylesheets: [
     {
-      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
-      type: 'text/css',
+      href: "https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css",
+      type: "text/css",
       integrity:
-        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
-      crossorigin: 'anonymous',
+        "sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM",
+      crossorigin: "anonymous",
     },
   ],
 
@@ -133,9 +133,9 @@ const config = {
             position: "right",
           },
           {
-            to: 'blog',
-            label: 'Blog',
-            position: 'left',
+            to: "blog",
+            label: "Blog",
+            position: "left",
           },
         ],
       },
