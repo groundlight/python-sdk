@@ -54,7 +54,7 @@ const config = {
           // there will be a third one for real URLs.  :)
         },
         gtag: {
-          trackingID: 'G-T3TVWD5269',
+          trackingID: 'G-WG1Q5X6F6L',
         },
         blog: {
           showReadingTime: true,
