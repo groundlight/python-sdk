@@ -538,6 +538,13 @@ components:
           default: 0.9
           description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
+        patience_time:
+          type: number
+          format: double
+          maximum: 3600
+          minimum: 0
+          default: 30.0
+          description: How long Groundlight will attempt to generate a confident prediction
         metadata:
           type: object
           additionalProperties: {}
@@ -909,7 +916,11 @@ components:
       type: object
       properties:
         confidence:
-          type: float
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          nullable: true
         label:
           type: string
       required:
@@ -919,7 +930,11 @@ components:
       type: object
       properties:
         confidence:
-          type: float
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          nullable: true
         value:
           type: integer
       required:
