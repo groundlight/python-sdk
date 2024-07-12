@@ -690,10 +690,10 @@ components:
         confidence_threshold:
           type: number
           format: double
-          maximum: 1
-          minimum: 0.5
+          readOnly: true
           description: Min confidence needed to accept the response of the image query.
       required:
+      - confidence_threshold
       - created_at
       - detector_id
       - id
