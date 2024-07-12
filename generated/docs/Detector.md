@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **mode** | **str** |  | [readonly] 
 **mode_configuration** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** |  | [readonly] 
 **confidence_threshold** | **float** | If the detector&#39;s prediction is below this confidence threshold, send the image query for human review. | [optional]  if omitted the server will use the default value of 0.9
+**patience_time** | **float** | How long Groundlight will attempt to generate a confident prediction | [optional]  if omitted the server will use the default value of 30.0
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
