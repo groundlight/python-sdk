@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[4573],{9099:s=>{s.exports=JSON.parse('{"label":"soc-2","permalink":"/python-sdk/blog/tags/soc-2","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);

@@ -2,100 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://code.groundlight.ai/python-sdk/blog</id>
     <title>Groundlight Blog</title>
-    <updated>2024-05-15T00:00:00.000Z</updated>
+    <updated>2024-03-20T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://code.groundlight.ai/python-sdk/blog"/>
     <subtitle>Groundlight Blog</subtitle>
     <icon>https://code.groundlight.ai/python-sdk/img/favicon.ico</icon>
-    <entry>
-        <title type="html"><![CDATA[Reducing Data Labeling Costs with Uncertainty Sampling]]></title>
-        <id>https://code.groundlight.ai/python-sdk/blog/active-learning</id>
-        <link href="https://code.groundlight.ai/python-sdk/blog/active-learning"/>
-        <updated>2024-05-15T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[How Groundlight uses active learning to train accurate vision models while saving on data labeling costs.]]></summary>
-        <content type="html"><![CDATA[<p>At Groundlight, we train each detector's machine learning (ML) model on images that have been manually labeled with correct responses. However, collecting labels at scale becomes expensive because it requires human review. Given that detectors are frequently applied to streams of images that change slowly over time, reviewing all images as they arrive is likely to result in effort wasted on labeling similar images that add little information to the training set.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="what-is-active-learning-in-machine-learning">What is Active Learning in Machine Learning?<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#what-is-active-learning-in-machine-learning" class="hash-link" aria-label="Direct link to What is Active Learning in Machine Learning?" title="Direct link to What is Active Learning in Machine Learning?">​</a></h2>
-<p>To avoid unnecessary labeling and save customers money, Groundlight uses <strong><a href="https://en.wikipedia.org/wiki/Active_learning_(machine_learning)" target="_blank" rel="noopener noreferrer">active learning</a></strong>, a machine learning protocol in which the ML model plays an active role in determining which images get manually labeled for training. With active learning, only informative images are prioritized for review, making it possible to label small a subset of the available data but train a model that's roughly as good as one trained with all the data labeled <a href="https://minds.wisconsin.edu/handle/1793/60660" target="_blank" rel="noopener noreferrer">[Settles, 2009]</a>.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="what-is-uncertainty-sampling">What is Uncertainty Sampling?<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#what-is-uncertainty-sampling" class="hash-link" aria-label="Direct link to What is Uncertainty Sampling?" title="Direct link to What is Uncertainty Sampling?">​</a></h2>
-<p>The variant of active learning we use at Groundlight is based on <strong><a href="https://lilianweng.github.io/posts/2022-02-20-active-learning/#uncertainty-sampling" target="_blank" rel="noopener noreferrer">uncertainty sampling</a></strong>, a well studied and effective method that can be used in either the streaming setting or the pool-based setting in which there exists a large reservoir of unlabeled examples to draw from. We operate in the stream-based setting, where images arrive one at a time and it must be decided in the moment whether to escalate an image for review.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="how-does-uncertainty-sampling-work">How Does Uncertainty Sampling Work?<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#how-does-uncertainty-sampling-work" class="hash-link" aria-label="Direct link to How Does Uncertainty Sampling Work?" title="Direct link to How Does Uncertainty Sampling Work?">​</a></h2>
-<p>Imagine we have a detector that processes a stream of images arriving one by one. The detector's ML model is trained on all images labeled up to that point in time. When a new image arrives, the model makes its best guess prediction for the new image and also reports its confidence in that prediction. The confidence is expressed as a probability (a number between zero and one) that the prediction is correct.</p>
-<p>In uncertainty sampling, we escalate those images whose predictions have low confidence so they can be manually reviewed and labeled. Conversely, we largely leave images with confident predictions unescalated and therefore unlabeled. In this way, we avoid the expense and effort of labeling images whose predictions are likely correct. But we still continue to label images the model is unsure of so it can improve on them.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="an-example-of-uncertainty-sampling">An Example of Uncertainty Sampling<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#an-example-of-uncertainty-sampling" class="hash-link" aria-label="Direct link to An Example of Uncertainty Sampling" title="Direct link to An Example of Uncertainty Sampling">​</a></h2>
-<p>As an example, the images shown below were sent to a detector that identifies the presence of dogs in and around a swimming pool at <a href="https://dogmode.com/aquatic-fitness-center-pool-view/" target="_blank" rel="noopener noreferrer">Dogmode's Aquatic Center</a>. The model reports with 95% confidence that there is a dog in the image on the left. But it is less confident in its response for the image on the right, saying there is no dog present with only 75% confidence. (There is in fact a dog at the back left corner of the pool, but it’s difficult to see.)</p>
-<center></center><table cellspacing="0" cellpadding="0"><tbody><tr><td><img src="https://code.groundlight.ai/python-sdk/assets/images/dog-conf-high-8d9cad195e418d3e0bb824529b8a9dfc.png"></td><td><img src="https://code.groundlight.ai/python-sdk/assets/images/dog-conf-low-bc13114624d9f5ee2d69d325ffda59b7.png"></td></tr><tr><td>Yes</td><td>No</td></tr></tbody></table>
-<br>
-<p>Assuming the detector's confidence threshold is set to a value between 75% and 95%, uncertainty sampling will escalate the image on the right for cloud labeling but not the one on the left. A user can set their detector's confidence threshold by adjusting the confidence threshold slider on the detector detail page. The image below shows this slider.</p>
-<img src="https://code.groundlight.ai/python-sdk/assets/images/confidence-threshold-89f6ddecf93d7defede23cc6f810a190.png">
-<br>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="experiment-with-uncertainty-sampling">Experiment with Uncertainty Sampling<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#experiment-with-uncertainty-sampling" class="hash-link" aria-label="Direct link to Experiment with Uncertainty Sampling" title="Direct link to Experiment with Uncertainty Sampling">​</a></h2>
-<p>We now present results from a time-series experiment on images collected and labeled for the purpose of measuring uncertainty sampling's impact on model accuracy and labeling cost. There are 500 images of a gate, and the task is to determine in every image if the gate has been left open or closed. All images in the experiment are labeled so we know the correct responses. But note<sup><a href="https://code.groundlight.ai/python-sdk/blog/active-learning#user-content-fn-1-f95320" id="user-content-fnref-1-f95320" data-footnote-ref="true" aria-describedby="footnote-label">1</a></sup> that this would not be the case if we were running active learning in real life because, by design, active learning does not recruit labels on high confidence images.</p>
-<p>Our results compare the performance of three models trained under different protocols:</p>
-<ol>
-<li>No uncertainty sampling, all images are escalated for manual review and labeling</li>
-<li>Moderate uncertainty sampling, predictions less than 95% confident get escalated</li>
-<li>Aggressive uncertainty sampling, only predictions below 75% confidence are escalated</li>
-</ol>
-<p>The training sets of all three models are initialized with the same 20 images, 10 labeled from each class.</p>
-<p>The plot below shows that the model trained with moderate uncertainty sampling (confidence threshold 95%) has an error rate similar to the model trained without any uncertainty sampling. This demonstrates that uncertainty sampling can fit a model as accurately as labeling and training on all the available data.</p>
-<img src="https://code.groundlight.ai/python-sdk/assets/images/error-rate-over-time-5a8a630ef2e86617224ed794f5b4c583.png" width="500 px">
-<p>On the other hand, aggressive uncertainty sampling (confidence threshold 75%) escalates too few images for labeling, resulting in a model trained on less data which makes more mistakes. This shows how the confidence threshold controls the trade off between model accuracy and labeling costs from manual labeling. Indirectly, it also demonstrates the need for calibrating models so their reported confidences reflect observed frequencies and can be used for making decisions about when to escalate. We calibrate machine learning models at Groundlight though the details are beyond the scope of this post.</p>
-<p>Strikingly, plotting the number of images escalated by each model shows that active learning dramatically reduces labeling costs. The model trained without uncertainty sampling escalates all 500 images for review manual review. In contrast, the model trained with moderate uncertainty sampling escalates only 132 images in total. This is a nearly 75% reduction in manual labeling and cost with little change in model error. Aggressive uncertainty sampling escalates even fewer images, only 60, but the resulting model has noticeably higher error as observed in the plot above.</p>
-<img src="https://code.groundlight.ai/python-sdk/assets/images/labels-over-time-562d3b801755d00733fad600f1a38443.png" width="500 px">
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="conclusion">Conclusion<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#conclusion" class="hash-link" aria-label="Direct link to Conclusion" title="Direct link to Conclusion">​</a></h2>
-<p>At Groundlight, we use active learning to reduce labeling costs for our customers. In particular, we use a variant based on uncertainty sampling that is extremely effective and easy to explain. A small experiment on an image time-series dataset shows that uncertainty sampling can dramatically reduce the number of images labeled without impacting model accuracy. If you want to learn more about active learning and its various formulations, definitely check out the references below.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="references">References<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#references" class="hash-link" aria-label="Direct link to References" title="Direct link to References">​</a></h2>
-<ol>
-<li><a href="https://minds.wisconsin.edu/handle/1793/60660" target="_blank" rel="noopener noreferrer">Settles, Burr. <em>Active learning literature survey</em>. University of Wisconsin-Madison Department of Computer Sciences, 2009.</a></li>
-<li><a href="https://lilianweng.github.io/posts/2022-02-20-active-learning/" target="_blank" rel="noopener noreferrer">Weng, Lilian. "Learning with not Enough Data Part 2: Active Learning." Lil'Log, February 20 2022. April 29 2024.</a></li>
-</ol>
-<section data-footnotes="true" class="footnotes"><h2 class="anchor anchorWithStickyNavbar_FNw8 sr-only" id="footnote-label">Footnotes<a href="https://code.groundlight.ai/python-sdk/blog/active-learning#footnote-label" class="hash-link" aria-label="Direct link to Footnotes" title="Direct link to Footnotes">​</a></h2>
-<ol>
-<li id="user-content-fn-1-f95320">
-<p>In practice, we audit a constant fraction of confidently predicted images for review that serve as an additional source of labeled data. <a href="https://code.groundlight.ai/python-sdk/blog/active-learning#user-content-fnref-1-f95320" data-footnote-backref="" aria-label="Back to reference 1" class="data-footnote-backref">↩</a></p>
-</li>
-</ol>
-</section>]]></content>
-        <author>
-            <name>Ted Sandler</name>
-        </author>
-        <category label="active learning" term="active learning"/>
-        <category label="uncertainty sampling" term="uncertainty sampling"/>
-        <category label="deep dive" term="deep dive"/>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Groundlight AI Achieves SOC 2 Type 2 Compliance]]></title>
-        <id>https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance</id>
-        <link href="https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance"/>
-        <updated>2024-05-13T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Groundlight AI Achieves SOC 2 Type 2 Compliance]]></summary>
-        <content type="html"><![CDATA[<p>At Groundlight, we take data security and privacy extremely seriously. From the very beginning, we recognized the importance of implementing stringent controls and processes to safeguard our clients' sensitive information. That's why we made the decision early on to pursue SOC 2 compliance.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="what-is-soc-2-verification">What is SOC 2 Verification<a href="https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance#what-is-soc-2-verification" class="hash-link" aria-label="Direct link to What is SOC 2 Verification" title="Direct link to What is SOC 2 Verification">​</a></h2>
-<p>For those unfamiliar, SOC 2 (Service Organization Control 2) is an auditing framework established by the American Institute of Certified Public Accountants (AICPA). It involves an in-depth external review of an organization's security policies, procedures, and controls by an independent auditor. Achieving SOC 2 certification demonstrates our unwavering commitment to maintaining the highest standards of data protection and privacy.</p>
-<h3 class="anchor anchorWithStickyNavbar_FNw8" id="what-are-the-different-soc-2-types">What Are the Different SOC 2 Types?<a href="https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance#what-are-the-different-soc-2-types" class="hash-link" aria-label="Direct link to What Are the Different SOC 2 Types?" title="Direct link to What Are the Different SOC 2 Types?">​</a></h3>
-<p><strong>SOC 2 Type 1:</strong> Evaluates an organization's cybersecurity controls at a single point in time.</p>
-<p><strong>SOC 2 Type 2:</strong>  Type 2 report assesses the operational effectiveness of controls over a defined period of time (3, 6, 12 months).</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="how-did-groundlight-achieve-soc-2-compliance">How Did Groundlight Achieve SOC 2 Compliance<a href="https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance#how-did-groundlight-achieve-soc-2-compliance" class="hash-link" aria-label="Direct link to How Did Groundlight Achieve SOC 2 Compliance" title="Direct link to How Did Groundlight Achieve SOC 2 Compliance">​</a></h2>
-<p>Achieving SOC 2 compliance is a marathon, not a sprint. It demands meticulous planning and dedication from teams across the entire organization. At Groundlight, we took a methodical approach by first establishing an audit timeline. From there, we worked backwards systematically to get our house in order.
-Teams across engineering, security, operations, and more collaborated to implement rigorous security policies and controls. We overhauled processes for everything from access management to incident response handling. Robust evidence collection and documentation mechanisms were put into place.
-Once we had thoroughly prepared, we brought in external auditors to conduct their independent evaluation. This was the high-stakes final exam. Our policies, technical safeguards, and control operations were stress-tested and scrutinized over an extended period.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="what-does-soc-2-verification-mean-for-groundlight-ais-data-security">What Does SOC 2 Verification Mean for Groundlight AI’s Data Security<a href="https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance#what-does-soc-2-verification-mean-for-groundlight-ais-data-security" class="hash-link" aria-label="Direct link to What Does SOC 2 Verification Mean for Groundlight AI’s Data Security" title="Direct link to What Does SOC 2 Verification Mean for Groundlight AI’s Data Security">​</a></h2>
-<p>From day one, Groundlight has made data security and privacy a top priority. Safeguarding our customers' sensitive information is foundational to our business. So while achieving SOC 2 certification marks an important milestone, it simply reinforces practices that have been ingrained in our DNA all along.
-We've never treated security as an afterthought or box to check. Instead, we've embraced building robust data protections into the core of our products and services from the ground up. Our policies, processes and technical controls are meticulously tailored to our unique operations - not generic one-size-fits-all measures.
-SOC 2 compliance validates that we've institutionalized this security-first mindset across the entire organization. But it's just one step along our continuous journey. As data privacy regulations evolve and new threats emerge, we'll remain vigilant in regularly reassessing and elevating our safeguards.
-By upholding the highest standards like SOC 2, we solidify the unshakable foundation of trust with our customers. Upholding these compliance standards unlocks new business opportunities and allows us to double down on our commitment to being steadfast in data security.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="key-takeaways-of-soc-2-verification">Key Takeaways of SOC 2 Verification<a href="https://code.groundlight.ai/python-sdk/blog/groundlight-ai-achieves-soc-2-type-2-compliance#key-takeaways-of-soc-2-verification" class="hash-link" aria-label="Direct link to Key Takeaways of SOC 2 Verification" title="Direct link to Key Takeaways of SOC 2 Verification">​</a></h2>
-<ul>
-<li>Prioritizing security and tailoring controls to our needs, not just checking boxes</li>
-<li>SOC 2 enables new business growth by meeting vendor security requirements</li>
-<li>Earning certification required full organizational commitment and stakeholder participation</li>
-<li>This marks an important milestone, but our security journey is never complete</li>
-</ul>]]></content>
-        <author>
-            <name>Phillipie Motley</name>
-        </author>
-        <category label="soc-2" term="soc-2"/>
-    </entry>
     <entry>
         <title type="html"><![CDATA[Navigating Ambiguity with Groundlight AI Detectors]]></title>
         <id>https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images</id>
