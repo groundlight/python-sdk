@@ -12,15 +12,14 @@ from typing import Any, Dict, Union
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
-from groundlight_openapi_client.model.action import Action
 from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from model import Detector, PaginatedRuleList, Rule, DetectorGroup
+from model import Detector, DetectorGroup, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
