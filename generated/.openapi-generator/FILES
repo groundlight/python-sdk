@@ -13,6 +13,8 @@ docs/ConditionRequest.md
 docs/CountingResult.md
 docs/Detector.md
 docs/DetectorCreationInputRequest.md
+docs/DetectorGroup.md
+docs/DetectorGroupRequest.md
 docs/DetectorTypeEnum.md
 docs/DetectorsApi.md
 docs/ImageQueriesApi.md
@@ -55,6 +57,8 @@ groundlight_openapi_client/model/condition_request.py
 groundlight_openapi_client/model/counting_result.py
 groundlight_openapi_client/model/detector.py
 groundlight_openapi_client/model/detector_creation_input_request.py
+groundlight_openapi_client/model/detector_group.py
+groundlight_openapi_client/model/detector_group_request.py
 groundlight_openapi_client/model/detector_type_enum.py
 groundlight_openapi_client/model/image_query.py
 groundlight_openapi_client/model/image_query_type_enum.py

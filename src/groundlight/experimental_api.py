@@ -19,7 +19,8 @@ from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, PaginatedRuleList, Rule
+from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
+from model import Detector, PaginatedRuleList, Rule, DetectorGroup
 
 from .client import Groundlight
 
@@ -95,7 +96,7 @@ class ExperimentalApi(Groundlight):
         )
         return Rule.model_validate(self.actions_api.create_rule(det_id, rule_input).to_dict())
 
-    def get_rule(self, action_id: int) -> Action:
+    def get_rule(self, action_id: int) -> Rule:
         """
         Gets the action with the given id
 
@@ -175,3 +176,22 @@ class ExperimentalApi(Groundlight):
         if isinstance(note, str):
             note = NoteRequest(content=note)
         self.notes_api.create_note(det_id, note)
+
+    def create_detector_group(self, name: str) -> DetectorGroup:
+        """
+        Creates a detector group with the given name
+        Note: you can specify a detector group when creating a detector without the need to create it ahead of time
+
+        :param name: the name of the detector group
+
+        :return: a Detector object corresponding to the new detector group
+        """
+        return DetectorGroup(**self.detectors_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
+
+    def list_detector_groups(self) -> list[DetectorGroup]:
+        """
+        Gets a list of all detector groups
+
+        :return: a list of all detector groups
+        """
+        return [DetectorGroup(**det.to_dict()) for det in self.detectors_api.get_detector_groups()]

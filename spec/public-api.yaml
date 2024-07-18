@@ -212,6 +212,54 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detectors/detector-groups:
+    get:
+      operationId: Get Detector Groups
+      description: List all detector groups
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
+    post:
+      operationId: Create Detector Group
+      description: |-
+        Create a new detector group
+
+        POST data:
+          Required:
+            - name (str) - name of the predictor set
+      tags:
+      - detectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -633,6 +681,27 @@ components:
       - name
       - query
       x-internal: true
+    DetectorGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    DetectorGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - name
     DetectorTypeEnum:
       enum:
       - detector

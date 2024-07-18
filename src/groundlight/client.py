@@ -245,6 +245,7 @@ class Groundlight:
         name: str,
         query: str,
         *,
+        group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
@@ -271,6 +272,8 @@ class Groundlight:
             query=query,
             pipeline_config=pipeline_config,
         )
+        if group_name is not None:
+            detector_creation_input.group_name = group_name
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
         if confidence_threshold:
