@@ -26,6 +26,11 @@ from .client import Groundlight
 
 class ExperimentalApi(Groundlight):
     def __init__(self, endpoint: Union[str, None] = None, api_token: Union[str, None] = None):
+        """
+        Constructs an experimental groundlight client. The experimental client inherits all the functionality of the
+        base groundlight client, but also includes additional functionality that is still in development. Additional
+        functionality is subject to change
+        """
         super().__init__(endpoint=endpoint, api_token=api_token)
         self.actions_api = ActionsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
