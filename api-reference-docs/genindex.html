@@ -80,7 +80,9 @@
  | <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -97,20 +99,26 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#groundlight.Groundlight.__init__">__init__() (groundlight.Groundlight method)</a>
+      <li><a href="models.html#groundlight.ExperimentalApi.__init__">__init__() (groundlight.ExperimentalApi method)</a>
+
+      <ul>
+        <li><a href="models.html#groundlight.Groundlight.__init__">(groundlight.Groundlight method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#groundlight.Groundlight.add_label">add_label() (groundlight.Groundlight method)</a>
+      <li><a href="models.html#model.Rule.action">action (model.Rule attribute)</a>
 </li>
-      <li><a href="models.html#groundlight.Groundlight.ask_async">ask_async() (groundlight.Groundlight method)</a>
+      <li><a href="models.html#groundlight.Groundlight.add_label">add_label() (groundlight.Groundlight method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.ask_async">ask_async() (groundlight.Groundlight method)</a>
+</li>
       <li><a href="models.html#groundlight.Groundlight.ask_confident">ask_confident() (groundlight.Groundlight method)</a>
 </li>
       <li><a href="models.html#groundlight.Groundlight.ask_ml">ask_ml() (groundlight.Groundlight method)</a>
@@ -121,6 +129,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#model.Rule.condition">condition (model.Rule attribute)</a>
+</li>
       <li><a href="models.html#model.Detector.confidence_threshold">confidence_threshold (model.Detector attribute)</a>
 
       <ul>
@@ -132,10 +142,16 @@
       <ul>
         <li><a href="models.html#model.PaginatedImageQueryList.count">(model.PaginatedImageQueryList attribute)</a>
 </li>
+        <li><a href="models.html#model.PaginatedRuleList.count">(model.PaginatedRuleList attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#groundlight.Groundlight.create_detector">create_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.create_note">create_note() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.create_rule">create_rule() (groundlight.ExperimentalApi method)</a>
 </li>
       <li><a href="models.html#model.Detector.created_at">created_at (model.Detector attribute)</a>
 
@@ -149,7 +165,31 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi.delete_all_rules">delete_all_rules() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.delete_rule">delete_rule() (groundlight.ExperimentalApi method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.ImageQuery.detector_id">detector_id (model.ImageQuery attribute)</a>
+
+      <ul>
+        <li><a href="models.html#model.Rule.detector_id">(model.Rule attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="models.html#model.Rule.detector_name">detector_name (model.Rule attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#model.Rule.enabled">enabled (model.Rule attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi">ExperimentalApi (class in groundlight)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -161,15 +201,29 @@
 </li>
       <li><a href="models.html#groundlight.Groundlight.get_detector_by_name">get_detector_by_name() (groundlight.Groundlight method)</a>
 </li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_image">get_image() (groundlight.ExperimentalApi method)</a>
+</li>
       <li><a href="models.html#groundlight.Groundlight.get_image_query">get_image_query() (groundlight.Groundlight method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_notes">get_notes() (groundlight.ExperimentalApi method)</a>
+</li>
       <li><a href="models.html#groundlight.Groundlight.get_or_create_detector">get_or_create_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_rule">get_rule() (groundlight.ExperimentalApi method)</a>
 </li>
       <li><a href="models.html#groundlight.Groundlight">Groundlight (class in groundlight)</a>
 </li>
       <li><a href="models.html#model.Detector.group_name">group_name (model.Detector attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#model.Rule.human_review_required">human_review_required (model.Rule attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -181,6 +235,8 @@
 
       <ul>
         <li><a href="models.html#model.ImageQuery.id">(model.ImageQuery attribute)</a>
+</li>
+        <li><a href="models.html#model.Rule.id">(model.Rule attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -194,6 +250,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#groundlight.Groundlight.list_image_queries">list_image_queries() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.list_rules">list_rules() (groundlight.ExperimentalApi method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -211,8 +269,6 @@
 </li>
       <li><a href="models.html#model.Detector.mode_configuration">mode_configuration (model.Detector attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.Detector.model_computed_fields">model_computed_fields (model.Detector attribute)</a>
 
       <ul>
@@ -222,6 +278,10 @@
 </li>
         <li><a href="models.html#model.PaginatedImageQueryList.model_computed_fields">(model.PaginatedImageQueryList attribute)</a>
 </li>
+        <li><a href="models.html#model.PaginatedRuleList.model_computed_fields">(model.PaginatedRuleList attribute)</a>
+</li>
+        <li><a href="models.html#model.Rule.model_computed_fields">(model.Rule attribute)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -230,13 +290,19 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.Detector.name">name (model.Detector attribute)</a>
+
+      <ul>
+        <li><a href="models.html#model.Rule.name">(model.Rule attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.PaginatedDetectorList.next">next (model.PaginatedDetectorList attribute)</a>
 
       <ul>
         <li><a href="models.html#model.PaginatedImageQueryList.next">(model.PaginatedImageQueryList attribute)</a>
+</li>
+        <li><a href="models.html#model.PaginatedRuleList.next">(model.PaginatedRuleList attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -257,6 +323,8 @@
 
       <ul>
         <li><a href="models.html#model.PaginatedImageQueryList.previous">(model.PaginatedImageQueryList attribute)</a>
+</li>
+        <li><a href="models.html#model.PaginatedRuleList.previous">(model.PaginatedRuleList attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -288,6 +356,8 @@
       <ul>
         <li><a href="models.html#model.PaginatedImageQueryList.results">(model.PaginatedImageQueryList attribute)</a>
 </li>
+        <li><a href="models.html#model.PaginatedRuleList.results">(model.PaginatedRuleList attribute)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -295,10 +365,16 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#groundlight.Groundlight.start_inspection">start_inspection() (groundlight.Groundlight method)</a>
+      <li><a href="models.html#model.Rule.snooze_time_enabled">snooze_time_enabled (model.Rule attribute)</a>
+</li>
+      <li><a href="models.html#model.Rule.snooze_time_unit">snooze_time_unit (model.Rule attribute)</a>
+</li>
+      <li><a href="models.html#model.Rule.snooze_time_value">snooze_time_value (model.Rule attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.start_inspection">start_inspection() (groundlight.Groundlight method)</a>
+</li>
       <li><a href="models.html#groundlight.Groundlight.stop_inspection">stop_inspection() (groundlight.Groundlight method)</a>
 </li>
       <li><a href="models.html#groundlight.Groundlight.submit_image_query">submit_image_query() (groundlight.Groundlight method)</a>
