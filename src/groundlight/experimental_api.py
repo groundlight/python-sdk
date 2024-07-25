@@ -7,7 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, List
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -192,7 +192,7 @@ class ExperimentalApi(Groundlight):
         """
         return DetectorGroup(**self.detectors_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
 
-    def list_detector_groups(self) -> list[DetectorGroup]:
+    def list_detector_groups(self) -> List[DetectorGroup]:
         """
         Gets a list of all detector groups
 
