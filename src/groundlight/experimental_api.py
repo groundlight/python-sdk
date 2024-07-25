@@ -7,7 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, Union, List
+from typing import Any, Dict, List, Union
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
