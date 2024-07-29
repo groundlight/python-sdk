@@ -20,7 +20,7 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, PaginatedRuleList, Rule, DetectorGroup
+from model import Detector, DetectorGroup, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
