@@ -127,6 +127,54 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detector-groups:
+    get:
+      operationId: Get Detector Groups
+      description: List all detector groups
+      tags:
+      - detector-groups
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
+    post:
+      operationId: Create Detector Group
+      description: |-
+        Create a new detector group
+
+        POST data:
+          Required:
+            - name (str) - name of the predictor set
+      tags:
+      - detector-groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/detectors:
     get:
       operationId: List detectors
@@ -212,54 +260,6 @@ paths:
       responses:
         '204':
           description: No response body
-  /v1/detectors/detector-groups:
-    get:
-      operationId: Get Detector Groups
-      description: List all detector groups
-      tags:
-      - detectors
-      security:
-      - ApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DetectorGroup'
-          description: ''
-    post:
-      operationId: Create Detector Group
-      description: |-
-        Create a new detector group
-
-        POST data:
-          Required:
-            - name (str) - name of the predictor set
-      tags:
-      - detectors
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-        required: true
-      security:
-      - ApiToken: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetectorGroup'
-          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -674,6 +674,7 @@ components:
 
             * `BINARY` - BINARY
             * `COUNT` - COUNT
+            * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
           nullable: true
           description: Configuration for each detector mode.
@@ -781,10 +782,12 @@ components:
       enum:
       - BINARY
       - COUNT
+      - MULTI_CLASS
       type: string
       description: |-
         * `BINARY` - BINARY
         * `COUNT` - COUNT
+        * `MULTI_CLASS` - MULTI_CLASS
     Note:
       type: object
       properties:

@@ -10,6 +10,7 @@ import json
 from typing import Any, Dict, List, Union
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
+from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
@@ -19,7 +20,7 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, DetectorGroup, PaginatedRuleList, Rule
+from model import Detector, PaginatedRuleList, Rule, DetectorGroup
 
 from .client import Groundlight
 
@@ -35,6 +36,7 @@ class ExperimentalApi(Groundlight):
         self.actions_api = ActionsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
+        self.detector_group_api = DetectorGroupsApi(self.api_client)
 
     ITEMS_PER_PAGE = 100
 
@@ -190,7 +192,7 @@ class ExperimentalApi(Groundlight):
 
         :return: a Detector object corresponding to the new detector group
         """
-        return DetectorGroup(**self.detectors_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
+        return DetectorGroup(**self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
 
     def list_detector_groups(self) -> List[DetectorGroup]:
         """
@@ -198,4 +200,4 @@ class ExperimentalApi(Groundlight):
 
         :return: a list of all detector groups
         """
-        return [DetectorGroup(**det.to_dict()) for det in self.detectors_api.get_detector_groups()]
+        return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
