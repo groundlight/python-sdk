@@ -73,6 +73,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.ExperimentalApi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_detector_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_detector_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_note"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_note()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_rule()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.delete_all_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.delete_all_rules()</span></code></a></li>
@@ -80,6 +81,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_image"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_notes"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_notes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_rule()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_detector_groups"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_detector_groups()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_rules()</span></code></a></li>
 </ul>
 </li>
@@ -428,7 +430,7 @@ the image query (limited to 1KB). You can retrieve this metadata later by callin
 
 <dl class="py method">
 <dt class="sig sig-object py" id="groundlight.Groundlight.create_detector">
-<span class="sig-name descname"><span class="pre">create_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_detector" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_detector" title="Link to this definition"></a></dt>
 <dd><p>Create a new detector with a given name and query</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -440,6 +442,7 @@ the image query (limited to 1KB). You can retrieve this metadata later by callin
 <li><p><strong>metadata</strong> (<em>dict</em><em> | </em><em>str</em><em> | </em><em>None</em>) – A dictionary or JSON string of custom key/value metadata to associate with
 the detector (limited to 1KB). You can retrieve this metadata later by calling
 <cite>get_detector()</cite>.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -783,6 +786,24 @@ functionality is subject to change.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_detector_group">
+<span class="sig-name descname"><span class="pre">create_detector_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DetectorGroup</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_detector_group" title="Link to this definition"></a></dt>
+<dd><p>Creates a detector group with the given name
+Note: you can specify a detector group when creating a detector without the need to create it ahead of time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – the name of the detector group</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a Detector object corresponding to the new detector group</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DetectorGroup</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_note">
 <span class="sig-name descname"><span class="pre">create_note</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoteRequest</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_note" title="Link to this definition"></a></dt>
 <dd><p>Adds a note to a given detector</p>
@@ -903,7 +924,7 @@ the detector, and values that are lists of notes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.get_rule">
-<span class="sig-name descname"><span class="pre">get_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Action</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_rule" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Rule" title="model.Rule"><span class="pre">Rule</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_rule" title="Link to this definition"></a></dt>
 <dd><p>Gets the action with the given id</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -913,7 +934,21 @@ the detector, and values that are lists of notes</p>
 <dd class="field-even"><p>the action with the given id</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>Action</em></p>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Rule" title="model.Rule"><em>Rule</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.list_detector_groups">
+<span class="sig-name descname"><span class="pre">list_detector_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DetectorGroup</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.list_detector_groups" title="Link to this definition"></a></dt>
+<dd><p>Gets a list of all detector groups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a list of all detector groups</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>List</em>[<em>DetectorGroup</em>]</p>
 </dd>
 </dl>
 </dd></dl>
