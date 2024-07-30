@@ -36,12 +36,12 @@ class LabelsApi(object):
         if api_client is None:
             api_client = ApiClient()
         self.api_client = api_client
-        self.labels_create_endpoint = _Endpoint(
+        self.create_label_endpoint = _Endpoint(
             settings={
                 "response_type": (LabelValue,),
                 "auth": ["ApiToken"],
                 "endpoint_path": "/v1/labels",
-                "operation_id": "labels_create",
+                "operation_id": "create_label",
                 "http_method": "POST",
                 "servers": None,
             },
@@ -75,14 +75,14 @@ class LabelsApi(object):
             api_client=api_client,
         )
 
-    def labels_create(self, label_value_request, **kwargs):
-        """labels_create  # noqa: E501
+    def create_label(self, label_value_request, **kwargs):
+        """create_label  # noqa: E501
 
         Create a new LabelValue and attach it to an image query. This will trigger asynchronous fine-tuner model training.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.labels_create(label_value_request, async_req=True)
+        >>> thread = api.create_label(label_value_request, async_req=True)
         >>> result = thread.get()
 
         Args:
@@ -131,4 +131,4 @@ class LabelsApi(object):
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["label_value_request"] = label_value_request
-        return self.labels_create_endpoint.call_with_http_info(**kwargs)
+        return self.create_label_endpoint.call_with_http_info(**kwargs)

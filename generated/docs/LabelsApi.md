@@ -4,11 +4,11 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**labels_create**](LabelsApi.md#labels_create) | **POST** /v1/labels | 
+[**create_label**](LabelsApi.md#create_label) | **POST** /v1/labels | 
 
 
-# **labels_create**
-> LabelValue labels_create(label_value_request)
+# **create_label**
+> LabelValue create_label(label_value_request)
 
 
 
@@ -58,10 +58,10 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.labels_create(label_value_request)
+        api_response = api_instance.create_label(label_value_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling LabelsApi->labels_create: %s\n" % e)
+        print("Exception when calling LabelsApi->create_label: %s\n" % e)
 ```
 
 

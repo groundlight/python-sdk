@@ -403,7 +403,7 @@ paths:
           description: ''
   /v1/labels:
     post:
-      operationId: labels_create
+      operationId: create label
       description: |-
         Create a new LabelValue and attach it to an image query. This will trigger
         asynchronous fine-tuner model training.

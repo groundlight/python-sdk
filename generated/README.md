@@ -124,7 +124,7 @@ Class | Method | HTTP request | Description
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
-*LabelsApi* | [**labels_create**](docs/LabelsApi.md#labels_create) | **POST** /v1/labels | 
+*LabelsApi* | [**create_label**](docs/LabelsApi.md#create_label) | **POST** /v1/labels | 
 *NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /v1/notes | 
 *NotesApi* | [**get_notes**](docs/NotesApi.md#get_notes) | **GET** /v1/notes | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /v1/me | 

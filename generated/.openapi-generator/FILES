@@ -102,16 +102,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_annotations_requested_enum.py
-test/test_b_box_geometry.py
-test/test_blank_enum.py
-test/test_detector_group.py
-test/test_detector_group_request.py
-test/test_label_value.py
-test/test_label_value_request.py
-test/test_labels_api.py
-test/test_null_enum.py
-test/test_review_reason_enum.py
-test/test_roi.py
-test/test_source_enum.py
 tox.ini
