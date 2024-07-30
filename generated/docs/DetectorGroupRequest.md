@@ -1,11 +1,11 @@
-# ModeEnum
+# DetectorGroupRequest
 
-* `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS
 
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**value** | **str** | * &#x60;BINARY&#x60; - BINARY * &#x60;COUNT&#x60; - COUNT * &#x60;MULTI_CLASS&#x60; - MULTI_CLASS |  must be one of ["BINARY", "COUNT", "MULTI_CLASS", ]
+**name** | **str** |  | 
+**any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

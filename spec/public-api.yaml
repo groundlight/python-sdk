@@ -212,6 +212,54 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detectors/detector-groups:
+    get:
+      operationId: Get Detector Groups
+      description: List all detector groups
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
+    post:
+      operationId: Create Detector Group
+      description: |-
+        Create a new detector group
+
+        POST data:
+          Required:
+            - name (str) - name of the predictor set
+      tags:
+      - detectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -353,6 +401,35 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /v1/labels:
+    post:
+      operationId: labels_create
+      description: |-
+        Create a new LabelValue and attach it to an image query. This will trigger
+        asynchronous fine-tuner model training.
+      tags:
+      - labels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelValueRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LabelValueRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LabelValueRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelValue'
+          description: ''
   /v1/me:
     get:
       operationId: Who am I
@@ -470,6 +547,47 @@ components:
       required:
       - CUSTOMER
       - GL
+    AnnotationsRequestedEnum:
+      enum:
+      - BINARY_CLASSIFICATION
+      - BOUNDING_BOXES
+      type: string
+      description: |-
+        * `BINARY_CLASSIFICATION` - Binary Classification
+        * `BOUNDING_BOXES` - Bounding Boxes
+    BBoxGeometry:
+      type: object
+      properties:
+        left:
+          type: number
+          format: double
+        top:
+          type: number
+          format: double
+        right:
+          type: number
+          format: double
+        bottom:
+          type: number
+          format: double
+        x:
+          type: number
+          format: double
+          readOnly: true
+        y:
+          type: number
+          format: double
+          readOnly: true
+      required:
+      - bottom
+      - left
+      - right
+      - top
+      - x
+      - y
+    BlankEnum:
+      enum:
+      - ''
     ChannelEnum:
       enum:
       - EMAIL
@@ -626,6 +744,7 @@ components:
 
             * `BINARY` - BINARY
             * `COUNT` - COUNT
+            * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
           nullable: true
           description: Configuration for each detector mode.
@@ -633,6 +752,27 @@ components:
       - name
       - query
       x-internal: true
+    DetectorGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    DetectorGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - name
     DetectorTypeEnum:
       enum:
       - detector
@@ -692,7 +832,15 @@ components:
           format: double
           readOnly: true
           description: Min confidence needed to accept the response of the image query.
+        bounding_boxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROI'
+          readOnly: true
+          nullable: true
+          description: An array of bounding boxes collected on image
       required:
+      - bounding_boxes
       - confidence_threshold
       - created_at
       - detector_id
@@ -708,14 +856,117 @@ components:
       enum:
       - image_query
       type: string
+    LabelValue:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+          nullable: true
+        confidence:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+        class_name:
+          type: string
+          nullable: true
+          description: A human-readable class name for this label
+          readOnly: true
+        feedback_text:
+          type: string
+          nullable: true
+        rois:
+          nullable: true
+          description: List of region-of-interest (ROI) annotations
+        flag_archived:
+          type: boolean
+          nullable: true
+        annotations_requested:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/AnnotationsRequestedEnum'
+            description: |-
+              The type of annotation requested
+
+              * `BINARY_CLASSIFICATION` - Binary Classification
+              * `BOUNDING_BOXES` - Bounding Boxes
+          readOnly: true
+        review_reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ReviewReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        detector_id:
+          type: integer
+          nullable: true
+          readOnly: true
+        deleted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - annotations_requested
+      - class_name
+      - confidence
+      - created_at
+      - deleted_at
+      - detector_id
+      - source
+    LabelValueRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          writeOnly: true
+          minLength: 1
+        posicheck_id:
+          type: string
+          writeOnly: true
+          minLength: 1
+        value:
+          type: number
+          format: double
+          nullable: true
+        feedback_text:
+          type: string
+          nullable: true
+        rois:
+          nullable: true
+          description: List of region-of-interest (ROI) annotations
+        flag_archived:
+          type: boolean
+          nullable: true
+        review_reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ReviewReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - label
+      - posicheck_id
     ModeEnum:
       enum:
       - BINARY
       - COUNT
+      - MULTI_CLASS
       type: string
       description: |-
         * `BINARY` - BINARY
         * `COUNT` - COUNT
+        * `MULTI_CLASS` - MULTI_CLASS
     Note:
       type: object
       properties:
@@ -737,6 +988,9 @@ components:
           description: Text content of the note.
       required:
       - content
+    NullEnum:
+      enum:
+      - null
     PaginatedDetectorList:
       type: object
       required:
@@ -806,11 +1060,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Rule'
+    ROI:
+      type: object
+      properties:
+        label:
+          type: string
+          description: The label of the bounding box.
+        score:
+          type: number
+          format: double
+          description: The confidence of the bounding box.
+        geometry:
+          $ref: '#/components/schemas/BBoxGeometry'
+      required:
+      - geometry
+      - label
+      - score
     ResultTypeEnum:
       enum:
       - binary_classification
       - counting
       type: string
+    ReviewReasonEnum:
+      enum:
+      - ESCALATION
+      - AUDIT
+      - ASSESSMENT
+      - CUSTOMER_INITIATED
+      - CONFIDENT_UNCLEAR
+      - CONFIDENT_UNCLEAR_AUDIT
+      - DISAGREEMENT
+      - DISAGREEMENT_ON_ASSESSMENT
+      - CONFIRM_ACTION_TRIGGER
+      type: string
+      description: |-
+        * `ESCALATION` - ESCALATION
+        * `AUDIT` - AUDIT
+        * `ASSESSMENT` - ASSESSMENT
+        * `CUSTOMER_INITIATED` - CUSTOMER_INITIATED
+        * `CONFIDENT_UNCLEAR` - CONFIDENT_UNCLEAR
+        * `CONFIDENT_UNCLEAR_AUDIT` - CONFIDENT_UNCLEAR_AUDIT
+        * `DISAGREEMENT` - DISAGREEMENT
+        * `DISAGREEMENT_ON_ASSESSMENT` - DISAGREEMENT_ON_ASSESSMENT
+        * `CONFIRM_ACTION_TRIGGER` - CONFIRM_ACTION_TRIGGER
     Rule:
       type: object
       properties:
@@ -898,6 +1190,24 @@ components:
         * `HOURS` - HOURS
         * `MINUTES` - MINUTES
         * `SECONDS` - SECONDS
+    SourceEnum:
+      enum:
+      - INITIAL_PLACEHOLDER
+      - CLOUD
+      - CUST
+      - HUMAN_CLOUD_ENSEMBLE
+      - ALG
+      - ALG_REC
+      - ALG_UNCLEAR
+      type: string
+      description: |-
+        * `INITIAL_PLACEHOLDER` - InitialPlaceholder
+        * `CLOUD` - HumanCloud
+        * `CUST` - HumanCustomer
+        * `HUMAN_CLOUD_ENSEMBLE` - HumanCloudEnsemble
+        * `ALG` - Algorithm
+        * `ALG_REC` - AlgorithmReconciled
+        * `ALG_UNCLEAR` - AlgorithmUnclear
     VerbEnum:
       enum:
       - ANSWERED_CONSECUTIVELY
