@@ -10,8 +10,10 @@ from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.user_api import UserApi
+from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
     Detector,
     ImageQuery,
@@ -149,6 +151,7 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
+        self.labels_api = LabelsApi(self.api_client)
         self._verify_connectivity()
 
     def __repr__(self) -> str:
@@ -740,7 +743,8 @@ class Groundlight:
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
-
+        LabelValueRequest()
+        return self.labels_api.create_label()
         return self.api_client._add_label(image_query_id, api_label)  # pylint: disable=protected-access
 
     def start_inspection(self) -> str:
