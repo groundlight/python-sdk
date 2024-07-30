@@ -5,10 +5,10 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**create_detector**](DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
-[**create_detector_group**](DetectorsApi.md#create_detector_group) | **POST** /v1/detectors/detector-groups | 
+[**create_detector_group2**](DetectorsApi.md#create_detector_group2) | **POST** /v1/detectors/detector-groups | 
 [**delete_detector**](DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 [**get_detector**](DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
-[**get_detector_groups**](DetectorsApi.md#get_detector_groups) | **GET** /v1/detectors/detector-groups | 
+[**get_detector_groups2**](DetectorsApi.md#get_detector_groups2) | **GET** /v1/detectors/detector-groups | 
 [**list_detectors**](DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 
 
@@ -100,8 +100,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **create_detector_group**
-> DetectorGroup create_detector_group(detector_group_request)
+# **create_detector_group2**
+> DetectorGroup create_detector_group2(detector_group_request)
 
 
 
@@ -145,10 +145,10 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.create_detector_group(detector_group_request)
+        api_response = api_instance.create_detector_group2(detector_group_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling DetectorsApi->create_detector_group: %s\n" % e)
+        print("Exception when calling DetectorsApi->create_detector_group2: %s\n" % e)
 ```
 
 
@@ -332,8 +332,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **get_detector_groups**
-> [DetectorGroup] get_detector_groups()
+# **get_detector_groups2**
+> [DetectorGroup] get_detector_groups2()
 
 
 
@@ -373,10 +373,10 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
     # example, this endpoint has no required or optional parameters
     try:
-        api_response = api_instance.get_detector_groups()
+        api_response = api_instance.get_detector_groups2()
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling DetectorsApi->get_detector_groups: %s\n" % e)
+        print("Exception when calling DetectorsApi->get_detector_groups2: %s\n" % e)
 ```
 
 

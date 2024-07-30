@@ -114,11 +114,13 @@ Class | Method | HTTP request | Description
 *ActionsApi* | [**get_rule**](docs/ActionsApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
 *ActionsApi* | [**list_detector_rules**](docs/ActionsApi.md#list_detector_rules) | **GET** /v1/actions/detector/{detector_id}/rules | 
 *ActionsApi* | [**list_rules**](docs/ActionsApi.md#list_rules) | **GET** /v1/actions/rules | 
+*DetectorGroupsApi* | [**create_detector_group**](docs/DetectorGroupsApi.md#create_detector_group) | **POST** /v1/detector-groups | 
+*DetectorGroupsApi* | [**get_detector_groups**](docs/DetectorGroupsApi.md#get_detector_groups) | **GET** /v1/detector-groups | 
 *DetectorsApi* | [**create_detector**](docs/DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
-*DetectorsApi* | [**create_detector_group**](docs/DetectorsApi.md#create_detector_group) | **POST** /v1/detectors/detector-groups | 
+*DetectorsApi* | [**create_detector_group2**](docs/DetectorsApi.md#create_detector_group2) | **POST** /v1/detectors/detector-groups | 
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
-*DetectorsApi* | [**get_detector_groups**](docs/DetectorsApi.md#get_detector_groups) | **GET** /v1/detectors/detector-groups | 
+*DetectorsApi* | [**get_detector_groups2**](docs/DetectorsApi.md#get_detector_groups2) | **GET** /v1/detectors/detector-groups | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 

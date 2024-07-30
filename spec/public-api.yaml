@@ -127,6 +127,54 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detector-groups:
+    get:
+      operationId: Get Detector Groups
+      description: List all detector groups
+      tags:
+      - detector-groups
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
+    post:
+      operationId: Create Detector Group
+      description: |-
+        Create a new detector group
+
+        POST data:
+          Required:
+            - name (str) - name of the predictor set
+      tags:
+      - detector-groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/detectors:
     get:
       operationId: List detectors
@@ -214,7 +262,7 @@ paths:
           description: No response body
   /v1/detectors/detector-groups:
     get:
-      operationId: Get Detector Groups
+      operationId: Get Detector Groups_2
       description: List all detector groups
       tags:
       - detectors
@@ -230,7 +278,7 @@ paths:
                   $ref: '#/components/schemas/DetectorGroup'
           description: ''
     post:
-      operationId: Create Detector Group
+      operationId: Create Detector Group_2
       description: |-
         Create a new detector group
 
