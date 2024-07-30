@@ -114,6 +114,8 @@ Class | Method | HTTP request | Description
 *ActionsApi* | [**get_rule**](docs/ActionsApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
 *ActionsApi* | [**list_detector_rules**](docs/ActionsApi.md#list_detector_rules) | **GET** /v1/actions/detector/{detector_id}/rules | 
 *ActionsApi* | [**list_rules**](docs/ActionsApi.md#list_rules) | **GET** /v1/actions/rules | 
+*DetectorGroupsApi* | [**create_detector_group**](docs/DetectorGroupsApi.md#create_detector_group) | **POST** /v1/detector-groups | 
+*DetectorGroupsApi* | [**get_detector_groups**](docs/DetectorGroupsApi.md#get_detector_groups) | **GET** /v1/detector-groups | 
 *DetectorsApi* | [**create_detector**](docs/DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
@@ -139,6 +141,8 @@ Class | Method | HTTP request | Description
  - [CountingResult](docs/CountingResult.md)
  - [Detector](docs/Detector.md)
  - [DetectorCreationInputRequest](docs/DetectorCreationInputRequest.md)
+ - [DetectorGroup](docs/DetectorGroup.md)
+ - [DetectorGroupRequest](docs/DetectorGroupRequest.md)
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)

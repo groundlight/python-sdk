@@ -53,6 +53,7 @@ class ModeEnum(ModelSimple):
         ("value",): {
             "BINARY": "BINARY",
             "COUNT": "COUNT",
+            "MULTI_CLASS": "MULTI_CLASS",
         },
     }
 
@@ -102,10 +103,10 @@ class ModeEnum(ModelSimple):
         Note that value can be passed either in args or in kwargs, but not in both.
 
         Args:
-            args[0] (str): * `BINARY` - BINARY * `COUNT` - COUNT., must be one of ["BINARY", "COUNT", ]  # noqa: E501
+            args[0] (str): * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS., must be one of ["BINARY", "COUNT", "MULTI_CLASS", ]  # noqa: E501
 
         Keyword Args:
-            value (str): * `BINARY` - BINARY * `COUNT` - COUNT., must be one of ["BINARY", "COUNT", ]  # noqa: E501
+            value (str): * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS., must be one of ["BINARY", "COUNT", "MULTI_CLASS", ]  # noqa: E501
             _check_type (bool): if True, values for parameters in openapi_types
                                 will be type checked and a TypeError will be
                                 raised if the wrong type is input.
@@ -194,10 +195,10 @@ class ModeEnum(ModelSimple):
         Note that value can be passed either in args or in kwargs, but not in both.
 
         Args:
-            args[0] (str): * `BINARY` - BINARY * `COUNT` - COUNT., must be one of ["BINARY", "COUNT", ]  # noqa: E501
+            args[0] (str): * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS., must be one of ["BINARY", "COUNT", "MULTI_CLASS", ]  # noqa: E501
 
         Keyword Args:
-            value (str): * `BINARY` - BINARY * `COUNT` - COUNT., must be one of ["BINARY", "COUNT", ]  # noqa: E501
+            value (str): * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS., must be one of ["BINARY", "COUNT", "MULTI_CLASS", ]  # noqa: E501
             _check_type (bool): if True, values for parameters in openapi_types
                                 will be type checked and a TypeError will be
                                 raised if the wrong type is input.
