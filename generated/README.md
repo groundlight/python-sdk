@@ -138,7 +138,6 @@ Class | Method | HTTP request | Description
  - [AnnotationsRequestedEnum](docs/AnnotationsRequestedEnum.md)
  - [BBoxGeometry](docs/BBoxGeometry.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
- - [BlankEnum](docs/BlankEnum.md)
  - [ChannelEnum](docs/ChannelEnum.md)
  - [Condition](docs/Condition.md)
  - [ConditionRequest](docs/ConditionRequest.md)

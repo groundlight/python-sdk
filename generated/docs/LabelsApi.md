@@ -48,12 +48,8 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     api_instance = labels_api.LabelsApi(api_client)
     label_value_request = LabelValueRequest(
         label="label_example",
-        posicheck_id="posicheck_id_example",
-        value=3.14,
-        feedback_text="feedback_text_example",
+        image_query_id="image_query_id_example",
         rois=None,
-        flag_archived=True,
-        review_reason=None,
     ) # LabelValueRequest | 
 
     # example passing only required values which don't have defaults set

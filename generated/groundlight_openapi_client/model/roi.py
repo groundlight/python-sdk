@@ -111,7 +111,9 @@ class ROI(ModelNormal):
         "geometry": "geometry",  # noqa: E501
     }
 
-    read_only_vars = {}
+    read_only_vars = {
+        "score",  # noqa: E501
+    }
 
     _composed_schemas = {}
 
@@ -209,12 +211,11 @@ class ROI(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, label, score, geometry, *args, **kwargs):  # noqa: E501
+    def __init__(self, label, geometry, *args, **kwargs):  # noqa: E501
         """ROI - a model defined in OpenAPI
 
         Args:
             label (str): The label of the bounding box.
-            score (float): The confidence of the bounding box.
             geometry (BBoxGeometry):
 
         Keyword Args:
@@ -275,7 +276,6 @@ class ROI(ModelNormal):
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
         self.label = label
-        self.score = score
         self.geometry = geometry
         for var_name, var_value in kwargs.items():
             if (

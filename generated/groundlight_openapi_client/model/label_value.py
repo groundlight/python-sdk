@@ -31,13 +31,11 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 def lazy_import():
     from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
-    from groundlight_openapi_client.model.blank_enum import BlankEnum
     from groundlight_openapi_client.model.null_enum import NullEnum
     from groundlight_openapi_client.model.review_reason_enum import ReviewReasonEnum
     from groundlight_openapi_client.model.source_enum import SourceEnum
 
     globals()["AnnotationsRequestedEnum"] = AnnotationsRequestedEnum
-    globals()["BlankEnum"] = BlankEnum
     globals()["NullEnum"] = NullEnum
     globals()["ReviewReasonEnum"] = ReviewReasonEnum
     globals()["SourceEnum"] = SourceEnum
@@ -104,6 +102,10 @@ class LabelValue(ModelNormal):
         """
         lazy_import()
         return {
+            "value": (
+                float,
+                none_type,
+            ),  # noqa: E501
             "confidence": (
                 float,
                 none_type,
@@ -112,14 +114,25 @@ class LabelValue(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "feedback_text": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "annotations_requested": ([bool, date, datetime, dict, float, int, list, str, none_type],),  # noqa: E501
+            "review_reason": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
             "created_at": (datetime,),  # noqa: E501
             "detector_id": (
                 int,
-                none_type,
-            ),  # noqa: E501
-            "deleted_at": (
-                datetime,
                 none_type,
             ),  # noqa: E501
             "source": (
@@ -133,30 +146,7 @@ class LabelValue(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
-            "value": (
-                float,
-                none_type,
-            ),  # noqa: E501
-            "feedback_text": (
-                str,
-                none_type,
-            ),  # noqa: E501
             "rois": (
-                bool,
-                date,
-                datetime,
-                dict,
-                float,
-                int,
-                list,
-                str,
-                none_type,
-            ),  # noqa: E501
-            "flag_archived": (
-                bool,
-                none_type,
-            ),  # noqa: E501
-            "review_reason": (
                 bool,
                 date,
                 datetime,
@@ -174,27 +164,27 @@ class LabelValue(ModelNormal):
         return None
 
     attribute_map = {
+        "value": "value",  # noqa: E501
         "confidence": "confidence",  # noqa: E501
         "class_name": "class_name",  # noqa: E501
+        "feedback_text": "feedback_text",  # noqa: E501
         "annotations_requested": "annotations_requested",  # noqa: E501
+        "review_reason": "review_reason",  # noqa: E501
         "created_at": "created_at",  # noqa: E501
         "detector_id": "detector_id",  # noqa: E501
-        "deleted_at": "deleted_at",  # noqa: E501
         "source": "source",  # noqa: E501
-        "value": "value",  # noqa: E501
-        "feedback_text": "feedback_text",  # noqa: E501
         "rois": "rois",  # noqa: E501
-        "flag_archived": "flag_archived",  # noqa: E501
-        "review_reason": "review_reason",  # noqa: E501
     }
 
     read_only_vars = {
+        "value",  # noqa: E501
         "confidence",  # noqa: E501
         "class_name",  # noqa: E501
+        "feedback_text",  # noqa: E501
         "annotations_requested",  # noqa: E501
+        "review_reason",  # noqa: E501
         "created_at",  # noqa: E501
         "detector_id",  # noqa: E501
-        "deleted_at",  # noqa: E501
         "source",  # noqa: E501
     }
 
@@ -203,17 +193,30 @@ class LabelValue(ModelNormal):
     @classmethod
     @convert_js_args_to_python_args
     def _from_openapi_data(
-        cls, confidence, class_name, annotations_requested, created_at, detector_id, deleted_at, source, *args, **kwargs
+        cls,
+        value,
+        confidence,
+        class_name,
+        feedback_text,
+        annotations_requested,
+        review_reason,
+        created_at,
+        detector_id,
+        source,
+        *args,
+        **kwargs,
     ):  # noqa: E501
         """LabelValue - a model defined in OpenAPI
 
         Args:
+            value (float, none_type):
             confidence (float, none_type):
             class_name (str, none_type): A human-readable class name for this label
+            feedback_text (str, none_type):
             annotations_requested ([bool, date, datetime, dict, float, int, list, str, none_type]):
+            review_reason (bool, date, datetime, dict, float, int, list, str, none_type):
             created_at (datetime):
             detector_id (int, none_type):
-            deleted_at (datetime, none_type):
             source (bool, date, datetime, dict, float, int, list, str, none_type):
 
         Keyword Args:
@@ -247,11 +250,7 @@ class LabelValue(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            value (float, none_type): [optional]  # noqa: E501
-            feedback_text (str, none_type): [optional]  # noqa: E501
             rois (bool, date, datetime, dict, float, int, list, str, none_type): List of region-of-interest (ROI) annotations. [optional]  # noqa: E501
-            flag_archived (bool, none_type): [optional]  # noqa: E501
-            review_reason (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -280,12 +279,14 @@ class LabelValue(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.value = value
         self.confidence = confidence
         self.class_name = class_name
+        self.feedback_text = feedback_text
         self.annotations_requested = annotations_requested
+        self.review_reason = review_reason
         self.created_at = created_at
         self.detector_id = detector_id
-        self.deleted_at = deleted_at
         self.source = source
         for var_name, var_value in kwargs.items():
             if (
@@ -343,11 +344,7 @@ class LabelValue(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            value (float, none_type): [optional]  # noqa: E501
-            feedback_text (str, none_type): [optional]  # noqa: E501
             rois (bool, date, datetime, dict, float, int, list, str, none_type): List of region-of-interest (ROI) annotations. [optional]  # noqa: E501
-            flag_archived (bool, none_type): [optional]  # noqa: E501
-            review_reason (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

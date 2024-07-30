@@ -585,9 +585,6 @@ components:
       - top
       - x
       - y
-    BlankEnum:
-      enum:
-      - ''
     ChannelEnum:
       enum:
       - EMAIL
@@ -862,6 +859,7 @@ components:
         value:
           type: number
           format: double
+          readOnly: true
           nullable: true
         confidence:
           type: number
@@ -875,13 +873,11 @@ components:
           readOnly: true
         feedback_text:
           type: string
+          readOnly: true
           nullable: true
         rois:
           nullable: true
           description: List of region-of-interest (ROI) annotations
-        flag_archived:
-          type: boolean
-          nullable: true
         annotations_requested:
           type: array
           items:
@@ -894,10 +890,10 @@ components:
               * `BOUNDING_BOXES` - Bounding Boxes
           readOnly: true
         review_reason:
+          readOnly: true
           nullable: true
           oneOf:
           - $ref: '#/components/schemas/ReviewReasonEnum'
-          - $ref: '#/components/schemas/BlankEnum'
           - $ref: '#/components/schemas/NullEnum'
         created_at:
           type: string
@@ -907,11 +903,6 @@ components:
           type: integer
           nullable: true
           readOnly: true
-        deleted_at:
-          type: string
-          format: date-time
-          readOnly: true
-          nullable: true
         source:
           allOf:
           - $ref: '#/components/schemas/SourceEnum'
@@ -921,9 +912,11 @@ components:
       - class_name
       - confidence
       - created_at
-      - deleted_at
       - detector_id
+      - feedback_text
+      - review_reason
       - source
+      - value
     LabelValueRequest:
       type: object
       properties:
@@ -931,32 +924,16 @@ components:
           type: string
           writeOnly: true
           minLength: 1
-        posicheck_id:
+        image_query_id:
           type: string
           writeOnly: true
           minLength: 1
-        value:
-          type: number
-          format: double
-          nullable: true
-        feedback_text:
-          type: string
-          nullable: true
         rois:
           nullable: true
           description: List of region-of-interest (ROI) annotations
-        flag_archived:
-          type: boolean
-          nullable: true
-        review_reason:
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/ReviewReasonEnum'
-          - $ref: '#/components/schemas/BlankEnum'
-          - $ref: '#/components/schemas/NullEnum'
       required:
+      - image_query_id
       - label
-      - posicheck_id
     ModeEnum:
       enum:
       - BINARY
@@ -1069,6 +1046,7 @@ components:
         score:
           type: number
           format: double
+          readOnly: true
           description: The confidence of the bounding box.
         geometry:
           $ref: '#/components/schemas/BBoxGeometry'

@@ -7,7 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, Union
+from typing import Any, Dict, Tuple, Union
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -19,7 +19,7 @@ from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, PaginatedRuleList, Rule
+from model import Detector, PaginatedRuleList, Rule, ROI
 
 from .client import Groundlight
 
@@ -180,3 +180,22 @@ class ExperimentalApi(Groundlight):
         if isinstance(note, str):
             note = NoteRequest(content=note)
         self.notes_api.create_note(det_id, note)
+
+    def create_roi(self, label: str, top_left: Tuple[int, int], bottom_right: Tuple[int, int]) -> ROI:
+        """
+        Adds a region of interest to the given detector
+        NOTE: This feature is only available to Pro tier and higher
+        If you would like to learn more, reach out to us at https://groundlight.ai
+
+        :param label: the label of the item in the roi
+        :param top_left: the top left corner of the roi
+        :param bottom_right: the bottom right corner of the roi
+        """
+
+        return ROI(
+            label=label,
+            left = top_left[0],
+            top = top_left[1],
+            right = bottom_right[0],
+            bottom = bottom_right[1]
+        )

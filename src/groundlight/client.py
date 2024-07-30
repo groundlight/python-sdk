@@ -723,7 +723,7 @@ class Groundlight:
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
+    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Optional[list] = None):
         """
         Add a new label to an image query.  This answers the detector's question.
 
@@ -731,6 +731,7 @@ class Groundlight:
                             or an image_query id as a string.
 
         :param label: The string "YES" or the string "NO" in answer to the query.
+        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
 
         :return: None
         """
@@ -743,9 +744,9 @@ class Groundlight:
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
-        LabelValueRequest()
-        return self.labels_api.create_label()
-        return self.api_client._add_label(image_query_id, api_label)  # pylint: disable=protected-access
+        json_rois = [roi.json() for roi in rois] if rois else None
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=json_rois)
+        self.labels_api.create_label(request_params)
 
     def start_inspection(self) -> str:
         """

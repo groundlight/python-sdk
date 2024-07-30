@@ -15,7 +15,6 @@ from groundlight_openapi_client.model.all_notes import AllNotes
 from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
 from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
 from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
-from groundlight_openapi_client.model.blank_enum import BlankEnum
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition import Condition
 from groundlight_openapi_client.model.condition_request import ConditionRequest
