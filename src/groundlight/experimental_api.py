@@ -20,7 +20,7 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, DetectorGroup, PaginatedRuleList, Rule, ROI
+from model import Detector, DetectorGroup, PaginatedRuleList, Rule, ROI, BBoxGeometry
 
 from .client import Groundlight
 
@@ -201,3 +201,27 @@ class ExperimentalApi(Groundlight):
         :return: a list of all detector groups
         """
         return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
+
+    def create_roi(self, label: str, top_left: Tuple[int, int], bottom_right: Tuple[int, int]) -> ROI:
+        """
+        Adds a region of interest to the given detector
+        NOTE: This feature is only available to Pro tier and higher
+        If you would like to learn more, reach out to us at https://groundlight.ai
+
+        :param label: the label of the item in the roi
+        :param top_left: the top left corner of the roi
+        :param bottom_right: the bottom right corner of the roi
+        """
+
+        return ROI(
+            label=label,
+            score=1.0,
+            geometry=BBoxGeometry(
+                left = top_left[0],
+                top = top_left[1],
+                right = bottom_right[0],
+                bottom = bottom_right[1],
+                x = (top_left[0] + bottom_right[0]) / 2,
+                y = (top_left[1] + bottom_right[1]) / 2,
+            )
+        )
