@@ -6,11 +6,10 @@ from groundlight_openapi_client.exceptions import NotFoundException
 
 
 def test_create_action(gl: ExperimentalApi):
-    # We first clear out any rules in case the account has any left over from a previous test
-    gl.delete_all_rules()
+    # use a unique name for the alert
     name = f"Test {datetime.utcnow()}"
     det = gl.get_or_create_detector(name, "test_query")
-    rule = gl.create_rule(det, "test_rule", "EMAIL", "test@example.com")
+    rule = gl.create_rule(det, f"test_rule_{name}", "EMAIL", "test@example.com")
     rule2 = gl.get_rule(rule.id)
     assert rule == rule2
     gl.delete_rule(rule.id)
@@ -35,3 +34,14 @@ def test_get_all_actions(gl: ExperimentalApi):
     assert num_deleted == num_test_rules
     rules = gl.list_rules()
     assert rules.count == 0
+
+
+def test_create_action_with_human_review(gl: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl.get_or_create_detector(name, "test_query")
+    rule = gl.create_rule(det, f"test_rule_{name}", "EMAIL", "test@example.com", human_review_required=True)
+    rule2 = gl.get_rule(rule.id)
+    assert rule == rule2
+    gl.delete_rule(rule.id)
+    with pytest.raises(NotFoundException) as _:
+        gl.get_rule(rule.id)
