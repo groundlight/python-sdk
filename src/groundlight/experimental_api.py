@@ -7,7 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, Tuple, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
@@ -20,7 +20,7 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, DetectorGroup, PaginatedRuleList, Rule, ROI, BBoxGeometry
+from model import ROI, BBoxGeometry, Detector, DetectorGroup, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
@@ -217,11 +217,11 @@ class ExperimentalApi(Groundlight):
             label=label,
             score=1.0,
             geometry=BBoxGeometry(
-                left = top_left[0],
-                top = top_left[1],
-                right = bottom_right[0],
-                bottom = bottom_right[1],
-                x = (top_left[0] + bottom_right[0]) / 2,
-                y = (top_left[1] + bottom_right[1]) / 2,
-            )
+                left=top_left[0],
+                top=top_left[1],
+                right=bottom_right[0],
+                bottom=bottom_right[1],
+                x=(top_left[0] + bottom_right[0]) / 2,
+                y=(top_left[1] + bottom_right[1]) / 2,
+            ),
         )

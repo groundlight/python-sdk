@@ -9,17 +9,17 @@ from typing import Callable, Optional, Union
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
-from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
+from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
+    ROI,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
     PaginatedImageQueryList,
-    ROI,
 )
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -727,7 +727,9 @@ class Groundlight:
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Optional[list[ROI]] = None):
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Optional[list[ROI]] = None
+    ):
         """
         Add a new label to an image query.  This answers the detector's question.
 
@@ -749,7 +751,9 @@ class Groundlight:
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
         request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois)
-        import IPython; IPython.embed()
+        import IPython
+
+        IPython.embed()
         self.labels_api.create_label(request_params)
 
     def start_inspection(self) -> str:
