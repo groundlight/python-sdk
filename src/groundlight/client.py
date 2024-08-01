@@ -9,17 +9,17 @@ from typing import Callable, Optional, Union
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
-from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
+from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
+    ROI,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
     PaginatedImageQueryList,
-    ROI,
 )
 from urllib3.exceptions import InsecureRequestWarning
 

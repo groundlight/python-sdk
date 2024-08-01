@@ -9,7 +9,6 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, List, Tuple, Union
 
-from groundlight.binary_labels import Label, convert_display_label_to_internal
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -23,6 +22,8 @@ from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
+
+from groundlight.binary_labels import Label, convert_display_label_to_internal
 
 from .client import Groundlight
 
