@@ -727,7 +727,9 @@ class Groundlight:
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Optional[list[ROI]] = None):
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[list[ROI], str, None] = None
+    ):
         """
         Add a new label to an image query.  This answers the detector's question.
 
@@ -739,6 +741,8 @@ class Groundlight:
 
         :return: None
         """
+        if isinstance(rois, str):
+            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
         else:
@@ -748,8 +752,8 @@ class Groundlight:
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
-        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois)
-        import IPython; IPython.embed()
+        rois_json = [roi.dict() for roi in rois] if rois else None
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
         self.labels_api.create_label(request_params)
 
     def start_inspection(self) -> str:

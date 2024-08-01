@@ -877,15 +877,7 @@ components:
           format: double
           readOnly: true
           description: Min confidence needed to accept the response of the image query.
-        bounding_boxes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ROI'
-          readOnly: true
-          nullable: true
-          description: An array of bounding boxes collected on image
       required:
-      - bounding_boxes
       - confidence_threshold
       - created_at
       - detector_id

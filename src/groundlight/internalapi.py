@@ -208,6 +208,7 @@ class GroundlightApiClient(ApiClient):
         start_time = time.time()
         url = f"{self.configuration.host}/labels"
 
+        # TODO: remove posicheck_id
         data = {"label": label, "posicheck_id": image_query_id, "review_reason": ReviewReason.CUSTOMER_INITIATED}
 
         headers = self._headers()

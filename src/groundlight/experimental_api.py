@@ -7,8 +7,9 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, Tuple, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
+from groundlight.binary_labels import Label, convert_display_label_to_internal
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -17,10 +18,11 @@ from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, DetectorGroup, PaginatedRuleList, Rule, ROI, BBoxGeometry
+from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
 
 from .client import Groundlight
 
@@ -217,11 +219,41 @@ class ExperimentalApi(Groundlight):
             label=label,
             score=1.0,
             geometry=BBoxGeometry(
-                left = top_left[0],
-                top = top_left[1],
-                right = bottom_right[0],
-                bottom = bottom_right[1],
-                x = (top_left[0] + bottom_right[0]) / 2,
-                y = (top_left[1] + bottom_right[1]) / 2,
-            )
+                left=top_left[0],
+                top=top_left[1],
+                right=bottom_right[0],
+                bottom=bottom_right[1],
+                x=(top_left[0] + bottom_right[0]) / 2,
+                y=(top_left[1] + bottom_right[1]) / 2,
+            ),
         )
+
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[list[ROI], str, None] = None
+    ):
+        """
+        Experimental version of add_label.
+        Add a new label to an image query.  This answers the detector's question.
+
+        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
+                            or an image_query id as a string.
+
+        :param label: The string "YES" or the string "NO" in answer to the query.
+        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
+
+        :return: None
+        """
+        if isinstance(rois, str):
+            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
+        if isinstance(image_query, ImageQuery):
+            image_query_id = image_query.id
+        else:
+            image_query_id = str(image_query)
+            # Some old imagequery id's started with "chk_"
+            # TODO: handle iqe_ for image_queries returned from edge endpoints
+            if not image_query_id.startswith(("chk_", "iq_")):
+                raise ValueError(f"Invalid image query id {image_query_id}")
+        api_label = convert_display_label_to_internal(image_query_id, label)
+        rois_json = [roi.dict() for roi in rois] if rois else None
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
+        self.labels_api.create_label(request_params)
