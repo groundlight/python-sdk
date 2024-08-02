@@ -257,4 +257,5 @@ class ExperimentalApi(Groundlight):
         api_label = convert_display_label_to_internal(image_query_id, label)
         rois_json = [roi.dict() for roi in rois] if rois else None
         request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
+        import IPython; IPython.embed()
         self.labels_api.create_label(request_params)

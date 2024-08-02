@@ -22,7 +22,7 @@ def test_submit_roi(gl_experimental: ExperimentalApi, image_query_yes: ImageQuer
     gl_experimental.add_label(image_query_yes.id, "YES", [roi])
 
 
-def test_submit_rois(gl_experimental: ExperimentalApi, image_query_no: ImageQuery):
+def test_submit_multiple_rois(gl_experimental: ExperimentalApi, image_query_no: ImageQuery):
     """
     verify that we can submit multiple ROIs
     """
