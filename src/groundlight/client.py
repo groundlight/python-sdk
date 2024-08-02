@@ -247,6 +247,7 @@ class Groundlight:
         *,
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
@@ -257,7 +258,11 @@ class Groundlight:
 
         :param query: the detector query
 
+        :param group_name: the detector group that the new detector should belong to
+
         :param confidence_threshold: the confidence threshold
+
+        :param patience_time: the patience time, or how long Groundlight should work to generate a confident answer
 
         :param pipeline_config: the pipeline config
 
@@ -267,6 +272,7 @@ class Groundlight:
 
         :return: Detector
         """
+
         detector_creation_input = DetectorCreationInputRequest(
             name=name,
             query=query,
@@ -278,6 +284,12 @@ class Groundlight:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
         if confidence_threshold:
             detector_creation_input.confidence_threshold = confidence_threshold
+        if group_name:
+            detector_creation_input.group_name = group_name
+        if isinstance(patience_time, int):
+            patience_time = float(patience_time)
+        if patience_time:
+            detector_creation_input.patience_time = patience_time
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
@@ -286,6 +298,7 @@ class Groundlight:
         name: str,
         query: str,
         *,
+        group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
@@ -298,6 +311,8 @@ class Groundlight:
         :param name: the detector name
 
         :param query: the detector query
+
+        :param group_name: the detector group that the new detector should belong to
 
         :param confidence_threshold: the confidence threshold
 
@@ -316,6 +331,7 @@ class Groundlight:
             return self.create_detector(
                 name=name,
                 query=query,
+                group_name=group_name,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
@@ -326,6 +342,13 @@ class Groundlight:
             raise ValueError(
                 f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
                 f" The existing query is '{existing_detector.query}'.",
+            )
+        if group_name is not None and existing_detector.group_name != group_name:
+            raise ValueError(
+                (
+                    f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
+                    f" match. The existing group name is '{existing_detector.group_name}'."
+                ),
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
