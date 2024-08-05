@@ -12,14 +12,18 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
+from groundlight_openapi_client.model.roi import ROI
+from groundlight_openapi_client.model.source_enum import SourceEnum
 
-globals()["ImageQuery"] = ImageQuery
-from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
+globals()["AnnotationsRequestedEnum"] = AnnotationsRequestedEnum
+globals()["ROI"] = ROI
+globals()["SourceEnum"] = SourceEnum
+from groundlight_openapi_client.model.label_value import LabelValue
 
 
-class TestPaginatedImageQueryList(unittest.TestCase):
-    """PaginatedImageQueryList unit test stubs"""
+class TestLabelValue(unittest.TestCase):
+    """LabelValue unit test stubs"""
 
     def setUp(self):
         pass
@@ -27,10 +31,10 @@ class TestPaginatedImageQueryList(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testPaginatedImageQueryList(self):
-        """Test PaginatedImageQueryList"""
+    def testLabelValue(self):
+        """Test LabelValue"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = PaginatedImageQueryList()  # noqa: E501
+        # model = LabelValue()  # noqa: E501
         pass
 
 

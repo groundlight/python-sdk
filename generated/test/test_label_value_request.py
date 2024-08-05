@@ -12,14 +12,14 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.roi_request import ROIRequest
 
-globals()["ImageQuery"] = ImageQuery
-from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
+globals()["ROIRequest"] = ROIRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 
 
-class TestPaginatedImageQueryList(unittest.TestCase):
-    """PaginatedImageQueryList unit test stubs"""
+class TestLabelValueRequest(unittest.TestCase):
+    """LabelValueRequest unit test stubs"""
 
     def setUp(self):
         pass
@@ -27,10 +27,10 @@ class TestPaginatedImageQueryList(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testPaginatedImageQueryList(self):
-        """Test PaginatedImageQueryList"""
+    def testLabelValueRequest(self):
+        """Test LabelValueRequest"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = PaginatedImageQueryList()  # noqa: E501
+        # model = LabelValueRequest()  # noqa: E501
         pass
 
 

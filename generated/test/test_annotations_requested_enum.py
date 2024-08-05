@@ -12,14 +12,11 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.image_query import ImageQuery
-
-globals()["ImageQuery"] = ImageQuery
-from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
+from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
 
 
-class TestPaginatedImageQueryList(unittest.TestCase):
-    """PaginatedImageQueryList unit test stubs"""
+class TestAnnotationsRequestedEnum(unittest.TestCase):
+    """AnnotationsRequestedEnum unit test stubs"""
 
     def setUp(self):
         pass
@@ -27,10 +24,10 @@ class TestPaginatedImageQueryList(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testPaginatedImageQueryList(self):
-        """Test PaginatedImageQueryList"""
+    def testAnnotationsRequestedEnum(self):
+        """Test AnnotationsRequestedEnum"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = PaginatedImageQueryList()  # noqa: E501
+        # model = AnnotationsRequestedEnum()  # noqa: E501
         pass
 
 

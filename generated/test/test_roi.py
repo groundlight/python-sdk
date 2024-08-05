@@ -12,14 +12,14 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.note import Note
+from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
 
-globals()["Note"] = Note
-from groundlight_openapi_client.model.paginated_note_list import PaginatedNoteList
+globals()["BBoxGeometry"] = BBoxGeometry
+from groundlight_openapi_client.model.roi import ROI
 
 
-class TestPaginatedNoteList(unittest.TestCase):
-    """PaginatedNoteList unit test stubs"""
+class TestROI(unittest.TestCase):
+    """ROI unit test stubs"""
 
     def setUp(self):
         pass
@@ -27,10 +27,10 @@ class TestPaginatedNoteList(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testPaginatedNoteList(self):
-        """Test PaginatedNoteList"""
+    def testROI(self):
+        """Test ROI"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = PaginatedNoteList()  # noqa: E501
+        # model = ROI()  # noqa: E501
         pass
 
 

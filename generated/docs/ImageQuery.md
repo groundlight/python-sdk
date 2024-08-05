@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **result** | **bool, date, datetime, dict, float, int, list, str, none_type** | The result of the image query. | [readonly] 
 **patience_time** | **float** | How long to wait for a confident response. | [readonly] 
 **confidence_threshold** | **float** | Min confidence needed to accept the response of the image query. | [readonly] 
+**bounding_boxes** | [**[ROI], none_type**](ROI.md) | An array of bounding boxes collected on image | [readonly] 
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
