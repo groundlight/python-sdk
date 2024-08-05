@@ -1,6 +1,6 @@
 from datetime import datetime
-import pytest
 
+import pytest
 from groundlight import ExperimentalApi, ImageQuery
 
 
