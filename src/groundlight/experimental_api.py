@@ -59,6 +59,7 @@ class ExperimentalApi(Groundlight):
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
         snooze_time_unit: str = "SECONDS",
+        human_review_required: bool = False,
     ) -> Rule:
         """
         Adds a notification rule to the given detector
@@ -77,6 +78,7 @@ class ExperimentalApi(Groundlight):
             will be delivered until the snooze time has passed
         :param snooze_time_value: The value of the snooze time
         :param snooze_time_unit: The unit of the snooze time
+        :param huamn_review_required: If true, a cloud labeler will review and confirm alerts before they are sent
 
         :return: a Rule object corresponding to the new rule
         """
@@ -104,6 +106,7 @@ class ExperimentalApi(Groundlight):
             snooze_time_enabled=snooze_time_enabled,
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
+            human_review_required=human_review_required,
         )
         return Rule.model_validate(self.actions_api.create_rule(det_id, rule_input).to_dict())
 
