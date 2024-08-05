@@ -20,6 +20,8 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
 
@@ -255,7 +257,14 @@ class ExperimentalApi(Groundlight):
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
-        rois_json = [roi.dict() for roi in rois] if rois else None
-        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
-        import IPython; IPython.embed()
+        geometry_requests = [BBoxGeometryRequest(**roi.geometry.dict()) for roi in rois] if rois else None
+        roi_requests = (
+            [
+                ROIRequest(label=roi.label, score=roi.score, geometry=geometry)
+                for roi, geometry in zip(rois, geometry_requests)
+            ]
+            if rois
+            else None
+        )
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
         self.labels_api.create_label(request_params)
