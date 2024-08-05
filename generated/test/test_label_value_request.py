@@ -12,13 +12,9 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.blank_enum import BlankEnum
-from groundlight_openapi_client.model.null_enum import NullEnum
-from groundlight_openapi_client.model.review_reason_enum import ReviewReasonEnum
+from groundlight_openapi_client.model.roi_request import ROIRequest
 
-globals()["BlankEnum"] = BlankEnum
-globals()["NullEnum"] = NullEnum
-globals()["ReviewReasonEnum"] = ReviewReasonEnum
+globals()["ROIRequest"] = ROIRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 
 

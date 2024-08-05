@@ -605,6 +605,7 @@ components:
         * `BOUNDING_BOXES` - Bounding Boxes
     BBoxGeometry:
       type: object
+      description: Mixin for serializers to handle data in the StrictBaseModel format
       properties:
         left:
           type: number
@@ -633,6 +634,27 @@ components:
       - top
       - x
       - y
+    BBoxGeometryRequest:
+      type: object
+      description: Mixin for serializers to handle data in the StrictBaseModel format
+      properties:
+        left:
+          type: number
+          format: double
+        top:
+          type: number
+          format: double
+        right:
+          type: number
+          format: double
+        bottom:
+          type: number
+          format: double
+      required:
+      - bottom
+      - left
+      - right
+      - top
     ChannelEnum:
       enum:
       - EMAIL
@@ -877,7 +899,15 @@ components:
           format: double
           readOnly: true
           description: Min confidence needed to accept the response of the image query.
+        bounding_boxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROI'
+          readOnly: true
+          nullable: true
+          description: An array of bounding boxes collected on image
       required:
+      - bounding_boxes
       - confidence_threshold
       - created_at
       - detector_id
@@ -896,11 +926,6 @@ components:
     LabelValue:
       type: object
       properties:
-        value:
-          type: number
-          format: double
-          readOnly: true
-          nullable: true
         confidence:
           type: number
           format: double
@@ -911,13 +936,11 @@ components:
           nullable: true
           description: A human-readable class name for this label
           readOnly: true
-        feedback_text:
-          type: string
-          readOnly: true
-          nullable: true
         rois:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROI'
           nullable: true
-          description: List of region-of-interest (ROI) annotations
         annotations_requested:
           type: array
           items:
@@ -929,12 +952,6 @@ components:
               * `BINARY_CLASSIFICATION` - Binary Classification
               * `BOUNDING_BOXES` - Bounding Boxes
           readOnly: true
-        review_reason:
-          readOnly: true
-          nullable: true
-          oneOf:
-          - $ref: '#/components/schemas/ReviewReasonEnum'
-          - $ref: '#/components/schemas/NullEnum'
         created_at:
           type: string
           format: date-time
@@ -953,10 +970,7 @@ components:
       - confidence
       - created_at
       - detector_id
-      - feedback_text
-      - review_reason
       - source
-      - value
     LabelValueRequest:
       type: object
       properties:
@@ -969,8 +983,10 @@ components:
           writeOnly: true
           minLength: 1
         rois:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROIRequest'
           nullable: true
-          description: List of region-of-interest (ROI) annotations
       required:
       - image_query_id
       - label
@@ -1005,9 +1021,6 @@ components:
           description: Text content of the note.
       required:
       - content
-    NullEnum:
-      enum:
-      - null
     PaginatedDetectorList:
       type: object
       required:
@@ -1079,6 +1092,12 @@ components:
             $ref: '#/components/schemas/Rule'
     ROI:
       type: object
+      description: |-
+        A serializer for ROI objects.
+        Corresponds directly with predictors.types.ROI
+
+        The class should handle like a normal serializer, just note that the when instantiating as
+        ROISerializer(instance=obj), the obj is the json representation pulled straight from the database
       properties:
         label:
           type: string
@@ -1094,33 +1113,29 @@ components:
       - geometry
       - label
       - score
+    ROIRequest:
+      type: object
+      description: |-
+        A serializer for ROI objects.
+        Corresponds directly with predictors.types.ROI
+
+        The class should handle like a normal serializer, just note that the when instantiating as
+        ROISerializer(instance=obj), the obj is the json representation pulled straight from the database
+      properties:
+        label:
+          type: string
+          minLength: 1
+          description: The label of the bounding box.
+        geometry:
+          $ref: '#/components/schemas/BBoxGeometryRequest'
+      required:
+      - geometry
+      - label
     ResultTypeEnum:
       enum:
       - binary_classification
       - counting
       type: string
-    ReviewReasonEnum:
-      enum:
-      - ESCALATION
-      - AUDIT
-      - ASSESSMENT
-      - CUSTOMER_INITIATED
-      - CONFIDENT_UNCLEAR
-      - CONFIDENT_UNCLEAR_AUDIT
-      - DISAGREEMENT
-      - DISAGREEMENT_ON_ASSESSMENT
-      - CONFIRM_ACTION_TRIGGER
-      type: string
-      description: |-
-        * `ESCALATION` - ESCALATION
-        * `AUDIT` - AUDIT
-        * `ASSESSMENT` - ASSESSMENT
-        * `CUSTOMER_INITIATED` - CUSTOMER_INITIATED
-        * `CONFIDENT_UNCLEAR` - CONFIDENT_UNCLEAR
-        * `CONFIDENT_UNCLEAR_AUDIT` - CONFIDENT_UNCLEAR_AUDIT
-        * `DISAGREEMENT` - DISAGREEMENT
-        * `DISAGREEMENT_ON_ASSESSMENT` - DISAGREEMENT_ON_ASSESSMENT
-        * `CONFIRM_ACTION_TRIGGER` - CONFIRM_ACTION_TRIGGER
     Rule:
       type: object
       properties:

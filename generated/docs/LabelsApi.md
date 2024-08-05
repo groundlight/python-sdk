@@ -49,7 +49,17 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     label_value_request = LabelValueRequest(
         label="label_example",
         image_query_id="image_query_id_example",
-        rois=None,
+        rois=[
+            ROIRequest(
+                label="label_example",
+                geometry=BBoxGeometryRequest(
+                    left=3.14,
+                    top=3.14,
+                    right=3.14,
+                    bottom=3.14,
+                ),
+            ),
+        ],
     ) # LabelValueRequest | 
 
     # example passing only required values which don't have defaults set

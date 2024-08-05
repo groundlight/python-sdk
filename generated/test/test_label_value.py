@@ -13,15 +13,11 @@ import unittest
 
 import groundlight_openapi_client
 from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
-from groundlight_openapi_client.model.blank_enum import BlankEnum
-from groundlight_openapi_client.model.null_enum import NullEnum
-from groundlight_openapi_client.model.review_reason_enum import ReviewReasonEnum
+from groundlight_openapi_client.model.roi import ROI
 from groundlight_openapi_client.model.source_enum import SourceEnum
 
 globals()["AnnotationsRequestedEnum"] = AnnotationsRequestedEnum
-globals()["BlankEnum"] = BlankEnum
-globals()["NullEnum"] = NullEnum
-globals()["ReviewReasonEnum"] = ReviewReasonEnum
+globals()["ROI"] = ROI
 globals()["SourceEnum"] = SourceEnum
 from groundlight_openapi_client.model.label_value import LabelValue
 

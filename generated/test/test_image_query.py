@@ -12,10 +12,16 @@ import sys
 import unittest
 
 import groundlight_openapi_client
+from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
+from groundlight_openapi_client.model.counting_result import CountingResult
 from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
 from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
+from groundlight_openapi_client.model.roi import ROI
 
+globals()["BinaryClassificationResult"] = BinaryClassificationResult
+globals()["CountingResult"] = CountingResult
 globals()["ImageQueryTypeEnum"] = ImageQueryTypeEnum
+globals()["ROI"] = ROI
 globals()["ResultTypeEnum"] = ResultTypeEnum
 from groundlight_openapi_client.model.image_query import ImageQuery
 

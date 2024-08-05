@@ -12,11 +12,14 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.blank_enum import BlankEnum
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
+
+globals()["BBoxGeometryRequest"] = BBoxGeometryRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
 
 
-class TestBlankEnum(unittest.TestCase):
-    """BlankEnum unit test stubs"""
+class TestROIRequest(unittest.TestCase):
+    """ROIRequest unit test stubs"""
 
     def setUp(self):
         pass
@@ -24,10 +27,10 @@ class TestBlankEnum(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testBlankEnum(self):
-        """Test BlankEnum"""
+    def testROIRequest(self):
+        """Test ROIRequest"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = BlankEnum()  # noqa: E501
+        # model = ROIRequest()  # noqa: E501
         pass
 
 

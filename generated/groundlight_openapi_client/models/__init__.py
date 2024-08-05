@@ -14,6 +14,7 @@ from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.all_notes import AllNotes
 from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
 from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition import Condition
@@ -32,13 +33,12 @@ from groundlight_openapi_client.model.label_value_request import LabelValueReque
 from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.note import Note
 from groundlight_openapi_client.model.note_request import NoteRequest
-from groundlight_openapi_client.model.null_enum import NullEnum
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
 from groundlight_openapi_client.model.roi import ROI
+from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
-from groundlight_openapi_client.model.review_reason_enum import ReviewReasonEnum
 from groundlight_openapi_client.model.rule import Rule
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum

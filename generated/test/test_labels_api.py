@@ -23,8 +23,8 @@ class TestLabelsApi(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_labels_create(self):
-        """Test case for labels_create"""
+    def test_create_label(self):
+        """Test case for create_label"""
         pass
 
 

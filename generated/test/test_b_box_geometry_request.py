@@ -12,11 +12,11 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.review_reason_enum import ReviewReasonEnum
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 
 
-class TestReviewReasonEnum(unittest.TestCase):
-    """ReviewReasonEnum unit test stubs"""
+class TestBBoxGeometryRequest(unittest.TestCase):
+    """BBoxGeometryRequest unit test stubs"""
 
     def setUp(self):
         pass
@@ -24,10 +24,10 @@ class TestReviewReasonEnum(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testReviewReasonEnum(self):
-        """Test ReviewReasonEnum"""
+    def testBBoxGeometryRequest(self):
+        """Test BBoxGeometryRequest"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = ReviewReasonEnum()  # noqa: E501
+        # model = BBoxGeometryRequest()  # noqa: E501
         pass
 
 
