@@ -5,17 +5,17 @@ from groundlight import ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
 
-def test_create_action(gl: ExperimentalApi):
+def test_create_action(gl_experimental: ExperimentalApi):
     # We first clear out any rules in case the account has any left over from a previous test
-    gl.delete_all_rules()
+    gl_experimental.delete_all_rules()
     name = f"Test {datetime.utcnow()}"
-    det = gl.get_or_create_detector(name, "test_query")
-    rule = gl.create_rule(det, "test_rule", "EMAIL", "test@example.com")
-    rule2 = gl.get_rule(rule.id)
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    rule = gl_experimental.create_rule(det, "test_rule", "EMAIL", "test@example.com")
+    rule2 = gl_experimental.get_rule(rule.id)
     assert rule == rule2
-    gl.delete_rule(rule.id)
+    gl_experimental.delete_rule(rule.id)
     with pytest.raises(NotFoundException) as _:
-        gl.get_rule(rule.id)
+        gl_experimental.get_rule(rule.id)
 
 
 @pytest.mark.skip(reason="actions are global on account, the test matrix collides with itself")  # type: ignore

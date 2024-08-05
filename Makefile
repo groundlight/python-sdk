@@ -32,7 +32,7 @@ PYTEST=poetry run pytest -v
 # 	`make test TEST_ARGS="-k some_filter"`
 TEST_ARGS=
 
-CLOUD_FILTERS = -m "not (run_only_for_edge_endpoint or skip)"
+CLOUD_FILTERS = -m "not run_only_for_edge_endpoint"
 EDGE_FILTERS = -m "not skip_for_edge_endpoint"
 
 test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
