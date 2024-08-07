@@ -27,7 +27,6 @@ from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTyp
 from groundlight_openapi_client.model.inline_response200 import InlineResponse200
 from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.note import Note
-from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList

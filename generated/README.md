@@ -149,7 +149,6 @@ Class | Method | HTTP request | Description
  - [InlineResponse200](docs/InlineResponse200.md)
  - [ModeEnum](docs/ModeEnum.md)
  - [Note](docs/Note.md)
- - [NoteRequest](docs/NoteRequest.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)

@@ -181,6 +181,11 @@ class ApiClient(object):
             # use server/host defined in path or operation instead
             url = _host + resource_path
 
+        self.url = url
+        self.query_params = query_params
+        self.headers = header_params
+        self.post_params = post_params
+        self.body = body
         try:
             # perform request and return response
             response_data = self.request(

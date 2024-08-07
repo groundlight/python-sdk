@@ -457,12 +457,6 @@ paths:
       - notes
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NoteRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/NoteRequest'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/NoteRequest'
@@ -807,6 +801,11 @@ components:
           type: string
           minLength: 1
           description: Text content of the note.
+        image:
+          type: string
+          format: binary
+          writeOnly: true
+          nullable: true
       required:
       - content
     PaginatedDetectorList:

@@ -9,6 +9,7 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, List, Union
 
+from groundlight.images import parse_supported_image_types
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -175,16 +176,19 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteRequest]) -> None:
+    def create_note(self, detector: Union[str, Detector], note: str, image: Union[str, None]=None) -> None:
         """
         Adds a note to a given detector
 
         :param detector: the detector to add the note to
+        :param note: the text content of the note
+        :param image: a path to an image to attach to the note
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
-        if isinstance(note, str):
-            note = NoteRequest(content=note)
-        self.notes_api.create_note(det_id, note)
+        if image is not None:
+            img_bytes = parse_supported_image_types(image)
+        kwargs = {"image": img_bytes.read()}
+        self.notes_api.create_note(det_id, note, **kwargs)
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """

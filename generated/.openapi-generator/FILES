@@ -24,7 +24,6 @@ docs/ImageQueryTypeEnum.md
 docs/InlineResponse200.md
 docs/ModeEnum.md
 docs/Note.md
-docs/NoteRequest.md
 docs/NotesApi.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
@@ -67,7 +66,6 @@ groundlight_openapi_client/model/image_query_type_enum.py
 groundlight_openapi_client/model/inline_response200.py
 groundlight_openapi_client/model/mode_enum.py
 groundlight_openapi_client/model/note.py
-groundlight_openapi_client/model/note_request.py
 groundlight_openapi_client/model/paginated_detector_list.py
 groundlight_openapi_client/model/paginated_image_query_list.py
 groundlight_openapi_client/model/paginated_rule_list.py
