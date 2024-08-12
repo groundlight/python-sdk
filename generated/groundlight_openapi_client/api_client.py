@@ -840,7 +840,6 @@ class Endpoint(object):
                         content_type_headers_list, self.settings["http_method"], params["body"]
                     )
                     params["header"]["Content-Type"] = header_list
-
         return self.api_client.call_api(
             self.settings["endpoint_path"],
             self.settings["http_method"],

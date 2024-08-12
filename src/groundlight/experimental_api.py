@@ -187,7 +187,7 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         if image is not None:
             img_bytes = parse_supported_image_types(image)
-        kwargs = {"image": img_bytes.read()}
+        kwargs = {"image": img_bytes}
         self.notes_api.create_note(det_id, note, **kwargs)
 
     def create_detector_group(self, name: str) -> DetectorGroup:
