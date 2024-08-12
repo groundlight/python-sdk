@@ -15,6 +15,7 @@ def test_notes(gl: ExperimentalApi):
             found_note = True
     assert found_note
 
+
 def test_note_with_image(gl: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
     det = gl.create_detector(name, "test_query")

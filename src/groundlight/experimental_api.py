@@ -9,7 +9,6 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from typing import Any, Dict, List, Union
 
-from groundlight.images import parse_supported_image_types
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -18,10 +17,11 @@ from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from model import Detector, DetectorGroup, PaginatedRuleList, Rule
+
+from groundlight.images import parse_supported_image_types
 
 from .client import Groundlight
 
@@ -176,7 +176,7 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: str, image: Union[str, None]=None) -> None:
+    def create_note(self, detector: Union[str, Detector], note: str, image: Union[str, None] = None) -> None:
         """
         Adds a note to a given detector
 
