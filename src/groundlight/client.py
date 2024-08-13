@@ -4,7 +4,7 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
-from typing import Callable, Optional, Union, List
+from typing import Callable, List, Optional, Union
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi

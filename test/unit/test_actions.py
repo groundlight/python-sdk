@@ -40,7 +40,9 @@ def test_get_all_actions(gl_experimental: ExperimentalApi):
 def test_create_action_with_human_review(gl_experimental: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
     det = gl_experimental.get_or_create_detector(name, "test_query")
-    rule = gl_experimental.create_rule(det, f"test_rule_{name}", "EMAIL", "test@example.com", human_review_required=True)
+    rule = gl_experimental.create_rule(
+        det, f"test_rule_{name}", "EMAIL", "test@example.com", human_review_required=True
+    )
     rule2 = gl_experimental.get_rule(rule.id)
     assert rule == rule2
     gl_experimental.delete_rule(rule.id)
