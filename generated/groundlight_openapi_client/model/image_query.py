@@ -147,7 +147,7 @@ class ImageQuery(ModelNormal):
             ),  # noqa: E501
             "patience_time": (float,),  # noqa: E501
             "confidence_threshold": (float,),  # noqa: E501
-            "bounding_boxes": (
+            "rois": (
                 [ROI],
                 none_type,
             ),  # noqa: E501
@@ -168,7 +168,7 @@ class ImageQuery(ModelNormal):
         "result": "result",  # noqa: E501
         "patience_time": "patience_time",  # noqa: E501
         "confidence_threshold": "confidence_threshold",  # noqa: E501
-        "bounding_boxes": "bounding_boxes",  # noqa: E501
+        "rois": "rois",  # noqa: E501
     }
 
     read_only_vars = {
@@ -182,7 +182,7 @@ class ImageQuery(ModelNormal):
         "result",  # noqa: E501
         "patience_time",  # noqa: E501
         "confidence_threshold",  # noqa: E501
-        "bounding_boxes",  # noqa: E501
+        "rois",  # noqa: E501
     }
 
     _composed_schemas = {}
@@ -201,7 +201,7 @@ class ImageQuery(ModelNormal):
         result,
         patience_time,
         confidence_threshold,
-        bounding_boxes,
+        rois,
         *args,
         **kwargs,
     ):  # noqa: E501
@@ -218,7 +218,7 @@ class ImageQuery(ModelNormal):
             result (bool, date, datetime, dict, float, int, list, str, none_type): The result of the image query.
             patience_time (float): How long to wait for a confident response.
             confidence_threshold (float): Min confidence needed to accept the response of the image query.
-            bounding_boxes ([ROI], none_type): An array of bounding boxes collected on image
+            rois ([ROI], none_type): An array of regions of interest (bounding boxes) collected on image
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -289,7 +289,7 @@ class ImageQuery(ModelNormal):
         self.result = result
         self.patience_time = patience_time
         self.confidence_threshold = confidence_threshold
-        self.bounding_boxes = bounding_boxes
+        self.rois = rois
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map

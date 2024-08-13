@@ -203,7 +203,7 @@ class GroundlightApiClient(ApiClient):
     @RequestsRetryDecorator()
     def _add_label(self, image_query_id: str, label: str) -> dict:
         """Temporary internal call to add a label to an image query.  Not supported."""
-        logger.warning("This method is slated for removal")
+        logger.warning("This method is slated for removal, instead use the labels_api in the groundlight client")
         # TODO: Properly model this with OpenApi spec.
         start_time = time.time()
         url = f"{self.configuration.host}/labels"

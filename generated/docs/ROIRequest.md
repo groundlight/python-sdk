@@ -1,6 +1,6 @@
 # ROIRequest
 
-A serializer for ROI objects. Corresponds directly with predictors.types.ROI  The class should handle like a normal serializer, just note that the when instantiating as ROISerializer(instance=obj), the obj is the json representation pulled straight from the database
+Mixin for serializers to handle data in the StrictBaseModel format
 
 ## Properties
 Name | Type | Description | Notes

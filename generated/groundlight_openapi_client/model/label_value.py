@@ -165,7 +165,7 @@ class LabelValue(ModelNormal):
 
         Args:
             confidence (float, none_type):
-            class_name (str, none_type): A human-readable class name for this label
+            class_name (str, none_type): A human-readable class name for this label (e.g. YES/NO)
             annotations_requested ([bool, date, datetime, dict, float, int, list, str, none_type]):
             created_at (datetime):
             detector_id (int, none_type):

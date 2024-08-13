@@ -899,15 +899,15 @@ components:
           format: double
           readOnly: true
           description: Min confidence needed to accept the response of the image query.
-        bounding_boxes:
+        rois:
           type: array
           items:
             $ref: '#/components/schemas/ROI'
           readOnly: true
           nullable: true
-          description: An array of bounding boxes collected on image
+          description: An array of regions of interest (bounding boxes) collected
+            on image
       required:
-      - bounding_boxes
       - confidence_threshold
       - created_at
       - detector_id
@@ -917,6 +917,7 @@ components:
       - query
       - result
       - result_type
+      - rois
       - type
       x-internal: true
     ImageQueryTypeEnum:
@@ -934,7 +935,7 @@ components:
         class_name:
           type: string
           nullable: true
-          description: A human-readable class name for this label
+          description: A human-readable class name for this label (e.g. YES/NO)
           readOnly: true
         rois:
           type: array
@@ -1092,12 +1093,7 @@ components:
             $ref: '#/components/schemas/Rule'
     ROI:
       type: object
-      description: |-
-        A serializer for ROI objects.
-        Corresponds directly with predictors.types.ROI
-
-        The class should handle like a normal serializer, just note that the when instantiating as
-        ROISerializer(instance=obj), the obj is the json representation pulled straight from the database
+      description: Mixin for serializers to handle data in the StrictBaseModel format
       properties:
         label:
           type: string
@@ -1115,12 +1111,7 @@ components:
       - score
     ROIRequest:
       type: object
-      description: |-
-        A serializer for ROI objects.
-        Corresponds directly with predictors.types.ROI
-
-        The class should handle like a normal serializer, just note that the when instantiating as
-        ROISerializer(instance=obj), the obj is the json representation pulled straight from the database
+      description: Mixin for serializers to handle data in the StrictBaseModel format
       properties:
         label:
           type: string
