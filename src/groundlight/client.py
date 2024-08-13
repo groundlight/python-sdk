@@ -4,7 +4,7 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, List
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
@@ -728,7 +728,7 @@ class Groundlight:
         return image_query
 
     def add_label(
-        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[list[ROI], str, None] = None
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
         Add a new label to an image query.  This answers the detector's question.

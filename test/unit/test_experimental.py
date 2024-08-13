@@ -1,7 +1,8 @@
 from datetime import datetime
 
 import pytest
-from groundlight import ExperimentalApi, ImageQuery
+from groundlight import ExperimentalApi
+from model import ImageQuery
 
 
 def test_detector_groups(gl_experimental: ExperimentalApi):

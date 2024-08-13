@@ -210,7 +210,7 @@ class ExperimentalApi(Groundlight):
         """
         return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
 
-    def create_roi(self, label: str, top_left: Tuple[int, int], bottom_right: Tuple[int, int]) -> ROI:
+    def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
         """
         Adds a region of interest to the given detector
         NOTE: This feature is only available to Pro tier and higher
@@ -235,7 +235,7 @@ class ExperimentalApi(Groundlight):
         )
 
     def add_label(
-        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[list[ROI], str, None] = None
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
         Experimental version of add_label.
@@ -266,7 +266,7 @@ class ExperimentalApi(Groundlight):
                 ROIRequest(label=roi.label, score=roi.score, geometry=geometry)
                 for roi, geometry in zip(rois, geometry_requests)
             ]
-            if rois
+            if rois and geometry_requests
             else None
         )
         request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)

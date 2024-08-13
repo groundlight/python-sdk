@@ -1,7 +1,8 @@
 from datetime import datetime
 
 import pytest
-from groundlight import Detector, ExperimentalApi, Groundlight, ImageQuery
+from groundlight import ExperimentalApi, Groundlight
+from model import Detector, ImageQuery
 
 
 @pytest.fixture(name="gl")
