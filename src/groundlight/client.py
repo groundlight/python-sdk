@@ -52,7 +52,7 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
-class Groundlight: # pylint: disable=too-many-instance-attributes
+class Groundlight:  # pylint: disable=too-many-instance-attributes
     """
     Client for accessing the Groundlight cloud service.
 
