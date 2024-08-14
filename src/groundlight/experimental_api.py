@@ -200,7 +200,7 @@ class ExperimentalApi(Groundlight):
         data = {"content": note}
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
-        requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
+        requests.post(url, headers=headers, data=data, files=files, params=params, timeout=60)  # type: ignore
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """
@@ -249,14 +249,17 @@ class ExperimentalApi(Groundlight):
         self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
-        Experimental version of add_label.
-        Add a new label to an image query.  This answers the detector's question.
+        Experimental version of add_label. Add a new label to an image query.
+        This answers the detector's question.
 
-        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
-                            or an image_query id as a string.
+        :param image_query: Either an ImageQuery object (returned from
+                            `submit_image_query`) or an image_query id as a
+                            string.
 
-        :param label: The string "YES" or the string "NO" in answer to the query.
-        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
+        :param label: The string "YES" or the string "NO" in answer to the
+            query.
+        :param rois: An option list of regions of interest (ROIs) to associate
+            with the label. (This feature experimental)
 
         :return: None
         """
