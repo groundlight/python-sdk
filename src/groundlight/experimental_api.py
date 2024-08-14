@@ -20,14 +20,12 @@ from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
-from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal
-
 from groundlight.images import parse_supported_image_types
 
 from .client import Groundlight
