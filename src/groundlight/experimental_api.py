@@ -200,7 +200,7 @@ class ExperimentalApi(Groundlight):
         data = {"content": note}
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
-        requests.post(url, headers=headers, data=data, files=files, params=params) # type: ignore
+        requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """
