@@ -52,7 +52,7 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
-class Groundlight: # pylint: disable=too-many-instance-attributes
+class Groundlight:  # pylint: disable=too-many-instance-attributes
     """
     Client for accessing the Groundlight cloud service.
 
@@ -735,7 +735,7 @@ class Groundlight: # pylint: disable=too-many-instance-attributes
         question.
 
         :param image_query: Either an ImageQuery object (returned from
-                            `submit_image_query`) or an image_query id as a
+                            `ask_ml` or similar method) or an image_query id as a
                             string.
 
         :param label: The string "YES" or the string "NO" in answer to the

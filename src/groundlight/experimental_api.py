@@ -7,6 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+from io import BufferedReader, BytesIO
 from typing import Any, Dict, List, Tuple, Union
 
 import requests
@@ -27,6 +28,7 @@ from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, Pagina
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal
 from groundlight.images import parse_supported_image_types
+from groundlight.optional_imports import Image, np
 
 from .client import Groundlight
 
@@ -181,7 +183,12 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: str, image: Union[str, None] = None) -> None:
+    def create_note(
+        self,
+        detector: Union[str, Detector],
+        note: str,
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray, None] = None,
+    ) -> None:
         """
         Adds a note to a given detector
 
