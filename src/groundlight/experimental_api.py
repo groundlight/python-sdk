@@ -7,9 +7,9 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-import requests
 from typing import Any, Dict, List, Union
 
+import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -192,7 +192,7 @@ class ExperimentalApi(Groundlight):
         # kwargs = {"image": img_bytes}
         # self.notes_api.create_note(det_id, note, **kwargs)
         url = f"{self.endpoint}/v1/notes"
-        files = {"image": ("image.jpg", img_bytes, 'image/jpeg')} if image is not None else None
+        files = {"image": ("image.jpg", img_bytes, "image/jpeg")} if image is not None else None
         data = {"content": note}
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
