@@ -262,11 +262,11 @@ class Groundlight:
 
         :param query: the detector query
 
-        :param group_name: the detector group that the new detector should belong to
+        :param group_name: the detector group that the new detector should belong to. If none, defaults to default_group
 
         :param confidence_threshold: the confidence threshold
 
-        :param patience_time: the patience time, or how long Groundlight should work to generate a confident answer
+        :param patience_time: the patience time, or how long Groundlight should work to generate a confident answer. Defaults to 30 seconds.
 
         :param pipeline_config: the pipeline config
 
