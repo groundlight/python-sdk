@@ -7,29 +7,41 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
+from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
-from groundlight_openapi_client.model.action import Action
 from groundlight_openapi_client.model.action_request import ActionRequest
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.note_request import NoteRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, PaginatedRuleList, Rule
+from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
+
+from groundlight.binary_labels import Label, convert_display_label_to_internal
 
 from .client import Groundlight
 
 
 class ExperimentalApi(Groundlight):
     def __init__(self, endpoint: Union[str, None] = None, api_token: Union[str, None] = None):
+        """
+        Constructs an experimental groundlight client. The experimental client inherits all the functionality of the
+        base groundlight client, but also includes additional functionality that is still in development. Experimental
+        functionality is subject to change.
+        """
         super().__init__(endpoint=endpoint, api_token=api_token)
         self.actions_api = ActionsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
+        self.detector_group_api = DetectorGroupsApi(self.api_client)
 
     ITEMS_PER_PAGE = 100
 
@@ -47,6 +59,7 @@ class ExperimentalApi(Groundlight):
         snooze_time_enabled: bool = False,
         snooze_time_value: int = 3600,
         snooze_time_unit: str = "SECONDS",
+        human_review_required: bool = False,
     ) -> Rule:
         """
         Adds a notification rule to the given detector
@@ -65,6 +78,7 @@ class ExperimentalApi(Groundlight):
             will be delivered until the snooze time has passed
         :param snooze_time_value: The value of the snooze time
         :param snooze_time_unit: The unit of the snooze time
+        :param huamn_review_required: If true, a cloud labeler will review and confirm alerts before they are sent
 
         :return: a Rule object corresponding to the new rule
         """
@@ -92,10 +106,11 @@ class ExperimentalApi(Groundlight):
             snooze_time_enabled=snooze_time_enabled,
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
+            human_review_required=human_review_required,
         )
         return Rule.model_validate(self.actions_api.create_rule(det_id, rule_input).to_dict())
 
-    def get_rule(self, action_id: int) -> Action:
+    def get_rule(self, action_id: int) -> Rule:
         """
         Gets the action with the given id
 
@@ -175,3 +190,84 @@ class ExperimentalApi(Groundlight):
         if isinstance(note, str):
             note = NoteRequest(content=note)
         self.notes_api.create_note(det_id, note)
+
+    def create_detector_group(self, name: str) -> DetectorGroup:
+        """
+        Creates a detector group with the given name
+        Note: you can specify a detector group when creating a detector without the need to create it ahead of time
+
+        :param name: the name of the detector group
+
+        :return: a Detector object corresponding to the new detector group
+        """
+        return DetectorGroup(**self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
+
+    def list_detector_groups(self) -> List[DetectorGroup]:
+        """
+        Gets a list of all detector groups
+
+        :return: a list of all detector groups
+        """
+        return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
+
+    def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
+        """
+        Adds a region of interest to the given detector
+        NOTE: This feature is only available to Pro tier and higher
+        If you would like to learn more, reach out to us at https://groundlight.ai
+
+        :param label: the label of the item in the roi
+        :param top_left: the top left corner of the roi
+        :param bottom_right: the bottom right corner of the roi
+        """
+
+        return ROI(
+            label=label,
+            score=1.0,
+            geometry=BBoxGeometry(
+                left=top_left[0],
+                top=top_left[1],
+                right=bottom_right[0],
+                bottom=bottom_right[1],
+                x=(top_left[0] + bottom_right[0]) / 2,
+                y=(top_left[1] + bottom_right[1]) / 2,
+            ),
+        )
+
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
+    ):
+        """
+        Experimental version of add_label.
+        Add a new label to an image query.  This answers the detector's question.
+
+        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
+                            or an image_query id as a string.
+
+        :param label: The string "YES" or the string "NO" in answer to the query.
+        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
+
+        :return: None
+        """
+        if isinstance(rois, str):
+            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
+        if isinstance(image_query, ImageQuery):
+            image_query_id = image_query.id
+        else:
+            image_query_id = str(image_query)
+            # Some old imagequery id's started with "chk_"
+            # TODO: handle iqe_ for image_queries returned from edge endpoints
+            if not image_query_id.startswith(("chk_", "iq_")):
+                raise ValueError(f"Invalid image query id {image_query_id}")
+        api_label = convert_display_label_to_internal(image_query_id, label)
+        geometry_requests = [BBoxGeometryRequest(**roi.geometry.dict()) for roi in rois] if rois else None
+        roi_requests = (
+            [
+                ROIRequest(label=roi.label, score=roi.score, geometry=geometry)
+                for roi, geometry in zip(rois, geometry_requests)
+            ]
+            if rois and geometry_requests
+            else None
+        )
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
+        self.labels_api.create_label(request_params)

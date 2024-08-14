@@ -4,15 +4,18 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
+from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
+    ROI,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
@@ -149,6 +152,7 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
+        self.labels_api = LabelsApi(self.api_client)
         self._verify_connectivity()
 
     def __repr__(self) -> str:
@@ -278,6 +282,8 @@ class Groundlight:
             query=query,
             pipeline_config=pipeline_config,
         )
+        if group_name is not None:
+            detector_creation_input.group_name = group_name
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
         if confidence_threshold:
@@ -338,10 +344,8 @@ class Groundlight:
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                    f" The existing query is '{existing_detector.query}'."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                f" The existing query is '{existing_detector.query}'.",
             )
         if group_name is not None and existing_detector.group_name != group_name:
             raise ValueError(
@@ -352,11 +356,9 @@ class Groundlight:
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                    " thresholds don't match. The existing confidence threshold is"
-                    f" {existing_detector.confidence_threshold}."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                " thresholds don't match. The existing confidence threshold is"
+                f" {existing_detector.confidence_threshold}.",
             )
         return existing_detector
 
@@ -748,7 +750,9 @@ class Groundlight:
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
+    ):
         """
         Add a new label to an image query.  This answers the detector's question.
 
@@ -756,9 +760,12 @@ class Groundlight:
                             or an image_query id as a string.
 
         :param label: The string "YES" or the string "NO" in answer to the query.
+        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
 
         :return: None
         """
+        if isinstance(rois, str):
+            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
         else:
@@ -768,8 +775,9 @@ class Groundlight:
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
-
-        return self.api_client._add_label(image_query_id, api_label)  # pylint: disable=protected-access
+        rois_json = [roi.dict() for roi in rois] if rois else None
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
+        self.labels_api.create_label(request_params)
 
     def start_inspection(self) -> str:
         """

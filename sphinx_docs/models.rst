@@ -5,6 +5,9 @@ SDK Client
    :members:
    :special-members: __init__
 
+.. autoclass:: groundlight.ExperimentalApi
+   :members:
+   :special-members: __init__
 
 API Response Objects
 =====================
@@ -19,4 +22,10 @@ API Response Objects
     :model-show-json: True
 
 .. autopydantic_model:: model.PaginatedImageQueryList
+    :model-show-json: True
+
+.. autopydantic_model:: model.Rule
+    :model-show-json: True
+
+.. autopydantic_model:: model.PaginatedRuleList
     :model-show-json: True

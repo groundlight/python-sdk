@@ -108,7 +108,7 @@ def test_list_image_queries_attempts_retries(gl: Groundlight):
 def test_add_label_attempts_retries(gl: Groundlight, detector: Detector):
     image_query = gl.submit_image_query(detector=detector.id, image=IMAGE_FILE)
     run_test(
-        mocked_call="requests.request",
+        mocked_call="urllib3.PoolManager.request",
         api_method=gl.add_label,
         expected_call_counts=TOTAL_RETRIES + 1,
         image_query=image_query,
@@ -116,7 +116,7 @@ def test_add_label_attempts_retries(gl: Groundlight, detector: Detector):
     )
 
     run_test(
-        mocked_call="requests.request",
+        mocked_call="urllib3.PoolManager.request",
         api_method=gl.add_label,
         expected_call_counts=TOTAL_RETRIES + 1,
         image_query=image_query,

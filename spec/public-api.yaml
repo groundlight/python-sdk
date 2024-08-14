@@ -127,6 +127,54 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detector-groups:
+    get:
+      operationId: Get Detector Groups
+      description: List all detector groups
+      tags:
+      - detector-groups
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
+    post:
+      operationId: Create Detector Group
+      description: |-
+        Create a new detector group
+
+        POST data:
+          Required:
+            - name (str) - name of the predictor set
+      tags:
+      - detector-groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/detectors:
     get:
       operationId: List detectors
@@ -212,6 +260,54 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detectors/detector-groups:
+    get:
+      operationId: Get Detector Groups_2
+      description: List all detector groups
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
+    post:
+      operationId: Create Detector Group_2
+      description: |-
+        Create a new detector group
+
+        POST data:
+          Required:
+            - name (str) - name of the predictor set
+      tags:
+      - detectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DetectorGroupRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -353,6 +449,35 @@ paths:
                 type: string
                 format: binary
           description: ''
+  /v1/labels:
+    post:
+      operationId: create label
+      description: |-
+        Create a new LabelValue and attach it to an image query. This will trigger
+        asynchronous fine-tuner model training.
+      tags:
+      - labels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelValueRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LabelValueRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LabelValueRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelValue'
+          description: ''
   /v1/me:
     get:
       operationId: Who am I
@@ -470,6 +595,66 @@ components:
       required:
       - CUSTOMER
       - GL
+    AnnotationsRequestedEnum:
+      enum:
+      - BINARY_CLASSIFICATION
+      - BOUNDING_BOXES
+      type: string
+      description: |-
+        * `BINARY_CLASSIFICATION` - Binary Classification
+        * `BOUNDING_BOXES` - Bounding Boxes
+    BBoxGeometry:
+      type: object
+      description: Mixin for serializers to handle data in the StrictBaseModel format
+      properties:
+        left:
+          type: number
+          format: double
+        top:
+          type: number
+          format: double
+        right:
+          type: number
+          format: double
+        bottom:
+          type: number
+          format: double
+        x:
+          type: number
+          format: double
+          readOnly: true
+        y:
+          type: number
+          format: double
+          readOnly: true
+      required:
+      - bottom
+      - left
+      - right
+      - top
+      - x
+      - y
+    BBoxGeometryRequest:
+      type: object
+      description: Mixin for serializers to handle data in the StrictBaseModel format
+      properties:
+        left:
+          type: number
+          format: double
+        top:
+          type: number
+          format: double
+        right:
+          type: number
+          format: double
+        bottom:
+          type: number
+          format: double
+      required:
+      - bottom
+      - left
+      - right
+      - top
     ChannelEnum:
       enum:
       - EMAIL
@@ -538,6 +723,13 @@ components:
           default: 0.9
           description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
+        patience_time:
+          type: number
+          format: double
+          maximum: 3600
+          minimum: 0
+          default: 30.0
+          description: How long Groundlight will attempt to generate a confident prediction
         metadata:
           type: object
           additionalProperties: {}
@@ -619,6 +811,7 @@ components:
 
             * `BINARY` - BINARY
             * `COUNT` - COUNT
+            * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
           nullable: true
           description: Configuration for each detector mode.
@@ -626,6 +819,27 @@ components:
       - name
       - query
       x-internal: true
+    DetectorGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    DetectorGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - name
     DetectorTypeEnum:
       enum:
       - detector
@@ -683,10 +897,18 @@ components:
         confidence_threshold:
           type: number
           format: double
-          maximum: 1
-          minimum: 0.5
+          readOnly: true
           description: Min confidence needed to accept the response of the image query.
+        rois:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROI'
+          readOnly: true
+          nullable: true
+          description: An array of regions of interest (bounding boxes) collected
+            on image
       required:
+      - confidence_threshold
       - created_at
       - detector_id
       - id
@@ -695,20 +917,90 @@ components:
       - query
       - result
       - result_type
+      - rois
       - type
       x-internal: true
     ImageQueryTypeEnum:
       enum:
       - image_query
       type: string
+    LabelValue:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+        class_name:
+          type: string
+          nullable: true
+          description: A human-readable class name for this label (e.g. YES/NO)
+          readOnly: true
+        rois:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROI'
+          nullable: true
+        annotations_requested:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/AnnotationsRequestedEnum'
+            description: |-
+              The type of annotation requested
+
+              * `BINARY_CLASSIFICATION` - Binary Classification
+              * `BOUNDING_BOXES` - Bounding Boxes
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        detector_id:
+          type: integer
+          nullable: true
+          readOnly: true
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          readOnly: true
+      required:
+      - annotations_requested
+      - class_name
+      - confidence
+      - created_at
+      - detector_id
+      - source
+    LabelValueRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          writeOnly: true
+          minLength: 1
+        image_query_id:
+          type: string
+          writeOnly: true
+          minLength: 1
+        rois:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROIRequest'
+          nullable: true
+      required:
+      - image_query_id
+      - label
     ModeEnum:
       enum:
       - BINARY
       - COUNT
+      - MULTI_CLASS
       type: string
       description: |-
         * `BINARY` - BINARY
         * `COUNT` - COUNT
+        * `MULTI_CLASS` - MULTI_CLASS
     Note:
       type: object
       properties:
@@ -799,6 +1091,37 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Rule'
+    ROI:
+      type: object
+      description: Mixin for serializers to handle data in the StrictBaseModel format
+      properties:
+        label:
+          type: string
+          description: The label of the bounding box.
+        score:
+          type: number
+          format: double
+          readOnly: true
+          description: The confidence of the bounding box.
+        geometry:
+          $ref: '#/components/schemas/BBoxGeometry'
+      required:
+      - geometry
+      - label
+      - score
+    ROIRequest:
+      type: object
+      description: Mixin for serializers to handle data in the StrictBaseModel format
+      properties:
+        label:
+          type: string
+          minLength: 1
+          description: The label of the bounding box.
+        geometry:
+          $ref: '#/components/schemas/BBoxGeometryRequest'
+      required:
+      - geometry
+      - label
     ResultTypeEnum:
       enum:
       - binary_classification
@@ -891,6 +1214,24 @@ components:
         * `HOURS` - HOURS
         * `MINUTES` - MINUTES
         * `SECONDS` - SECONDS
+    SourceEnum:
+      enum:
+      - INITIAL_PLACEHOLDER
+      - CLOUD
+      - CUST
+      - HUMAN_CLOUD_ENSEMBLE
+      - ALG
+      - ALG_REC
+      - ALG_UNCLEAR
+      type: string
+      description: |-
+        * `INITIAL_PLACEHOLDER` - InitialPlaceholder
+        * `CLOUD` - HumanCloud
+        * `CUST` - HumanCustomer
+        * `HUMAN_CLOUD_ENSEMBLE` - HumanCloudEnsemble
+        * `ALG` - Algorithm
+        * `ALG_REC` - AlgorithmReconciled
+        * `ALG_UNCLEAR` - AlgorithmUnclear
     VerbEnum:
       enum:
       - ANSWERED_CONSECUTIVELY
@@ -909,7 +1250,11 @@ components:
       type: object
       properties:
         confidence:
-          type: float
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          nullable: true
         label:
           type: string
       required:
@@ -919,7 +1264,11 @@ components:
       type: object
       properties:
         confidence:
-          type: float
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          nullable: true
         value:
           type: integer
       required:
