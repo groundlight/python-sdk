@@ -7,7 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
@@ -15,12 +15,18 @@ from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.model.note_request import NoteRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import Detector, DetectorGroup, PaginatedRuleList, Rule
+from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
+
+from groundlight.binary_labels import Label, convert_display_label_to_internal
 
 from groundlight.images import parse_supported_image_types
 
@@ -216,3 +222,65 @@ class ExperimentalApi(Groundlight):
         :return: a list of all detector groups
         """
         return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
+
+    def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
+        """
+        Adds a region of interest to the given detector
+        NOTE: This feature is only available to Pro tier and higher
+        If you would like to learn more, reach out to us at https://groundlight.ai
+
+        :param label: the label of the item in the roi
+        :param top_left: the top left corner of the roi
+        :param bottom_right: the bottom right corner of the roi
+        """
+
+        return ROI(
+            label=label,
+            score=1.0,
+            geometry=BBoxGeometry(
+                left=top_left[0],
+                top=top_left[1],
+                right=bottom_right[0],
+                bottom=bottom_right[1],
+                x=(top_left[0] + bottom_right[0]) / 2,
+                y=(top_left[1] + bottom_right[1]) / 2,
+            ),
+        )
+
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
+    ):
+        """
+        Experimental version of add_label.
+        Add a new label to an image query.  This answers the detector's question.
+
+        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
+                            or an image_query id as a string.
+
+        :param label: The string "YES" or the string "NO" in answer to the query.
+        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
+
+        :return: None
+        """
+        if isinstance(rois, str):
+            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
+        if isinstance(image_query, ImageQuery):
+            image_query_id = image_query.id
+        else:
+            image_query_id = str(image_query)
+            # Some old imagequery id's started with "chk_"
+            # TODO: handle iqe_ for image_queries returned from edge endpoints
+            if not image_query_id.startswith(("chk_", "iq_")):
+                raise ValueError(f"Invalid image query id {image_query_id}")
+        api_label = convert_display_label_to_internal(image_query_id, label)
+        geometry_requests = [BBoxGeometryRequest(**roi.geometry.dict()) for roi in rois] if rois else None
+        roi_requests = (
+            [
+                ROIRequest(label=roi.label, score=roi.score, geometry=geometry)
+                for roi, geometry in zip(rois, geometry_requests)
+            ]
+            if rois and geometry_requests
+            else None
+        )
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
+        self.labels_api.create_label(request_params)

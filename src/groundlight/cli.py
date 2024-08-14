@@ -13,6 +13,14 @@ cli_app = typer.Typer(
 )
 
 
+def is_cli_supported_type(annotation):
+    """
+    Check if the annotation is a type that can be supported by the CLI
+    str is a supported type, but is given precedence over other types
+    """
+    return annotation in (int, float, bool)
+
+
 def class_func_to_cli(method):
     """
     Given the class method, create a method with the identical signature to provide the help documentation and
@@ -36,12 +44,29 @@ def class_func_to_cli(method):
         print(gl_bound_method(*args, **kwargs))  # this is where we output to the console
 
     # not recommended practice to directly change annotations, but gets around Typer not supporting Union types
+    cli_unsupported_params = []
     for name, annotation in method.__annotations__.items():
         if get_origin(annotation) is Union:
+            # If we can submit a string, we take the string from the cli
             if str in annotation.__args__:
                 wrapper.__annotations__[name] = str
+            # Otherwise, we grab the first type that is supported by the CLI
             else:
-                wrapper.__annotations__[name] = annotation
+                found_supported_type = False
+                for arg in annotation.__args__:
+                    if is_cli_supported_type(arg):
+                        found_supported_type = True
+                        wrapper.__annotations__[name] = arg
+                        break
+                if not found_supported_type:
+                    cli_unsupported_params.append(name)
+    # Ideally we could just not list the unsupported params, but it doesn't seem natively supported by Typer
+    # and requires more metaprogamming than makes sense at the moment. For now, we require methods to support str
+    for param in cli_unsupported_params:
+        raise Exception(
+            f"Parameter {param} on method {method.__name__} has an unsupported type for the CLI. Consider allowing a"
+            " string representation or writing a custom exception inside the method"
+        )
 
     return wrapper
 

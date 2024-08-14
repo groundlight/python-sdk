@@ -117,13 +117,16 @@ Class | Method | HTTP request | Description
 *DetectorGroupsApi* | [**create_detector_group**](docs/DetectorGroupsApi.md#create_detector_group) | **POST** /v1/detector-groups | 
 *DetectorGroupsApi* | [**get_detector_groups**](docs/DetectorGroupsApi.md#get_detector_groups) | **GET** /v1/detector-groups | 
 *DetectorsApi* | [**create_detector**](docs/DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
+*DetectorsApi* | [**create_detector_group2**](docs/DetectorsApi.md#create_detector_group2) | **POST** /v1/detectors/detector-groups | 
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
+*DetectorsApi* | [**get_detector_groups2**](docs/DetectorsApi.md#get_detector_groups2) | **GET** /v1/detectors/detector-groups | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
 *ImageQueriesApi* | [**submit_image_query**](docs/ImageQueriesApi.md#submit_image_query) | **POST** /v1/image-queries | 
+*LabelsApi* | [**create_label**](docs/LabelsApi.md#create_label) | **POST** /v1/labels | 
 *NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /v1/notes | 
 *NotesApi* | [**get_notes**](docs/NotesApi.md#get_notes) | **GET** /v1/notes | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /v1/me | 
@@ -134,6 +137,9 @@ Class | Method | HTTP request | Description
  - [Action](docs/Action.md)
  - [ActionRequest](docs/ActionRequest.md)
  - [AllNotes](docs/AllNotes.md)
+ - [AnnotationsRequestedEnum](docs/AnnotationsRequestedEnum.md)
+ - [BBoxGeometry](docs/BBoxGeometry.md)
+ - [BBoxGeometryRequest](docs/BBoxGeometryRequest.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
  - [ChannelEnum](docs/ChannelEnum.md)
  - [Condition](docs/Condition.md)
@@ -147,15 +153,20 @@ Class | Method | HTTP request | Description
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
  - [InlineResponse200](docs/InlineResponse200.md)
+ - [LabelValue](docs/LabelValue.md)
+ - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)
  - [Note](docs/Note.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)
+ - [ROI](docs/ROI.md)
+ - [ROIRequest](docs/ROIRequest.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
  - [Rule](docs/Rule.md)
  - [RuleRequest](docs/RuleRequest.md)
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
+ - [SourceEnum](docs/SourceEnum.md)
  - [VerbEnum](docs/VerbEnum.md)
 
 

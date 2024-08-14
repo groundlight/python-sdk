@@ -12,14 +12,14 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.all_notes import AllNotes
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 
-globals()["AllNotes"] = AllNotes
-from groundlight_openapi_client.model.paginated_all_notes_list import PaginatedAllNotesList
+globals()["BBoxGeometryRequest"] = BBoxGeometryRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
 
 
-class TestPaginatedAllNotesList(unittest.TestCase):
-    """PaginatedAllNotesList unit test stubs"""
+class TestROIRequest(unittest.TestCase):
+    """ROIRequest unit test stubs"""
 
     def setUp(self):
         pass
@@ -27,10 +27,10 @@ class TestPaginatedAllNotesList(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testPaginatedAllNotesList(self):
-        """Test PaginatedAllNotesList"""
+    def testROIRequest(self):
+        """Test ROIRequest"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = PaginatedAllNotesList()  # noqa: E501
+        # model = ROIRequest()  # noqa: E501
         pass
 
 
