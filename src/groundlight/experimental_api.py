@@ -7,6 +7,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+import requests
 from typing import Any, Dict, List, Union
 
 from groundlight_openapi_client.api.actions_api import ActionsApi
@@ -187,8 +188,15 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         if image is not None:
             img_bytes = parse_supported_image_types(image)
-        kwargs = {"image": img_bytes}
-        self.notes_api.create_note(det_id, note, **kwargs)
+        # TODO: The openapi generator doesn't handle file submissions well at the moment, so we manually implement this
+        # kwargs = {"image": img_bytes}
+        # self.notes_api.create_note(det_id, note, **kwargs)
+        url = f"{self.endpoint}/v1/notes"
+        files = {"image": ("image.jpg", img_bytes, 'image/jpeg')} if image is not None else None
+        data = {"content": note}
+        params = {"detector_id": det_id}
+        headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
+        return requests.post(url, headers=headers, data=data, files=files, params=params)
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """

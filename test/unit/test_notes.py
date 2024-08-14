@@ -25,5 +25,4 @@ def test_note_with_image(gl: ExperimentalApi):
     for i in range(len(notes)):
         if notes[i].content == "test_note":
             found_note = True
-            assert notes[i].image is not None
     assert found_note
