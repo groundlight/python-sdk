@@ -349,10 +349,8 @@ class Groundlight:
             )
         if group_name is not None and existing_detector.group_name != group_name:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
-                    f" match. The existing group name is '{existing_detector.group_name}'."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
+                f" match. The existing group name is '{existing_detector.group_name}'.",
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
