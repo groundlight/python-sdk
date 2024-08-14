@@ -245,6 +245,7 @@ class ExperimentalApi(Groundlight):
             ),
         )
 
+    # pylint: disable=duplicate-code
     def add_label(
         self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
