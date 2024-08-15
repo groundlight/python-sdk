@@ -22,7 +22,6 @@ from groundlight_openapi_client.model_utils import (  # noqa: F401
     validate_and_convert_types,
 )
 from groundlight_openapi_client.model.all_notes import AllNotes
-from groundlight_openapi_client.model.note_request import NoteRequest
 
 
 class NotesApi(object):
@@ -48,36 +47,49 @@ class NotesApi(object):
             params_map={
                 "all": [
                     "detector_id",
-                    "note_request",
+                    "content",
+                    "image",
                 ],
                 "required": [
                     "detector_id",
-                    "note_request",
+                    "content",
                 ],
-                "nullable": [],
+                "nullable": [
+                    "image",
+                ],
                 "enum": [],
-                "validation": [],
+                "validation": [
+                    "content",
+                ],
             },
             root_map={
-                "validations": {},
+                "validations": {
+                    ("content",): {
+                        "min_length": 1,
+                    },
+                },
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
-                    "note_request": (NoteRequest,),
+                    "content": (str,),
+                    "image": (
+                        file_type,
+                        none_type,
+                    ),
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
+                    "content": "content",
+                    "image": "image",
                 },
                 "location_map": {
                     "detector_id": "query",
-                    "note_request": "body",
+                    "content": "form",
+                    "image": "form",
                 },
                 "collection_format_map": {},
             },
-            headers_map={
-                "accept": [],
-                "content_type": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data"],
-            },
+            headers_map={"accept": [], "content_type": ["multipart/form-data"]},
             api_client=api_client,
         )
         self.get_notes_endpoint = _Endpoint(
@@ -121,21 +133,22 @@ class NotesApi(object):
             api_client=api_client,
         )
 
-    def create_note(self, detector_id, note_request, **kwargs):
+    def create_note(self, detector_id, content, **kwargs):
         """create_note  # noqa: E501
 
         Create a new note  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.create_note(detector_id, note_request, async_req=True)
+        >>> thread = api.create_note(detector_id, content, async_req=True)
         >>> result = thread.get()
 
         Args:
             detector_id (str): the detector to associate the new note with
-            note_request (NoteRequest):
+            content (str): Text content of the note.
 
         Keyword Args:
+            image (file_type, none_type): [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object
@@ -178,7 +191,7 @@ class NotesApi(object):
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["detector_id"] = detector_id
-        kwargs["note_request"] = note_request
+        kwargs["content"] = content
         return self.create_note_endpoint.call_with_http_info(**kwargs)
 
     def get_notes(self, detector_id, **kwargs):

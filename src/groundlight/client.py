@@ -52,7 +52,7 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
-class Groundlight:
+class Groundlight:  # pylint: disable=too-many-instance-attributes
     """
     Client for accessing the Groundlight cloud service.
 
@@ -731,13 +731,17 @@ class Groundlight:
         self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
-        Add a new label to an image query.  This answers the detector's question.
+        Add a new label to an image query.  This answers the detector's
+        question.
 
-        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
-                            or an image_query id as a string.
+        :param image_query: Either an ImageQuery object (returned from
+                            `ask_ml` or similar method) or an image_query id as a
+                            string.
 
-        :param label: The string "YES" or the string "NO" in answer to the query.
-        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
+        :param label: The string "YES" or the string "NO" in answer to the
+            query.
+        :param rois: An option list of regions of interest (ROIs) to associate
+            with the label. (This feature experimental)
 
         :return: None
         """

@@ -157,7 +157,6 @@ Class | Method | HTTP request | Description
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)
  - [Note](docs/Note.md)
- - [NoteRequest](docs/NoteRequest.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)

@@ -7,8 +7,10 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+from io import BufferedReader, BytesIO
 from typing import Any, Dict, List, Tuple, Union
 
+import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -19,13 +21,14 @@ from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
-from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal
+from groundlight.images import parse_supported_image_types
+from groundlight.optional_imports import Image, np
 
 from .client import Groundlight
 
@@ -180,16 +183,31 @@ class ExperimentalApi(Groundlight):
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
 
-    def create_note(self, detector: Union[str, Detector], note: Union[str, NoteRequest]) -> None:
+    def create_note(
+        self,
+        detector: Union[str, Detector],
+        note: str,
+        image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray, None] = None,
+    ) -> None:
         """
         Adds a note to a given detector
 
         :param detector: the detector to add the note to
+        :param note: the text content of the note
+        :param image: a path to an image to attach to the note
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
-        if isinstance(note, str):
-            note = NoteRequest(content=note)
-        self.notes_api.create_note(det_id, note)
+        if image is not None:
+            img_bytes = parse_supported_image_types(image)
+        # TODO: The openapi generator doesn't handle file submissions well at the moment, so we manually implement this
+        # kwargs = {"image": img_bytes}
+        # self.notes_api.create_note(det_id, note, **kwargs)
+        url = f"{self.endpoint}/v1/notes"
+        files = {"image": ("image.jpg", img_bytes, "image/jpeg")} if image is not None else None
+        data = {"content": note}
+        params = {"detector_id": det_id}
+        headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
+        requests.post(url, headers=headers, data=data, files=files, params=params, timeout=60)  # type: ignore
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """
@@ -234,18 +252,22 @@ class ExperimentalApi(Groundlight):
             ),
         )
 
+    # pylint: disable=duplicate-code
     def add_label(
         self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
-        Experimental version of add_label.
-        Add a new label to an image query.  This answers the detector's question.
+        Experimental version of add_label. Add a new label to an image query.
+        This answers the detector's question.
 
-        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
-                            or an image_query id as a string.
+        :param image_query: Either an ImageQuery object (returned from
+                            `submit_image_query`) or an image_query id as a
+                            string.
 
-        :param label: The string "YES" or the string "NO" in answer to the query.
-        :param rois: An option list of regions of interest (ROIs) to associate with the label. (This feature experimental)
+        :param label: The string "YES" or the string "NO" in answer to the
+            query.
+        :param rois: An option list of regions of interest (ROIs) to associate
+            with the label. (This feature experimental)
 
         :return: None
         """
