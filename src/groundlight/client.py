@@ -262,11 +262,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param query: the detector query
 
-        :param group_name: the detector group that the new detector should belong to
+        :param group_name: the detector group that the new detector should belong to. If none, defaults to default_group
 
         :param confidence_threshold: the confidence threshold
 
-        :param patience_time: the patience time, or how long Groundlight should work to generate a confident answer
+        :param patience_time: the patience time, or how long Groundlight should work to generate a confident answer. Defaults to 30 seconds.
 
         :param pipeline_config: the pipeline config
 
@@ -349,10 +349,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             )
         if group_name is not None and existing_detector.group_name != group_name:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
-                    f" match. The existing group name is '{existing_detector.group_name}'."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
+                f" match. The existing group name is '{existing_detector.group_name}'.",
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
