@@ -54,7 +54,7 @@ const config = {
           // there will be a third one for real URLs.  :)
         },
         gtag: {
-          trackingID: 'G-G0XW52NM2K',
+          trackingID: 'G-WG1Q5X6F6L',
         },
         blog: {
           showReadingTime: true,
@@ -209,6 +209,23 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
+  plugins: [
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          {
+            to: "https://www.groundlight.ai/blog/reducing-data-labeling-costs-with-uncertainty-sampling", // new marketing site route
+            from: "/blog/active-learning", // old blog route
+          },
+          {
+            to: "https://www.groundlight.ai/blog/groundlight-ai-achieves-soc-2-type-2-compliance", // new marketing site route
+            from: "/blog/groundlight-ai-achieves-soc-2-type-2-compliance", // old blog route
+          },
+        ],
+      },
+    ],
+  ],  
 };
 
 module.exports = config;

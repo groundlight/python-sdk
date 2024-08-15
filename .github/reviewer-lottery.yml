@@ -1,12 +1,15 @@
+# The auto-assign bot will randomly select a reviewer from this list of usernames.
 groups:
   - name: dependabot-reviewers
     reviewers: 1
     usernames:
-      - mjvogelsong
       - robotrapta
       - tyler-romero
       - sunildkumar
-      - roxanne-o
-      - blaise-muhirwa
-      - brandon-groundlight
       - tomfaulhaber
+      - roxanne-o
+      - timmarkhuff
+      - brandon-groundlight
+      - f-wright
+      - CoreyEWood
+      - honeytung

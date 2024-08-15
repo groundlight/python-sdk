@@ -1,17 +1,17 @@
 # Installing on NVIDIA Jetson
 
-This guide will help you install the Groundlight SDK on NVIDIA Jetson devices. The Groundlight SDK requires Python 3.7 or higher.
+This guide will help you install the Groundlight SDK on NVIDIA Jetson devices. The Groundlight SDK requires Python 3.8 or higher.
 
 ## Prerequisites
 
 Ensure that you have the following installed on your NVIDIA Jetson:
 
-- Python 3.7 or higher
+- Python 3.8 or higher
 - pip (Python package installer)
 
 ## Basic Installation
 
-Assuming you have Python 3.7 or higher installed on your NVIDIA Jetson, you can proceed with the following steps to install or upgrade the Groundlight SDK:
+Assuming you have Python 3.8 or higher installed on your NVIDIA Jetson, you can proceed with the following steps to install or upgrade the Groundlight SDK:
 
 ### Installing Groundlight SDK
 
