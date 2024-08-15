@@ -199,7 +199,8 @@ def test_create_detector_with_everything(gl: Groundlight):
     assert detector.confidence_threshold == confidence_threshold
     # TODO: We need a backend update to get the serialized output
     # assert detector.patience_time == patience_time
-    # GL runs multiple models synchronously, and the active pipeline may change. Currently, we don't check the pipeline config here.
+    # GL runs multiple models synchronously, and the active pipeline may change.
+    # Currently, we don't check the pipeline config here.
     assert detector.metadata == metadata
 
 
