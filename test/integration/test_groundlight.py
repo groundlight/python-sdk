@@ -137,7 +137,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     assert isinstance(_detector, Detector)
     assert _detector.confidence_threshold == confidence_threshold
 
-    # If you retrieve an existing detector, we currently require the confidence and query to match
+    # If you retrieve an existing detector, we currently require the group_name, confidence, query to match
     # exactly. TODO: We may want to allow updating those fields through the SDK (and then we can
     # change this test).
     different_confidence = 0.7
@@ -158,11 +158,50 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
             pipeline_config=pipeline_config,
         )
 
+    different_group_name = "Different group"
+    with pytest.raises(ValueError):
+        gl.get_or_create_detector(
+            name=name,
+            query=query,
+            confidence_threshold=confidence_threshold,
+            pipeline_config=pipeline_config,
+            group_name=different_group_name,
+        )
+
     # If the confidence is not provided, we will use the existing detector's confidence.
     retrieved_detector = gl.get_or_create_detector(name=name, query=query)
     assert (
         retrieved_detector.confidence_threshold == confidence_threshold
     ), "We expected to retrieve the existing detector's confidence, but got a different value."
+
+
+def test_create_detector_with_everything(gl: Groundlight):
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+    group_name = "Test group"
+    confidence_threshold = 0.825
+    patience_time = 300  # seconds
+    pipeline_config = "never-review"
+    metadata = generate_random_dict(target_size_bytes=200)
+    detector = gl.create_detector(
+        name=name,
+        query=query,
+        group_name=group_name,
+        confidence_threshold=confidence_threshold,
+        patience_time=patience_time,
+        pipeline_config=pipeline_config,
+        metadata=metadata,
+    )
+    assert isinstance(detector, Detector)
+    assert detector.name == name
+    assert detector.query == query
+    assert detector.group_name == group_name
+    assert detector.confidence_threshold == confidence_threshold
+    # TODO: We need a backend update to get the serialized output
+    # assert detector.patience_time == patience_time
+    # GL runs multiple models synchronously, and the active pipeline may change.
+    # Currently, we don't check the pipeline config here.
+    assert detector.metadata == metadata
 
 
 def test_list_detectors(gl: Groundlight):
