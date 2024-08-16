@@ -504,23 +504,25 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
-        :param image: The image, in several possible formats:
-          - filename (string) of a jpeg file
-          - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image
-          Any binary format must be JPEG-encoded already.  Any pixel format will get
-          converted to JPEG at high quality before sending to service.
+        :param image: The image, in several possible formats: - filename (string) of a jpeg file -
+          byte array or BytesIO or BufferedReader with jpeg bytes - numpy array with values 0-255
+          and dimensions (H,W,3) in BGR order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels) - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get converted to
+          JPEG at high quality before sending to service.
 
-        :param confidence_threshold: The confidence threshold to wait for.
-            If not set, use the detector's confidence threshold.
+        :param confidence_threshold: The confidence threshold to wait for. If not set, use the
+            detector's confidence threshold.
 
         :param wait: How long to wait (in seconds) for a confident answer.
 
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
+
+        :param inspection_id: A premium feature allowing users to combine multiple image queries
+            together into an inspection report. If you are interested in learning more, please reach
+            out at support@groundlight.ai or through the chat widget on our website.
 
         :return: ImageQuery
         """
@@ -548,20 +550,22 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
-        :param image: The image, in several possible formats:
-          - filename (string) of a jpeg file
-          - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image
-          Any binary format must be JPEG-encoded already.  Any pixel format will get
-          converted to JPEG at high quality before sending to service.
+        :param image: The image, in several possible formats: - filename (string) of a jpeg file -
+          byte array or BytesIO or BufferedReader with jpeg bytes - numpy array with values 0-255
+          and dimensions (H,W,3) in BGR order
+            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels) - PIL Image
+          Any binary format must be JPEG-encoded already.  Any pixel format will get converted to
+          JPEG at high quality before sending to service.
 
         :param wait: How long to wait (in seconds) for any answer.
 
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
+
+        :param inspection_id: A premium feature allowing users to combine multiple image queries
+            together into an inspection report. If you are interested in learning more, please reach
+            out at support@groundlight.ai or through the chat widget on our website.
 
         :return: ImageQuery
         """
@@ -588,9 +592,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
-        `submit_image_query` with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the
-        ImageQuery.
+        Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to
+        calling `submit_image_query` with `want_async=True` and `wait=0`. Use `get_image_query` to
+        retrieve the `result` of the ImageQuery.
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
@@ -598,28 +602,29 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image: Any binary format must be JPEG-encoded already.
-            Any pixel format will get converted to JPEG at high quality before sending to service.
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order (Note OpenCV uses BGR
+            not RGB. `img[:, :, ::-1]` will reverse the channels)
+          - PIL Image: Any binary format must be JPEG-encoded already. Any pixel format will get
+            converted to JPEG at high quality before sending to service.
 
 
-        :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
-            The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
-            Within patience_time, Groundlight will update ML predictions based on stronger findings,
-            and, additionally, Groundlight will prioritize human review of the image query if necessary.
-            This is a soft server-side timeout. If not set, use the detector's patience_time.
+        :param patience_time: How long to wait (in seconds) for a confident answer for this image
+            query. The longer the patience_time, the more likely Groundlight will arrive at a
+            confident answer. Within patience_time, Groundlight will update ML predictions based on
+            stronger findings, and, additionally, Groundlight will prioritize human review of the
+            image query if necessary. This is a soft server-side timeout. If not set, use the
+            detector's patience_time.
 
-        :param confidence_threshold: The confidence threshold to wait for.
-            If not set, use the detector's confidence threshold.
+        :param confidence_threshold: The confidence threshold to wait for. If not set, use the
+            detector's confidence threshold.
 
-        :param human_review: If `None` or `DEFAULT`, send the image query for human review
-            only if the ML prediction is not confident.
-            If set to `ALWAYS`, always send the image query for human review.
-            If set to `NEVER`, never send the image query for human review.
+        :param human_review: If `None` or `DEFAULT`, send the image query for human review only if
+            the ML prediction is not confident. If set to `ALWAYS`, always send the image query for
+            human review. If set to `NEVER`, never send the image query for human review.
 
-        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
-                            this is the ID of the inspection to associate with the image query.
+        :param inspection_id: A premium feature allowing users to combine multiple image queries
+            together into an inspection report. If you are interested in learning more, please reach
+            out at support@groundlight.ai or through the chat widget on our website.
 
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
@@ -630,34 +635,29 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = Groundlight()
-            detector = gl.get_or_create_detector(
-                            name="door",
-                            query="Is the door locked?",
-                            confidence_threshold=0.9
+            gl = Groundlight() detector = gl.get_or_create_detector(
+                            name="door", query="Is the door locked?", confidence_threshold=0.9
                         )
 
             image_query = gl.ask_async(
-                            detector=detector,
-                            image="path/to/image.jpeg")
+                            detector=detector, image="path/to/image.jpeg")
 
-            # the image_query will have an id for later retrieval
-            assert image_query.id is not None
+            # the image_query will have an id for later retrieval assert image_query.id is not None
 
             # Do not attempt to access the result of this query as the result for all async queries
             # will be None. Your result is being computed asynchronously and will be available later
             assert image_query.result is None
 
-            # retrieve the result later or on another machine by calling gl.wait_for_confident_result()
-            # with the id of the image_query above. This will block until the result is available.
-            image_query = gl.wait_for_confident_result(image_query.id)
+            # retrieve the result later or on another machine by calling
+            gl.wait_for_confident_result() # with the id of the image_query above. This will block
+            until the result is available. image_query =
+            gl.wait_for_confident_result(image_query.id)
 
-            # now the result will be available for your use
-            assert image_query.result is not None
+            # now the result will be available for your use assert image_query.result is not None
 
             # alternatively, you can check if the result is available (without blocking) by calling
-            # gl.get_image_query() with the id of the image_query above.
-            image_query = gl.get_image_query(image_query.id)
+            # gl.get_image_query() with the id of the image_query above. image_query =
+            gl.get_image_query(image_query.id)
         """
         return self.submit_image_query(
             detector,
