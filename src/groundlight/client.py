@@ -408,35 +408,38 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
         :param image: The image, in several possible formats:
+
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image: Any binary format must be JPEG-encoded already.
-            Any pixel format will get converted to JPEG at high quality before sending to service.
+          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order (Note OpenCV uses BGR
+            not RGB. ``img[:, :, ::-1]`` will reverse the channels)
+          - PIL Image: Any binary format must be JPEG-encoded already. Any pixel format will get
+            converted to JPEG at high quality before sending to service.
 
-        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout.
+        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side
+            timeout.
 
-        :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
-            The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
-            Within patience_time, Groundlight will update ML predictions based on stronger findings,
-            and, additionally, Groundlight will prioritize human review of the image query if necessary.
-            This is a soft server-side timeout. If not set, use the detector's patience_time.
+        :param patience_time: How long to wait (in seconds) for a confident answer for this image
+            query. The longer the patience_time, the more likely Groundlight will arrive at a
+            confident answer. Within patience_time, Groundlight will update ML predictions based on
+            stronger findings, and, additionally, Groundlight will prioritize human review of the
+            image query if necessary. This is a soft server-side timeout. If not set, use the
+            detector's patience_time.
 
-        :param confidence_threshold: The confidence threshold to wait for.
-            If not set, use the detector's confidence threshold.
+        :param confidence_threshold: The confidence threshold to wait for. If not set, use the
+            detector's confidence threshold.
 
-        :param human_review: If `None` or `DEFAULT`, send the image query for human review
-            only if the ML prediction is not confident.
-            If set to `ALWAYS`, always send the image query for human review.
-            If set to `NEVER`, never send the image query for human review.
+        :param human_review: If `None` or `DEFAULT`, send the image query for human review only if
+            the ML prediction is not confident. If set to `ALWAYS`, always send the image query for
+            human review. If set to `NEVER`, never send the image query for human review.
 
-        :param want_async: If True, the client will return as soon as the image query is submitted and will not wait for
-            an ML/human prediction. The returned `ImageQuery` will have a `result` of None. Must set `wait` to 0 to use
-            want_async.
+        :param want_async: If True, the client will return as soon as the image query is submitted
+            and will not wait for an ML/human prediction. The returned `ImageQuery` will have a
+            `result` of None. Must set `wait` to 0 to use want_async.
 
-        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
-                            this is the ID of the inspection to associate with the image query.
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports
+                            enabled, this is the ID of the inspection to associate with the image
+                            query.
 
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
@@ -504,10 +507,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
-        :param image: The image, in several possible formats: - filename (string) of a jpeg file -
-          byte array or BytesIO or BufferedReader with jpeg bytes - numpy array with values 0-255
-          and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels) - PIL Image
+        :param image: The image, in several possible formats:
+
+            - filename (string) of a jpeg file
+            - byte array or BytesIO or BufferedReader with jpeg bytes
+            - numpy array with values 0-255 and dimensions (H,W,3) in BGR order (Note OpenCV uses
+              BGR not RGB. ``img[:, :, ::-1]`` will reverse the channels)
+            - PIL Image
+
           Any binary format must be JPEG-encoded already.  Any pixel format will get converted to
           JPEG at high quality before sending to service.
 
@@ -550,12 +557,16 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
-        :param image: The image, in several possible formats: - filename (string) of a jpeg file -
-          byte array or BytesIO or BufferedReader with jpeg bytes - numpy array with values 0-255
-          and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels) - PIL Image
-          Any binary format must be JPEG-encoded already.  Any pixel format will get converted to
-          JPEG at high quality before sending to service.
+        :param image: The image, in several possible formats:
+
+            - filename (string) of a jpeg filiuo
+            - byte array or BytesIO or BufferedReader with jpeg bytes
+            - numpy array with values 0-255 and dimensions (H,W,3) in BGR order (Note OpenCV uses
+              BGR not RGB. ``img[:, :, ::-1]`` will reverse the channels)
+            - PIL Image
+
+            Any binary format must be JPEG-encoded already.  Any pixel format will get converted to
+            JPEG at high quality before sending to service.
 
         :param wait: How long to wait (in seconds) for any answer.
 
@@ -603,7 +614,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
           - numpy array with values 0-255 and dimensions (H,W,3) in BGR order (Note OpenCV uses BGR
-            not RGB. `img[:, :, ::-1]` will reverse the channels)
+            not RGB. ``img[:, :, ::-1]`` will reverse the channels)
           - PIL Image: Any binary format must be JPEG-encoded already. Any pixel format will get
             converted to JPEG at high quality before sending to service.
 
