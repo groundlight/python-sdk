@@ -44,4 +44,4 @@ by ask_async.
 `submit_image_query` provides the most configurability over submitting image queries. The other `ask_*` methods are actually wrappers around `submit_image_query` with some defaults set to produce their respective behavior.
 
 See the details on the full function signature for `submit_image_query` and the other ask
-groundlight methods in the [API Reference](/api-reference-docs/models.html#groundlight.Groundlight)
+groundlight methods in the [API Reference](/docs/api-reference/)
