@@ -175,6 +175,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     ), "We expected to retrieve the existing detector's confidence, but got a different value."
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
 def test_create_detector_with_everything(gl: Groundlight):
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
