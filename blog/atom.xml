@@ -2,48 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://code.groundlight.ai/python-sdk/blog</id>
     <title>Groundlight Blog</title>
-    <updated>2024-03-20T00:00:00.000Z</updated>
+    <updated>2024-02-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://code.groundlight.ai/python-sdk/blog"/>
     <subtitle>Groundlight Blog</subtitle>
     <icon>https://code.groundlight.ai/python-sdk/img/favicon.ico</icon>
-    <entry>
-        <title type="html"><![CDATA[Navigating Ambiguity with Groundlight AI Detectors]]></title>
-        <id>https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images</id>
-        <link href="https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images"/>
-        <updated>2024-03-20T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[Let's talk more about ambiguous image queries]]></summary>
-        <content type="html"><![CDATA[<p>When you first explore the capabilities of our Groundlight AI detectors, you'll quickly notice that they excel at answering binary questions. These are queries expecting a straightforward "Yes" or "No" response. However, the world around us rarely conforms to such black-and-white distinctions, particularly when analyzing images. In reality, many scenarios present challenges that defy a simple binary answer.</p>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="exploring-the-gray-areas-real-world-examples">Exploring the Gray Areas: Real-World Examples<a href="https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images#exploring-the-gray-areas-real-world-examples" class="hash-link" aria-label="Direct link to Exploring the Gray Areas: Real-World Examples" title="Direct link to Exploring the Gray Areas: Real-World Examples">​</a></h2>
-<p>Consider the following scenarios that highlight the complexity of interpreting real-world images:</p>
-<ol>
-<li><strong>The Case of the Hidden Oven</strong>: Imagine asking, "Is the oven light turned on?" only to find the view partially blocked by a person. With the contents on the other side hidden from view, providing a definitive "Yes" or "No" becomes impossible. Such instances are best described as "Unclear."</li>
-</ol>
-<figure style="text-align:center"><img src="https://code.groundlight.ai/python-sdk/assets/images/hidden_oven-b7fdb5b37f74a65ebf99fc30d11cd238.png" width="350px"><figcaption><small><p>Oven is hidden from the camera view</p></small></figcaption></figure>
-<ol start="2">
-<li><strong>The Locked Garage Door Dilemma</strong>: When faced with a query like, "Is the garage door locked?" accompanied by an image shrouded in darkness or blurred beyond recognition, identifying the status of the door lock is a challenge. In these circumstances, clarity eludes us, leaving us unable to confidently answer.</li>
-</ol>
-<figure style="text-align:center"><img src="https://code.groundlight.ai/python-sdk/assets/images/dark_door-2c9df78f2745af46f8c13280a3317ac6.png" width="350px"><figcaption><small><p>Dark images make it difficult to answer the query</p></small></figcaption></figure>
-<ol start="3">
-<li><strong>Irrelevant Imagery</strong>: At times, the images presented may bear no relation to the question posed. These irrelevant scenes further underscore the limitations of binary responses in complex situations. For instance, responding to the question "Is there a black jacket on the coat hanger?" with the following image (that doesn't even include a coat hanger) exemplifies how such imagery can be off-topic and fail to address the query appropriately.</li>
-</ol>
-<figure style="text-align:center"><img src="https://code.groundlight.ai/python-sdk/assets/images/unrelated_img-e2fbf4a7e7018cc3df9d90713bf17d86.png" width="350px"><figcaption><small><p>Images unrelated to the query lead to ambiguity</p></small></figcaption></figure>
-<h2 class="anchor anchorWithStickyNavbar_FNw8" id="strategies-for-navigating-ambiguity">Strategies for Navigating Ambiguity<a href="https://code.groundlight.ai/python-sdk/blog/dealing-with-unclear-images#strategies-for-navigating-ambiguity" class="hash-link" aria-label="Direct link to Strategies for Navigating Ambiguity" title="Direct link to Strategies for Navigating Ambiguity">​</a></h2>
-<p>Although encountering unclear images might seem like a setback, it actually opens up avenues for improvement and customization. Our detectors are designed to identify and flag these ambiguous cases, empowering you to steer their interpretation. Here are some strategies you can employ to enhance the process:</p>
-<ol>
-<li><strong>Clarify your queries</strong> : It's crucial to formulate your questions to the system with precision, avoiding any vagueness. For instance, instead of asking, “Is the light ON?” opt for a more detailed inquiry such as, “Can you clearly see the red LED on the right panel turned ON?” This approach ensures your queries are direct and specific.</li>
-<li><strong>Customize Yes/ No classifications</strong>: You can specify how the model should interpret and deal with unclear images by reframing your queries and notes. For instance, by specifying “If the garage door is not visible, mark it as a NO” in your notes, you can make the detector sort unclear images into the “NO” class. You can refer to our <a href="https://code.groundlight.ai/python-sdk/blog/best-practices" target="_blank" rel="noopener noreferrer">previous blog post</a> for best practices while refining your queries and notes.</li>
-<li><strong>Flagging “Unclear” images</strong>: Should you prefer to classify an obstructed view or irrelevant imagery as “Unclear”, simply add a couple of labels as “UNCLEAR” or provide instructions in the notes. Groundlight's machine learning systems will adapt to your preference and continue to flag them as "Unclear" for you.</li>
-</ol>
-<figure style="text-align:center"><img src="https://code.groundlight.ai/python-sdk/assets/images/unclear_label-caa7bfe352df67a9cb4611894807b14a.png" width="350px" class="center"><figcaption><small><p>Marking an image query as “Unclear" in the data review page</p></small></figcaption></figure>
-<p>The strategies outlined above will significantly improve your ability to navigate through unclear
-scenarios. However, there exist many other situations, such as borderline classifications or cases where there's insufficient information for a definitive answer. Recognizing and managing the inherent uncertainty in these tasks is crucial as we progress. We are committed to building more tools that empower you to deal with these challenges.</p>]]></content>
-        <author>
-            <name>Sharmila Reddy Nangi</name>
-        </author>
-        <category label="unclears" term="unclears"/>
-        <category label="real-world ambiguity" term="real-world ambiguity"/>
-    </entry>
     <entry>
         <title type="html"><![CDATA[Building your first computer vision model just got easier]]></title>
         <id>https://code.groundlight.ai/python-sdk/blog/getting-started</id>

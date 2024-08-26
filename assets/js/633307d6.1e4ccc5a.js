@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[1828],{6299:a=>{a.exports=JSON.parse('{"label":"real-world ambiguity","permalink":"/python-sdk/blog/tags/real-world-ambiguity","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);
