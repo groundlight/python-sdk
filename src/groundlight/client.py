@@ -540,6 +540,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
         wait: Optional[float] = None,
+        human_review: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
@@ -559,6 +560,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param wait: How long to wait (in seconds) for any answer.
 
+        :param human_review: While ask_ml will return the first answer Groundlight can provide,
+            human_review will control whether the image is sent for human review later to improve
+            the model going forward.
+            If `None` or `DEFAULT`, send the image query for human review
+            only if the ML prediction is not confident.
+            If set to `ALWAYS`, always send the image query for human review.
+            If set to `NEVER`, never send the image query for human review.
+
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
@@ -569,6 +578,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             detector,
             image,
             wait=0,
+            human_review=human_review,
             metadata=metadata,
             inspection_id=inspection_id,
         )
