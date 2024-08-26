@@ -116,6 +116,7 @@ Class | Method | HTTP request | Description
 *ActionsApi* | [**list_rules**](docs/ActionsApi.md#list_rules) | **GET** /v1/actions/rules | 
 *DetectorGroupsApi* | [**create_detector_group**](docs/DetectorGroupsApi.md#create_detector_group) | **POST** /v1/detector-groups | 
 *DetectorGroupsApi* | [**get_detector_groups**](docs/DetectorGroupsApi.md#get_detector_groups) | **GET** /v1/detector-groups | 
+*DetectorResetApi* | [**reset_detector**](docs/DetectorResetApi.md#reset_detector) | **DELETE** /v1/detector-reset/{id} | 
 *DetectorsApi* | [**create_detector**](docs/DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
 *DetectorsApi* | [**create_detector_group2**](docs/DetectorsApi.md#create_detector_group2) | **POST** /v1/detectors/detector-groups | 
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
@@ -157,6 +158,7 @@ Class | Method | HTTP request | Description
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)
  - [Note](docs/Note.md)
+ - [NoteRequest](docs/NoteRequest.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)

@@ -93,6 +93,10 @@ class NoteRequest(ModelNormal):
         """
         return {
             "content": (str,),  # noqa: E501
+            "image": (
+                file_type,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -101,6 +105,7 @@ class NoteRequest(ModelNormal):
 
     attribute_map = {
         "content": "content",  # noqa: E501
+        "image": "image",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -146,6 +151,7 @@ class NoteRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            image (file_type, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -234,6 +240,7 @@ class NoteRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            image (file_type, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

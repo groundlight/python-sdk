@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **query** | **str** | A question about the image. | [readonly] 
 **group_name** | **str** | Which group should this detector be part of? | [readonly] 
 **metadata** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** | Metadata about the detector. | [readonly] 
-**mode** | **str** |  | [readonly] 
+**mode** | **bool, date, datetime, dict, float, int, list, str, none_type** |  | [readonly] 
 **mode_configuration** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** |  | [readonly] 
 **confidence_threshold** | **float** | If the detector&#39;s prediction is below this confidence threshold, send the image query for human review. | [optional]  if omitted the server will use the default value of 0.9
 **patience_time** | **float** | How long Groundlight will attempt to generate a confident prediction | [optional]  if omitted the server will use the default value of 30.0

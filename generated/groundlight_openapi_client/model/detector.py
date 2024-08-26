@@ -31,8 +31,10 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 def lazy_import():
     from groundlight_openapi_client.model.detector_type_enum import DetectorTypeEnum
+    from groundlight_openapi_client.model.mode_enum import ModeEnum
 
     globals()["DetectorTypeEnum"] = DetectorTypeEnum
+    globals()["ModeEnum"] = ModeEnum
 
 
 class Detector(ModelNormal):
@@ -128,7 +130,17 @@ class Detector(ModelNormal):
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
             ),  # noqa: E501
-            "mode": (str,),  # noqa: E501
+            "mode": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
             "mode_configuration": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
@@ -183,7 +195,7 @@ class Detector(ModelNormal):
             query (str): A question about the image.
             group_name (str): Which group should this detector be part of?
             metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): Metadata about the detector.
-            mode (str):
+            mode (bool, date, datetime, dict, float, int, list, str, none_type):
             mode_configuration ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type):
 
         Keyword Args:
