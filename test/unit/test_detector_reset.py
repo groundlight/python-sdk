@@ -4,6 +4,7 @@ import pytest
 from groundlight import ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
+
 @pytest.mark.skip(reason="Due to a backend bug, this test will fail")
 def test_reset(gl_experimental: ExperimentalApi):
     # Reset the detector
