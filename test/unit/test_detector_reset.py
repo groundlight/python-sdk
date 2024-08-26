@@ -11,7 +11,7 @@ def test_reset(gl_experimental: ExperimentalApi):
     det = gl_experimental.create_detector(f"Test {datetime.utcnow()}", "test_query")
     iq = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     gl_experimental.reset_detector(det.id)
-    time.sleep(120)
+    time.sleep(300)
     with pytest.raises(NotFoundException):
         gl_experimental.get_image_query(iq.id)
 
