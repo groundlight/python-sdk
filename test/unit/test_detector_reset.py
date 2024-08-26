@@ -1,15 +1,16 @@
 from datetime import datetime
+import time
 
 import pytest
 from groundlight import ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
-@pytest.mark.skip(reason="Due to a backend bug, this test will fail")
 def test_reset(gl_experimental: ExperimentalApi):
     # Reset the detector
     det = gl_experimental.create_detector(f"Test {datetime.utcnow()}", "test_query")
     iq = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     gl_experimental.reset_detector(det.id)
+    time.sleep(120)
     with pytest.raises(NotFoundException):
         gl_experimental.get_image_query(iq.id)
 
