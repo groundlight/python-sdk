@@ -1,1 +1,0 @@
-0.17.3 : ImageQuery returns image_query_id instead of posicheck_id
