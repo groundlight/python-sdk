@@ -226,6 +226,10 @@ const config = {
             to: "https://www.groundlight.ai/blog/navigating-ambiguity-with-groundlight-ai-detectors", // new marketing site route
             from: "/blog/dealing-with-unclear-images", // old blog route
           },
+          {
+            to: "https://www.groundlight.ai/blog/building-your-first-computer-vision-model-just-got-easier", // new marketing site route
+            from: "/blog/getting-started", // old blog route
+          },
         ],
       },
     ],
