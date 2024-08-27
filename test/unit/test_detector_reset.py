@@ -19,7 +19,7 @@ def test_reset_retry(gl_experimental: ExperimentalApi):
         print(i)
         try:
             gl_experimental.get_image_query(iq.id)
-        except:
+        except NotFoundException:
             with pytest.raises(NotFoundException):
                 gl_experimental.get_image_query(iq.id)
             success = True
