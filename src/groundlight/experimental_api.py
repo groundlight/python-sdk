@@ -297,19 +297,6 @@ class ExperimentalApi(Groundlight):
         request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
         self.labels_api.create_label(request_params)
 
-    def update_detector_confidence(self, detector: Union[str, Detector], confidence: float) -> None:
-        """
-        Updates the confidence threshold for the given detector
-
-        :param detector: the detector to update
-        :param confidence: the new confidence threshold
-
-        :return: None
-        """
-        if isinstance(detector, Detector):
-            detector = detector.id
-        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(confidence_threshold=confidence))
-
     def update_detector_name(self, detector: Union[str, Detector], name: str) -> None:
         """
         Updates the name of the given detector
@@ -321,7 +308,7 @@ class ExperimentalApi(Groundlight):
         """
         if isinstance(detector, Detector):
             detector = detector.id
-        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(name=name))
+        self.detectors_api.update_detector(detector, patched_detector_request=PatchedDetectorRequest(name=name))
 
     def update_detector_status(self, detector: Union[str, Detector], enabled: bool) -> None:
         """
@@ -334,7 +321,9 @@ class ExperimentalApi(Groundlight):
         """
         if isinstance(detector, Detector):
             detector = detector.id
-        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF")))
+        self.detectors_api.update_detector(
+            detector, patched_detector_request=PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF"))
+        )
 
     def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
         """
@@ -353,16 +342,6 @@ class ExperimentalApi(Groundlight):
         escalation_type = escalation_type.upper()
         if escalation_type not in ["STANDARD", "NO_HUMAN_LABELING"]:
             raise ValueError("escalation_type must be either 'STANDARD' or 'NO_HUMAN_LABELING'")
-        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(escalation_type=EscalationTypeEnum(escalation_type)))
-
-    def reset_detector(self, detector: Union[str, Detector]) -> None:
-        """
-        Removes all image queries for the given detector
-
-        :param detector_id: the id of the detector to reset
-
-        :return: None
-        """
-        if isinstance(detector, Detector):
-            detector = detector.id
-        self.detector_reset_api.reset_detector(detector)
+        self.detectors_api.update_detector(
+            detector, patched_detector_request=PatchedDetectorRequest(escalation_type=EscalationTypeEnum(escalation_type))
+        )

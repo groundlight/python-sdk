@@ -260,21 +260,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/Detector'
           description: ''
-<<<<<<< Updated upstream
-    delete:
-      operationId: Delete detector
-      description: Delete a detector by its ID.
-=======
     patch:
       operationId: Update detector
       description: Update a detector
->>>>>>> Stashed changes
       parameters:
       - in: path
         name: id
         schema:
           type: string
-<<<<<<< Updated upstream
+        required: true
+      tags:
+      - detectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDetectorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDetectorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDetectorRequest'
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detector'
+          description: ''
+    delete:
+      operationId: Delete detector
+      description: Delete a detector by its ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
         description: Choose a detector by its ID.
         required: true
       tags:
@@ -284,57 +308,6 @@ paths:
       responses:
         '204':
           description: No response body
-  /v1/detectors/detector-groups:
-    get:
-      operationId: Get Detector Groups_2
-      description: List all detector groups
-      tags:
-      - detectors
-      security:
-      - ApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DetectorGroup'
-          description: ''
-    post:
-      operationId: Create Detector Group_2
-      description: |-
-        Create a new detector group
-
-        POST data:
-          Required:
-            - name (str) - name of the predictor set
-=======
-        required: true
->>>>>>> Stashed changes
-      tags:
-      - detectors
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-        required: true
-      security:
-      - ApiToken: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetectorGroup'
-          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -561,6 +534,12 @@ paths:
       - notes
       requestBody:
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/NoteRequest'
@@ -761,7 +740,8 @@ components:
           readOnly: true
           description: Metadata about the detector.
         mode:
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/ModeEnum'
           readOnly: true
         mode_configuration:
           type: object
@@ -979,7 +959,7 @@ components:
         class_name:
           type: string
           nullable: true
-          description: A human-readable class name for this label (e.g. YES/NO)
+          description: Return a human-readable class name for this label (e.g. YES/NO)
           readOnly: true
         rois:
           type: array
@@ -1041,10 +1021,6 @@ components:
       - COUNT
       - MULTI_CLASS
       type: string
-      description: |-
-        * `BINARY` - BINARY
-        * `COUNT` - COUNT
-        * `MULTI_CLASS` - MULTI_CLASS
     Note:
       type: object
       properties:
@@ -1140,8 +1116,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Rule'
-<<<<<<< Updated upstream
-=======
     PatchedDetectorRequest:
       type: object
       description: Spec for serializing a detector object in the public API.
@@ -1179,7 +1153,6 @@ components:
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       x-internal: true
->>>>>>> Stashed changes
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
