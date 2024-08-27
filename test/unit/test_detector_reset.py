@@ -5,7 +5,7 @@ import pytest
 from groundlight import ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
-@pytest.skip("Reset can potentially take a long time to get queued and run")
+@pytest.mark.skip("Reset can potentially take a long time to get queued and run")
 def test_reset_retry(gl_experimental: ExperimentalApi):
     # Reset the detector, retrying in case the reset is still ongoing
     print("Resetting detector")
@@ -29,7 +29,7 @@ def test_reset_retry(gl_experimental: ExperimentalApi):
         print("Successfully reset detector")
 
 
-@pytest.skip("Reset can potentially take a long time to get queued and run")
+@pytest.mark.skip("Reset can potentially take a long time to get queued and run")
 def test_reset_training(gl_experimental: ExperimentalApi):
     # If we reset a detector, we should have low confidence after the reset
     low_confidence_threshold = 0.6
