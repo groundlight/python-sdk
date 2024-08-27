@@ -831,4 +831,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             detector = detector.id
         if confidence_threshold < 0 or confidence_threshold > 1:
             raise ValueError("confidence must be between 0 and 1")
-        self.detectors_api.update_detector(detector, patched_detector_request=PatchedDetectorRequest(confidence_threshold=confidence_threshold))
+        self.detectors_api.update_detector(
+            detector, patched_detector_request=PatchedDetectorRequest(confidence_threshold=confidence_threshold)
+        )

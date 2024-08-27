@@ -20,13 +20,13 @@ from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometry
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
-from groundlight_openapi_client.model.verb_enum import VerbEnum
 from groundlight_openapi_client.model.status_enum import StatusEnum
-from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
+from groundlight_openapi_client.model.verb_enum import VerbEnum
 from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal
@@ -322,7 +322,8 @@ class ExperimentalApi(Groundlight):
         if isinstance(detector, Detector):
             detector = detector.id
         self.detectors_api.update_detector(
-            detector, patched_detector_request=PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF"))
+            detector,
+            patched_detector_request=PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF")),
         )
 
     def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
@@ -343,5 +344,6 @@ class ExperimentalApi(Groundlight):
         if escalation_type not in ["STANDARD", "NO_HUMAN_LABELING"]:
             raise ValueError("escalation_type must be either 'STANDARD' or 'NO_HUMAN_LABELING'")
         self.detectors_api.update_detector(
-            detector, patched_detector_request=PatchedDetectorRequest(escalation_type=EscalationTypeEnum(escalation_type))
+            detector,
+            patched_detector_request=PatchedDetectorRequest(escalation_type=EscalationTypeEnum(escalation_type)),
         )
