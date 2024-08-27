@@ -9,7 +9,7 @@ Method | HTTP request | Description
 
 
 # **create_note**
-> create_note(detector_id, content)
+> create_note(detector_id, note_request)
 
 
 
@@ -23,6 +23,7 @@ Create a new note
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import notes_api
+from groundlight_openapi_client.model.note_request import NoteRequest
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -46,19 +47,14 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = notes_api.NotesApi(api_client)
     detector_id = "detector_id_example" # str | the detector to associate the new note with
-    content = "content_example" # str | Text content of the note.
-    image = open('/path/to/file', 'rb') # file_type, none_type |  (optional)
+    note_request = NoteRequest(
+        content="content_example",
+        image=open('/path/to/file', 'rb'),
+    ) # NoteRequest | 
 
     # example passing only required values which don't have defaults set
     try:
-        api_instance.create_note(detector_id, content)
-    except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling NotesApi->create_note: %s\n" % e)
-
-    # example passing only required values which don't have defaults set
-    # and optional values
-    try:
-        api_instance.create_note(detector_id, content, image=image)
+        api_instance.create_note(detector_id, note_request)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling NotesApi->create_note: %s\n" % e)
 ```
@@ -69,8 +65,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| the detector to associate the new note with |
- **content** | **str**| Text content of the note. |
- **image** | **file_type, none_type**|  | [optional]
+ **note_request** | [**NoteRequest**](NoteRequest.md)|  |
 
 ### Return type
 
@@ -82,7 +77,7 @@ void (empty response body)
 
 ### HTTP request headers
 
- - **Content-Type**: multipart/form-data
+ - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: Not defined
 
 

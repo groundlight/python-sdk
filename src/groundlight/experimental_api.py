@@ -20,10 +20,13 @@ from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometry
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
+from groundlight_openapi_client.model.status_enum import StatusEnum
+from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
 from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal
@@ -293,3 +296,73 @@ class ExperimentalApi(Groundlight):
         )
         request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
         self.labels_api.create_label(request_params)
+
+    def update_detector_confidence(self, detector: Union[str, Detector], confidence: float) -> None:
+        """
+        Updates the confidence threshold for the given detector
+
+        :param detector: the detector to update
+        :param confidence: the new confidence threshold
+
+        :return: None
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(confidence_threshold=confidence))
+
+    def update_detector_name(self, detector: Union[str, Detector], name: str) -> None:
+        """
+        Updates the name of the given detector
+
+        :param detector: the detector to update
+        :param name: the new name
+
+        :return: None
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(name=name))
+
+    def update_detector_status(self, detector: Union[str, Detector], enabled: bool) -> None:
+        """
+        Updates the status of the given detector. If the detector is disabled, it will not receive new image queries
+
+        :param detector: the detector to update
+        :param enabled: whether the detector is enabled, can be either True or False
+
+        :return: None
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF")))
+
+    def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
+        """
+        Updates the escalation type of the given detector
+
+        This is particularly useful for turning off human labeling for billing or security purposes. By setting a detector to "NO_HUMAN_LABELING",
+        no image queries sent to this detector will be sent to human labelers.
+
+        :param detector: the detector to update
+        :param escalation_type: the new escalation type, can be "STANDARD" or "NO_HUMAN_LABELING"
+
+        :return: None
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        escalation_type = escalation_type.upper()
+        if escalation_type not in ["STANDARD", "NO_HUMAN_LABELING"]:
+            raise ValueError("escalation_type must be either 'STANDARD' or 'NO_HUMAN_LABELING'")
+        self.detector_group_api.update_detector(detector, PatchedDetectorRequest(escalation_type=EscalationTypeEnum(escalation_type)))
+
+    def reset_detector(self, detector: Union[str, Detector]) -> None:
+        """
+        Removes all image queries for the given detector
+
+        :param detector_id: the id of the detector to reset
+
+        :return: None
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detector_reset_api.reset_detector(detector)

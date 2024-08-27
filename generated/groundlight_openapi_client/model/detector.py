@@ -30,9 +30,17 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
+    from groundlight_openapi_client.model.blank_enum import BlankEnum
     from groundlight_openapi_client.model.detector_type_enum import DetectorTypeEnum
+    from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
+    from groundlight_openapi_client.model.mode_enum import ModeEnum
+    from groundlight_openapi_client.model.status_enum import StatusEnum
 
+    globals()["BlankEnum"] = BlankEnum
     globals()["DetectorTypeEnum"] = DetectorTypeEnum
+    globals()["EscalationTypeEnum"] = EscalationTypeEnum
+    globals()["ModeEnum"] = ModeEnum
+    globals()["StatusEnum"] = StatusEnum
 
 
 class Detector(ModelNormal):
@@ -128,13 +136,45 @@ class Detector(ModelNormal):
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
             ),  # noqa: E501
-            "mode": (str,),  # noqa: E501
+            "mode": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
             "mode_configuration": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
             ),  # noqa: E501
             "confidence_threshold": (float,),  # noqa: E501
             "patience_time": (float,),  # noqa: E501
+            "status": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
+            "escalation_type": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -153,6 +193,8 @@ class Detector(ModelNormal):
         "mode_configuration": "mode_configuration",  # noqa: E501
         "confidence_threshold": "confidence_threshold",  # noqa: E501
         "patience_time": "patience_time",  # noqa: E501
+        "status": "status",  # noqa: E501
+        "escalation_type": "escalation_type",  # noqa: E501
     }
 
     read_only_vars = {
@@ -183,7 +225,7 @@ class Detector(ModelNormal):
             query (str): A question about the image.
             group_name (str): Which group should this detector be part of?
             metadata ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): Metadata about the detector.
-            mode (str):
+            mode (bool, date, datetime, dict, float, int, list, str, none_type):
             mode_configuration ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type):
 
         Keyword Args:
@@ -219,6 +261,8 @@ class Detector(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
             patience_time (float): How long Groundlight will attempt to generate a confident prediction. [optional] if omitted the server will use the default value of 30.0  # noqa: E501
+            status (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            escalation_type (bool, date, datetime, dict, float, int, list, str, none_type): Category that define internal proccess for labeling image queries  * `STANDARD` - STANDARD * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -315,6 +359,8 @@ class Detector(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
             patience_time (float): How long Groundlight will attempt to generate a confident prediction. [optional] if omitted the server will use the default value of 30.0  # noqa: E501
+            status (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            escalation_type (bool, date, datetime, dict, float, int, list, str, none_type): Category that define internal proccess for labeling image queries  * `STANDARD` - STANDARD * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
