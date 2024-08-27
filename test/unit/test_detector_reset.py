@@ -5,6 +5,7 @@ import pytest
 from groundlight import ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
+
 @pytest.mark.skip("Reset can potentially take a long time to get queued and run")
 def test_reset_retry(gl_experimental: ExperimentalApi):
     # Reset the detector, retrying in case the reset is still ongoing
