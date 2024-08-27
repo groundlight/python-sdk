@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[8978],{5929:t=>{t.exports=JSON.parse('{"label":"Getting started","permalink":"/python-sdk/blog/tags/getting-started","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);
