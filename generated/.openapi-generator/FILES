@@ -19,6 +19,7 @@ docs/DetectorCreationInputRequest.md
 docs/DetectorGroup.md
 docs/DetectorGroupRequest.md
 docs/DetectorGroupsApi.md
+docs/DetectorResetApi.md
 docs/DetectorTypeEnum.md
 docs/DetectorsApi.md
 docs/ImageQueriesApi.md
@@ -30,6 +31,7 @@ docs/LabelValueRequest.md
 docs/LabelsApi.md
 docs/ModeEnum.md
 docs/Note.md
+docs/NoteRequest.md
 docs/NotesApi.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
@@ -48,6 +50,7 @@ groundlight_openapi_client/__init__.py
 groundlight_openapi_client/api/__init__.py
 groundlight_openapi_client/api/actions_api.py
 groundlight_openapi_client/api/detector_groups_api.py
+groundlight_openapi_client/api/detector_reset_api.py
 groundlight_openapi_client/api/detectors_api.py
 groundlight_openapi_client/api/image_queries_api.py
 groundlight_openapi_client/api/labels_api.py
@@ -81,6 +84,7 @@ groundlight_openapi_client/model/label_value.py
 groundlight_openapi_client/model/label_value_request.py
 groundlight_openapi_client/model/mode_enum.py
 groundlight_openapi_client/model/note.py
+groundlight_openapi_client/model/note_request.py
 groundlight_openapi_client/model/paginated_detector_list.py
 groundlight_openapi_client/model/paginated_image_query_list.py
 groundlight_openapi_client/model/paginated_rule_list.py
@@ -100,4 +104,5 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_detector_reset_api.py
 tox.ini

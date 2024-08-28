@@ -175,6 +175,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/DetectorGroup'
           description: ''
+  /v1/detector-reset/{id}:
+    delete:
+      operationId: Reset detector
+      description: Deletes all image queries on the detector
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - detector-reset
+      security:
+      - ApiToken: []
+      responses:
+        '204':
+          description: No response body
   /v1/detectors:
     get:
       operationId: List detectors
@@ -534,6 +551,12 @@ paths:
       - notes
       requestBody:
         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NoteRequest'
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/NoteRequest'
@@ -731,7 +754,8 @@ components:
           readOnly: true
           description: Metadata about the detector.
         mode:
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/ModeEnum'
           readOnly: true
         mode_configuration:
           type: object
@@ -991,10 +1015,6 @@ components:
       - COUNT
       - MULTI_CLASS
       type: string
-      description: |-
-        * `BINARY` - BINARY
-        * `COUNT` - COUNT
-        * `MULTI_CLASS` - MULTI_CLASS
     Note:
       type: object
       properties:
