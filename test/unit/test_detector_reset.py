@@ -32,4 +32,3 @@ def test_reset_training(gl_experimental: ExperimentalApi):
     gl_experimental.reset_detector(det.id)
     iq = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     assert iq.result.confidence < low_confidence_threshold
-
