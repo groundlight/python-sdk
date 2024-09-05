@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[5184],{8980:s=>{s.exports=JSON.parse('{"label":"best-practices","permalink":"/python-sdk/blog/tags/best-practices","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);

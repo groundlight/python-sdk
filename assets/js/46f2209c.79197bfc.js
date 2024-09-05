@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[83],{7283:s=>{s.exports=JSON.parse('{"label":"mns","permalink":"/python-sdk/blog/tags/mns","allTagsPath":"/python-sdk/blog/tags","count":1,"unlisted":false}')}}]);
