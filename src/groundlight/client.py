@@ -166,6 +166,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         try:
             # a simple query to confirm that the endpoint & API token are working
             self.whoami()
+            if self._user_is_privileged():
+                logger.warning(
+                    "WARNING: The current user has elevated permissions. Please verify such permissions are necessary for your current operation"
+                )
         except UnauthorizedException as e:
             msg = (
                 f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
@@ -200,6 +204,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         obj = self.user_api.who_am_i()
         return obj["username"]
+
+    def _user_is_privileged(self) -> bool:
+        """
+        Return a boolean indicating whether the user is privileged.
+        Privleged users have elevated permissions, so care should be taken when using a privileged account.
+        """
+        obj = self.user_api.who_am_i()
+        return obj["is_superuser"] or obj["is_staff"]
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
