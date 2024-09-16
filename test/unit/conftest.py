@@ -4,11 +4,15 @@ import pytest
 from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery
 
+
 def pytest_configure(config):
     # Run environment check before tests
     gl = Groundlight()
     if gl._user_is_privileged():
-        raise Exception("ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user.")
+        raise Exception(
+            "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
+        )
+
 
 @pytest.fixture(name="gl")
 def fixture_gl() -> Groundlight:

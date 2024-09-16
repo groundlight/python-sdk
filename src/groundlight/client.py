@@ -168,7 +168,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             self.whoami()
             if self._user_is_privileged():
                 logger.warning(
-                    "WARNING: The current user has elevated permissions. Please verify such permissions are necessary for your current operation"
+                    "WARNING: The current user has elevated permissions. Please verify such permissions are necessary"
+                    " for your current operation"
                 )
         except UnauthorizedException as e:
             msg = (
