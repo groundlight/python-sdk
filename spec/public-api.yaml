@@ -925,6 +925,11 @@ components:
           nullable: true
           description: An array of regions of interest (bounding boxes) collected
             on image
+        text:
+          type: string
+          nullable: true
+          readOnly: true
+          description: A text field on image query.
       required:
       - confidence_threshold
       - created_at
@@ -936,6 +941,7 @@ components:
       - result
       - result_type
       - rois
+      - text
       - type
       x-internal: true
     ImageQueryTypeEnum:
@@ -953,7 +959,7 @@ components:
         class_name:
           type: string
           nullable: true
-          description: A human-readable class name for this label (e.g. YES/NO)
+          description: Return a human-readable class name for this label (e.g. YES/NO)
           readOnly: true
         rois:
           type: array
@@ -983,6 +989,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/SourceEnum'
           readOnly: true
+        text:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Text annotations
       required:
       - annotations_requested
       - class_name
@@ -990,6 +1001,7 @@ components:
       - created_at
       - detector_id
       - source
+      - text
     LabelValueRequest:
       type: object
       properties:
@@ -1145,6 +1157,7 @@ components:
       enum:
       - binary_classification
       - counting
+      - multi_classification
       type: string
     Rule:
       type: object

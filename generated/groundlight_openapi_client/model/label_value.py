@@ -125,6 +125,10 @@ class LabelValue(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "text": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "rois": (
                 [ROI],
                 none_type,
@@ -142,6 +146,7 @@ class LabelValue(ModelNormal):
         "created_at": "created_at",  # noqa: E501
         "detector_id": "detector_id",  # noqa: E501
         "source": "source",  # noqa: E501
+        "text": "text",  # noqa: E501
         "rois": "rois",  # noqa: E501
     }
 
@@ -152,6 +157,7 @@ class LabelValue(ModelNormal):
         "created_at",  # noqa: E501
         "detector_id",  # noqa: E501
         "source",  # noqa: E501
+        "text",  # noqa: E501
     }
 
     _composed_schemas = {}
@@ -159,17 +165,18 @@ class LabelValue(ModelNormal):
     @classmethod
     @convert_js_args_to_python_args
     def _from_openapi_data(
-        cls, confidence, class_name, annotations_requested, created_at, detector_id, source, *args, **kwargs
+        cls, confidence, class_name, annotations_requested, created_at, detector_id, source, text, *args, **kwargs
     ):  # noqa: E501
         """LabelValue - a model defined in OpenAPI
 
         Args:
             confidence (float, none_type):
-            class_name (str, none_type): A human-readable class name for this label (e.g. YES/NO)
+            class_name (str, none_type): Return a human-readable class name for this label (e.g. YES/NO)
             annotations_requested ([bool, date, datetime, dict, float, int, list, str, none_type]):
             created_at (datetime):
             detector_id (int, none_type):
             source (bool, date, datetime, dict, float, int, list, str, none_type):
+            text (str, none_type): Text annotations
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -237,6 +244,7 @@ class LabelValue(ModelNormal):
         self.created_at = created_at
         self.detector_id = detector_id
         self.source = source
+        self.text = text
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
