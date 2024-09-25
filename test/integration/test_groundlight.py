@@ -296,11 +296,15 @@ def test_submit_image_query_returns_yes(gl: Groundlight):
     image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10, human_review="NEVER")
     assert image_query.result.label == Label.YES
 
+
 def test_submit_image_query_returns_text(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
-    detector = gl.get_or_create_detector(name="Always same text", query="Is there a dog?", pipeline_config="constant-text")
+    detector = gl.get_or_create_detector(
+        name="Always same text", query="Is there a dog?", pipeline_config="constant-text"
+    )
     image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10, human_review="NEVER")
     assert isinstance(image_query.text, str)
+
 
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
