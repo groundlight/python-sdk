@@ -151,6 +151,10 @@ class ImageQuery(ModelNormal):
                 [ROI],
                 none_type,
             ),  # noqa: E501
+            "text": (
+                str,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -169,6 +173,7 @@ class ImageQuery(ModelNormal):
         "patience_time": "patience_time",  # noqa: E501
         "confidence_threshold": "confidence_threshold",  # noqa: E501
         "rois": "rois",  # noqa: E501
+        "text": "text",  # noqa: E501
     }
 
     read_only_vars = {
@@ -183,6 +188,7 @@ class ImageQuery(ModelNormal):
         "patience_time",  # noqa: E501
         "confidence_threshold",  # noqa: E501
         "rois",  # noqa: E501
+        "text",  # noqa: E501
     }
 
     _composed_schemas = {}
@@ -202,6 +208,7 @@ class ImageQuery(ModelNormal):
         patience_time,
         confidence_threshold,
         rois,
+        text,
         *args,
         **kwargs,
     ):  # noqa: E501
@@ -219,6 +226,7 @@ class ImageQuery(ModelNormal):
             patience_time (float): How long to wait for a confident response.
             confidence_threshold (float): Min confidence needed to accept the response of the image query.
             rois ([ROI], none_type): An array of regions of interest (bounding boxes) collected on image
+            text (str, none_type): A text field on image query.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -290,6 +298,7 @@ class ImageQuery(ModelNormal):
         self.patience_time = patience_time
         self.confidence_threshold = confidence_threshold
         self.rois = rois
+        self.text = text
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
