@@ -117,6 +117,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.result"><code class="docutils literal notranslate"><span class="pre">ImageQuery.result</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.result_type"><code class="docutils literal notranslate"><span class="pre">ImageQuery.result_type</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.rois"><code class="docutils literal notranslate"><span class="pre">ImageQuery.rois</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.text"><code class="docutils literal notranslate"><span class="pre">ImageQuery.text</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.type"><code class="docutils literal notranslate"><span class="pre">ImageQuery.type</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">ImageQuery.model_computed_fields</span></code></a></li>
 </ul>
@@ -1367,6 +1368,18 @@ the detector, and values that are lists of notes</p>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;An array of regions of interest (bounding boxes) collected on image&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rois&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A text field on image query.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1499,7 +1512,8 @@ the detector, and values that are lists of notes</p>
 <span class="w">      </span><span class="nt">&quot;ResultTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;binary_classification&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;counting&quot;</span>
+<span class="w">            </span><span class="s2">&quot;counting&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;multi_classification&quot;</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ResultTypeEnum&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -1516,7 +1530,8 @@ the detector, and values that are lists of notes</p>
 <span class="w">      </span><span class="s2">&quot;result&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;patience_time&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;confidence_threshold&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="s2">&quot;rois&quot;</span>
+<span class="w">      </span><span class="s2">&quot;rois&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;text&quot;</span>
 <span class="w">   </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
@@ -1534,6 +1549,7 @@ the detector, and values that are lists of notes</p>
 <li><p><a class="reference internal" href="#model.ImageQuery.result" title="model.ImageQuery.result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result</span> <span class="pre">(model.BinaryClassificationResult</span> <span class="pre">|</span> <span class="pre">model.CountingResult</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.result_type" title="model.ImageQuery.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span> <span class="pre">(model.ResultTypeEnum)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.rois" title="model.ImageQuery.rois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rois</span> <span class="pre">(List[model.ROI]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#model.ImageQuery.text" title="model.ImageQuery.text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">text</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.type" title="model.ImageQuery.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span> <span class="pre">(model.ImageQueryTypeEnum)</span></code></a></p></li>
 </ul>
 </dd>
@@ -1596,6 +1612,12 @@ the detector, and values that are lists of notes</p>
 <dt class="sig sig-object py" id="model.ImageQuery.rois">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rois</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.ImageQuery.rois" title="Link to this definition"></a></dt>
 <dd><p>An array of regions of interest (bounding boxes) collected on image</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="model.ImageQuery.text">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.ImageQuery.text" title="Link to this definition"></a></dt>
+<dd><p>A text field on image query.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -2046,6 +2068,18 @@ the detector, and values that are lists of notes</p>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;An array of regions of interest (bounding boxes) collected on image&quot;</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rois&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A text field on image query.&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2059,7 +2093,8 @@ the detector, and values that are lists of notes</p>
 <span class="w">            </span><span class="s2">&quot;result&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;patience_time&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;confidence_threshold&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;rois&quot;</span>
+<span class="w">            </span><span class="s2">&quot;rois&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;text&quot;</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQuery&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
@@ -2100,7 +2135,8 @@ the detector, and values that are lists of notes</p>
 <span class="w">      </span><span class="nt">&quot;ResultTypeEnum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;binary_classification&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;counting&quot;</span>
+<span class="w">            </span><span class="s2">&quot;counting&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;multi_classification&quot;</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ResultTypeEnum&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
