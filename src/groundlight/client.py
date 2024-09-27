@@ -14,6 +14,7 @@ from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.model.mode_enum import ModeEnum
 from model import (
     ROI,
     Detector,
@@ -249,6 +250,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         name: str,
         query: str,
         *,
+        mode: ModeEnum = "BINARY",
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
