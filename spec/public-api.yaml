@@ -277,54 +277,6 @@ paths:
       responses:
         '204':
           description: No response body
-  /v1/detectors/detector-groups:
-    get:
-      operationId: Get Detector Groups_2
-      description: List all detector groups
-      tags:
-      - detectors
-      security:
-      - ApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DetectorGroup'
-          description: ''
-    post:
-      operationId: Create Detector Group_2
-      description: |-
-        Create a new detector group
-
-        POST data:
-          Required:
-            - name (str) - name of the predictor set
-      tags:
-      - detectors
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-        required: true
-      security:
-      - ApiToken: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetectorGroup'
-          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -409,6 +361,30 @@ paths:
       requestBody:
         content:
           image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/jpg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/gif:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+          image/bmp:
+            schema:
+              type: string
+              format: binary
+          image/x-icon:
             schema:
               type: string
               format: binary
@@ -568,33 +544,6 @@ paths:
           description: No response body
 components:
   schemas:
-    Action:
-      type: object
-      properties:
-        channel:
-          $ref: '#/components/schemas/ChannelEnum'
-        recipient:
-          type: string
-        include_image:
-          type: boolean
-      required:
-      - channel
-      - include_image
-      - recipient
-    ActionRequest:
-      type: object
-      properties:
-        channel:
-          $ref: '#/components/schemas/ChannelEnum'
-        recipient:
-          type: string
-          minLength: 1
-        include_image:
-          type: boolean
-      required:
-      - channel
-      - include_image
-      - recipient
     AllNotes:
       type: object
       description: |-
@@ -672,14 +621,6 @@ components:
       - left
       - right
       - top
-    ChannelEnum:
-      enum:
-      - EMAIL
-      - TEXT
-      type: string
-      description: |-
-        * `EMAIL` - EMAIL
-        * `TEXT` - TEXT
     Condition:
       type: object
       properties:
@@ -900,10 +841,6 @@ components:
           readOnly: true
           description: What type of result are we returning?
         result:
-          additionalProperties: {}
-          nullable: true
-          readOnly: true
-          description: The result of the image query.
           oneOf:
           - $ref: '#/components/schemas/BinaryClassificationResult'
           - $ref: '#/components/schemas/CountingResult'
@@ -1194,7 +1131,9 @@ components:
         condition:
           $ref: '#/components/schemas/Condition'
         action:
-          $ref: '#/components/schemas/Action'
+          oneOf:
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
       - action
       - condition
@@ -1229,7 +1168,9 @@ components:
         condition:
           $ref: '#/components/schemas/ConditionRequest'
         action:
-          $ref: '#/components/schemas/ActionRequest'
+          oneOf:
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
       - action
       - condition
@@ -1306,6 +1247,51 @@ components:
       required:
       - confidence
       - value
+    CountModeConfigurationSerializer:
+      type: object
+      properties:
+        id:
+          type: string
+        max_count:
+          type: integer
+      required:
+      - id
+      - predictor
+      - max_count
+    MultiClassModeConfigurationSerializer:
+      type: object
+      properties:
+        id:
+          type: string
+        num_classes:
+          type: integer
+      required:
+      - id
+      - predictor
+      - class_names
+      - num_classes
+    ChannelEnum:
+      type: string
+      enum:
+      - TEXT
+      - EMAIL
+    Action:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/ChannelEnum'
+        recipient:
+          type: string
+        include_image:
+          type: boolean
+      required:
+      - channel
+      - recipient
+      - include_image
+    ActionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
   securitySchemes:
     ApiToken:
       name: x-api-token

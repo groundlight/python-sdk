@@ -3,7 +3,7 @@
 .travis.yml
 README.md
 docs/Action.md
-docs/ActionRequest.md
+docs/ActionList.md
 docs/ActionsApi.md
 docs/AllNotes.md
 docs/AnnotationsRequestedEnum.md
@@ -13,6 +13,7 @@ docs/BinaryClassificationResult.md
 docs/ChannelEnum.md
 docs/Condition.md
 docs/ConditionRequest.md
+docs/CountModeConfigurationSerializer.md
 docs/CountingResult.md
 docs/Detector.md
 docs/DetectorCreationInputRequest.md
@@ -30,6 +31,7 @@ docs/LabelValue.md
 docs/LabelValueRequest.md
 docs/LabelsApi.md
 docs/ModeEnum.md
+docs/MultiClassModeConfigurationSerializer.md
 docs/Note.md
 docs/NoteRequest.md
 docs/NotesApi.md
@@ -62,7 +64,7 @@ groundlight_openapi_client/configuration.py
 groundlight_openapi_client/exceptions.py
 groundlight_openapi_client/model/__init__.py
 groundlight_openapi_client/model/action.py
-groundlight_openapi_client/model/action_request.py
+groundlight_openapi_client/model/action_list.py
 groundlight_openapi_client/model/all_notes.py
 groundlight_openapi_client/model/annotations_requested_enum.py
 groundlight_openapi_client/model/b_box_geometry.py
@@ -71,6 +73,7 @@ groundlight_openapi_client/model/binary_classification_result.py
 groundlight_openapi_client/model/channel_enum.py
 groundlight_openapi_client/model/condition.py
 groundlight_openapi_client/model/condition_request.py
+groundlight_openapi_client/model/count_mode_configuration_serializer.py
 groundlight_openapi_client/model/counting_result.py
 groundlight_openapi_client/model/detector.py
 groundlight_openapi_client/model/detector_creation_input_request.py
@@ -83,6 +86,7 @@ groundlight_openapi_client/model/inline_response200.py
 groundlight_openapi_client/model/label_value.py
 groundlight_openapi_client/model/label_value_request.py
 groundlight_openapi_client/model/mode_enum.py
+groundlight_openapi_client/model/multi_class_mode_configuration_serializer.py
 groundlight_openapi_client/model/note.py
 groundlight_openapi_client/model/note_request.py
 groundlight_openapi_client/model/paginated_detector_list.py
@@ -104,4 +108,7 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_action_list.py
+test/test_count_mode_configuration_serializer.py
+test/test_multi_class_mode_configuration_serializer.py
 tox.ini

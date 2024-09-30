@@ -328,7 +328,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: image/jpeg
+ - **Content-Type**: image/jpeg, image/jpg, image/png, image/gif, image/webp, image/bmp, image/x-icon
  - **Accept**: application/json
 
 

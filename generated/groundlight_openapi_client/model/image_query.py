@@ -184,7 +184,6 @@ class ImageQuery(ModelNormal):
         "query",  # noqa: E501
         "detector_id",  # noqa: E501
         "result_type",  # noqa: E501
-        "result",  # noqa: E501
         "patience_time",  # noqa: E501
         "confidence_threshold",  # noqa: E501
         "rois",  # noqa: E501
@@ -222,7 +221,7 @@ class ImageQuery(ModelNormal):
             query (str): A question about the image.
             detector_id (str): Which detector was used on this image query?
             result_type (bool, date, datetime, dict, float, int, list, str, none_type): What type of result are we returning?
-            result (bool, date, datetime, dict, float, int, list, str, none_type): The result of the image query.
+            result (bool, date, datetime, dict, float, int, list, str, none_type):
             patience_time (float): How long to wait for a confident response.
             confidence_threshold (float): Min confidence needed to accept the response of the image query.
             rois ([ROI], none_type): An array of regions of interest (bounding boxes) collected on image
@@ -321,9 +320,10 @@ class ImageQuery(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, *args, **kwargs):  # noqa: E501
+    def __init__(self, result, *args, **kwargs):  # noqa: E501
         """ImageQuery - a model defined in OpenAPI
 
+            result (bool, date, datetime, dict, float, int, list, str, none_type):
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
                                 will be type checked and a TypeError will be
@@ -381,6 +381,7 @@ class ImageQuery(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.result = result
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
