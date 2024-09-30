@@ -108,7 +108,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_action_list.py
-test/test_count_mode_configuration_serializer.py
-test/test_multi_class_mode_configuration_serializer.py
 tox.ini
