@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Tuple, Union
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
+from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
@@ -48,6 +49,7 @@ class ExperimentalApi(Groundlight):
         self.images_api = ImageQueriesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
+        self.detector_reset_api = DetectorResetApi(self.api_client)
 
     ITEMS_PER_PAGE = 100
 
@@ -210,7 +212,7 @@ class ExperimentalApi(Groundlight):
         data = {"content": note}
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
-        requests.post(url, headers=headers, data=data, files=files, params=params, timeout=60)  # type: ignore
+        requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """
@@ -296,6 +298,16 @@ class ExperimentalApi(Groundlight):
         )
         request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
         self.labels_api.create_label(request_params)
+
+    def reset_detector(self, detector: Union[str, Detector]) -> None:
+        """
+        Removes all image queries for the given detector
+
+        :param detector_id: the id of the detector to reset
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detector_reset_api.reset_detector(detector)
 
     def update_detector_name(self, detector: Union[str, Detector], name: str) -> None:
         """
