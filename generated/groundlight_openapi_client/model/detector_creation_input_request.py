@@ -30,9 +30,15 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
+    from groundlight_openapi_client.model.count_mode_configuration_serializer import CountModeConfigurationSerializer
     from groundlight_openapi_client.model.mode_enum import ModeEnum
+    from groundlight_openapi_client.model.multi_class_mode_configuration_serializer import (
+        MultiClassModeConfigurationSerializer,
+    )
 
+    globals()["CountModeConfigurationSerializer"] = CountModeConfigurationSerializer
     globals()["ModeEnum"] = ModeEnum
+    globals()["MultiClassModeConfigurationSerializer"] = MultiClassModeConfigurationSerializer
 
 
 class DetectorCreationInputRequest(ModelNormal):
@@ -224,7 +230,7 @@ class DetectorCreationInputRequest(ModelNormal):
             pipeline_config (str, none_type): (Advanced usage) Configuration needed to instantiate a prediction pipeline.. [optional]  # noqa: E501
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS. [optional]  # noqa: E501
-            mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): Configuration for each detector mode.. [optional]  # noqa: E501
+            mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -321,7 +327,7 @@ class DetectorCreationInputRequest(ModelNormal):
             pipeline_config (str, none_type): (Advanced usage) Configuration needed to instantiate a prediction pipeline.. [optional]  # noqa: E501
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS. [optional]  # noqa: E501
-            mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): Configuration for each detector mode.. [optional]  # noqa: E501
+            mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

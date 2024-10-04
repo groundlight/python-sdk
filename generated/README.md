@@ -117,6 +117,7 @@ Class | Method | HTTP request | Description
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
+*DetectorsApi* | [**update_detector**](docs/DetectorsApi.md#update_detector) | **PATCH** /v1/detectors/{id} | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
@@ -136,28 +137,32 @@ Class | Method | HTTP request | Description
  - [BBoxGeometry](docs/BBoxGeometry.md)
  - [BBoxGeometryRequest](docs/BBoxGeometryRequest.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
+ - [BlankEnum](docs/BlankEnum.md)
  - [ChannelEnum](docs/ChannelEnum.md)
  - [Condition](docs/Condition.md)
  - [ConditionRequest](docs/ConditionRequest.md)
- - [CountModeConfigurationSerializer](docs/CountModeConfigurationSerializer.md)
+ - [CountModeConfiguration](docs/CountModeConfiguration.md)
  - [CountingResult](docs/CountingResult.md)
  - [Detector](docs/Detector.md)
  - [DetectorCreationInputRequest](docs/DetectorCreationInputRequest.md)
  - [DetectorGroup](docs/DetectorGroup.md)
  - [DetectorGroupRequest](docs/DetectorGroupRequest.md)
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
+ - [EscalationTypeEnum](docs/EscalationTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
  - [InlineResponse200](docs/InlineResponse200.md)
  - [LabelValue](docs/LabelValue.md)
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)
- - [MultiClassModeConfigurationSerializer](docs/MultiClassModeConfigurationSerializer.md)
+ - [MultiClassModeConfiguration](docs/MultiClassModeConfiguration.md)
+ - [MultiClassificationResult](docs/MultiClassificationResult.md)
  - [Note](docs/Note.md)
  - [NoteRequest](docs/NoteRequest.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)
+ - [PatchedDetectorRequest](docs/PatchedDetectorRequest.md)
  - [ROI](docs/ROI.md)
  - [ROIRequest](docs/ROIRequest.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
@@ -165,6 +170,7 @@ Class | Method | HTTP request | Description
  - [RuleRequest](docs/RuleRequest.md)
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
  - [SourceEnum](docs/SourceEnum.md)
+ - [StatusEnum](docs/StatusEnum.md)
  - [VerbEnum](docs/VerbEnum.md)
 
 
