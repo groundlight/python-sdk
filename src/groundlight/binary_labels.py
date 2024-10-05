@@ -7,6 +7,7 @@ This part of the API is kinda ugly right now.  So we'll encapsulate the ugliness
 import logging
 from enum import Enum
 from typing import Union
+
 from model import Detector, ImageQuery, Label
 
 logger = logging.getLogger(__name__)
