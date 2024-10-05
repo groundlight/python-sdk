@@ -30,15 +30,13 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from groundlight_openapi_client.model.count_mode_configuration_serializer import CountModeConfigurationSerializer
+    from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
     from groundlight_openapi_client.model.mode_enum import ModeEnum
-    from groundlight_openapi_client.model.multi_class_mode_configuration_serializer import (
-        MultiClassModeConfigurationSerializer,
-    )
+    from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 
-    globals()["CountModeConfigurationSerializer"] = CountModeConfigurationSerializer
+    globals()["CountModeConfiguration"] = CountModeConfiguration
     globals()["ModeEnum"] = ModeEnum
-    globals()["MultiClassModeConfigurationSerializer"] = MultiClassModeConfigurationSerializer
+    globals()["MultiClassModeConfiguration"] = MultiClassModeConfiguration
 
 
 class DetectorCreationInputRequest(ModelNormal):

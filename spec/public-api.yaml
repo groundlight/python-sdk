@@ -819,8 +819,8 @@ components:
             * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
           oneOf:
-          - $ref: '#/components/schemas/CountModeConfigurationSerializer'
-          - $ref: '#/components/schemas/MultiClassModeConfigurationSerializer'
+          - $ref: '#/components/schemas/CountModeConfiguration'
+          - $ref: '#/components/schemas/MultiClassModeConfiguration'
           nullable: true
       required:
       - name

@@ -16,6 +16,7 @@ from groundlight_openapi_client.model.detector_creation_input_request import Det
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
     ROI,
+    BinaryClassificationResult,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
@@ -188,7 +189,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         # Note: This might go away once we clean up the mapping logic server-side.
 
         # we have to check that result is not None because the server will return a result of None if want_async=True
-        if iq.result is not None:
+        if isinstance(iq.result, BinaryClassificationResult):
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
@@ -245,15 +246,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
     def _prep_create_detector(
-            self,
-            name: str,
-            query: str,
-            *,
-            group_name: Optional[str] = None,
-            confidence_threshold: Optional[float] = None,
-            patience_time: Optional[float] = None,
-            pipeline_config: Optional[str] = None,
-            metadata: Union[dict, str, None] = None,
+        self,
+        name: str,
+        query: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
         A helper function to prepare the input for creating a detector. Individual create_detector

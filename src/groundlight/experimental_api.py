@@ -20,7 +20,7 @@ from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
-from groundlight_openapi_client.model.count_mode_configuration_serializer import CountModeConfigurationSerializer
+from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
@@ -333,7 +333,10 @@ class ExperimentalApi(Groundlight):
             metadata=metadata,
         )
         detector_creation_input.mode = ModeEnum.COUNT
-        mode_config = CountModeConfigurationSerializer(max_count=max_count)
+        # TODO: pull the BE defined default
+        if max_count is None:
+            max_count = 10
+        mode_config = CountModeConfiguration(max_count=max_count)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
