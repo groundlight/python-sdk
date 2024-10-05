@@ -118,11 +118,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_blank_enum.py
-test/test_count_mode_configuration.py
-test/test_escalation_type_enum.py
-test/test_multi_class_mode_configuration.py
-test/test_multi_classification_result.py
-test/test_patched_detector_request.py
-test/test_status_enum.py
 tox.ini

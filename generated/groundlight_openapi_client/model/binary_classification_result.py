@@ -55,13 +55,11 @@ class BinaryClassificationResult(ModelNormal):
 
     allowed_values = {
         ("source",): {
-            "INITIALPLACEHOLDER": "InitialPlaceholder",
-            "HUMANCLOUD": "HumanCloud",
-            "HUMANCUSTOMER": "HumanCustomer",
-            "HUMANCLOUDENSEMBLE": "HumanCloudEnsemble",
-            "ALGORITHM": "Algorithm",
-            "ALGORITHMRECONCILED": "AlgorithmReconciled",
-            "ALGORITHMUNCLEAR": "AlgorithmUnclear",
+            "STILL_PROCESSING": "STILL_PROCESSING",
+            "CLOUD": "CLOUD",
+            "USER": "USER",
+            "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
+            "ALGORITHM": "ALGORITHM",
         },
         ("label",): {
             "YES": "YES",

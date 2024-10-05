@@ -901,6 +901,7 @@ components:
           - $ref: '#/components/schemas/BinaryClassificationResult'
           - $ref: '#/components/schemas/CountingResult'
           - $ref: '#/components/schemas/MultiClassificationResult'
+          nullable: true
         patience_time:
           type: number
           format: double
@@ -1332,13 +1333,11 @@ components:
         source:
           type: string
           enum:
-          - InitialPlaceholder
-          - HumanCloud
-          - HumanCustomer
-          - HumanCloudEnsemble
-          - Algorithm
-          - AlgorithmReconciled
-          - AlgorithmUnclear
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         label:
           type: string
           enum:
@@ -1359,13 +1358,11 @@ components:
         source:
           type: string
           enum:
-          - InitialPlaceholder
-          - HumanCloud
-          - HumanCustomer
-          - HumanCloudEnsemble
-          - Algorithm
-          - AlgorithmReconciled
-          - AlgorithmUnclear
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         count:
           type: integer
           minimum: null
@@ -1386,13 +1383,11 @@ components:
         source:
           type: string
           enum:
-          - InitialPlaceholder
-          - HumanCloud
-          - HumanCustomer
-          - HumanCloudEnsemble
-          - Algorithm
-          - AlgorithmReconciled
-          - AlgorithmUnclear
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         label:
           type: string
       required:
