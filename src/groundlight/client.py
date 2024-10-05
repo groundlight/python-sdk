@@ -16,6 +16,7 @@ from groundlight_openapi_client.model.detector_creation_input_request import Det
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
     ROI,
+    BinaryClassificationResult,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
@@ -188,7 +189,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         # Note: This might go away once we clean up the mapping logic server-side.
 
         # we have to check that result is not None because the server will return a result of None if want_async=True
-        if iq.result is not None:
+        if isinstance(iq.result, BinaryClassificationResult):
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
@@ -244,6 +245,38 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
+    def _prep_create_detector(
+        self,
+        name: str,
+        query: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        A helper function to prepare the input for creating a detector. Individual create_detector
+        methods may add to the input before calling the API.
+        """
+        detector_creation_input = DetectorCreationInputRequest(
+            name=name,
+            query=query,
+            pipeline_config=pipeline_config,
+        )
+        if group_name is not None:
+            detector_creation_input.group_name = group_name
+        if metadata is not None:
+            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        if confidence_threshold:
+            detector_creation_input.confidence_threshold = confidence_threshold
+        if isinstance(patience_time, int):
+            patience_time = float(patience_time)
+        if patience_time:
+            detector_creation_input.patience_time = patience_time
+        return detector_creation_input
+
     def create_detector(  # noqa: PLR0913
         self,
         name: str,
@@ -279,21 +312,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: Detector
         """
 
-        detector_creation_input = DetectorCreationInputRequest(
+        detector_creation_input = self._prep_create_detector(
             name=name,
             query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
             pipeline_config=pipeline_config,
+            metadata=metadata,
         )
-        if group_name is not None:
-            detector_creation_input.group_name = group_name
-        if metadata is not None:
-            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
-        if confidence_threshold:
-            detector_creation_input.confidence_threshold = confidence_threshold
-        if isinstance(patience_time, int):
-            patience_time = float(patience_time)
-        if patience_time:
-            detector_creation_input.patience_time = patience_time
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 

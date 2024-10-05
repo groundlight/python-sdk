@@ -215,7 +215,18 @@ class ImageQueriesApi(object):
                 },
                 "collection_format_map": {},
             },
-            headers_map={"accept": ["application/json"], "content_type": ["image/jpeg"]},
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": [
+                    "image/jpeg",
+                    "image/jpg",
+                    "image/png",
+                    "image/gif",
+                    "image/webp",
+                    "image/bmp",
+                    "image/x-icon",
+                ],
+            },
             api_client=api_client,
         )
 

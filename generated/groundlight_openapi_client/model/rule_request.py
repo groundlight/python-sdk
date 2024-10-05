@@ -30,11 +30,13 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from groundlight_openapi_client.model.action_request import ActionRequest
+    from groundlight_openapi_client.model.action import Action
+    from groundlight_openapi_client.model.action_list import ActionList
     from groundlight_openapi_client.model.condition_request import ConditionRequest
     from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
 
-    globals()["ActionRequest"] = ActionRequest
+    globals()["Action"] = Action
+    globals()["ActionList"] = ActionList
     globals()["ConditionRequest"] = ConditionRequest
     globals()["SnoozeTimeUnitEnum"] = SnoozeTimeUnitEnum
 
@@ -110,7 +112,17 @@ class RuleRequest(ModelNormal):
         return {
             "name": (str,),  # noqa: E501
             "condition": (ConditionRequest,),  # noqa: E501
-            "action": (ActionRequest,),  # noqa: E501
+            "action": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
             "enabled": (bool,),  # noqa: E501
             "snooze_time_enabled": (bool,),  # noqa: E501
             "snooze_time_value": (int,),  # noqa: E501
@@ -155,7 +167,7 @@ class RuleRequest(ModelNormal):
         Args:
             name (str):
             condition (ConditionRequest):
-            action (ActionRequest):
+            action (bool, date, datetime, dict, float, int, list, str, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -252,7 +264,7 @@ class RuleRequest(ModelNormal):
         Args:
             name (str):
             condition (ConditionRequest):
-            action (ActionRequest):
+            action (bool, date, datetime, dict, float, int, list, str, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types

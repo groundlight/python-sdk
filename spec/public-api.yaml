@@ -260,6 +260,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Detector'
           description: ''
+    patch:
+      operationId: Update detector
+      description: Update a detector
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - detectors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDetectorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDetectorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDetectorRequest'
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detector'
+          description: ''
     delete:
       operationId: Delete detector
       description: Delete a detector by its ID.
@@ -277,54 +308,6 @@ paths:
       responses:
         '204':
           description: No response body
-  /v1/detectors/detector-groups:
-    get:
-      operationId: Get Detector Groups_2
-      description: List all detector groups
-      tags:
-      - detectors
-      security:
-      - ApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DetectorGroup'
-          description: ''
-    post:
-      operationId: Create Detector Group_2
-      description: |-
-        Create a new detector group
-
-        POST data:
-          Required:
-            - name (str) - name of the predictor set
-      tags:
-      - detectors
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/DetectorGroupRequest'
-        required: true
-      security:
-      - ApiToken: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetectorGroup'
-          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -409,6 +392,30 @@ paths:
       requestBody:
         content:
           image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/jpg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/gif:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+          image/bmp:
+            schema:
+              type: string
+              format: binary
+          image/x-icon:
             schema:
               type: string
               format: binary
@@ -568,33 +575,6 @@ paths:
           description: No response body
 components:
   schemas:
-    Action:
-      type: object
-      properties:
-        channel:
-          $ref: '#/components/schemas/ChannelEnum'
-        recipient:
-          type: string
-        include_image:
-          type: boolean
-      required:
-      - channel
-      - include_image
-      - recipient
-    ActionRequest:
-      type: object
-      properties:
-        channel:
-          $ref: '#/components/schemas/ChannelEnum'
-        recipient:
-          type: string
-          minLength: 1
-        include_image:
-          type: boolean
-      required:
-      - channel
-      - include_image
-      - recipient
     AllNotes:
       type: object
       description: |-
@@ -672,14 +652,9 @@ components:
       - left
       - right
       - top
-    ChannelEnum:
+    BlankEnum:
       enum:
-      - EMAIL
-      - TEXT
-      type: string
-      description: |-
-        * `EMAIL` - EMAIL
-        * `TEXT` - TEXT
+      - ''
     Condition:
       type: object
       properties:
@@ -762,6 +737,18 @@ components:
           additionalProperties: {}
           nullable: true
           readOnly: true
+        status:
+          oneOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        escalation_type:
+          allOf:
+          - $ref: '#/components/schemas/EscalationTypeEnum'
+          description: |-
+            Category that define internal proccess for labeling image queries
+
+            * `STANDARD` - STANDARD
+            * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       required:
       - created_at
       - group_name
@@ -831,8 +818,10 @@ components:
             * `COUNT` - COUNT
             * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
+          oneOf:
+          - $ref: '#/components/schemas/CountModeConfiguration'
+          - $ref: '#/components/schemas/MultiClassModeConfiguration'
           nullable: true
-          description: Configuration for each detector mode.
       required:
       - name
       - query
@@ -862,6 +851,14 @@ components:
       enum:
       - detector
       type: string
+    EscalationTypeEnum:
+      enum:
+      - STANDARD
+      - NO_HUMAN_LABELING
+      type: string
+      description: |-
+        * `STANDARD` - STANDARD
+        * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
     ImageQuery:
       type: object
       description: Spec for serializing a image-query object in the public API.
@@ -900,13 +897,11 @@ components:
           readOnly: true
           description: What type of result are we returning?
         result:
-          additionalProperties: {}
-          nullable: true
-          readOnly: true
-          description: The result of the image query.
           oneOf:
           - $ref: '#/components/schemas/BinaryClassificationResult'
           - $ref: '#/components/schemas/CountingResult'
+          - $ref: '#/components/schemas/MultiClassificationResult'
+          nullable: true
         patience_time:
           type: number
           format: double
@@ -1122,6 +1117,43 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Rule'
+    PatchedDetectorRequest:
+      type: object
+      description: Spec for serializing a detector object in the public API.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: A short, descriptive name for the detector.
+          maxLength: 200
+        confidence_threshold:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+          default: 0.9
+          description: If the detector's prediction is below this confidence threshold,
+            send the image query for human review.
+        patience_time:
+          type: number
+          format: double
+          maximum: 3600
+          minimum: 0
+          default: 30.0
+          description: How long Groundlight will attempt to generate a confident prediction
+        status:
+          oneOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        escalation_type:
+          allOf:
+          - $ref: '#/components/schemas/EscalationTypeEnum'
+          description: |-
+            Category that define internal proccess for labeling image queries
+
+            * `STANDARD` - STANDARD
+            * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
+      x-internal: true
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1194,7 +1226,9 @@ components:
         condition:
           $ref: '#/components/schemas/Condition'
         action:
-          $ref: '#/components/schemas/Action'
+          oneOf:
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
       - action
       - condition
@@ -1229,7 +1263,9 @@ components:
         condition:
           $ref: '#/components/schemas/ConditionRequest'
         action:
-          $ref: '#/components/schemas/ActionRequest'
+          oneOf:
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
       - action
       - condition
@@ -1264,6 +1300,14 @@ components:
         * `ALG` - Algorithm
         * `ALG_REC` - AlgorithmReconciled
         * `ALG_UNCLEAR` - AlgorithmUnclear
+    StatusEnum:
+      enum:
+      - 'ON'
+      - 'OFF'
+      type: string
+      description: |-
+        * `ON` - ON
+        * `OFF` - OFF
     VerbEnum:
       enum:
       - ANSWERED_CONSECUTIVELY
@@ -1284,13 +1328,24 @@ components:
         confidence:
           type: number
           format: float
-          minimum: 0
-          maximum: 1
-          nullable: true
+          minimum: 0.0
+          maximum: 1.0
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         label:
           type: string
+          enum:
+          - 'YES'
+          - 'NO'
+          - UNCLEAR
       required:
-      - confidence
+      - source
       - label
     CountingResult:
       type: object
@@ -1298,14 +1353,87 @@ components:
         confidence:
           type: number
           format: float
-          minimum: 0
-          maximum: 1
-          nullable: true
-        value:
+          minimum: 0.0
+          maximum: 1.0
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+        count:
           type: integer
+          minimum: null
+          maximum: null
+        greater_than_max:
+          type: boolean
       required:
-      - confidence
-      - value
+      - source
+      - count
+    MultiClassificationResult:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+        label:
+          type: string
+      required:
+      - source
+      - label
+    CountModeConfiguration:
+      type: object
+      properties:
+        max_count:
+          type: integer
+          minimum: 1
+          maximum: 50
+      required: []
+    MultiClassModeConfiguration:
+      type: object
+      properties:
+        class_names:
+          type: object
+        num_classes:
+          type: integer
+          minimum: null
+          maximum: null
+      required:
+      - class_names
+    ChannelEnum:
+      type: string
+      enum:
+      - TEXT
+      - EMAIL
+    Action:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/ChannelEnum'
+        recipient:
+          type: string
+        include_image:
+          type: boolean
+      required:
+      - channel
+      - recipient
+      - include_image
+    ActionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
   securitySchemes:
     ApiToken:
       name: x-api-token
