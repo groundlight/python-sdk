@@ -7,16 +7,9 @@ This part of the API is kinda ugly right now.  So we'll encapsulate the ugliness
 import logging
 from enum import Enum
 from typing import Union
-
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, Label
 
 logger = logging.getLogger(__name__)
-
-
-class Label(str, Enum):
-    YES = "YES"
-    NO = "NO"
-    UNCLEAR = "UNCLEAR"
 
 
 VALID_DISPLAY_LABELS = {Label.YES, Label.NO, Label.UNCLEAR}
@@ -46,8 +39,8 @@ def convert_internal_label_to_display(
     NOTE: We return UPPERCASE label strings to the user, unless there is a custom label (which
     shouldn't be happening at this time).
     """
-    # NOTE: Someday we will do nothing here, when the server provides properly named classes.
-    if not isinstance(label, str):
+    # NOTE: We should be able to do nothing here now, keeping for radiation proofing
+    if not isinstance(label, str) and not isinstance(label, Label):
         raise ValueError(f"Expected a string label, but got {label} of type {type(label)}")
     upper = label.upper()
     if upper in {Label.YES, DeprecatedLabel.PASS}:
