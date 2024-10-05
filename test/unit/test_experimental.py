@@ -43,3 +43,13 @@ def test_submit_multiple_rois(gl_experimental: ExperimentalApi, image_query_no: 
     label_name = "dog"
     roi = gl_experimental.create_roi(label_name, (0, 0), (0.5, 0.5))
     gl_experimental.add_label(image_query_no, "YES", [roi] * 3)
+
+def test_counting_detector(gl_experimental: ExperimentalApi):
+    """
+    verify that we can create and submit to a counting detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    created_detector = gl_experimental.create_counting_detector(name, "How many dogs")
+    assert created_detector is not None
+    count_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert count_iq.count is not None

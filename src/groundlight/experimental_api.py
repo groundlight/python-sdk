@@ -8,7 +8,7 @@ modifications or potentially be removed in future releases, which could lead to 
 
 import json
 from io import BufferedReader, BytesIO
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
@@ -20,18 +20,19 @@ from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.count_mode_configuration_serializer import CountModeConfigurationSerializer
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, PaginatedRuleList, Rule
+from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, ModeEnum, PaginatedRuleList, Rule
 
 from groundlight.binary_labels import Label, convert_display_label_to_internal
 from groundlight.images import parse_supported_image_types
 from groundlight.optional_imports import Image, np
 
-from .client import Groundlight
+from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight
 
 
 class ExperimentalApi(Groundlight):
@@ -305,3 +306,34 @@ class ExperimentalApi(Groundlight):
         if isinstance(detector, Detector):
             detector = detector.id
         self.detector_reset_api.reset_detector(detector)
+
+    def create_counting_detector(
+        self,
+        name: str,
+        query: str,
+        *,
+        max_count: Optional[int] = None,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a counting detector with the given name and query
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        detector_creation_input.mode = ModeEnum.COUNT
+        mode_config = CountModeConfigurationSerializer(max_count=max_count)
+        detector_creation_input.mode_configuration = mode_config
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
