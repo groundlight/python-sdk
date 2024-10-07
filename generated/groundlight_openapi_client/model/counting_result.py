@@ -101,9 +101,9 @@ class CountingResult(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "source": (str,),  # noqa: E501
             "count": (int,),  # noqa: E501
             "confidence": (float,),  # noqa: E501
+            "source": (str,),  # noqa: E501
             "greater_than_max": (bool,),  # noqa: E501
         }
 
@@ -112,9 +112,9 @@ class CountingResult(ModelNormal):
         return None
 
     attribute_map = {
-        "source": "source",  # noqa: E501
         "count": "count",  # noqa: E501
         "confidence": "confidence",  # noqa: E501
+        "source": "source",  # noqa: E501
         "greater_than_max": "greater_than_max",  # noqa: E501
     }
 
@@ -124,11 +124,10 @@ class CountingResult(ModelNormal):
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(cls, source, count, *args, **kwargs):  # noqa: E501
+    def _from_openapi_data(cls, count, *args, **kwargs):  # noqa: E501
         """CountingResult - a model defined in OpenAPI
 
         Args:
-            source (str):
             count (int):
 
         Keyword Args:
@@ -163,6 +162,7 @@ class CountingResult(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             confidence (float): [optional]  # noqa: E501
+            source (str): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
 
@@ -192,7 +192,6 @@ class CountingResult(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
-        self.source = source
         self.count = count
         for var_name, var_value in kwargs.items():
             if (
@@ -216,11 +215,10 @@ class CountingResult(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, source, count, *args, **kwargs):  # noqa: E501
+    def __init__(self, count, *args, **kwargs):  # noqa: E501
         """CountingResult - a model defined in OpenAPI
 
         Args:
-            source (str):
             count (int):
 
         Keyword Args:
@@ -255,6 +253,7 @@ class CountingResult(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             confidence (float): [optional]  # noqa: E501
+            source (str): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
 
@@ -282,7 +281,6 @@ class CountingResult(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
-        self.source = source
         self.count = count
         for var_name, var_value in kwargs.items():
             if (

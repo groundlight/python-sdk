@@ -995,7 +995,6 @@ components:
       - confidence
       - created_at
       - detector_id
-      - source
       - text
     LabelValueRequest:
       type: object
@@ -1345,7 +1344,6 @@ components:
           - 'NO'
           - UNCLEAR
       required:
-      - source
       - label
     CountingResult:
       type: object
@@ -1370,7 +1368,6 @@ components:
         greater_than_max:
           type: boolean
       required:
-      - source
       - count
     MultiClassificationResult:
       type: object
@@ -1391,7 +1388,6 @@ components:
         label:
           type: string
       required:
-      - source
       - label
     CountModeConfiguration:
       type: object
