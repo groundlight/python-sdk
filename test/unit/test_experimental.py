@@ -62,7 +62,7 @@ def test_multiclass_detector(gl_experimental: ExperimentalApi):
     """
     name = f"Test {datetime.utcnow()}"
     class_names = ["Golden Retriever", "Labrador Retriever", "Poodle"]
-    created_detector = gl_experimental.create_counting_detector(
+    created_detector = gl_experimental.create_multiclass_detector(
         name, "What kind of dog is this?", class_names=class_names
     )
     assert created_detector is not None
