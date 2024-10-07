@@ -21,6 +21,7 @@ from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometry
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
+from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
@@ -307,7 +308,7 @@ class ExperimentalApi(Groundlight):
             detector = detector.id
         self.detector_reset_api.reset_detector(detector)
 
-    def create_counting_detector( # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+    def create_counting_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
         query: str,
@@ -337,6 +338,37 @@ class ExperimentalApi(Groundlight):
         if max_count is None:
             max_count = 10
         mode_config = CountModeConfiguration(max_count=max_count)
+        detector_creation_input.mode_configuration = mode_config
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
+
+    def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        class_names: List[str],
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a multiclass detector with the given name and query
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        detector_creation_input.mode = ModeEnum.M
+        mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
