@@ -245,7 +245,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def _prep_create_detector( # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+    def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
         query: str,
