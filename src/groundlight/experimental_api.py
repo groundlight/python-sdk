@@ -21,9 +21,9 @@ from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometry
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
+from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
-from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.verb_enum import VerbEnum
@@ -367,7 +367,7 @@ class ExperimentalApi(Groundlight):
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.M
+        detector_creation_input.mode = ModeEnum.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
