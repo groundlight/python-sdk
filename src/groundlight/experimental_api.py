@@ -307,7 +307,7 @@ class ExperimentalApi(Groundlight):
             detector = detector.id
         self.detector_reset_api.reset_detector(detector)
 
-    def create_counting_detector( # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+    def create_counting_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
         query: str,

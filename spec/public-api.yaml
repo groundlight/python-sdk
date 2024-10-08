@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Groundlight API
-  version: 0.15.3
+  version: 0.18.1
   description: Groundlight makes it simple to understand images. You can easily create
     computer vision detectors just by describing what you want to know using natural
     language.
@@ -995,7 +995,6 @@ components:
       - confidence
       - created_at
       - detector_id
-      - source
       - text
     LabelValueRequest:
       type: object
@@ -1331,6 +1330,7 @@ components:
           minimum: 0.0
           maximum: 1.0
         source:
+          description: Source is optional to support edge v0.2
           type: string
           enum:
           - STILL_PROCESSING
@@ -1345,7 +1345,6 @@ components:
           - 'NO'
           - UNCLEAR
       required:
-      - source
       - label
     CountingResult:
       type: object
@@ -1356,6 +1355,7 @@ components:
           minimum: 0.0
           maximum: 1.0
         source:
+          description: Source is optional to support edge v0.2
           type: string
           enum:
           - STILL_PROCESSING
@@ -1370,7 +1370,6 @@ components:
         greater_than_max:
           type: boolean
       required:
-      - source
       - count
     MultiClassificationResult:
       type: object
@@ -1381,6 +1380,7 @@ components:
           minimum: 0.0
           maximum: 1.0
         source:
+          description: Source is optional to support edge v0.2
           type: string
           enum:
           - STILL_PROCESSING
@@ -1391,7 +1391,6 @@ components:
         label:
           type: string
       required:
-      - source
       - label
     CountModeConfiguration:
       type: object
