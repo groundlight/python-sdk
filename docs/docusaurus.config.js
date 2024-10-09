@@ -232,15 +232,15 @@ const config = {
           },
           {
             to: "https://www.groundlight.ai/blog/introducing-groundlights-framegrab-library",
-            from: "https://code.groundlight.ai/python-sdk/blog/introducing-framegrab"
+            from: "/blog/introducing-framegrab"
           },
           {
             to: "https://www.groundlight.ai/blog/best-practices-for-best-results-with-groundlight",
-            from: "https://code.groundlight.ai/python-sdk/blog/best-practices"
+            from: "/blog/best-practices"
           },
           {
             to: "https://www.groundlight.ai/blog/linux-os-images-for-computer-vision-on-raspberry-pi",
-            from: "https://code.groundlight.ai/python-sdk/blog/raspberry-pi-computer-vision"
+            from: "/blog/raspberry-pi-computer-vision"
           },
         ],
       },
