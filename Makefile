@@ -1,3 +1,5 @@
+.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-integ test-local
+
 install:  ## Install the package from source
 	poetry install
 
@@ -79,11 +81,6 @@ BUILDDIR      = build
 sphinx-help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-
-# The .PHONY directive tells make that `apidocs` and `html` are labels for
-# commands. `apidocs: html` allows us to generate docs by running
-# `make apidocs` instead.
-.PHONY: docs-comprehensive apidocs html
 
 # Start an interactive server to test docs locally.
 # Before running this, make sure that you have installed the node modules

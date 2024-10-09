@@ -1345,7 +1345,6 @@ components:
           - 'NO'
           - UNCLEAR
       required:
-      - source
       - label
     CountingResult:
       type: object
@@ -1370,7 +1369,6 @@ components:
         greater_than_max:
           type: boolean
       required:
-      - source
       - count
     MultiClassificationResult:
       type: object
@@ -1391,7 +1389,6 @@ components:
         label:
           type: string
       required:
-      - source
       - label
     CountModeConfiguration:
       type: object
@@ -1405,7 +1402,9 @@ components:
       type: object
       properties:
         class_names:
-          type: object
+          type: array
+          items:
+            type: string
         num_classes:
           type: integer
           minimum: null
