@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkweb=self.webpackChunkweb||[]).push([[3779],{7370:e=>{e.exports=JSON.parse('{"permalink":"/python-sdk/blog/tags/raspberry-pi","page":1,"postsPerPage":10,"totalPages":1,"totalCount":2,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
