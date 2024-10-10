@@ -88,7 +88,7 @@ class MultiClassModeConfiguration(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "class_names": ({str: (bool, date, datetime, dict, float, int, list, str, none_type)},),  # noqa: E501
+            "class_names": ([str],),  # noqa: E501
             "num_classes": (int,),  # noqa: E501
         }
 
@@ -111,7 +111,7 @@ class MultiClassModeConfiguration(ModelNormal):
         """MultiClassModeConfiguration - a model defined in OpenAPI
 
         Args:
-            class_names ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}):
+            class_names ([str]):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -200,7 +200,7 @@ class MultiClassModeConfiguration(ModelNormal):
         """MultiClassModeConfiguration - a model defined in OpenAPI
 
         Args:
-            class_names ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}):
+            class_names ([str]):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types

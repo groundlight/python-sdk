@@ -4,7 +4,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**class_names** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}** |  | 
+**class_names** | **[str]** |  | 
 **num_classes** | **int** |  | [optional] 
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 

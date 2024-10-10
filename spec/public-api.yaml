@@ -1404,7 +1404,9 @@ components:
       type: object
       properties:
         class_names:
-          type: object
+          type: array
+          items:
+            type: string
         num_classes:
           type: integer
           minimum: null

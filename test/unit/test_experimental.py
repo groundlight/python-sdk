@@ -54,3 +54,18 @@ def test_counting_detector(gl_experimental: ExperimentalApi):
     assert created_detector is not None
     count_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert count_iq.result.count is not None
+
+
+def test_multiclass_detector(gl_experimental: ExperimentalApi):
+    """
+    verify that we can create and submit to a multi-class detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    class_names = ["Golden Retriever", "Labrador Retriever", "Poodle"]
+    created_detector = gl_experimental.create_multiclass_detector(
+        name, "What kind of dog is this?", class_names=class_names
+    )
+    assert created_detector is not None
+    mc_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert mc_iq.result.label is not None
+    assert mc_iq.result.label in class_names
