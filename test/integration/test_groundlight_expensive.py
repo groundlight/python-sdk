@@ -5,31 +5,21 @@ We collect various expensive tests here. These tests should not be run regularly
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
-import json
 import random
-import string
 import time
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
 
-import groundlight_openapi_client
 import pytest
 from groundlight import Groundlight
-from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
-from groundlight.internalapi import InternalApiError, NotFoundError, iq_is_answered, iq_is_confident
+from groundlight.internalapi import iq_is_answered, iq_is_confident
 from groundlight.optional_imports import *
-from groundlight.status_codes import is_user_error
 from model import (
-    BinaryClassificationResult,
-    CountingResult,
     Detector,
-    ImageQuery,
-    PaginatedDetectorList,
-    PaginatedImageQueryList,
 )
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
+
 
 @pytest.fixture(name="gl")
 def fixture_gl() -> Groundlight:
@@ -38,10 +28,13 @@ def fixture_gl() -> Groundlight:
     _gl.DEFAULT_WAIT = 10
     return _gl
 
+
 @pytest.mark.skip(reason="This test requires a human labeler who does not need to be in the testing loop")
 def test_human_label(gl: Groundlight):
     detector = gl.create_detector(name=f"Test {datetime.utcnow()}", query="Is there a dog?")
-    img_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", wait=60, human_review="ALWAYS")
+    img_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=60, human_review="ALWAYS"
+    )
 
     count = 0
     while img_query.result.source == "ALGORITHM" or img_query.result.label == "STILL_PROCESSING":
@@ -54,12 +47,12 @@ def test_human_label(gl: Groundlight):
     assert iq_is_answered(img_query)
     assert iq_is_confident(img_query, confidence_threshold=0.9)
 
+
 @pytest.mark.skip(reason="This test can block development depending on the state of the service")
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
 def test_detector_improvement(gl: Groundlight):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
-    import random
     import time
 
     from PIL import Image, ImageEnhance
