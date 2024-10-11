@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, Source
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
@@ -64,9 +64,6 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     The only subtletie here is that currently confidence of None means
     human label, which is treated as confident.
     """
-    if iq.result.confidence is None:
-        # Human label
-        return True
     return iq.result.confidence >= confidence_threshold
 
 
@@ -74,11 +71,10 @@ def iq_is_answered(iq: ImageQuery) -> bool:
     """Returns True if the image query has a ML or human label.
     Placeholder and special labels (out of domain) have confidences exactly 0.5
     """
-    if iq.result.confidence is None:
-        # Human label
-        return True
-    placeholder_confidence = 0.5
-    return iq.result.confidence > placeholder_confidence
+    if (iq.result.source == Source.STILL_PROCESSING) or (iq.result.source is None): # Should never be None
+        return False
+    return True
+
 
 
 class InternalApiError(ApiException, RuntimeError):
