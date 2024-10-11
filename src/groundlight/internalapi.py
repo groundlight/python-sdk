@@ -71,10 +71,9 @@ def iq_is_answered(iq: ImageQuery) -> bool:
     """Returns True if the image query has a ML or human label.
     Placeholder and special labels (out of domain) have confidences exactly 0.5
     """
-    if (iq.result.source == Source.STILL_PROCESSING) or (iq.result.source is None): # Should never be None
+    if (iq.result.source == Source.STILL_PROCESSING) or (iq.result.source is None):  # Should never be None
         return False
     return True
-
 
 
 class InternalApiError(ApiException, RuntimeError):
