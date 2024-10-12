@@ -37,11 +37,13 @@ def test_human_label(gl: Groundlight):
     )
 
     count = 0
+    sleep_time = 5
+    total_time = 60
     while img_query.result.source == "ALGORITHM" or img_query.result.label == "STILL_PROCESSING":
         count += 1
-        time.sleep(5)
+        time.sleep(sleep_time)
         img_query = gl.get_image_query(img_query.id)
-        if count > 12:
+        if count > total_time / sleep_time:
             assert False, f"Human review is taking too long: {img_query}"
 
     assert iq_is_answered(img_query)
