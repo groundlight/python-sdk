@@ -205,7 +205,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: str
         """
         obj = self.user_api.who_am_i()
-        return obj["username"]
+        return obj["email"]
 
     def _user_is_privileged(self) -> bool:
         """
@@ -213,7 +213,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         Privleged users have elevated permissions, so care should be taken when using a privileged account.
         """
         obj = self.user_api.who_am_i()
-        return obj["is_superuser"] or obj["is_staff"]
+        return obj["is_superuser"]
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
