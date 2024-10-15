@@ -117,9 +117,9 @@ jobs:
       github.ref == 'refs/heads/main' ||
       startsWith(github.ref, 'refs/tags/v') ||
       endsWith(github.ref, '-fulltest')
-    needs:
-      - test-simple
-      - test-docs
+    # needs:
+    #   - test-simple
+    #   - test-docs
     runs-on: ubuntu-latest
     strategy:
       # fail-fast=false works best for flaky tests with manual "retry failed".
@@ -140,6 +140,13 @@ jobs:
     steps:
       - name: get code
         uses: actions/checkout@v4
+        # Pillow may need these to function
+      - name: install potential system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev
+          libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk
+          libharfbuzz-dev libfribidi-dev libxcb1-dev
       - name: install modern python for poetry
         uses: actions/setup-python@v4
         with:
