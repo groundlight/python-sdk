@@ -113,10 +113,10 @@ jobs:
   # - releases
   # - branch names ending with "-fulltest"
   test-comprehensive:
-    if: >-
-      github.ref == 'refs/heads/main' ||
-      startsWith(github.ref, 'refs/tags/v') ||
-      endsWith(github.ref, '-fulltest')
+    # if: >-
+    #   github.ref == 'refs/heads/main' ||
+    #   startsWith(github.ref, 'refs/tags/v') ||
+    #   endsWith(github.ref, '-fulltest')
     # needs:
     #   - test-simple
     #   - test-docs
