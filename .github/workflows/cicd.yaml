@@ -145,8 +145,8 @@ jobs:
       - name: install potential system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev
-          libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk
+          sudo apt-get install libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev \
+          libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk \
           libharfbuzz-dev libfribidi-dev libxcb1-dev
       - name: install modern python for poetry
         uses: actions/setup-python@v4
