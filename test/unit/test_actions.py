@@ -43,6 +43,7 @@ def test_create_action_with_human_review(gl_experimental: ExperimentalApi):
     rule2 = gl_experimental.get_rule(rule.id)
     assert rule == rule2
 
+
 @pytest.mark.skip(reason="actions are global on account, the test matrix collides with itself")  # type: ignore
 def test_delete_action(gl_experimental: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
