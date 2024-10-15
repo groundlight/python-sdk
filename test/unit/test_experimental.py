@@ -55,6 +55,7 @@ def test_counting_detector(gl_experimental: ExperimentalApi):
     count_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert count_iq.result.count is not None
 
+
 @pytest.mark.skip(
     reason=(
         "General users currently currently can't use multiclass detectors. If you have questions, reach out"
