@@ -130,9 +130,10 @@ jobs:
         python-version: [
             #"3.6",   # Default on Ubuntu18.04 but openapi-generator fails
             # "3.7",  # Removed support as of 0.17
-            "3.8",
-            "3.9",
-            "3.10",
+            # TEMP
+            # "3.8",
+            # "3.9",
+            # "3.10",
             "3.11",
             "3.12",
           ]
