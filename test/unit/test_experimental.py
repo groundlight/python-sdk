@@ -56,6 +56,12 @@ def test_counting_detector(gl_experimental: ExperimentalApi):
     assert count_iq.result.count is not None
 
 
+@pytest.mark.skip(
+    reason=(
+        "General users currently currently can't use multiclass detectors. If you have questions, reach out"
+        " to Groundlight support, or upgrade your plan."
+    )
+)
 def test_multiclass_detector(gl_experimental: ExperimentalApi):
     """
     verify that we can create and submit to a multi-class detector

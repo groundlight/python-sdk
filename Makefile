@@ -37,11 +37,16 @@ TEST_ARGS=
 CLOUD_FILTERS = -m "not run_only_for_edge_endpoint"
 EDGE_FILTERS = -m "not skip_for_edge_endpoint"
 
+# Record information about the slowest 25 tests (but don't show anything slower than 0.1 seconds)
+PROFILING_ARGS = \
+	--durations 25 \
+	--durations-min 0.1
+
 test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
 test-4edge: install  ## Run tests against the prod API via the edge-endpoint (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} ${TEST_ARGS} ${EDGE_FILTERS} test
+	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${EDGE_FILTERS} test
 
 test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API_TOKEN and a local API server)
 	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test

@@ -13,9 +13,6 @@ def test_create_action(gl_experimental: ExperimentalApi):
     rule = gl_experimental.create_rule(det, f"test_rule_{name}", "EMAIL", "test@example.com")
     rule2 = gl_experimental.get_rule(rule.id)
     assert rule == rule2
-    gl_experimental.delete_rule(rule.id)
-    with pytest.raises(NotFoundException) as _:
-        gl_experimental.get_rule(rule.id)
 
 
 @pytest.mark.skip(reason="actions are global on account, the test matrix collides with itself")  # type: ignore
@@ -45,6 +42,13 @@ def test_create_action_with_human_review(gl_experimental: ExperimentalApi):
     )
     rule2 = gl_experimental.get_rule(rule.id)
     assert rule == rule2
+
+
+@pytest.mark.skip(reason="actions are global on account, the test matrix collides with itself")  # type: ignore
+def test_delete_action(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    rule = gl_experimental.create_rule(det, f"test_rule_{name}", "EMAIL", "test@example.com")
     gl_experimental.delete_rule(rule.id)
     with pytest.raises(NotFoundException) as _:
         gl_experimental.get_rule(rule.id)
