@@ -23,6 +23,7 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
+from ksuid import KsuidMs
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -315,6 +316,16 @@ def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/cat.png", human_review="NEVER")
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+
+
+def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
+    id = f"iq_{KsuidMs()}"
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER", image_query_id=id
+    )
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
