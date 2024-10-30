@@ -15,6 +15,7 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Lab
 from groundlight.internalapi import InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
+from ksuid import KsuidMs
 from model import (
     BinaryClassificationResult,
     CountingResult,
@@ -23,7 +24,6 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-from ksuid import KsuidMs
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
