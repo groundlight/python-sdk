@@ -176,7 +176,7 @@ const config = {
               },
               {
                 label: "Sign In",
-                href: "https://app.groundlight.ai/",
+                href: "https://dashboard.groundlight.ai/",
               },
             ],
           },

@@ -32,7 +32,7 @@ pip install groundlight opencv-python pillow
 
 ## Creating the Application
 
-1. First, log in to the [Groundlight application](https://app.groundlight.ai) and get an [API Token](api-tokens).
+1. First, log in to the [Groundlight application](https://dashboard.groundlight.ai) and create an [API Token](https://dashboard.groundlight.ai/reef/my-account/api-tokens).
 
 2. Next, we'll write the Python script for the application. Import the required libraries:
 
@@ -166,4 +166,3 @@ Save the script as `service_counter_monitor.py` and run it:
 ```bash
 python service_counter_monitor.py
 ```
-
