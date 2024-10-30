@@ -520,7 +520,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             # which means we need to put the metadata in the query string. To do that safely, we
             # url- and base64-encode the metadata.
             params["metadata"] = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
-        
+
         if image_query_id is not None:
             params["image_query_id"] = image_query_id
 
@@ -569,7 +569,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        
+
         :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
             for general external use. If not set, a random ID will be generated.
 
@@ -615,7 +615,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        
+
         :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
             for general external use. If not set, a random ID will be generated.
 
@@ -682,7 +682,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-        
+
         :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
             for general external use. If not set, a random ID will be generated.
 
