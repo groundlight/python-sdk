@@ -520,7 +520,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             # which means we need to put the metadata in the query string. To do that safely, we
             # url- and base64-encode the metadata.
             params["metadata"] = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
-        
+
         if image_query_id is not None:
             params["image_query_id"] = image_query_id
 
