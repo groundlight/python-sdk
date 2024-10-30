@@ -39,7 +39,7 @@ This will download the most recent frame from a YouTube live stream and save it 
 chmod +x get_latest_frame.sh
 ```
 
-3. Log in to the [Groundlight application](https://dashboard.groundlight.ai) and create an [API Token](https://dashboard.groundlight.ai/reef/my-account/api-tokens).
+3. Log in to the [Groundlight dashboard](https://dashboard.groundlight.ai) and create an [API Token](https://dashboard.groundlight.ai/reef/my-account/api-tokens).
 
 4. Next, we'll write the Python script for the application.
 
