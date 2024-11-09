@@ -54,6 +54,9 @@ test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
+test-dev: install ## Run tests against a dev API server (needs GROUNDLIGHT_API_TOKEN and properly configured dns-hostmap)
+	GROUNDLIGHT_ENDPOINT="https://api.dev.groundlight.ai" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
