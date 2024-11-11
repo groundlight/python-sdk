@@ -49,13 +49,16 @@ test-4edge: install  ## Run tests against the prod API via the edge-endpoint (ne
 	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${EDGE_FILTERS} test
 
 test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API_TOKEN and a local API server)
-	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	$(eval GROUNDLIGHT_ENDPOINT="http://localhost:8000/")
+    $(MAKE) test
 
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	$(eval GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/")
+    $(MAKE) test
 
 test-dev: install ## Run tests against a dev API server (needs GROUNDLIGHT_API_TOKEN and properly configured dns-hostmap)
-	GROUNDLIGHT_ENDPOINT="https://api.dev.groundlight.ai" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	$(eval GROUNDLIGHT_ENDPOINT="https://api.dev.groundlight.ai/")
+    $(MAKE) test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
