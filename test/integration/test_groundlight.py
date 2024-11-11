@@ -329,20 +329,27 @@ def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
+    assert _image_query.id == id
     assert _image_query.metadata is not None
     assert _image_query.metadata.get("is_from_edge")
 
     # ask_confident
     id = f"iq_{KsuidMs()}"
     _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10, image_query_id=id)
+    assert isinstance(_image_query, ImageQuery)
+    assert _image_query.id == id
 
     # ask_ml
     id = f"iq_{KsuidMs()}"
     _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10, image_query_id=id)
+    assert isinstance(_image_query, ImageQuery)
+    assert _image_query.id == id
 
     # ask_async
     id = f"iq_{KsuidMs()}"
     _image_query = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg", image_query_id=id)
+    assert isinstance(_image_query, ImageQuery)
+    assert _image_query.id == id
 
 
 def test_submit_image_query_with_invalid_id(gl: Groundlight, detector: Detector):
