@@ -50,15 +50,15 @@ test-4edge: install  ## Run tests against the prod API via the edge-endpoint (ne
 
 test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API_TOKEN and a local API server)
 	$(eval GROUNDLIGHT_ENDPOINT="http://localhost:8000/")
-    $(MAKE) test
+	$(MAKE) test
 
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
 	$(eval GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/")
-    $(MAKE) test
+	$(MAKE) test
 
 test-dev: install ## Run tests against a dev API server (needs GROUNDLIGHT_API_TOKEN and properly configured dns-hostmap)
 	$(eval GROUNDLIGHT_ENDPOINT="https://api.dev.groundlight.ai/")
-    $(MAKE) test
+	$(MAKE) test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
