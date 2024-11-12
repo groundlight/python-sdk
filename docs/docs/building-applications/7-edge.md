@@ -14,8 +14,8 @@ and for communicating with the Groundlight cloud service.
 
 To use the edge endpoint, simply configure the Groundlight SDK to use the edge endpoint's URL instead of the cloud endpoint.
 All application logic will work seamlessly and unchanged with the Groundlight Edge Endpoint, except some ML answers will
-return much faster locally.  The only visible difference is that image queries answered at the edge endpoint will have the prefix `iqe_` instead of `iq_` for image queries answered in the cloud.  `iqe_` stands for "image query edge".  Edge-originated
-image queries will not appear in the cloud dashboard.
+return much faster locally.  Image queries answered at the edge endpoint will not appear in the cloud dashboard unless
+specifically configured to do so, in which case the edge prediction will not be reflected on the image query in the cloud.
 
 ## Configuring the Edge Endpoint
 
