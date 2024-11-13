@@ -441,6 +441,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         want_async: bool = False,
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        image_query_id: Optional[str] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight.
@@ -482,6 +483,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
 
+        :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
+            for general external use. If not set, a random ID will be generated.
+
         :return: ImageQuery
         """
         if wait is None:
@@ -516,6 +520,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             # which means we need to put the metadata in the query string. To do that safely, we
             # url- and base64-encode the metadata.
             params["metadata"] = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
+
+        if image_query_id is not None:
+            params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())

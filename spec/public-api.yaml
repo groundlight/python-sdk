@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Groundlight API
-  version: 0.18.1
+  version: 0.18.2
   description: Groundlight makes it simple to understand images. You can easily create
     computer vision detectors just by describing what you want to know using natural
     language.
@@ -336,18 +336,16 @@ paths:
           description: ''
     post:
       operationId: Submit image query
-      description: |2+
+      description: |2
 
         Submit an image query against a detector.
 
-        You must use `"Content-Type: image/jpeg"` for the image data. For example:
-
+        You must use `"Content-Type: image/jpeg"` or similar (image/png, image/webp, etc) for the image data. For example:
         ```Bash
         $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \
             --header "Content-Type: image/jpeg" \
             --data-binary @path/to/filename.jpeg
         ```
-
       parameters:
       - in: query
         name: detector_id
@@ -363,6 +361,11 @@ paths:
           If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
           If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
           If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
+      - in: query
+        name: image_query_id
+        schema:
+          type: string
+        description: The ID to assign to the created image query.
       - in: query
         name: inspection_id
         schema:
@@ -995,6 +998,7 @@ components:
       - confidence
       - created_at
       - detector_id
+      - source
       - text
     LabelValueRequest:
       type: object
@@ -1330,7 +1334,6 @@ components:
           minimum: 0.0
           maximum: 1.0
         source:
-          description: Source is optional to support edge v0.2
           type: string
           enum:
           - STILL_PROCESSING
@@ -1355,7 +1358,6 @@ components:
           minimum: 0.0
           maximum: 1.0
         source:
-          description: Source is optional to support edge v0.2
           type: string
           enum:
           - STILL_PROCESSING
@@ -1380,7 +1382,6 @@ components:
           minimum: 0.0
           maximum: 1.0
         source:
-          description: Source is optional to support edge v0.2
           type: string
           enum:
           - STILL_PROCESSING
