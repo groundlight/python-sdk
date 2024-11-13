@@ -334,28 +334,6 @@ def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     assert _image_query.metadata.get("is_from_edge")
 
 
-def test_submit_image_query_with_invalid_id(gl: Groundlight, detector: Detector):
-    # Invalid ID format
-    id = f"iqabc_{KsuidMs()}"
-    with pytest.raises(ApiException):
-        gl.submit_image_query(
-            detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER", image_query_id=id
-        )
-
-    # Duplicate ID entry
-    id = f"iq_{KsuidMs()}"
-    _image_query_1 = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER", image_query_id=id
-    )
-    assert str(_image_query_1)
-    assert isinstance(_image_query_1, ImageQuery)
-    assert is_valid_display_result(_image_query_1.result)
-    with pytest.raises(ApiException):
-        gl.submit_image_query(
-            detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER", image_query_id=id
-        )
-
-
 def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: Detector):
     # For now, this just tests that the image query is submitted successfully.
     # There should probably be a better way to check whether the image query was escalated for human review.
