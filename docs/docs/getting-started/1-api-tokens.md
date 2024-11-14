@@ -40,7 +40,7 @@ gl = Groundlight(api_token=token)
 ```
 
 ## Creating and Revoking API Tokens
-You can manage your API tokens from the Groundlight website at [https://app.groundlight.ai/reef/my-account/api-tokens](https://app.groundlight.ai/reef/my-account/api-tokens).
+You can manage your API tokens from the Groundlight dashboard at [https://dashboard.groundlight.ai/reef/my-account/api-tokens](https://dashboard.groundlight.ai/reef/my-account/api-tokens).
 
 
 ### Creating API Tokens
@@ -66,4 +66,3 @@ On the API tokens page, you can see a list of your current tokens, along with th
 1. Confirm that you want to revoke the token.
 
 Note: Revoking an API token will immediately invalidate it and prevent any applications using it from accessing your Groundlight account. Be sure to update your applications with a new token before revoking an old one.
-

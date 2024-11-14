@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, Source
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
@@ -37,10 +37,8 @@ def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     parts = urlsplit(endpoint)
     if (parts.scheme not in ("http", "https")) or (not parts.netloc):
         raise ValueError(
-            (
-                f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
-                " https://api.groundlight.ai/"
-            ),
+            f"Invalid API endpoint {endpoint}.  Unsupported scheme: {parts.scheme}.  Must be http or https, e.g."
+            " https://api.groundlight.ai/",
         )
     if parts.query or parts.fragment:
         raise ValueError(f"Invalid API endpoint {endpoint}.  Cannot have query or fragment.")
@@ -63,12 +61,9 @@ def _generate_request_id():
 
 def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     """Returns True if the image query's confidence is above threshold.
-    The only subtletie here is that currently confidence of None means
+    The only subtlety here is that currently confidence of None means
     human label, which is treated as confident.
     """
-    if iq.result.confidence is None:
-        # Human label
-        return True
     return iq.result.confidence >= confidence_threshold
 
 
@@ -76,11 +71,9 @@ def iq_is_answered(iq: ImageQuery) -> bool:
     """Returns True if the image query has a ML or human label.
     Placeholder and special labels (out of domain) have confidences exactly 0.5
     """
-    if iq.result.confidence is None:
-        # Human label
-        return True
-    placeholder_confidence = 0.5
-    return iq.result.confidence > placeholder_confidence
+    if (iq.result.source == Source.STILL_PROCESSING) or (iq.result.source is None):  # Should never be None
+        return False
+    return True
 
 
 class InternalApiError(ApiException, RuntimeError):
@@ -141,11 +134,9 @@ class RequestsRetryDecorator:
                             # This is implementing a full jitter strategy
                             random_delay = random.uniform(0, delay)
                             logger.warning(
-                                (
-                                    f"Current HTTP response status: {status_code}. "
-                                    f"Remaining retries: {self.max_retries - retry_count}. "
-                                    f"Delaying {random_delay:.1f}s before retrying."
-                                ),
+                                f"Current HTTP response status: {status_code}. "
+                                f"Remaining retries: {self.max_retries - retry_count}. "
+                                f"Delaying {random_delay:.1f}s before retrying.",
                                 exc_info=True,
                             )
                             time.sleep(random_delay)
@@ -207,10 +198,12 @@ class GroundlightApiClient(ApiClient):
     @RequestsRetryDecorator()
     def _add_label(self, image_query_id: str, label: str) -> dict:
         """Temporary internal call to add a label to an image query.  Not supported."""
+        logger.warning("This method is slated for removal, instead use the labels_api in the groundlight client")
         # TODO: Properly model this with OpenApi spec.
         start_time = time.time()
         url = f"{self.configuration.host}/labels"
 
+        # TODO: remove posicheck_id
         data = {"label": label, "posicheck_id": image_query_id, "review_reason": ReviewReason.CUSTOMER_INITIATED}
 
         headers = self._headers()

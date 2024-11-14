@@ -4,14 +4,14 @@ Here is a whimsical example of how you could use Groundlight in your home to kee
 
 ## Requirements
 
-- [Groundlight SDK](/docs/installation/) with Python 3.7 or higher
+- [Groundlight SDK](/docs/installation/) with Python 3.8 or higher
 - A supported USB or network-connected camera
 - A pre-recorded sound file (e.g., `get_off_couch.mp3`)
 - A couch and a dog are recommended for proper end-to-end testing.
 
 ## Installation
 
-Ensure you have Python 3.7 or higher installed, and then install the Groundlight SDK and OpenCV library:
+Ensure you have Python 3.8 or higher installed, and then install the Groundlight SDK and OpenCV library:
 
 ```bash
 pip install groundlight opencv-python pillow pyaudio
@@ -19,7 +19,7 @@ pip install groundlight opencv-python pillow pyaudio
 
 ## Creating the Application
 
-1. First, log in to the [Groundlight application](https://app.groundlight.ai) and get an [API Token](api-tokens).
+1. First, log in to the [Groundlight dashboard](https://dashboard.groundlight.ai) and create an [API Token](https://dashboard.groundlight.ai/reef/my-account/api-tokens).
 
 2. Next, we'll write the Python script for the application. Import the required libraries:
 
@@ -106,4 +106,3 @@ Save the script as `dog_on_couch_detector.py` and run it:
 ```bash
 python dog_on_couch_detector.py
 ```
-

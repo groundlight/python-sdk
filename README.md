@@ -24,8 +24,6 @@ print(f"The answer is {image_query.result}")
 
 Your images are first analyzed by machine learning (ML) models which are automatically trained on your data. If those models have high enough confidence, that's your answer. But if the models are unsure, then the images are progressively escalated to more resource-intensive analysis methods up to real-time human review. So what you get is a computer vision system that starts working right away without even needing to first gather and label a dataset. At first it will operate with high latency, because people need to review the image queries. But over time, the ML systems will learn and improve so queries come back faster with higher confidence.
 
-_Note: The SDK is currently in "beta" phase. Interfaces are subject to change in future versions. We will follow [semver](https://semver.org/) semantics for breaking changes._
-
 ## Learn more
 
 Some more resources you might like:
@@ -33,4 +31,4 @@ Some more resources you might like:
 - [Code Documentation](https://code.groundlight.ai/python-sdk/docs/getting-started)
 - [Python SDK on PyPi](https://pypi.org/project/groundlight/) or [GitHub](https://github.com/groundlight/python-sdk)
 - [Company](https://www.groundlight.ai/)
-- [Login to Groundlight App](https://app.groundlight.ai/)
+- [Login to the Groundlight Dashboard](https://dashboard.groundlight.ai/)

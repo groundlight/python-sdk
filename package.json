@@ -1,8 +1,8 @@
 {
   "name": "groundlight-sdk-generator",
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.9.0",
-    "rehype-katex": "^7.0.0",
+    "@openapitools/openapi-generator-cli": "^2.13.9",
+    "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"
   }
 }

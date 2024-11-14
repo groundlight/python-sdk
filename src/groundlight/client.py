@@ -4,15 +4,19 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
+from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
-from groundlight_openapi_client.model.detector_creation_input import DetectorCreationInput
+from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from model import (
+    ROI,
+    BinaryClassificationResult,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
@@ -49,7 +53,7 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
-class Groundlight:
+class Groundlight:  # pylint: disable=too-many-instance-attributes
     """
     Client for accessing the Groundlight cloud service.
 
@@ -149,6 +153,7 @@ class Groundlight:
         self.detectors_api = DetectorsApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
+        self.labels_api = LabelsApi(self.api_client)
         self._verify_connectivity()
 
     def __repr__(self) -> str:
@@ -162,6 +167,11 @@ class Groundlight:
         try:
             # a simple query to confirm that the endpoint & API token are working
             self.whoami()
+            if self._user_is_privileged():
+                logger.warning(
+                    "WARNING: The current user has elevated permissions. Please verify such permissions are necessary"
+                    " for your current operation"
+                )
         except UnauthorizedException as e:
             msg = (
                 f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
@@ -184,7 +194,7 @@ class Groundlight:
         # Note: This might go away once we clean up the mapping logic server-side.
 
         # we have to check that result is not None because the server will return a result of None if want_async=True
-        if iq.result is not None:
+        if isinstance(iq.result, BinaryClassificationResult):
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
@@ -195,7 +205,15 @@ class Groundlight:
         :return: str
         """
         obj = self.user_api.who_am_i()
-        return obj["username"]
+        return obj["email"]
+
+    def _user_is_privileged(self) -> bool:
+        """
+        Return a boolean indicating whether the user is privileged.
+        Privleged users have elevated permissions, so care should be taken when using a privileged account.
+        """
+        obj = self.user_api.who_am_i()
+        return obj["is_superuser"]
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
@@ -240,12 +258,46 @@ class Groundlight:
         )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
-    def create_detector(
+    def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
         query: str,
         *,
+        group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        A helper function to prepare the input for creating a detector. Individual create_detector
+        methods may add to the input before calling the API.
+        """
+        detector_creation_input = DetectorCreationInputRequest(
+            name=name,
+            query=query,
+            pipeline_config=pipeline_config,
+        )
+        if group_name is not None:
+            detector_creation_input.group_name = group_name
+        if metadata is not None:
+            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        if confidence_threshold:
+            detector_creation_input.confidence_threshold = confidence_threshold
+        if isinstance(patience_time, int):
+            patience_time = float(patience_time)
+        if patience_time:
+            detector_creation_input.patience_time = patience_time
+        return detector_creation_input
+
+    def create_detector(  # noqa: PLR0913
+        self,
+        name: str,
+        query: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
@@ -256,7 +308,13 @@ class Groundlight:
 
         :param query: the detector query
 
+        :param group_name: the detector group that the new detector should belong to. If none,
+            defaults to default_group
+
         :param confidence_threshold: the confidence threshold
+
+        :param patience_time: the patience time, or how long Groundlight should work to generate a
+            confident answer. Defaults to 30 seconds.
 
         :param pipeline_config: the pipeline config
 
@@ -266,21 +324,25 @@ class Groundlight:
 
         :return: Detector
         """
-        detector_creation_input = DetectorCreationInput(name=name, query=query)
-        if confidence_threshold is not None:
-            detector_creation_input.confidence_threshold = confidence_threshold
-        if pipeline_config is not None:
-            detector_creation_input.pipeline_config = pipeline_config
-        if metadata is not None:
-            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
-    def get_or_create_detector(
+    def get_or_create_detector(  # noqa: PLR0913
         self,
         name: str,
         query: str,
         *,
+        group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
@@ -293,6 +355,8 @@ class Groundlight:
         :param name: the detector name
 
         :param query: the detector query
+
+        :param group_name: the detector group that the new detector should belong to
 
         :param confidence_threshold: the confidence threshold
 
@@ -311,6 +375,7 @@ class Groundlight:
             return self.create_detector(
                 name=name,
                 query=query,
+                group_name=group_name,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
@@ -319,18 +384,19 @@ class Groundlight:
         # TODO: We may soon allow users to update the retrieved detector's fields.
         if existing_detector.query != query:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
-                    f" The existing query is '{existing_detector.query}'."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the queries don't match."
+                f" The existing query is '{existing_detector.query}'.",
+            )
+        if group_name is not None and existing_detector.group_name != group_name:
+            raise ValueError(
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
+                f" match. The existing group name is '{existing_detector.group_name}'.",
             )
         if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
             raise ValueError(
-                (
-                    f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
-                    " thresholds don't match. The existing confidence threshold is"
-                    f" {existing_detector.confidence_threshold}."
-                ),
+                f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
+                " thresholds don't match. The existing confidence threshold is"
+                f" {existing_detector.confidence_threshold}.",
             )
         return existing_detector
 
@@ -375,6 +441,7 @@ class Groundlight:
         want_async: bool = False,
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        image_query_id: Optional[str] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight.
@@ -416,6 +483,9 @@ class Groundlight:
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
 
+        :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
+            for general external use. If not set, a random ID will be generated.
+
         :return: ImageQuery
         """
         if wait is None:
@@ -450,6 +520,9 @@ class Groundlight:
             # which means we need to put the metadata in the query string. To do that safely, we
             # url- and base64-encode the metadata.
             params["metadata"] = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
+
+        if image_query_id is not None:
+            params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
@@ -722,17 +795,26 @@ class Groundlight:
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    def add_label(self, image_query: Union[ImageQuery, str], label: Union[Label, str]):
+    def add_label(
+        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
+    ):
         """
-        Add a new label to an image query.  This answers the detector's question.
+        Add a new label to an image query.  This answers the detector's
+        question.
 
-        :param image_query: Either an ImageQuery object (returned from `submit_image_query`)
-                            or an image_query id as a string.
+        :param image_query: Either an ImageQuery object (returned from
+                            `ask_ml` or similar method) or an image_query id as a
+                            string.
 
-        :param label: The string "YES" or the string "NO" in answer to the query.
+        :param label: The string "YES" or the string "NO" in answer to the
+            query.
+        :param rois: An option list of regions of interest (ROIs) to associate
+            with the label. (This feature experimental)
 
         :return: None
         """
+        if isinstance(rois, str):
+            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
         else:
@@ -742,8 +824,9 @@ class Groundlight:
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
-
-        return self.api_client._add_label(image_query_id, api_label)  # pylint: disable=protected-access
+        rois_json = [roi.dict() for roi in rois] if rois else None
+        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
+        self.labels_api.create_label(request_params)
 
     def start_inspection(self) -> str:
         """

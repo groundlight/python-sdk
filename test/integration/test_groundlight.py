@@ -8,14 +8,21 @@ import time
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
-import groundlight_openapi_client
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
-from groundlight.internalapi import InternalApiError, NotFoundError, iq_is_answered
+from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from model import ClassificationResult, Detector, ImageQuery, PaginatedDetectorList, PaginatedImageQueryList
+from ksuid import KsuidMs
+from model import (
+    BinaryClassificationResult,
+    CountingResult,
+    Detector,
+    ImageQuery,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+)
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -23,7 +30,7 @@ IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
-    if not isinstance(result, ClassificationResult):
+    if not isinstance(result, BinaryClassificationResult) and not isinstance(result, CountingResult):
         return False
     if not is_valid_display_label(result.label):
         return False
@@ -130,7 +137,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
     assert isinstance(_detector, Detector)
     assert _detector.confidence_threshold == confidence_threshold
 
-    # If you retrieve an existing detector, we currently require the confidence and query to match
+    # If you retrieve an existing detector, we currently require the group_name, confidence, query to match
     # exactly. TODO: We may want to allow updating those fields through the SDK (and then we can
     # change this test).
     different_confidence = 0.7
@@ -151,11 +158,51 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
             pipeline_config=pipeline_config,
         )
 
+    different_group_name = "Different group"
+    with pytest.raises(ValueError):
+        gl.get_or_create_detector(
+            name=name,
+            query=query,
+            confidence_threshold=confidence_threshold,
+            pipeline_config=pipeline_config,
+            group_name=different_group_name,
+        )
+
     # If the confidence is not provided, we will use the existing detector's confidence.
     retrieved_detector = gl.get_or_create_detector(name=name, query=query)
     assert (
         retrieved_detector.confidence_threshold == confidence_threshold
     ), "We expected to retrieve the existing detector's confidence, but got a different value."
+
+
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
+def test_create_detector_with_everything(gl: Groundlight):
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "Is there a dog?"
+    group_name = "Test group"
+    confidence_threshold = 0.825
+    patience_time = 300  # seconds
+    pipeline_config = "never-review"
+    metadata = generate_random_dict(target_size_bytes=200)
+    detector = gl.create_detector(
+        name=name,
+        query=query,
+        group_name=group_name,
+        confidence_threshold=confidence_threshold,
+        patience_time=patience_time,
+        pipeline_config=pipeline_config,
+        metadata=metadata,
+    )
+    assert isinstance(detector, Detector)
+    assert detector.name == name
+    assert detector.query == query
+    assert detector.group_name == group_name
+    assert detector.confidence_threshold == confidence_threshold
+    # TODO: We need a backend update to get the serialized output
+    # assert detector.patience_time == patience_time
+    # GL runs multiple models synchronously, and the active pipeline may change.
+    # Currently, we don't check the pipeline config here.
+    assert detector.metadata == metadata
 
 
 def test_list_detectors(gl: Groundlight):
@@ -250,6 +297,15 @@ def test_submit_image_query_returns_yes(gl: Groundlight):
     assert image_query.result.label == Label.YES
 
 
+def test_submit_image_query_returns_text(gl: Groundlight):
+    # We use the "never-review" pipeline to guarantee a confident "yes" answer.
+    detector = gl.get_or_create_detector(
+        name="Always same text", query="Is there a dog?", pipeline_config="constant-text"
+    )
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10, human_review="NEVER")
+    assert isinstance(image_query.text, str)
+
+
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     assert str(_image_query)
@@ -262,6 +318,20 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
+
+
+def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
+    # submit_image_query
+    id = f"iq_{KsuidMs()}"
+    _image_query = gl.submit_image_query(
+        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER", image_query_id=id
+    )
+    assert str(_image_query)
+    assert isinstance(_image_query, ImageQuery)
+    assert is_valid_display_result(_image_query.result)
+    assert _image_query.id == id
+    assert _image_query.metadata is not None
+    assert _image_query.metadata.get("is_from_edge")
 
 
 def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: Detector):
@@ -369,7 +439,7 @@ def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: D
 @pytest.mark.run_only_for_edge_endpoint
 def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, detector: Detector, image: str):
     """On the edge-endpoint, we raise an exception if the user passes metadata."""
-    with pytest.raises(groundlight_openapi_client.exceptions.ApiException) as exc_info:
+    with pytest.raises(ApiException) as exc_info:
         gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata={"a": 1})
     assert is_user_error(exc_info.value.status)
 
@@ -387,7 +457,7 @@ def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
     jpeg_truncated = jpeg[:-500]  # Cut off the last 500 bytes
     # This is an extra difficult test because the header is valid.
     # So a casual check of the image will appear valid.
-    with pytest.raises(groundlight_openapi_client.exceptions.ApiException) as exc_info:
+    with pytest.raises(ApiException) as exc_info:
         _image_query = gl.submit_image_query(detector=detector.id, image=jpeg_truncated, human_review="NEVER")
     exc_value = exc_info.value
     assert is_user_error(exc_value.status)
@@ -596,92 +666,7 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
-@pytest.mark.skip(reason="This test can block development depending on the state of the service")
-@pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
-def test_detector_improvement(gl: Groundlight):
-    # test that we get confidence improvement after sending images in
-    # Pass two of each type of image in
-    import random
-    import time
-
-    from PIL import Image, ImageEnhance
-
-    random.seed(2741)
-
-    name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
-    query = "Is there a dog?"
-    detector = gl.create_detector(name=name, query=query)
-
-    def submit_noisy_image(image, label=None):
-        sharpness = ImageEnhance.Sharpness(image)
-        noisy_image = sharpness.enhance(random.uniform(0.75, 1.25))
-        color = ImageEnhance.Color(noisy_image)
-        noisy_image = color.enhance(random.uniform(0.75, 1))
-        contrast = ImageEnhance.Contrast(noisy_image)
-        noisy_image = contrast.enhance(random.uniform(0.75, 1))
-        brightness = ImageEnhance.Brightness(noisy_image)
-        noisy_image = brightness.enhance(random.uniform(0.75, 1))
-        img_query = gl.submit_image_query(detector=detector.id, image=noisy_image, wait=0, human_review="NEVER")
-        if label is not None:
-            gl.add_label(img_query, label)
-        return img_query
-
-    dog = Image.open("test/assets/dog.jpeg")
-    cat = Image.open("test/assets/cat.jpeg")
-
-    submit_noisy_image(dog, "YES")
-    submit_noisy_image(dog, "YES")
-    submit_noisy_image(cat, "NO")
-    submit_noisy_image(cat, "NO")
-
-    # wait to give enough time to train
-    wait_period = 30  # seconds
-    num_wait_periods = 4  # 2 minutes total
-    result_confidence = 0.6
-    new_dog_query = None
-    new_cat_query = None
-    for _ in range(num_wait_periods):
-        time.sleep(wait_period)
-        new_dog_query = submit_noisy_image(dog)
-        new_cat_query = submit_noisy_image(cat)
-        new_cat_result_confidence = new_cat_query.result.confidence
-        new_dog_result_confidence = new_dog_query.result.confidence
-
-        if (
-            new_cat_result_confidence and new_cat_result_confidence < result_confidence
-        ) or new_cat_query.result.label == "YES":
-            # If the new query is not confident enough, we'll try again
-            continue
-        elif (
-            new_dog_result_confidence and new_dog_result_confidence < result_confidence
-        ) or new_dog_query.result.label == "NO":
-            # If the new query is not confident enough, we'll try again
-            continue
-        else:
-            assert True
-            return
-
-    assert (
-        False
-    ), f"The detector {detector} quality has not improved after two minutes q.v. {new_dog_query}, {new_cat_query}"
-
-
-@pytest.mark.skip(
-    reason="We don't yet have an SLA level to test ask_confident against, and the test is flakey as a result"
-)
-def test_ask_method_quality(gl: Groundlight, detector: Detector):
-    # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
-    fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
-    assert iq_is_answered(fast_always_yes_iq)
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
-    query = "Is there a dog?"
-    detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
-    fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
-    assert iq_is_answered(fast_iq)
-    confident_iq = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=180)
-    assert confident_iq.result.confidence is None or (confident_iq.result.confidence > IQ_IMPROVEMENT_THRESHOLD)
-
-
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_start_inspection(gl: Groundlight):
     inspection_id = gl.start_inspection()
 
@@ -689,6 +674,7 @@ def test_start_inspection(gl: Groundlight):
     assert "inspect_" in inspection_id
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_update_inspection_metadata_success(gl: Groundlight):
     """Starts an inspection and adds a couple pieces of metadata to it.
     This should succeed. If there are any errors, an exception will be raised.
@@ -704,6 +690,7 @@ def test_update_inspection_metadata_success(gl: Groundlight):
     gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_update_inspection_metadata_failure(gl: Groundlight):
     """Attempts to add metadata to an inspection after it is closed.
     Should raise an exception.
@@ -718,6 +705,7 @@ def test_update_inspection_metadata_failure(gl: Groundlight):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
     """Attempt to update metadata for an inspection that doesn't exist.
     Should raise an InternalApiError.
@@ -731,6 +719,7 @@ def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
         gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query with the inspection ID that should pass, stops
     the inspection, checks the result.
@@ -742,6 +731,7 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     assert gl.stop_inspection(inspection_id) == "PASS"
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     """Starts an inspection, submits a query that should fail, stops
     the inspection, checks the result.
@@ -754,6 +744,7 @@ def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
     assert gl.stop_inspection(inspection_id) == "FAIL"
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
 def test_stop_inspection_with_invalid_id(gl: Groundlight):
     inspection_id = "some_invalid_inspection_id"
 

@@ -53,8 +53,8 @@ const config = {
           // the second "docs" is the subdir within the repo
           // there will be a third one for real URLs.  :)
         },
-        googleTagManager: {
-          containerId: "GTM-5MV4R9FV",
+        gtag: {
+          trackingID: 'G-WG1Q5X6F6L',
         },
         blog: {
           showReadingTime: true,
@@ -108,7 +108,7 @@ const config = {
         logo: {
           alt: "Groundlight Logo",
           src: "img/favicon-32x32.png",
-          href: "https://code.groundlight.ai/",
+          href: "/python-sdk/",
         },
         items: [
           {
@@ -176,7 +176,7 @@ const config = {
               },
               {
                 label: "Sign In",
-                href: "https://app.groundlight.ai/",
+                href: "https://dashboard.groundlight.ai/",
               },
             ],
           },
@@ -209,6 +209,43 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
+  plugins: [
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          {
+            to: "https://www.groundlight.ai/blog/reducing-data-labeling-costs-with-uncertainty-sampling", // new marketing site route
+            from: "/blog/active-learning", // old blog route
+          },
+          {
+            to: "https://www.groundlight.ai/blog/groundlight-ai-achieves-soc-2-type-2-compliance", // new marketing site route
+            from: "/blog/groundlight-ai-achieves-soc-2-type-2-compliance", // old blog route
+          },
+          {
+            to: "https://www.groundlight.ai/blog/navigating-ambiguity-with-groundlight-ai-detectors", // new marketing site route
+            from: "/blog/dealing-with-unclear-images", // old blog route
+          },
+          {
+            to: "https://www.groundlight.ai/blog/building-your-first-computer-vision-model-just-got-easier", // new marketing site route
+            from: "/blog/getting-started", // old blog route
+          },
+          {
+            to: "https://www.groundlight.ai/blog/introducing-groundlights-framegrab-library",
+            from: "/blog/introducing-framegrab"
+          },
+          {
+            to: "https://www.groundlight.ai/blog/best-practices-for-best-results-with-groundlight",
+            from: "/blog/best-practices"
+          },
+          {
+            to: "https://www.groundlight.ai/blog/linux-os-images-for-computer-vision-on-raspberry-pi",
+            from: "/blog/raspberry-pi-computer-vision"
+          },
+        ],
+      },
+    ],
+  ],
 };
 
 module.exports = config;
