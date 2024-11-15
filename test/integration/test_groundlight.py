@@ -320,6 +320,7 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing an image query ID.")
 def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     # submit_image_query
     id = f"iq_{KsuidMs()}"
