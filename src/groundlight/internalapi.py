@@ -162,7 +162,7 @@ class GroundlightApiClient(ApiClient):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user_agent = f"Groundlight-Python-SDK/{platform.platform()}/{platform.python_version()}/{get_version()}"
+        self.user_agent = f"Groundlight-Python-SDK/{get_version()}/{platform.platform()}/{platform.python_version()}"
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
