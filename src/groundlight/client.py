@@ -154,10 +154,12 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
         self.labels_api = LabelsApi(self.api_client)
+        self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
 
     def __repr__(self) -> str:
-        return f"Logged in as {self.whoami()} to Groundlight at {self.endpoint}"
+        # Don't call the API here because it that can get us stuck in a loop rendering exception strings
+        return f"Logged in as {self.logged_in_user} to Groundlight at {self.endpoint}"
 
     def _verify_connectivity(self) -> None:
         """
@@ -166,7 +168,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         try:
             # a simple query to confirm that the endpoint & API token are working
-            self.whoami()
+            self.logged_in_user = self.whoami()
             if self._user_is_privileged():
                 logger.warning(
                     "WARNING: The current user has elevated permissions. Please verify such permissions are necessary"
@@ -204,7 +206,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :return: str
         """
-        obj = self.user_api.who_am_i()
+        obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return obj["email"]
 
     def _user_is_privileged(self) -> bool:
