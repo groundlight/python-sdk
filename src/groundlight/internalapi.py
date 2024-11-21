@@ -355,27 +355,3 @@ class GroundlightApiClient(ApiClient):
             )
 
         return response.json()["result"]
-
-    @RequestsRetryDecorator()
-    def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
-        """Updates the confidence threshold of a detector."""
-
-        # The API does not validate the confidence threshold,
-        # so we will validate it here and raise an exception if necessary.
-        if confidence_threshold < 0 or confidence_threshold > 1:
-            raise ValueError(f"Confidence threshold must be between 0 and 1. Got {confidence_threshold}.")
-
-        url = f"{self.configuration.host}/predictors/{detector_id}"
-
-        headers = self._headers()
-
-        payload = {"confidence_threshold": confidence_threshold}
-
-        response = requests.request("PATCH", url, headers=headers, json=payload, verify=self.configuration.verify_ssl)
-
-        if not is_ok(response.status_code):
-            raise InternalApiError(
-                status=response.status_code,
-                reason=f"Error updating detector: {detector_id}.",
-                http_resp=response,
-            )
