@@ -17,6 +17,7 @@ from groundlight_openapi_client.model.label_value_request import LabelValueReque
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from model import (
     ROI,
+    BinaryClassificationResult,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
@@ -167,6 +168,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         try:
             # a simple query to confirm that the endpoint & API token are working
             self.whoami()
+            if self._user_is_privileged():
+                logger.warning(
+                    "WARNING: The current user has elevated permissions. Please verify such permissions are necessary"
+                    " for your current operation"
+                )
         except UnauthorizedException as e:
             msg = (
                 f"Invalid API token '{self.api_token_prefix}...' connecting to endpoint "
@@ -189,7 +195,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         # Note: This might go away once we clean up the mapping logic server-side.
 
         # we have to check that result is not None because the server will return a result of None if want_async=True
-        if iq.result is not None:
+        if isinstance(iq.result, BinaryClassificationResult):
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
@@ -200,7 +206,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: str
         """
         obj = self.user_api.who_am_i()
-        return obj["username"]
+        return obj["email"]
+
+    def _user_is_privileged(self) -> bool:
+        """
+        Return a boolean indicating whether the user is privileged.
+        Privleged users have elevated permissions, so care should be taken when using a privileged account.
+        """
+        obj = self.user_api.who_am_i()
+        return obj["is_superuser"]
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
@@ -245,6 +259,38 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
+    def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        A helper function to prepare the input for creating a detector. Individual create_detector
+        methods may add to the input before calling the API.
+        """
+        detector_creation_input = DetectorCreationInputRequest(
+            name=name,
+            query=query,
+            pipeline_config=pipeline_config,
+        )
+        if group_name is not None:
+            detector_creation_input.group_name = group_name
+        if metadata is not None:
+            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
+        if confidence_threshold:
+            detector_creation_input.confidence_threshold = confidence_threshold
+        if isinstance(patience_time, int):
+            patience_time = float(patience_time)
+        if patience_time:
+            detector_creation_input.patience_time = patience_time
+        return detector_creation_input
+
     def create_detector(  # noqa: PLR0913
         self,
         name: str,
@@ -280,21 +326,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: Detector
         """
 
-        detector_creation_input = DetectorCreationInputRequest(
+        detector_creation_input = self._prep_create_detector(
             name=name,
             query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
             pipeline_config=pipeline_config,
+            metadata=metadata,
         )
-        if group_name is not None:
-            detector_creation_input.group_name = group_name
-        if metadata is not None:
-            detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
-        if confidence_threshold:
-            detector_creation_input.confidence_threshold = confidence_threshold
-        if isinstance(patience_time, int):
-            patience_time = float(patience_time)
-        if patience_time:
-            detector_creation_input.patience_time = patience_time
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
@@ -402,6 +442,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         want_async: bool = False,
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        image_query_id: Optional[str] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight.
@@ -443,6 +484,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
 
+        :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
+            for general external use. If not set, a random ID will be generated.
+
         :return: ImageQuery
         """
         if wait is None:
@@ -477,6 +521,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             # which means we need to put the metadata in the query string. To do that safely, we
             # url- and base64-encode the metadata.
             params["metadata"] = url_encode_dict(metadata, name="metadata", size_limit_bytes=1024)
+
+        if image_query_id is not None:
+            params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
         image_query = ImageQuery.parse_obj(raw_image_query.to_dict())

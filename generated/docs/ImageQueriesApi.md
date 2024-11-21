@@ -248,7 +248,7 @@ Name | Type | Description  | Notes
 
 
 
- Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` for the image data. For example:  ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```  
+ Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ``` 
 
 ### Example
 
@@ -283,6 +283,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     api_instance = image_queries_api.ImageQueriesApi(api_client)
     detector_id = "detector_id_example" # str | Choose a detector by its ID.
     human_review = "human_review_example" # str | If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident. (optional)
+    image_query_id = "image_query_id_example" # str | The ID to assign to the created image query. (optional)
     inspection_id = "inspection_id_example" # str | Associate the image query with an inspection. (optional)
     metadata = "metadata_example" # str | A dictionary of custom key/value metadata to associate with the image query (limited to 1KB). (optional)
     patience_time = 3.14 # float | How long to wait for a confident response. (optional)
@@ -299,7 +300,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.submit_image_query(detector_id, human_review=human_review, inspection_id=inspection_id, metadata=metadata, patience_time=patience_time, want_async=want_async, body=body)
+        api_response = api_instance.submit_image_query(detector_id, human_review=human_review, image_query_id=image_query_id, inspection_id=inspection_id, metadata=metadata, patience_time=patience_time, want_async=want_async, body=body)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ImageQueriesApi->submit_image_query: %s\n" % e)
@@ -312,6 +313,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. |
  **human_review** | **str**| If set to &#x60;DEFAULT&#x60;, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to &#x60;ALWAYS&#x60;, always send the image query for human review even if the ML model is confident. If set to &#x60;NEVER&#x60;, never send the image query for human review even if the ML model is not confident. | [optional]
+ **image_query_id** | **str**| The ID to assign to the created image query. | [optional]
  **inspection_id** | **str**| Associate the image query with an inspection. | [optional]
  **metadata** | **str**| A dictionary of custom key/value metadata to associate with the image query (limited to 1KB). | [optional]
  **patience_time** | **float**| How long to wait for a confident response. | [optional]
@@ -328,7 +330,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: image/jpeg
+ - **Content-Type**: image/jpeg, image/jpg, image/png, image/gif, image/webp, image/bmp, image/x-icon
  - **Accept**: application/json
 
 

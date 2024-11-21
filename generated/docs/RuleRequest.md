@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **str** |  | 
 **condition** | [**ConditionRequest**](ConditionRequest.md) |  | 
-**action** | [**ActionRequest**](ActionRequest.md) |  | 
+**action** | **bool, date, datetime, dict, float, int, list, str, none_type** |  | 
 **enabled** | **bool** |  | [optional]  if omitted the server will use the default value of True
 **snooze_time_enabled** | **bool** |  | [optional]  if omitted the server will use the default value of False
 **snooze_time_value** | **int** |  | [optional]  if omitted the server will use the default value of 0

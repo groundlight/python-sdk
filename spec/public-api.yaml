@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Groundlight API
-  version: 0.15.3
+  version: 0.18.2
   description: Groundlight makes it simple to understand images. You can easily create
     computer vision detectors just by describing what you want to know using natural
     language.
@@ -336,18 +336,16 @@ paths:
           description: ''
     post:
       operationId: Submit image query
-      description: |2+
+      description: |2
 
         Submit an image query against a detector.
 
-        You must use `"Content-Type: image/jpeg"` for the image data. For example:
-
+        You must use `"Content-Type: image/jpeg"` or similar (image/png, image/webp, etc) for the image data. For example:
         ```Bash
         $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \
             --header "Content-Type: image/jpeg" \
             --data-binary @path/to/filename.jpeg
         ```
-
       parameters:
       - in: query
         name: detector_id
@@ -363,6 +361,11 @@ paths:
           If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
           If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
           If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
+      - in: query
+        name: image_query_id
+        schema:
+          type: string
+        description: The ID to assign to the created image query.
       - in: query
         name: inspection_id
         schema:
@@ -392,6 +395,30 @@ paths:
       requestBody:
         content:
           image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/jpg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/gif:
+            schema:
+              type: string
+              format: binary
+          image/webp:
+            schema:
+              type: string
+              format: binary
+          image/bmp:
+            schema:
+              type: string
+              format: binary
+          image/x-icon:
             schema:
               type: string
               format: binary
@@ -551,33 +578,6 @@ paths:
           description: No response body
 components:
   schemas:
-    Action:
-      type: object
-      properties:
-        channel:
-          $ref: '#/components/schemas/ChannelEnum'
-        recipient:
-          type: string
-        include_image:
-          type: boolean
-      required:
-      - channel
-      - include_image
-      - recipient
-    ActionRequest:
-      type: object
-      properties:
-        channel:
-          $ref: '#/components/schemas/ChannelEnum'
-        recipient:
-          type: string
-          minLength: 1
-        include_image:
-          type: boolean
-      required:
-      - channel
-      - include_image
-      - recipient
     AllNotes:
       type: object
       description: |-
@@ -658,14 +658,6 @@ components:
     BlankEnum:
       enum:
       - ''
-    ChannelEnum:
-      enum:
-      - EMAIL
-      - TEXT
-      type: string
-      description: |-
-        * `EMAIL` - EMAIL
-        * `TEXT` - TEXT
     Condition:
       type: object
       properties:
@@ -829,8 +821,10 @@ components:
             * `COUNT` - COUNT
             * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
+          oneOf:
+          - $ref: '#/components/schemas/CountModeConfiguration'
+          - $ref: '#/components/schemas/MultiClassModeConfiguration'
           nullable: true
-          description: Configuration for each detector mode.
       required:
       - name
       - query
@@ -906,13 +900,11 @@ components:
           readOnly: true
           description: What type of result are we returning?
         result:
-          additionalProperties: {}
-          nullable: true
-          readOnly: true
-          description: The result of the image query.
           oneOf:
           - $ref: '#/components/schemas/BinaryClassificationResult'
           - $ref: '#/components/schemas/CountingResult'
+          - $ref: '#/components/schemas/MultiClassificationResult'
+          nullable: true
         patience_time:
           type: number
           format: double
@@ -1237,7 +1229,9 @@ components:
         condition:
           $ref: '#/components/schemas/Condition'
         action:
-          $ref: '#/components/schemas/Action'
+          oneOf:
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
       - action
       - condition
@@ -1272,7 +1266,9 @@ components:
         condition:
           $ref: '#/components/schemas/ConditionRequest'
         action:
-          $ref: '#/components/schemas/ActionRequest'
+          oneOf:
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
       - action
       - condition
@@ -1335,13 +1331,23 @@ components:
         confidence:
           type: number
           format: float
-          minimum: 0
-          maximum: 1
-          nullable: true
+          minimum: 0.0
+          maximum: 1.0
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         label:
           type: string
+          enum:
+          - 'YES'
+          - 'NO'
+          - UNCLEAR
       required:
-      - confidence
       - label
     CountingResult:
       type: object
@@ -1349,14 +1355,87 @@ components:
         confidence:
           type: number
           format: float
-          minimum: 0
-          maximum: 1
-          nullable: true
-        value:
+          minimum: 0.0
+          maximum: 1.0
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+        count:
           type: integer
+          minimum: null
+          maximum: null
+        greater_than_max:
+          type: boolean
       required:
-      - confidence
-      - value
+      - count
+    MultiClassificationResult:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+        label:
+          type: string
+      required:
+      - label
+    CountModeConfiguration:
+      type: object
+      properties:
+        max_count:
+          type: integer
+          minimum: 1
+          maximum: 50
+      required: []
+    MultiClassModeConfiguration:
+      type: object
+      properties:
+        class_names:
+          type: array
+          items:
+            type: string
+        num_classes:
+          type: integer
+          minimum: null
+          maximum: null
+      required:
+      - class_names
+    ChannelEnum:
+      type: string
+      enum:
+      - TEXT
+      - EMAIL
+    Action:
+      type: object
+      properties:
+        channel:
+          $ref: '#/components/schemas/ChannelEnum'
+        recipient:
+          type: string
+        include_image:
+          type: boolean
+      required:
+      - channel
+      - recipient
+      - include_image
+    ActionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
   securitySchemes:
     ApiToken:
       name: x-api-token

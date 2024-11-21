@@ -176,7 +176,7 @@ const config = {
               },
               {
                 label: "Sign In",
-                href: "https://app.groundlight.ai/",
+                href: "https://dashboard.groundlight.ai/",
               },
             ],
           },
@@ -229,6 +229,18 @@ const config = {
           {
             to: "https://www.groundlight.ai/blog/building-your-first-computer-vision-model-just-got-easier", // new marketing site route
             from: "/blog/getting-started", // old blog route
+          },
+          {
+            to: "https://www.groundlight.ai/blog/introducing-groundlights-framegrab-library",
+            from: "/blog/introducing-framegrab"
+          },
+          {
+            to: "https://www.groundlight.ai/blog/best-practices-for-best-results-with-groundlight",
+            from: "/blog/best-practices"
+          },
+          {
+            to: "https://www.groundlight.ai/blog/linux-os-images-for-computer-vision-on-raspberry-pi",
+            from: "/blog/raspberry-pi-computer-vision"
           },
         ],
       },

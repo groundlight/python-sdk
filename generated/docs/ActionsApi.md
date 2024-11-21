@@ -64,11 +64,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
                 "key": None,
             },
         ),
-        action=ActionRequest(
-            channel=ChannelEnum("EMAIL"),
-            recipient="recipient_example",
-            include_image=True,
-        ),
+        action=None,
     ) # RuleRequest | 
 
     # example passing only required values which don't have defaults set

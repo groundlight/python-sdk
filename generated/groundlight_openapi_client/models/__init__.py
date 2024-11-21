@@ -10,7 +10,7 @@
 # sys.setrecursionlimit(n)
 
 from groundlight_openapi_client.model.action import Action
-from groundlight_openapi_client.model.action_request import ActionRequest
+from groundlight_openapi_client.model.action_list import ActionList
 from groundlight_openapi_client.model.all_notes import AllNotes
 from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
 from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
@@ -20,6 +20,7 @@ from groundlight_openapi_client.model.blank_enum import BlankEnum
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition import Condition
 from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.counting_result import CountingResult
 from groundlight_openapi_client.model.detector import Detector
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
@@ -33,6 +34,8 @@ from groundlight_openapi_client.model.inline_response200 import InlineResponse20
 from groundlight_openapi_client.model.label_value import LabelValue
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.mode_enum import ModeEnum
+from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
+from groundlight_openapi_client.model.multi_classification_result import MultiClassificationResult
 from groundlight_openapi_client.model.note import Note
 from groundlight_openapi_client.model.note_request import NoteRequest
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList

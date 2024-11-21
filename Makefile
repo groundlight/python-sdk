@@ -1,3 +1,5 @@
+.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-integ test-local
+
 install:  ## Install the package from source
 	poetry install
 
@@ -22,7 +24,7 @@ generate: install-generator  ## Generate the SDK from our public openapi spec
 		-o ./generated \
 		--additional-properties=packageName=groundlight_openapi_client
 # strict-nullable makes nullable fields Optional in the generated Pydantic classes: https://github.com/koxudaxi/datamodel-code-generator/issues/327
-	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py --strict-nullable --use-schema-description
+	poetry run datamodel-codegen  --input spec/public-api.yaml --output generated/model.py --strict-nullable --use-schema-description --output-model-type pydantic_v2.BaseModel --use-subclass-enum
 	poetry run black .
 
 PYTEST=poetry run pytest -v
@@ -35,17 +37,25 @@ TEST_ARGS=
 CLOUD_FILTERS = -m "not run_only_for_edge_endpoint"
 EDGE_FILTERS = -m "not skip_for_edge_endpoint"
 
+# Record information about the slowest 25 tests (but don't show anything slower than 0.1 seconds)
+PROFILING_ARGS = \
+	--durations 25 \
+	--durations-min 0.1
+
 test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
 test-4edge: install  ## Run tests against the prod API via the edge-endpoint (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} ${TEST_ARGS} ${EDGE_FILTERS} test
+	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${EDGE_FILTERS} test
 
 test-local: install  ## Run tests against a localhost API (needs GROUNDLIGHT_API_TOKEN and a local API server)
-	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	GROUNDLIGHT_ENDPOINT="http://localhost:8000/" $(MAKE) test
 
 test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGHT_API_TOKEN)
-	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" $(MAKE) test
+
+test-dev: install ## Run tests against a dev API server (needs GROUNDLIGHT_API_TOKEN and properly configured dns-hostmap)
+	GROUNDLIGHT_ENDPOINT="https://api.dev.groundlight.ai/" $(MAKE) test
 
 test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
@@ -79,11 +89,6 @@ BUILDDIR      = build
 sphinx-help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-
-# The .PHONY directive tells make that `apidocs` and `html` are labels for
-# commands. `apidocs: html` allows us to generate docs by running
-# `make apidocs` instead.
-.PHONY: docs-comprehensive apidocs html
 
 # Start an interactive server to test docs locally.
 # Before running this, make sure that you have installed the node modules
