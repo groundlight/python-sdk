@@ -344,8 +344,9 @@ class ExperimentalApi(Groundlight):
         """
         Updates the escalation type of the given detector
 
-        This is particularly useful for turning off human labeling for billing or security purposes. By setting a detector to "NO_HUMAN_LABELING",
-        no image queries sent to this detector will be sent to human labelers.
+        This is particularly useful for turning off human labeling for billing or security purposes.
+        By setting a detector to "NO_HUMAN_LABELING", no image queries sent to this detector will be
+        sent to human labelers.
 
         :param detector: the detector to update
         :param escalation_type: the new escalation type, can be "STANDARD" or "NO_HUMAN_LABELING"
