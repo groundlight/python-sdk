@@ -158,7 +158,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         self._verify_connectivity()
 
     def __repr__(self) -> str:
-        # Don't call the API here because it that can get us stuck in a loop rendering exception strings
+        # Don't call the API here because that can get us stuck in a loop rendering exception strings
         return f"Logged in as {self.logged_in_user} to Groundlight at {self.endpoint}"
 
     def _verify_connectivity(self) -> None:
