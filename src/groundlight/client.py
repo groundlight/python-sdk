@@ -14,6 +14,7 @@ from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from model import (
     ROI,
     BinaryClassificationResult,
@@ -864,15 +865,19 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         return self.api_client.stop_inspection(inspection_id)
 
-    def update_detector_confidence_threshold(self, detector_id: str, confidence_threshold: float) -> None:
+    def update_detector_confidence_threshold(self, detector: Union[str, Detector], confidence_threshold: float) -> None:
         """
-        Updates the confidence threshold of a detector given a detector_id.
+        Updates the confidence threshold for the given detector
 
-        :param detector_id: The id of the detector to update.
+        :param detector: the detector to update
+        :param confidence_threshold: the new confidence threshold
 
-        :param confidence_threshold: The new confidence threshold for the detector.
-
-        :return None
-        :rtype None
+        :return: None
         """
-        self.api_client.update_detector_confidence_threshold(detector_id, confidence_threshold)
+        if isinstance(detector, Detector):
+            detector = detector.id
+        if confidence_threshold < 0 or confidence_threshold > 1:
+            raise ValueError("confidence must be between 0 and 1")
+        self.detectors_api.update_detector(
+            detector, patched_detector_request=PatchedDetectorRequest(confidence_threshold=confidence_threshold)
+        )
