@@ -7,7 +7,6 @@ import clsx from "clsx";
 // import React from "react";
 // VSCode might try to delete it, but that will break the site.
 import React, { useState } from "react";
-import styles from "./index.module.css";
 import '../css/style.css'
 
 function HomepageHeader() {
@@ -25,9 +24,9 @@ function HomepageHeader() {
             <a href="" className="logo"><img src="img/dev_logo_dark.svg" alt="logo"/></a>
             <ul className={`menu ${isActive ? "active" : ""}`}>
               <li className="contain-logo"><a href="" className="logo"><img src="img/logo.png" alt=""/></a></li>
-              <li className="menu-item"><a className="menu-link" href="https://code.groundlight.ai/python-sdk/docs/getting-started">Docs</a></li>
-              <li className="menu-item"><a className="menu-link" href="https://code.groundlight.ai/python-sdk/docs/building-applications">Applications</a></li>
-              <li className="menu-item"><a className="menu-link" href="https://code.groundlight.ai/python-sdk/api-reference-docs/">API Reference</a></li>
+              <li className="menu-item"><a className="menu-link" href="/python-sdk/docs/getting-started">Docs</a></li>
+              <li className="menu-item"><a className="menu-link" href="/python-sdk/docs/building-applications">Applications</a></li>
+              <li className="menu-item"><a className="menu-link" href="/python-sdk/api-reference-docs/">API Reference</a></li>
               <li className="menu-item"><a className="menu-link" href="https://github.com/groundlight/python-sdk">GitHub</a></li>
               <li className="menu-item"><a href="https://dashboard.groundlight.ai/" className="cmn-button outline">Login</a></li>
             </ul>
@@ -84,7 +83,7 @@ print(iq);
                   you can focus on building.</p>
                 <div className="button-wrapper">
                   <a href="https://login.groundlight.ai/oauth2/register?tenantId=aad3d06b-ef57-454e-b952-91e9d3d347b1&client_id=ac8aac5d-c278-4c14-a549-e039f5ac54bb&nonce=&pendingIdPLinkId=&redirect_uri=https%3A%2F%2Fdashboard.groundlight.ai%2Fdevice-api%2Fauthz%2Fcallback&response_mode=&response_type=code&scope=openid%20profile%20email%20offline_access&state=&timezone=America%2FBogota&metaData.device.name=Windows%20Chrome&metaData.device.type=BROWSER&code_challenge=&code_challenge_method=&user_code=" className="cmn-button">Start building</a>
-                  <a href="https://code.groundlight.ai/python-sdk/docs/getting-started" className="cmn-button outline">See the docs</a>
+                  <a href="/python-sdk/docs/getting-started" className="cmn-button outline">See the docs</a>
                 </div>
               </div>
             </div>
@@ -96,7 +95,7 @@ print(iq);
             <div className="feature-wrapper">
               <div className="feature-item">
                 <div className="icon">
-                  <img src="img/1.png" alt="img"/>
+                  <img src="img/brain1.png" alt="img"/>
                 </div>
                 <div className="content">
                   <h3 className="title">AutoML</h3>
@@ -106,7 +105,7 @@ print(iq);
               </div>
               <div className="feature-item">
                 <div className="icon">
-                  <img src="img/2.png" alt="img"/>
+                  <img src="img/brain2.png" alt="img"/>
                 </div>
                 <div className="content">
                   <h3 className="title">24/7 Human Annotation</h3>
@@ -115,7 +114,7 @@ print(iq);
               </div>
               <div className="feature-item">
                 <div className="icon">
-                  <img src="img/3.png" alt="img"/>
+                  <img src="img/brain3.png" alt="img"/>
                 </div>
                 <div className="content">
                   <h3 className="title">Fast Edge Inference</h3>
@@ -135,14 +134,14 @@ print(iq);
                 <p>Groundlight is compatible across major development platforms and available through a REST API or Python
                   SDK. Enjoy easy deployments using Arduino, Raspberry Pi, or any number of hardware kits.</p>
                 <div className="logos-wrapper">
-                  <img src="img/nvidia.png" alt="icon"/>
-                  <img src="img/python.png" alt="icon"/>
-                  <img src="img/arduino.png" alt="icon"/>
-                  <img src="img/ras.png" alt="icon"/>
-                  <img src="img/github.png" alt="icon"/>
-                  <img src="img/demo.png" alt="icon"/>
-                  <img src="img/aws.png" alt="icon"/>
-                  <img src="img/u.png" alt="icon"/>
+                  <img src="img/logo-nvidia.png" alt="icon"/>
+                  <img src="img/logo-python.png" alt="icon"/>
+                  <img src="img/logo-arduino.png" alt="icon"/>
+                  <img src="img/logo-ras.png" alt="icon"/>
+                  <img src="img/logo-github.png" alt="icon"/>
+                  <img src="img/logo-boston-dynamics.png" alt="icon"/>
+                  <img src="img/logo-aws.png" alt="icon"/>
+                  <img src="img/universal-robotics-logo.png" alt="icon"/>
                 </div>
               </div>
               <span className="pipe"></span>
@@ -151,12 +150,12 @@ print(iq);
                   <div className="integration-compatibility-item">
                     <h3 className="title">Python SDK</h3>
                     <p>With only a few lines of code, you can have custom computer vision inside your application.</p>
-                    <a href="https://code.groundlight.ai/python-sdk/docs/getting-started" className="cmn-button outline">Learn More</a>
+                    <a href="/python-sdk/docs/getting-started" className="cmn-button outline">Learn More</a>
                   </div>
                   <div className="integration-compatibility-item">
                     <h3 className="title">API</h3>
                     <p>API to let you access your models in the cloud - no need to run your own models or hardware.</p>
-                    <a href="https://code.groundlight.ai/python-sdk/docs/getting-started " className="cmn-button outline">Learn More</a>
+                    <a href="/python-sdk/docs/getting-started " className="cmn-button outline">Learn More</a>
                   </div>
                   <div className="integration-compatibility-item">
                     <h3 className="title">Fast Edge Inference</h3>
@@ -246,9 +245,9 @@ print(iq);
               <div className="footer-widget">
                 <h3 className="title">Documentation</h3>
                 <ul className="footer-links">
-                  <li><a href="https://code.groundlight.ai/python-sdk/docs/getting-started">Getting Started</a></li>
-                  <li><a href="https://code.groundlight.ai/python-sdk/docs/building-applications">Building Applications</a></li>
-                  <li><a href="https://code.groundlight.ai/python-sdk/docs/installation">Installation</a></li>
+                  <li><a href="/python-sdk/docs/getting-started">Getting Started</a></li>
+                  <li><a href="/python-sdk/docs/building-applications">Building Applications</a></li>
+                  <li><a href="/python-sdk/docs/installation">Installation</a></li>
                 </ul>
               </div>
               <div className="footer-widget">

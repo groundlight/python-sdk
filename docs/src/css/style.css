@@ -451,11 +451,6 @@ h3 {
   }
 }
 
-.codeblock-img {
-  max-width: 100%;
-  width: 100%;
-}
-
 .support-section {
   padding-bottom: 90px;
 }
@@ -636,4 +631,11 @@ h3 {
 }
 .code-container .code-content {
   background-color: transparent;
+}
+
+nav.navbar.navbar--fixed-top {
+  display: none !important;
+}
+.footer.footer--dark {
+  display: none !important;
 }
