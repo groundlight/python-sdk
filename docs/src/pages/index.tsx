@@ -99,7 +99,7 @@ print(iq);
                   computer vision application. Groundlight’s fully managed computer vision solution takes care of the ML so
                   you can focus on building.</p>
                 <div className="button-wrapper">
-                  <a href="https://login.groundlight.ai/oauth2/register?tenantId=aad3d06b-ef57-454e-b952-91e9d3d347b1&client_id=ac8aac5d-c278-4c14-a549-e039f5ac54bb&nonce=&pendingIdPLinkId=&redirect_uri=https%3A%2F%2Fdashboard.groundlight.ai%2Fdevice-api%2Fauthz%2Fcallback&response_mode=&response_type=code&scope=openid%20profile%20email%20offline_access&state=&timezone=America%2FBogota&metaData.device.name=Windows%20Chrome&metaData.device.type=BROWSER&code_challenge=&code_challenge_method=&user_code=" className="cmn-button">Start building</a>
+                  <a href="https://dashboard.groundlight.ai" className="cmn-button">Start building</a>
                   <a href="/python-sdk/docs/getting-started" className="cmn-button outline">See the docs</a>
                 </div>
               </div>
