@@ -2,11 +2,12 @@ import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import HomepageFeatures from "@site/src/components/HomepageFeatures";
 import Layout from "@theme/Layout";
+import { useLocation } from "react-router-dom"; 
 import clsx from "clsx";
 // There should be a line here that says
 // import React from "react";
 // VSCode might try to delete it, but that will break the site.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import '../css/style.css'
 
 function HomepageHeader() {
@@ -18,30 +19,46 @@ function HomepageHeader() {
 
 
   return (
-      <header className="header">
-        <div className="container">
-          <div className="header-wrapper">
-            <a href="" className="logo"><img src="img/dev_logo_dark.svg" alt="logo"/></a>
-            <ul className={`menu ${isActive ? "active" : ""}`}>
-              <li className="contain-logo"><a href="" className="logo"><img src="img/logo.png" alt=""/></a></li>
-              <li className="menu-item"><a className="menu-link" href="/python-sdk/docs/getting-started">Docs</a></li>
-              <li className="menu-item"><a className="menu-link" href="/python-sdk/docs/building-applications">Applications</a></li>
-              <li className="menu-item"><a className="menu-link" href="/python-sdk/api-reference-docs/">API Reference</a></li>
-              <li className="menu-item"><a className="menu-link" href="https://github.com/groundlight/python-sdk">GitHub</a></li>
-              <li className="menu-item"><a href="https://dashboard.groundlight.ai/" className="cmn-button outline">Login</a></li>
-            </ul>
-            <button onClick={toggleMenu} className={`menu-toggle ${isActive ? "active" : ""}`}>
-              <img className="toggle" src="img/burger-menu-right-svgrepo-com.svg" alt="menu toggle"/>
-              <img className="closee" src="img/close-svgrepo-com.svg" alt="menu close"/>
-            </button>
-          </div>
+    <header className="header">
+      <div className="container">
+        <div className="header-wrapper">
+          <a href="" className="logo"><img src="img/dev_logo_dark.svg" alt="logo"/></a>
+          <ul className={`menu ${isActive ? "active" : ""}`}>
+            <li className="contain-logo"><a href="" className="logo"><img src="img/logo.png" alt=""/></a></li>
+            <li className="menu-item"><a className="menu-link" href="/python-sdk/docs/getting-started">Docs</a></li>
+            <li className="menu-item"><a className="menu-link" href="/python-sdk/docs/building-applications">Applications</a></li>
+            <li className="menu-item"><a className="menu-link" href="/python-sdk/api-reference-docs/">API Reference</a></li>
+            <li className="menu-item"><a className="menu-link" href="https://github.com/groundlight/python-sdk">GitHub</a></li>
+            <li className="menu-item"><a href="https://dashboard.groundlight.ai/" className="cmn-button outline">Login</a></li>
+          </ul>
+          <button onClick={toggleMenu} className={`menu-toggle ${isActive ? "active" : ""}`}>
+            <img className="toggle" src="img/burger-menu-right-svgrepo-com.svg" alt="menu toggle"/>
+            <img className="closee" src="img/close-svgrepo-com.svg" alt="menu close"/>
+          </button>
         </div>
-      </header>
+      </div>
+    </header>
   );
 }
 
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
+
+  const location = useLocation();
+  const isBasePath = location.pathname === "/python-sdk/";
+  useEffect(() => {
+    // Add or remove the class on the <body> tag
+    if (isBasePath) {
+      document.querySelector('#__docusaurus').classList.add("home-page");
+    } else {
+      document.querySelector('#__docusaurus').classList.remove("home-page");
+    }
+
+    // Cleanup on component unmount
+    return () => {
+      document.querySelector('#__docusaurus').classList.remove("home-page");
+    };
+  }, [isBasePath]);
 
 const code = `Install necessary dependencies:;
 bash;
@@ -72,7 +89,7 @@ print(iq);
       description="Computer Vision powered by Natural Language"
     >
       <HomepageHeader />
-      <main>
+      <main className={clsx({ "home-page": isBasePath })}>
         <section className="banner-section">
           <div className="container">
             <div className="banner-wrapper">

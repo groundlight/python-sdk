@@ -632,10 +632,9 @@ h3 {
 .code-container .code-content {
   background-color: transparent;
 }
-
-nav.navbar.navbar--fixed-top {
+.home-page nav.navbar.navbar--fixed-top {
   display: none !important;
 }
-.footer.footer--dark {
+.home-page .footer.footer--dark {
   display: none !important;
 }
