@@ -2,9 +2,9 @@
 
 When building applications with the Groundlight SDK, you may encounter server errors during API calls. This page covers how to handle such errors and build robust code that can gracefully handle exceptions.
 
-## Handling ApiException
+## Handling `ApiException`
 
-If there is an HTTP error during an API call, the SDK will raise an `ApiException`. You can access different metadata from that exception:
+In the event of an HTTP error during an API call, the Groundlight SDK raises an `ApiException`. This exception provides access to various metadata:
 
 ```python notest
 import traceback
@@ -50,15 +50,15 @@ Consider creating custom exception classes for your application-specific errors.
 
 ### Log Exceptions
 
-Log exceptions with appropriate log levels (e.g., error, warning, etc.) and include relevant context information. This will help you debug issues more effectively and monitor the health of your application.
+Log exceptions using appropriate log levels (e.g., error, warning) and include relevant context. This practice aids in effective debugging and monitoring application health.
 
 ### Implement Retry Logic
 
-When handling exceptions, implement retry logic with exponential backoff for transient errors, such as network issues or rate-limiting. This can help your application recover from temporary issues without manual intervention.
+Incorporate retry logic with exponential backoff for transient errors, such as network issues or rate limits. This strategy allows your application to recover from temporary problems automatically.
 
 ### Handle Exceptions Gracefully
 
-In addition to logging exceptions, handle them gracefully to ensure that your application remains functional despite errors. This might include displaying an error message to users or falling back to a default behavior.
+Ensure your application remains functional despite errors by handling exceptions gracefully. This might involve displaying user-friendly error messages or reverting to default behaviors.
 
 ### Test Your Error Handling
 

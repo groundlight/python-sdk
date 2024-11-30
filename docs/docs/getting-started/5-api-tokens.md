@@ -1,8 +1,6 @@
-# API Tokens
+# Using API Tokens
 
 API tokens authenticate your code to access Groundlight services. They look like `api_2GdXMflhJ...` and should be treated as sensitive credentials.
-
-## Using API Tokens
 
 The SDK can access your token in two ways:
 
@@ -35,13 +33,12 @@ gl = Groundlight(api_token=token)
 Access token management at [dashboard.groundlight.ai/reef/my-account/api-tokens](https://dashboard.groundlight.ai/reef/my-account/api-tokens)
 
 ### Create a Token
-1. Navigate to the API tokens page
-2. Click "Create New API Token"
-3. Provide a descriptive name
-4. Save the generated token securely - it won't be shown again
+1. Navigate to the [API tokens page](https://dashboard.groundlight.ai/reef/my-account/api-tokens)
+2. Enter a token name and click "Create API Token"
+3. Save the generated token securely - it won't be shown again!
 
 ### Revoke a Token
-1. Find the token in your dashboard
+1. Find the token in your dashboard by name
 2. Click "Delete"
 3. Confirm revocation
 

@@ -11,7 +11,7 @@ Here is a whimsical example of how you could use Groundlight in your home to kee
 
 ## Installation
 
-Ensure you have Python 3.9 or higher installed, and then install the Groundlight SDK and OpenCV library:
+Ensure you have Python 3.9 or higher installed, and then install the Groundlight SDK, OpenCV library, and other required libraries:
 
 ```bash
 pip install groundlight opencv-python pillow pyaudio
@@ -24,12 +24,12 @@ pip install groundlight opencv-python pillow pyaudio
 2. Next, we'll write the Python script for the application. Import the required libraries:
 
 ```python notest
-import time
 import cv2
-from groundlight import Groundlight
-from PIL import Image
 import pyaudio
+import time
 import wave
+from PIL import Image
+from groundlight import Groundlight, ApiException
 ```
 
 3. Define a function to capture an image from the camera using OpenCV:
@@ -90,7 +90,7 @@ while True:
             if answer == "YES":
                 print("Dog detected on the couch!")
                 play_sound("get_off_couch.mp3")
-        except Exception as e:
+        except ApiException as e:
             print(f"Error submitting image query: {e}")
     else:
         print("Failed to capture image")

@@ -37,14 +37,16 @@ pip install groundlight opencv-python pillow
 2. Next, we'll write the Python script for the application. Import the required libraries:
 
 ```python notest
-import time
-import cv2
 import smtplib
-from groundlight import Groundlight
-from PIL import Image
+import time
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+import cv2
+from PIL import Image
+
+from groundlight import Groundlight
 ```
 
 3. Define a function to capture an image from the camera using OpenCV:
@@ -102,7 +104,7 @@ gl = Groundlight()
 detector = gl.get_or_create_detector(
                 name="counter-in-use",
                 query="Is there a customer at the service counter?",
-                # We can get away with relatively low confidence since we're aggregating
+                # We can get away with relatively low confidence since we're aggregating across images
                 confidence_threshold=0.8)
 
 DELAY = 60
@@ -161,7 +163,7 @@ while True:
 
 This application captures an image using the `capture_image` function, then submits it to the Groundlight API for analysis. If a customer is detected at the counter, it logs the event. Every hour, it prints a summary of the counter's usage percentage, and at the end of the day, it emails the daily log using the `send_email` function.
 
-Save the script as `service_counter_monitor.py` and run it:
+Save the entire script as `service_counter_monitor.py` and run it:
 
 ```bash
 python service_counter_monitor.py

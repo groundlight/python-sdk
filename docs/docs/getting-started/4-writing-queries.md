@@ -2,9 +2,7 @@
 
 ## Introduction
 
-With Groundlight's `detectors`, you can ask binary questions about images &mdash; i.e., the answer
-should be unambiguously "YES" or "NO". If you ask an ambiguous question, you may receive an "UNSURE"
-response.
+Groundlight allows you to ask a variety of questions about images. The most common type of question is a binary question that can be answered with a simple "YES" or "NO". For example, "Is there a car in the leftmost parking space?" or "Is the door open?". Ambiguity in the question can lead to "UNSURE" responses.
 
 ```python notest
 detector = gl.get_or_create_detector(
@@ -17,30 +15,25 @@ image_query = gl.submit_image_query(detector=detector, image=some_image)
 print(f"The answer is {image_query.result.label}")
 ```
 
-So, what makes a good question? Let's look at a few good ✅, moderate 🟡, and bad ❌ examples!
+So, what makes a good question for a binary-mode detector? Let's look at a few good ✅, moderate 🟡, and bad ❌ examples!
 
 ## Examples
 
 ### ✅ Are there any cardboard boxes on the conveyor belt?
 
-This question is binary and can be answered unambiguously with a simple "YES" or "NO" based on the
-image content.
+This question is binary and can be answered unambiguously with a simple "YES" or "NO" based on the image content.
 
 ### 🟡 Is the trash can full?
 
-This question is okay, but it could be rephrased to be more specific. For example, "Is the black
-trash can more than 80% full?"
+This question is okay, but it could be rephrased to be more specific. For example, "Is the black trash can more than 80% full?"
 
 :::tip
-With Groundlight, your questions may be routed to a machine learning model or a human reviewer. One
-way to improve your questions is to think, "If I saw this question for the first time, would I know
-precisely what the person was trying to convey?"
+With Groundlight, your questions may be routed to a machine learning model or a human reviewer. One way to improve your questions is to think, "If I saw this question for the first time, would I know precisely what the person was trying to convey?"
 :::
 
 ### ✅ Is the garage door completely closed?
 
-The query is very specific about what "YES" means. According to this query, any slight / partial
-opening would be considered "NO".
+The query is very specific about what "YES" means. According to this query, any slight / partial opening would be considered "NO".
 
 ### 🟡 Is the weather nice out?
 
@@ -49,10 +42,8 @@ is nice weather. Instead, you might ask "Can you see any clouds in the sky?"
 
 ### ❌ Where is the thing?
 
-This is not a binary question &mdash; "YES" and "NO" don't make sense in this context. Also, it's
-not clear what the "thing" refers to.
+This is not a binary question &mdash; "YES" and "NO" don't make sense in this context. Also, it's not clear what the "thing" refers to.
 
 ### 🟡 Is the factory floor clean and organized?
 
-While this question is binary, "cleanliness" can be somewhat subjective. An improved version could
-be: "Are there any visible spills or clutter on the factory floor?"
+While this question is binary, "cleanliness" can be somewhat subjective. An improved version could be: "Are there any visible spills or clutter on the factory floor?"

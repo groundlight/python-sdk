@@ -1,5 +1,10 @@
 # Initial setup
 
+In this guide, you will set up your development environment to interact with the Groundlight API using the Groundlight SDK. You will learn how to:
+1. Install the Groundlight SDK
+2. Set your API token
+3. Call the Groundlight API
+
 ## Prerequisites
 You will need:
 1. A [Groundlight account](https://dashboard.groundlight.ai/)
@@ -24,6 +29,8 @@ Install the Groundlight SDK using pip:
 pip install groundlight
 ```
 
+For more detailed installation instructions, see the [installation guide](/docs/installation/).
+
 ## Set your API token
 Every request to the Groundlight API requires an API token. The Groundlight SDK is designed to pull the API token from an environment variable `GROUNDLIGHT_API_TOKEN`.
 
@@ -45,10 +52,14 @@ from groundlight import Groundlight, Detector, ImageQuery
 
 gl = Groundlight()
 
-det: Detector = gl.get_or_create_detector(name="parking-space", query="Is there a car in the leftmost parking space?")
+det: Detector = gl.get_or_create_detector(
+    name="parking-space",
+    query="Is there a car in the leftmost parking space?"
+)
 
 img = "./docs/static/img/doorway.jpg"  # Image can be a file or a Python object
 image_query = gl.submit_image_query(detector=det, image=img)
+
 print(f"The answer is {image_query.result.label}")
 print(image_query)
 ```
@@ -72,3 +83,5 @@ ImageQuery(
     metadata=None
 )
 ```
+
+For more information on the Groundlight SDK, see the [API Reference](/python-sdk/api-reference-docs/), or check out our guide to [building applications with the Groundlight SDK](/docs/building-applications/).

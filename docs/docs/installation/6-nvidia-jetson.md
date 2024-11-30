@@ -39,4 +39,4 @@ For a complete end-to-end example of running on an NVIDIA Jetson, see [this GitH
 
 ## Ready to go!
 
-You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications
+You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications](/docs/building-applications) documentation pages.

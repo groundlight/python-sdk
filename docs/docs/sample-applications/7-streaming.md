@@ -1,6 +1,6 @@
 # A Quick Example: Live Stream Alert
 
-A quick example to get used to setting up detectors and asking good questions: set up a monitor on a live stream.
+A quick example to help you get used to setting up detectors and asking good questions: set up a monitor on a live stream.
 
 ## Requirements
 
@@ -24,8 +24,7 @@ pip install groundlight pillow ffmpeg yt-dlp typer
 ## Creating the Application
 
 1. Save this command as a shell script `get_latest_frame.sh`:
-
-```
+```bash title="get_latest_frame.sh"
 #!/bin/bash
 
 ffmpeg -i "$(yt-dlp -g $1 | head -n 1)" -vframes 1 last.jpg -y
@@ -35,7 +34,7 @@ This will download the most recent frame from a YouTube live stream and save it 
 
 2. Ensure that the script has execute permissions. You can add execute permissions using the following command:
 
-```
+```bash
 chmod +x get_latest_frame.sh
 ```
 
@@ -43,7 +42,7 @@ chmod +x get_latest_frame.sh
 
 4. Next, we'll write the Python script for the application.
 
-```python notest
+```python notest title="streaming_alert.py"
 import os
 import subprocess
 import typer

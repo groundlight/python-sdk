@@ -1,10 +1,19 @@
-# Setting Confidence Levels
+# Setting Confidence Thresholds
 
-Groundlight gives you a simple way to control the trade-off of latency against accuracy. The longer you can wait for an answer to your image query, the better accuracy you can get. In particular, if the ML models are unsure of the best response, they will escalate the image query to more intensive analysis with more complex models and real-time human monitors as needed. Your code can easily wait for this delayed response. Either way, these new results are automatically trained into your models so your next queries will get better results faster.
+## Introduction to Confidence Thresholds
+When creating a Detector or submitting an ImageQuery, you can set the necessary confidence level for your use case. We call this the `confidence_threshold`. Tuning this value allows you to balance the trade-offs between accuracy and latency / cost.
 
-The desired confidence level is set as the escalation threshold on your detector. This determines the minimum confidence score for the ML system to provide before the image query is escalated.
+Confidence represents the likelihood that a prediction is accurate. For instance, when a model makes a prediction with a confidence of 0.95, we expect that 95% of the time that prediction will be correct. In other words, a prediction with a confidence of 0.95 is expected to be correct 19 out of 20 times. Confidence thresholds should be determined based on your application's acceptable error rate and the potential impact of those errors.
 
-For example, say you want to set your desired confidence level to 0.95, but that you're willing to wait up to 60 seconds to get a confident response.
+Higher confidence thresholds result in predictions that are more accurate but may take longer to process (because they are escalated to more complex/expensive models or human review). Lower confidence thresholds result in faster responses but may be less accurate. Over time, and as more human-provided labels are collected, the ML models will improve, and our fastest models will be able to provide higher confidence predictions more quickly.
+
+## Configuring Timeouts
+
+In some cases, challenging queries that require human review can take a number of seconds, so we provide both client-side and server-side timeouts to ensure that your application can continue to function even if the query takes longer than expected.
+
+Set a client-side timeout by configuring the `wait` parameter in the `submit_image_query` method. This simply stops the client from waiting for a response after a certain amount of time.
+
+Set a server-side timeout by configuring the `patience_time` parameter in the `submit_image_query` method. This tells Groundlight to deprioritize the query after a certain amount of time, which can be useful if the result of a query becomes less relevant over time. For example, if you are monitoring a live video feed, you may want to deprioritize queries that are more than a few seconds old so that our human reviewers can focus on the most recent data.
 
 <!-- We skip tests here because the tests may be slow -->
 
@@ -17,32 +26,45 @@ gl = Groundlight()
 image_url = "https://www.photos-public-domain.com/wp-content/uploads/2010/11/over_flowing_garbage_can.jpg"
 image = Image.open(requests.get(image_url, stream=True).raw)
 
+
+d = gl.get_or_create_detector(
+    name="trash",
+    query="Is the trash can full?",
 # highlight-start
-d = gl.get_or_create_detector(name="trash", query="Is the trash can full?", confidence_threshold=0.95)
+    confidence_threshold=0.95,  # Set the confidence threshold to 0.95
+# highlight-end
+)
 
 # This will wait until either 60 seconds have passed or the confidence reaches 0.95
-image_query = gl.submit_image_query(detector=d, image=image, wait=60)
+image_query = gl.submit_image_query(
+    detector=d,
+    image=image,
+# highlight-start
+    wait=10,  # tell the client to stop waiting after 10 seconds
+    patience_time=20,  # tell Groundlight to deprioritize the query after 20 seconds
 # highlight-end
+)
 
-print(f"The answer is {image_query.result}")
+print(f"The answer is {image_query.result.label}")
+print(f"The confidence is {image_query.result.confidence}")
 ```
 
 :::tip
 
-Tuning confidence lets you balance accuracy against latency.
-Higher confidence will get higher accuracy, but will generally require higher latency.
-Higher confidence also requires more labels, which increases labor costs.
+Tuning confidence_threshold lets you balance accuracy against latency.
+
+Higher confidence levels lead to greater accuracy but typically result in increased latency. Additionally, achieving higher confidence necessitates more labels, which can raise labor costs.
+
+Over time, our models will improve and become more confident, allowing you to achieve higher confidence levels more quickly while also reducing costs.
 
 :::
 
-Or if you want to execute `submit_image_query` as fast as possible, set `wait=0`. You will either get the ML results or a placeholder response if the ML model hasn't finished executing. Image queries which are below the desired confidence level will still be escalated for further analysis, and the results are incorporated as training data to improve your ML model, but your code will not wait for that to happen.
+## When Quick Answers are Needed
+
+To execute an image query as fast as possible and get the first available answer regardless of confidence, use the `ask_ml` method (equivalent to setting `wait=0`). This method returns the first answer Groundlight can provide without waiting for the query to reach a specific confidence level.
 
 ```python notest continuation
-image_query = gl.submit_image_query(detector=d, image=image, wait=0)
+image_query = gl.ask_ml(detector=d, image=image)
 ```
 
-If the returned result was generated from an ML model, you can see the confidence score returned for the image query:
-
-```python notest continuation
-print(f"The confidence is {image_query.result.confidence}")
-```
+When using this method, low-confidence Image Queries will still be escalated to human review - this allows our models to continue to improve over time.
