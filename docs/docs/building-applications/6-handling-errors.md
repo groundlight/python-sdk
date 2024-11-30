@@ -1,7 +1,3 @@
----
-sidebar_position: 4
----
-
 # Handling Server Errors
 
 When building applications with the Groundlight SDK, you may encounter server errors during API calls. This page covers how to handle such errors and build robust code that can gracefully handle exceptions.
@@ -17,8 +13,9 @@ from groundlight import ApiException, Groundlight
 gl = Groundlight()
 try:
     d = gl.get_or_create_detector(
-        "Road Checker", 
-        "Is the site access road blocked?")
+        name="Road Checker",
+        query="Is the site access road blocked?",
+    )
     iq = gl.submit_image_query(d, get_image(), wait=60)
 except ApiException as e:
     # Print a traceback for debugging

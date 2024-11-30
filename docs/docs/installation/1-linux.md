@@ -1,17 +1,17 @@
 # Installing on Linux
 
-This guide will help you install the Groundlight SDK on Linux. The Groundlight SDK requires Python 3.8 or higher.
+This guide will help you install the Groundlight SDK on Linux. The Groundlight SDK requires Python 3.9 or higher.
 
 ## Prerequisites
 
 Ensure that you have the following installed on your system:
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 
 ## Basic Installation
 
-Assuming you have Python 3.8 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
+Assuming you have Python 3.9 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
 
 ### Installing Groundlight SDK
 
@@ -61,7 +61,7 @@ To check your installed Python version, open a terminal and run:
 python --version
 ```
 
-If you see a version number starting with "3.8" or higher (e.g., "3.8.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
+If you see a version number starting with "3.9" or higher (e.g., "3.9.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
 
 ### Upgrading Python on Linux
 
@@ -92,20 +92,20 @@ After upgrading, verify the Python version by running `python --version` or `pyt
 
 ### Special note about Ubuntu 18.04
 
-Ubuntu 18.04 still uses python 3.6 by default, which is end-of-life. We generally recommend using python 3.10. If you know how to install py3.10, please go ahead. But the easiest version of python 3 to use with Ubuntu 18.04 is python 3.8, which can be installed as follows without adding any extra repositories:
+Ubuntu 18.04 still uses python 3.6 by default, which is end-of-life. We generally recommend using python 3.10. If you know how to install py3.10, please go ahead. But the easiest version of python 3 to use with Ubuntu 18.04 is python 3.9, which can be installed as follows without adding any extra repositories:
 
 ```shell
 # Prepare Ubuntu to install things
 sudo apt-get update
 # Install the basics
-sudo apt-get install -y python3.8 python3.8-distutils curl
-# Configure `python3` to run python3.8 by default
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
-# Download and install pip3.8
+sudo apt-get install -y python3.9 python3.9-distutils curl
+# Configure `python3` to run python3.9 by default
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 10
+# Download and install pip3.9
 curl https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py
-sudo python3.8 /tmp/get-pip.py
-# Configure `pip3` to run pip3.8
-sudo update-alternatives --install /usr/bin/pip3 pip3 $(which pip3.8) 10
+sudo python3.9 /tmp/get-pip.py
+# Configure `pip3` to run pip3.9
+sudo update-alternatives --install /usr/bin/pip3 pip3 $(which pip3.9) 10
 # Now we can install Groundlight!
 pip3 install groundlight
 ```

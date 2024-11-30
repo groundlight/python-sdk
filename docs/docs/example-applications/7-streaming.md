@@ -4,12 +4,12 @@ A quick example to get used to setting up detectors and asking good questions: s
 
 ## Requirements
 
-- [Groundlight SDK](/docs/installation/) with Python 3.8 or higher
+- [Groundlight SDK](/docs/installation/) with Python 3.9 or higher
 - The video ID of a YouTube live stream you'd like to monitor
 
 ## Installation
 
-Ensure you have Python 3.8 or higher installed, and then install the Groundlight SDK and OpenCV library:
+Ensure you have Python 3.9 or higher installed, and then install the Groundlight SDK and OpenCV library:
 
 ```bash
 # MacOS

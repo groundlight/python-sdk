@@ -1,17 +1,17 @@
-# Installing on Raspberry Pi
+# Usage on Raspberry Pi
 
-This guide will help you install the Groundlight SDK on Raspberry Pi. The Groundlight SDK requires Python 3.8 or higher.
+This guide will help you install the Groundlight SDK on Raspberry Pi. The Groundlight SDK requires Python 3.9 or higher.
 
 ## Prerequisites
 
 Ensure that you have the following installed on your Raspberry Pi:
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 
 ## Basic Installation
 
-Assuming you have Python 3.8 or higher installed on your Raspberry Pi, you can proceed with the following steps to install or upgrade the Groundlight SDK:
+Assuming you have Python 3.9 or higher installed on your Raspberry Pi, you can proceed with the following steps to install or upgrade the Groundlight SDK:
 
 ### Installing Groundlight SDK
 
@@ -40,5 +40,3 @@ For a complete end-to-end example of running on a Raspberry Pi, see [this GitHub
 ## Ready to go!
 
 You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications](/docs/building-applications) documentation pages.
-
-

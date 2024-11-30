@@ -2,7 +2,7 @@
 
 ## Smaller is better!
 
-The Groundlight SDK is optimized to run on small edge devices. As such, you can use the Groundlight SDK without
+The Groundlight Python SDK is optimized to run on small edge devices. As such, you can use the Groundlight SDK without
 installing large libraries like `numpy` or `OpenCV`.
 
 But if you're already installing them, we'll use them. Our SDK detects if these libraries are installed
