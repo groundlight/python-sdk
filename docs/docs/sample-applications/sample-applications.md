@@ -42,4 +42,4 @@ Monitor YouTube live streams with automated alerts using Groundlight's vision AP
 - Alert system integration
 - Simple command-line interface
 
-[Create a stream monitor →](/docs/sample-applications/streaming)
+[Create a stream monitor →](/docs/sample-applications/streaming-ffmpeg)
