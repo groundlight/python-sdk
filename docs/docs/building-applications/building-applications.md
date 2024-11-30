@@ -10,6 +10,6 @@ On the following pages, we'll guide you through the process of building applicat
 - **[Handling server errors](6-handling-errors.md)**: Understand how to handle and troubleshoot HTTP errors that may occur while using Groundlight.
 - **[Asynchronous queries](7-async-queries.md)**: Groundlight makes it easy to submit asynchronous queries. Learn how to submit queries asynchronously and retrieve the results later.
 - **[Using Groundlight on the edge](8-edge.md)**: Discover how to deploy Groundlight in edge computing environments for improved performance and reduced latency.
-- **[Industrial applications](../sample-applications/9-industrial.md)**: Learn how to apply modern natural-language-based computer vision to your industrial and manufacturing applications.
+- **[Industrial applications](../sample-applications/4-industrial.md)**: Learn how to apply modern natural-language-based computer vision to your industrial and manufacturing applications.
 
 By exploring these resources and sample applications, you'll be well on your way to building powerful visual applications using Groundlight's computer vision and natural language capabilities.
