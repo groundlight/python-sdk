@@ -29,7 +29,7 @@ Install the Groundlight SDK using pip:
 pip install groundlight
 ```
 
-For more detailed installation instructions, see the [installation guide](/docs/installation/).
+For more detailed installation instructions, see the [installation guide](../installation/).
 
 ## Set your API token
 Every request to the Groundlight API requires an API token. The Groundlight SDK is designed to pull the API token from an environment variable `GROUNDLIGHT_API_TOKEN`.
@@ -84,4 +84,4 @@ ImageQuery(
 )
 ```
 
-For more information on the Groundlight SDK, see the [API Reference](/python-sdk/api-reference-docs/), or check out our guide to [building applications with the Groundlight SDK](/docs/building-applications/).
+For more information on the Groundlight SDK, see the [API Reference](/python-sdk/api-reference-docs/), or check out our [guide to building applications with the Groundlight SDK](../guide/).

@@ -11,7 +11,7 @@ It supports a variety of input sources, including:
 - Image directories
 - Image URLs
 
-The Stream Processor can be combined with [Groundlight Alerts](../building-applications/9-alerts.md) to create a simple video analytics system. For example, you could use the Stream Processor to process a video stream from a security camera and send an alert when a person is detected.
+The Stream Processor can be combined with [Groundlight Alerts](../guide/9-alerts.md) to create a simple video analytics system. For example, you could use the Stream Processor to process a video stream from a security camera and send an alert when a person is detected.
 
 ## Prerequisites:
 You will need:
@@ -78,4 +78,4 @@ The Groundlight Stream Processor is lightweight and can be run on a Raspberry Pi
 ## Combining with Groundlight Alerts
 The Stream Processor submits frames to Groundlight, but it does not do anything with the results.
 
-In order to build a useful alerting system, you can combine the Stream Processor with [Groundlight Alerts](../building-applications/9-alerts.md).
+In order to build a useful alerting system, you can combine the Stream Processor with [Groundlight Alerts](../guide/9-alerts.md).

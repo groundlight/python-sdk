@@ -103,6 +103,11 @@ const config = {
     ({
       // image is expected to be a "social card".  Logo for now.
       image: "img/gl-icon400.png",
+      colorMode: {
+        defaultMode: 'dark',
+        disableSwitch: false,
+        respectPrefersColorScheme: false,
+      },
       navbar: {
         title: "Groundlight",
         logo: {
@@ -118,7 +123,12 @@ const config = {
             label: "Docs",
           },
           {
-            to: "/docs/building-applications",
+            to: "/docs/guide",
+            label: "Guide",
+            position: "left",
+          },
+          {
+            to: "/docs/sample-applications",
             label: "Applications",
             position: "left",
           },
@@ -150,8 +160,8 @@ const config = {
                 to: "/docs/getting-started",
               },
               {
-                label: "Building Applications",
-                to: "/docs/building-applications",
+                label: "Guide",
+                to: "/docs/guide",
               },
               {
                 label: "Installation",
@@ -192,11 +202,11 @@ const config = {
                 href: "https://pypi.org/project/groundlight/",
               },
               {
-                label: "Video streaming",
+                label: "Video Streaming",
                 href: "https://github.com/groundlight/stream",
               },
               {
-                label: "Arduino",
+                label: "Arduino / ESP32",
                 href: "https://github.com/groundlight/esp32cam",
               },
             ],

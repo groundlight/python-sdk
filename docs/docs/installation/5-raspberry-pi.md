@@ -39,4 +39,4 @@ For a complete end-to-end example of running on a Raspberry Pi, see [this GitHub
 
 ## Ready to go!
 
-You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications](/docs/building-applications) documentation pages.
+You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](../getting-started/5-api-tokens.md) documentation and the [Building Applications Guide](../guide/).

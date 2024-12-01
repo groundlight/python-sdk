@@ -25,4 +25,4 @@ Explore different ways to utilize Groundlight:
 - [ESP32 Camera Integration](../other-ways-to-use/2-iot.md)
 - [Linux with Monitoring and Notification Server](../other-ways-to-use/3-monitoring-notification-server.md)
 
-Once you've completed the installation for your platform, you can begin [developing visual applications](/docs/building-applications/) using the Groundlight SDK.
+Once you've completed the installation for your platform, you can begin [developing visual applications](/docs/guide/) using the Groundlight SDK.
