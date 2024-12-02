@@ -19,7 +19,7 @@ function HomepageHeader() {
 
 
   return (
-    <header className="header">
+    <header className="mun-header">
       <div className="container">
         <div className="header-wrapper">
           <a href="" className="logo"><img src="img/dev_logo_dark.svg" alt="logo"/></a>
@@ -90,7 +90,7 @@ print(iq);
     >
       <HomepageHeader />
       <main className={clsx({ "home-page": isBasePath })}>
-        <section className="banner-section">
+        <section className="mun-banner-section">
           <div className="container">
             <div className="banner-wrapper">
               <h1 className="title">Build custom computer vision apps - faster & more reliably</h1>
@@ -107,7 +107,7 @@ print(iq);
           </div>
         </section>
 
-        <section className="feature-section">
+        <section className="mun-feature-section">
           <div className="container">
             <div className="feature-wrapper">
               <div className="feature-item">
@@ -142,11 +142,11 @@ print(iq);
           </div>
         </section>
 
-        <section className="integration-compatibility">
+        <section className="mun-integration-compatibility">
           <div className="container">
             <h2 className="section-title">Groundlight <span style={{color: '#FF00D4'}}>integrations</span> and <span
                 style={{color: '#991EFF'}}>compatibility</span></h2>
-            <div className="integration-compatibility-wrapper">
+            <div className="mun-integration-compatibility-wrapper">
               <div className="left-content">
                 <p>Groundlight is compatible across major development platforms and available through a REST API or Python
                   SDK. Enjoy easy deployments using Arduino, Raspberry Pi, or any number of hardware kits.</p>
@@ -163,24 +163,24 @@ print(iq);
               </div>
               <span className="pipe"></span>
               <div className="right-content">
-                <div className="integration-compatibility-grid">
-                  <div className="integration-compatibility-item">
+                <div className="mun-integration-compatibility-grid">
+                  <div className="mun-integration-compatibility-item">
                     <h3 className="title">Python SDK</h3>
                     <p>With only a few lines of code, you can have custom computer vision inside your application.</p>
                     <a href="/python-sdk/docs/getting-started" className="cmn-button outline">Learn More</a>
                   </div>
-                  <div className="integration-compatibility-item">
+                  <div className="mun-integration-compatibility-item">
                     <h3 className="title">API</h3>
                     <p>API to let you access your models in the cloud - no need to run your own models or hardware.</p>
                     <a href="/python-sdk/docs/getting-started " className="cmn-button outline">Learn More</a>
                   </div>
-                  <div className="integration-compatibility-item">
+                  <div className="mun-integration-compatibility-item">
                     <h3 className="title">Fast Edge Inference</h3>
                     <p>We offer specialized hardware for local inference. Reduce latency, cost, network bandwidth, and energy.
                     </p>
                     <a href="https://www.groundlight.ai/products/groundlight-hub " className="cmn-button outline">Learn More</a>
                   </div>
-                  <div className="integration-compatibility-item">
+                  <div className="mun-integration-compatibility-item">
                     <h3 className="title">ROS</h3>
                     <p>Seamlessly integrate AI-driven perception into ROS2 projects, enabling natural language queries and
                       real-time decision-making for smarter, more adaptable robotic systems.</p>
@@ -196,11 +196,11 @@ print(iq);
           <div className="container">
             <h2 className="section-title">Build a <span style={{color: "#991EFF"}}>working computer vision application</span> in just
               a few lines of code:</h2>
-              <div class="code-header">
+              <div class="mun-code-header">
               <div class="title">Code Block</div>
               <div class="code-lang">PYTHON</div>
             </div>
-            <div className="code-container">
+            <div className="mun-code-container">
       {/* Line numbers container */}
       <div className="line-numbers">
         {codeLines.map((_, index) => (
@@ -256,10 +256,10 @@ print(iq);
           </div>
         </section>
 
-        <footer className="footer">
+        <footer className="mun-footer">
           <div className="container">
-            <div className="footer-wrapper">
-              <div className="footer-widget">
+            <div className="mun-footer-wrapper">
+              <div className="mun-footer-widget">
                 <h3 className="title">Documentation</h3>
                 <ul className="footer-links">
                   <li><a href="/python-sdk/docs/getting-started">Getting Started</a></li>
@@ -267,7 +267,7 @@ print(iq);
                   <li><a href="/python-sdk/docs/installation">Installation</a></li>
                 </ul>
               </div>
-              <div className="footer-widget">
+              <div className="mun-footer-widget">
                 <h3 className="title">Company</h3>
                 <ul className="footer-links">
                   <li><a href="https://www.groundlight.ai/">About</a></li>
@@ -276,7 +276,7 @@ print(iq);
                   <li><a href="https://dashboard.groundlight.ai/">Sign in</a></li>
                 </ul>
               </div>
-              <div className="footer-widget">
+              <div className="mun-footer-widget">
                 <h3 className="title">Code</h3>
                 <ul className="footer-links">
                   <li><a href="https://github.com/groundlight/">GitHub</a></li>
