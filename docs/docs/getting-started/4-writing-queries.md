@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Groundlight allows you to ask a variety of questions about images. The most common type of question is a binary question that can be answered with a simple "YES" or "NO". For example, "Is there a car in the leftmost parking space?" or "Is the door open?". Ambiguity in the question can lead to "UNSURE" responses.
+Groundlight allows you to ask a variety of questions about images. The most common type of question is a binary question that can be answered with a simple "YES" or "NO". For example, "Is there a car in the leftmost parking space?" or "Is the door open?". Ambiguity in the question can lead to "UNCLEAR" responses.
 
 ```python notest
 detector = gl.get_or_create_detector(
@@ -11,7 +11,7 @@ detector = gl.get_or_create_detector(
 )
 image_query = gl.submit_image_query(detector=detector, image=some_image)
 
-# The SDK can return "YES" or "NO" (or "UNSURE")
+# The SDK can return "YES" or "NO" (or "UNCLEAR")
 print(f"The answer is {image_query.result.label}")
 ```
 

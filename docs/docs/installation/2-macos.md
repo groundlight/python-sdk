@@ -37,6 +37,11 @@ To check if the Groundlight SDK is installed and to display its version, you can
 python -c "import groundlight; print(groundlight.__version__)"
 ```
 
+or the groundlight command line tool that comes with the SDK:
+
+```bash
+groundlight --help
+```
 ### Upgrading Groundlight SDK
 
 If you need to upgrade the Groundlight SDK to the latest version, use the following pip command:
