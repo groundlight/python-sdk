@@ -13,7 +13,7 @@ gl = Groundlight()
 ```
 
 2. **Direct Configuration**
-```python
+```python notest
 from groundlight import Groundlight
 
 token = get_token_from_secure_location()
