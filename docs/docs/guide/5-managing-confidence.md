@@ -28,7 +28,6 @@ gl = Groundlight()
 image_url = "https://www.photos-public-domain.com/wp-content/uploads/2010/11/over_flowing_garbage_can.jpg"
 image = Image.open(requests.get(image_url, stream=True).raw)
 
-
 d = gl.get_or_create_detector(
     name="trash",
     query="Is the trash can full?",
@@ -53,20 +52,10 @@ print(f"The confidence is {image_query.result.confidence}")
 
 :::tip
 
-Tuning confidence_threshold lets you balance accuracy against latency.
+Tuning the `confidence_threshold` allows you to balance accuracy with response time.
 
-Higher confidence levels lead to greater accuracy but typically result in increased latency. Additionally, achieving higher confidence necessitates more labels, which can raise labor costs.
+Higher confidence thresholds result in more accurate predictions but can increase latency. Achieving these higher confidence levels often requires more labels, which can increase labor costs.
 
-Over time, our models will improve and become more confident, allowing you to achieve higher confidence levels more quickly while also reducing costs.
+As our models improve over time, they will become more confident, enabling you to receive higher-confidence answers more quickly and at a lower cost.
 
 :::
-
-## When Quick Answers are Needed
-
-To execute an image query as fast as possible and get the first available answer regardless of confidence, use the `ask_ml` method (equivalent to setting `wait=0`). This method returns the first answer Groundlight can provide without waiting for the query to reach a specific confidence level.
-
-```python notest continuation
-image_query = gl.ask_ml(detector=d, image=image)
-```
-
-When using this method, low-confidence Image Queries will still be escalated to human review - this allows our models to continue to improve over time.
