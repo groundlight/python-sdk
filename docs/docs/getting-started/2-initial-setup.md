@@ -84,4 +84,4 @@ ImageQuery(
 )
 ```
 
-For more information on the Groundlight SDK, see the [API Reference](/python-sdk/api-reference-docs/), or check out our [guide to building applications with the Groundlight SDK](../guide/).
+For more information on the Groundlight SDK, see the [API Reference](../api-reference/), or check out our [guide to building applications with the Groundlight SDK](../guide/).
