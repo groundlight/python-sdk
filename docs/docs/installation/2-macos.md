@@ -6,12 +6,12 @@ This guide will help you install the Groundlight SDK on macOS. The Groundlight S
 
 Ensure that you have the following installed on your system:
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 
 ## Basic Installation
 
-Assuming you have Python 3.8 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
+Assuming you have Python 3.9 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
 
 ### Installing Groundlight SDK
 
@@ -61,7 +61,7 @@ To check your installed Python version, open a terminal and run:
 python --version
 ```
 
-If you see a version number starting with "3.8" or higher (e.g., "3.8.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
+If you see a version number starting with "3.9" or higher (e.g., "3.9.7" or "3.12.3"), you're good to go. If not, you might need to upgrade Python on your system.
 
 ### Upgrading Python on MacOS
 

@@ -61,7 +61,7 @@ To check your installed Python version, open a Command Prompt and run:
 python --version
 ```
 
-If you see a version number starting with "3.8" or higher (e.g., "3.8.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
+If you see a version number starting with "3.9" or higher (e.g., "3.9.7" or "3.12.3"), you're good to go. If not, you might need to upgrade Python on your system.
 
 ### Upgrading Python on Windows
 
