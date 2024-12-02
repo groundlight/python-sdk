@@ -32,7 +32,7 @@ setup(
     author_email="support@groundlight.ai",
     url="",
     keywords=["OpenAPI", "OpenAPI-Generator", "Groundlight API"],
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     install_requires=REQUIRES,
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
