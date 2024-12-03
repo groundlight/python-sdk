@@ -40,13 +40,55 @@ from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight
 
 
 class ExperimentalApi(Groundlight):
-    def __init__(self, endpoint: Union[str, None] = None, api_token: Union[str, None] = None):
+    def __init__(
+        self,
+        endpoint: Union[str, None] = None,
+        api_token: Union[str, None] = None,
+        disable_tls_verification: Optional[bool] = None,
+    ):
         """
-        Constructs an experimental groundlight client. The experimental client inherits all the functionality of the
-        base groundlight client, but also includes additional functionality that is still in development. Experimental
-        functionality is subject to change.
+        Constructs an experimental Groundlight client.
+
+        This client extends the base Groundlight client with additional experimental functionality that is still in
+        development. Note that experimental features may undergo significant changes or be removed in future releases.
+
+        **Example usage**::
+
+            from groundlight import ExperimentalApi
+
+            # Create an experimental API client
+            gl = ExperimentalApi()
+
+            # Create a notification rule
+            rule = gl.create_rule(
+                detector="door_detector",
+                rule_name="Door Open Alert",
+                channel="EMAIL",
+                recipient="alerts@company.com",
+                alert_on="CHANGED_TO",
+                include_image=True,
+                condition_parameters={"label": "YES"}
+            )
+
+            # Create a detector group
+            group = gl.create_detector_group(
+                name="Security Detectors",
+                description="Detectors monitoring security-related conditions",
+                detectors=["door_detector", "motion_detector"]
+            )
+
+        :param endpoint: Optional custom API endpoint URL. If not specified, uses the default Groundlight endpoint.
+        :param api_token: Authentication token for API access. If not provided, will attempt to read from
+                the "GROUNDLIGHT_API_TOKEN" environment variable.
+        :param disable_tls_verification: If True, disables SSL/TLS certificate verification for API calls.
+                When not specified, checks the "DISABLE_TLS_VERIFY" environment variable (1=disable, 0=enable).
+                Certificate verification is enabled by default.
+
+                Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using
+                self-signed certificates. For security, always keep verification enabled when using the
+                Groundlight cloud service.
         """
-        super().__init__(endpoint=endpoint, api_token=api_token)
+        super().__init__(endpoint=endpoint, api_token=api_token, disable_tls_verification=disable_tls_verification)
         self.actions_api = ActionsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
@@ -72,25 +114,63 @@ class ExperimentalApi(Groundlight):
         human_review_required: bool = False,
     ) -> Rule:
         """
-        Adds a notification rule to the given detector
+        Creates a notification rule for a detector that will send alerts based on specified conditions.
 
-        :param detector: the detector to add the action to
-        :param rule_name: a name to uniquely identify the rule
-        :param channel: what channel to send the notification over. Currently EMAIL or TEXT
-        :param recipient: the address or number to send the notification to
+        A notification rule allows you to configure automated alerts when certain conditions are met,
+        such as when a detector's prediction changes or maintains a particular state.
+
+        .. note::
+            Currently, only binary mode detectors (YES/NO answers) are supported for notification rules.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create a rule to send email alerts when door is detected as open
+            rule = gl.create_rule(
+                detector="door_detector",
+                rule_name="Door Open Alert",
+                channel="EMAIL",
+                recipient="alerts@company.com",
+                alert_on="CHANGED_TO",
+                condition_parameters={"label": "YES"},
+                include_image=True
+            )
+
+            # Create a rule for consecutive motion detections via SMS
+            rule = gl.create_rule(
+                detector="motion_detector",
+                rule_name="Repeated Motion Alert",
+                channel="TEXT",
+                recipient="+1234567890",
+                alert_on="ANSWERED_CONSECUTIVELY",
+                condition_parameters={
+                    "num_consecutive_labels": 3,
+                    "label": "YES"
+                },
+                snooze_time_enabled=True,
+                snooze_time_value=1,
+                snooze_time_unit="HOURS"
+            )
+
+        :param detector: The detector ID or Detector object to add the rule to
+        :param rule_name: A unique name to identify this rule
+        :param channel: Notification channel - either "EMAIL" or "TEXT"
+        :param recipient: Email address or phone number to receive notifications
         :param alert_on: what to alert on. One of ANSWERED_CONSECUTIVELY, ANSWERED_WITHIN_TIME,
             CHANGED_TO, NO_CHANGE, NO_QUERIES
-        :param enabled: whether the rule is enabled initially
-        :param include_image: whether to include the image in the notification
-        :param condition_parameters: additional information needed for the condition. i.e. if the
-            condition is ANSWERED_CONSECUTIVELY, we specify num_consecutive_labels and label here
-        :param snooze_time_enabled: Whether notifications wil be snoozed, no repeat notification
-            will be delivered until the snooze time has passed
-        :param snooze_time_value: The value of the snooze time
-        :param snooze_time_unit: The unit of the snooze time
-        :param huamn_review_required: If true, a cloud labeler will review and confirm alerts before they are sent
+        :param enabled: Whether the rule should be active when created (default True)
+        :param include_image: Whether to attach the triggering image to notifications (default False)
+        :param condition_parameters: Additional parameters for the alert condition:
+            - For ANSWERED_CONSECUTIVELY: {"num_consecutive_labels": N, "label": "YES/NO"}
+            - For CHANGED_TO: {"label": "YES/NO"}
+            - For time-based conditions: {"time_value": N, "time_unit": "MINUTES/HOURS/DAYS"}
+        :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
+        :param snooze_time_value: Duration of snooze period (default 3600)
+        :param snooze_time_unit: Unit for snooze duration - "SECONDS", "MINUTES", "HOURS", or "DAYS" (default "SECONDS")
+        :param human_review_required: Require human verification before sending alerts (default False)
 
-        :return: a Rule object corresponding to the new rule
+        :return: The created Rule object
         """
         if condition_parameters is None:
             condition_parameters = {}
@@ -122,35 +202,85 @@ class ExperimentalApi(Groundlight):
 
     def get_rule(self, action_id: int) -> Rule:
         """
-        Gets the action with the given id
+        Gets the rule with the given id.
 
-        :param action_id: the id of the action to get
-        :return: the action with the given id
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get an existing rule by ID
+            rule = gl.get_rule(action_id=123)
+            print(f"Rule name: {rule.name}")
+            print(f"Rule enabled: {rule.enabled}")
+
+        :param action_id: the id of the rule to get
+        :return: the Rule object with the given id
         """
         return Rule.model_validate(self.actions_api.get_rule(action_id).to_dict())
 
     def delete_rule(self, action_id: int) -> None:
         """
-        Deletes the action with the given id
+        Deletes the rule with the given id.
 
-        :param action_id: the id of the action to delete
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Delete a specific rule
+            gl.delete_rule(action_id=123)
+
+        :param action_id: the id of the rule to delete
         """
         self.actions_api.delete_rule(action_id)
 
     def list_rules(self, page=1, page_size=10) -> PaginatedRuleList:
         """
-        Gets a list of all rules
+        Gets a paginated list of all rules.
 
-        :return: a list of all rules
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get first page of rules
+            rules = gl.list_rules(page=1, page_size=10)
+            print(f"Total rules: {rules.count}")
+
+            # Iterate through rules on current page
+            for rule in rules.results:
+                print(f"Rule {rule.id}: {rule.name}")
+
+            # Get next page
+            next_page = gl.list_rules(page=2, page_size=10)
+
+        :param page: Page number to retrieve (default: 1)
+        :param page_size: Number of rules per page (default: 10)
+        :return: PaginatedRuleList containing the rules and pagination info
         """
         obj = self.actions_api.list_rules(page=page, page_size=page_size)
         return PaginatedRuleList.parse_obj(obj.to_dict())
 
     def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
         """
-        Deletes all rules associated with the given detector
+        Deletes all rules associated with the given detector. If no detector is specified,
+        deletes all rules in the account.
 
-        :param detector: the detector to delete the rules from
+        WARNING: If no detector is specified, this will delete ALL rules in your account.
+        This action cannot be undone. Use with caution.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Delete all rules for a specific detector
+            detector = gl.get_detector("my_detector")
+            num_deleted = gl.delete_all_rules(detector)
+            print(f"Deleted {num_deleted} rules")
+
+            # Delete all rules in the account
+            num_deleted = gl.delete_all_rules()
+            print(f"Deleted {num_deleted} rules")
+
+        :param detector: the detector to delete the rules from. If None, deletes all rules.
 
         :return: the number of rules deleted
         """
@@ -170,22 +300,58 @@ class ExperimentalApi(Groundlight):
 
     def get_image(self, iq_id: str) -> bytes:
         """
-        Get the image associated with the given image ID
-        If you have PIL installed, you can instantiate the pill image as PIL.Image.open(gl.get_image(iq.id))
+        Get the image associated with the given image query ID.
 
-        :param image_id: the ID of the image to get
-        :return: the image as a byte array
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get image from an image query
+            iq = gl.get_image_query("iq_123")
+            image_bytes = gl.get_image(iq.id)
+
+            # Open with PIL - returns RGB order
+            from PIL import Image
+            image = Image.open(gl.get_image(iq.id))  # Returns RGB image
+
+            # Open with numpy via PIL - returns RGB order
+            import numpy as np
+            from io import BytesIO
+            image = np.array(Image.open(gl.get_image(iq.id)))  # Returns RGB array
+
+            # Open with OpenCV - returns BGR order
+            import cv2
+            import numpy as np
+            nparr = np.frombuffer(image_bytes, np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Returns BGR array
+            # To convert to RGB if needed:
+            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        :param iq_id: The ID of the image query to get the image from
+        :return: The image as a byte array that can be used with PIL or other image libraries
         """
+        # TODO: support taking an ImageQuery object
         return self.images_api.get_image(iq_id)
 
     def get_notes(self, detector: Union[str, Detector]) -> Dict[str, Any]:
         """
-        Gets the notes for a given detector
+        Retrieves all notes associated with a detector.
 
-        :param detector: the detector to get the notes for
+        **Example usage**::
 
-        :return: a dictionary with two keys "CUSTOMER" and "GL" to indicate who added the note to
-            the detector, and values that are lists of notes
+            gl = ExperimentalApi()
+
+            detector = gl.get_detector("det_123")
+            notes = gl.get_notes(detector)
+            # notes = {
+            #     "CUSTOMER": ["Customer note 1", "Customer note 2"],
+            #     "GL": ["Groundlight note 1"]
+            # }
+
+        :param detector: The detector object or ID string to retrieve notes for
+
+        :return: A dictionary containing notes organized by source ("CUSTOMER" or "GL"),
+            where each source maps to a list of note strings
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
         return self.notes_api.get_notes(det_id)
@@ -197,53 +363,127 @@ class ExperimentalApi(Groundlight):
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray, None] = None,
     ) -> None:
         """
-        Adds a note to a given detector
+        Adds a note to a given detector.
 
-        :param detector: the detector to add the note to
-        :param note: the text content of the note
-        :param image: a path to an image to attach to the note
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            detector = gl.get_detector("det_123")
+            gl.create_note(detector, "Please label doors that are slightly ajar as 'YES'")
+
+            # With an image attachment
+            gl.create_note(
+                detector,
+                "Door that is slightly ajar and should be labeled 'YES'",
+                image="path/to/image.jpg"
+            )
+
+        :param detector: The detector object or detector ID string to add the note to
+        :param note: The text content of the note to add
+        :param image: Optional image to attach to the note.
         """
         det_id = detector.id if isinstance(detector, Detector) else detector
+
+        # Initialize img_bytes to None
+        img_bytes = None
         if image is not None:
             img_bytes = parse_supported_image_types(image)
+
         # TODO: The openapi generator doesn't handle file submissions well at the moment, so we manually implement this
         # kwargs = {"image": img_bytes}
         # self.notes_api.create_note(det_id, note, **kwargs)
         url = f"{self.endpoint}/v1/notes"
-        files = {"image": ("image.jpg", img_bytes, "image/jpeg")} if image is not None else None
+        files = {"image": ("image.jpg", img_bytes, "image/jpeg")} if img_bytes is not None else None
         data = {"content": note}
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
-        requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
+
+        response = requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
+        response.raise_for_status()  # Raise an exception for error status codes
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """
-        Creates a detector group with the given name
-        Note: you can specify a detector group when creating a detector without the need to create it ahead of time
+        Creates a detector group with the given name. A detector group allows you to organize
+        related detectors together.
 
-        :param name: the name of the detector group
+        .. note::
+            You can specify a detector group when creating a detector without the need to create it ahead of time.
+            The group will be created automatically if it doesn't exist.
 
-        :return: a Detector object corresponding to the new detector group
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create a group for all door-related detectors
+            door_group = gl.create_detector_group("door-detectors")
+
+            # Later, create detectors in this group
+            door_open_detector = gl.create_detector(
+                name="front-door-open",
+                query="Is the front door open?",
+                detector_group=door_group
+            )
+
+        :param name: The name of the detector group. This should be descriptive and unique within your organization.
+        :type name: str
+        :return: A DetectorGroup object corresponding to the newly created detector group
+        :rtype: DetectorGroup
         """
         return DetectorGroup(**self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
 
     def list_detector_groups(self) -> List[DetectorGroup]:
         """
-        Gets a list of all detector groups
+        Gets a list of all detector groups in your account.
 
-        :return: a list of all detector groups
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get all detector groups
+            groups = gl.list_detector_groups()
+
+            # Print information about each group
+            for group in groups:
+                print(f"Group name: {group.name}")
+                print(f"Group ID: {group.id}")
+
+        :return: A list of DetectorGroup objects representing all detector groups in your account
         """
         return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
 
     def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
         """
-        Adds a region of interest to the given detector
-        NOTE: This feature is only available to Pro tier and higher
-        If you would like to learn more, reach out to us at https://groundlight.ai
+        Creates a Region of Interest (ROI) object that can be used to specify areas of interest in images. Certain
+        detectors (such as Count-mode detectors) may emit ROIs as part of their output. Providing an ROI can help
+        improve the accuracy of such detectors.
 
-        :param label: the label of the item in the roi
-        :param top_left: the top left corner of the roi
-        :param bottom_right: the bottom right corner of the roi
+        .. note::
+            ROI functionality is only available to Pro tier and higher.
+            If you would like to learn more, reach out to us at https://groundlight.ai
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create an ROI for a door in the image
+            door_roi = gl.create_roi(
+                label="door",
+                top_left=(0.2, 0.3),     # Coordinates are normalized (0-1)
+                bottom_right=(0.4, 0.8)  # Coordinates are normalized (0-1)
+            )
+
+            # Use the ROI when submitting an image query
+            query = gl.submit_image_query(
+                detector="door-detector",
+                image=image_bytes,
+                rois=[door_roi]
+            )
+
+        :param label: A descriptive label for the object or area contained in the ROI
+        :param top_left: Tuple of (x, y) coordinates for the top-left corner, normalized to [0,1]
+        :param bottom_right: Tuple of (x, y) coordinates for the bottom-right corner, normalized to [0,1]
+        :return: An ROI object that can be used in image queries
         """
 
         return ROI(
@@ -259,22 +499,40 @@ class ExperimentalApi(Groundlight):
             ),
         )
 
+    # TODO: remove duplicate method on subclass
     # pylint: disable=duplicate-code
     def add_label(
         self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
-        Experimental version of add_label. Add a new label to an image query.
-        This answers the detector's question.
+        Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
+        for training detectors, or to correct the results of detectors.
 
-        :param image_query: Either an ImageQuery object (returned from
-                            `submit_image_query`) or an image_query id as a
-                            string.
+        **Example usage**::
 
-        :param label: The string "YES" or the string "NO" in answer to the
-            query.
-        :param rois: An option list of regions of interest (ROIs) to associate
-            with the label. (This feature experimental)
+            gl = ExperimentalApi()
+
+            # Using an ImageQuery object
+            image_query = gl.ask_ml(detector_id, image_data)
+            gl.add_label(image_query, "YES")
+
+            # Using an image query ID string directly
+            gl.add_label("iq_abc123", "NO")
+
+            # With regions of interest (ROIs)
+            rois = [ROI(x=100, y=100, width=50, height=50)]
+            gl.add_label(image_query, "YES", rois=rois)
+
+        :param image_query: Either an ImageQuery object (returned from methods like
+                          `ask_ml`) or an image query ID string starting with "iq_".
+
+        :param label: The label value to assign, typically "YES" or "NO" for binary
+                     classification detectors. For multi-class detectors, use one of
+                     the defined class names.
+
+        :param rois: Optional list of ROI objects defining regions of interest in the
+                    image. Each ROI specifies a bounding box with x, y coordinates
+                    and width, height.
 
         :return: None
         """
@@ -303,9 +561,27 @@ class ExperimentalApi(Groundlight):
 
     def reset_detector(self, detector: Union[str, Detector]) -> None:
         """
-        Removes all image queries for the given detector
+        Removes all image queries and training data for the given detector. This effectively resets
+        the detector to its initial state, allowing you to start fresh with new training data.
 
-        :param detector_id: the id of the detector to reset
+        .. warning::
+            This operation cannot be undone. All image queries and training data will be deleted.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+            gl.reset_detector(detector)
+
+            # Using a detector ID string directly
+            gl.reset_detector("det_abc123")
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector whose data should be reset.
+
+        :return: None
         """
         if isinstance(detector, Detector):
             detector = detector.id
@@ -315,8 +591,20 @@ class ExperimentalApi(Groundlight):
         """
         Updates the name of the given detector
 
-        :param detector: the detector to update
-        :param name: the new name
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+            gl.update_detector_name(detector, "new_detector_name")
+
+            # Using a detector ID string directly
+            gl.update_detector_name("det_abc123", "new_detector_name")
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector whose name should be updated.
+        :param name: The new name to assign to the detector
 
         :return: None
         """
@@ -326,10 +614,24 @@ class ExperimentalApi(Groundlight):
 
     def update_detector_status(self, detector: Union[str, Detector], enabled: bool) -> None:
         """
-        Updates the status of the given detector. If the detector is disabled, it will not receive new image queries
+        Updates the status of the given detector. When a detector is disabled (enabled=False),
+        it will not accept or process any new image queries. Existing queries will not be affected.
 
-        :param detector: the detector to update
-        :param enabled: whether the detector is enabled, can be either True or False
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+            gl.update_detector_status(detector, enabled=False)  # Disable the detector
+
+            # Using a detector ID string directly
+            gl.update_detector_status("det_abc123", enabled=True)  # Enable the detector
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector whose status should be updated.
+        :param enabled: Boolean indicating whether the detector should be enabled (True) or
+                       disabled (False). When disabled, the detector will not process new queries.
 
         :return: None
         """
@@ -342,16 +644,34 @@ class ExperimentalApi(Groundlight):
 
     def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
         """
-        Updates the escalation type of the given detector
+        Updates the escalation type of the given detector, controlling whether queries can be
+        sent to human labelers when ML confidence is low.
 
-        This is particularly useful for turning off human labeling for billing or security purposes.
-        By setting a detector to "NO_HUMAN_LABELING", no image queries sent to this detector will be
-        sent to human labelers.
+        This is particularly useful for controlling costs. When set to "NO_HUMAN_LABELING",
+        queries will only receive ML predictions, even if confidence is low.
+        When set to "STANDARD", low-confidence queries may be sent to human labelers for verification.
 
-        :param detector: the detector to update
-        :param escalation_type: the new escalation type, can be "STANDARD" or "NO_HUMAN_LABELING"
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+
+            # Disable human labeling
+            gl.update_detector_escalation_type(detector, "NO_HUMAN_LABELING")
+
+            # Re-enable standard human labeling
+            gl.update_detector_escalation_type("det_abc123", "STANDARD")
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector whose escalation type should be updated.
+        :param escalation_type: The new escalation type setting. Must be one of:
+                              - "STANDARD": Allow human labeling for low-confidence queries
+                              - "NO_HUMAN_LABELING": Never send queries to human labelers
 
         :return: None
+        :raises ValueError: If escalation_type is not one of the allowed values
         """
         if isinstance(detector, Detector):
             detector = detector.id
@@ -376,7 +696,42 @@ class ExperimentalApi(Groundlight):
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
-        Creates a counting detector with the given name and query
+        Creates a counting detector that can count objects in images up to a specified maximum count.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create a detector that counts people up to 5
+            detector = gl.create_counting_detector(
+                name="people_counter",
+                query="How many people are in the image?",
+                max_count=5,
+                confidence_threshold=0.9,
+                patience_time=30.0
+            )
+
+            # Use the detector to count people in an image
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+            print(f"Counted {image_query.result.count} people")
+            print(f"Confidence: {image_query.result.confidence}")
+
+        :param name: A short, descriptive name for the detector.
+        :param query: A question about the count of an object in the image.
+        :param max_count: Maximum number of objects to count (default: 10)
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value that sets the minimum confidence level required for the ML model's
+                            predictions. If confidence is below this threshold, the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+
+        :return: The created Detector object
         """
 
         detector_creation_input = self._prep_create_detector(
@@ -410,7 +765,40 @@ class ExperimentalApi(Groundlight):
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
-        Creates a multiclass detector with the given name and query
+        Creates a multiclass detector with the given name and query.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            detector = gl.create_multiclass_detector(
+                name="Traffic Light Detector",
+                query="What color is the traffic light?",
+                class_names=["Red", "Yellow", "Green"]
+            )
+
+            # Use the detector to classify a traffic light
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+            print(f"Traffic light is {image_query.result.label}")
+            print(f"Confidence: {image_query.result.confidence}")
+
+        :param name: A short, descriptive name for the detector.
+        :param query: A question about classifying objects in the image.
+        :param class_names: List of possible class labels for classification.
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value between 1/num_classes and 1 that sets the minimum confidence level required
+                                  for the ML model's predictions. If confidence is below this threshold,
+                                  the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+
+        :return: The created Detector object
         """
 
         detector_creation_input = self._prep_create_detector(

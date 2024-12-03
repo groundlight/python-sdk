@@ -58,19 +58,19 @@ groundlight = "groundlight.cli:groundlight"
 [tool.black]
 line-length = 120
 preview = true
-target-version = ["py37"]
+target-version = ["py39"]
 
 # https://mypy.readthedocs.io/en/stable/config_file.html
 [tool.mypy]
 ignore_missing_imports = true
-python_version = "3.8"
+python_version = "3.9"
 
 # https://beta.ruff.rs/docs/configuration/#using-pyprojecttoml
 [tool.ruff]
 exclude = ["__init__.py"]
 line-length = 120
 select = ["E", "F", "I", "N", "PL"] # shorthand names for plugins
-target-version = "py37"
+target-version = "py39"
 
 # https://toml-sort.readthedocs.io/en/latest/#configuration-file
 [tool.tomlsort]

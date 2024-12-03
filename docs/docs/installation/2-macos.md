@@ -1,6 +1,6 @@
 # Installing on macOS
 
-This guide will help you install the Groundlight SDK on macOS. The Groundlight SDK requires Python 3.8 or higher.
+This guide will help you install the Groundlight SDK on macOS. The Groundlight SDK requires Python 3.9 or higher.
 
 ## Prerequisites
 
@@ -37,6 +37,11 @@ To check if the Groundlight SDK is installed and to display its version, you can
 python -c "import groundlight; print(groundlight.__version__)"
 ```
 
+or the groundlight command line tool that comes with the SDK:
+
+```bash
+groundlight --help
+```
 ### Upgrading Groundlight SDK
 
 If you need to upgrade the Groundlight SDK to the latest version, use the following pip command:
@@ -75,6 +80,4 @@ After upgrading, verify the Python version by running `python --version` or `pyt
 
 ## Ready to go!
 
-You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications](/docs/building-applications) documentation pages.
-
-
+You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](../getting-started/5-api-tokens.md) documentation and the [Building Applications Guide](../guide/).

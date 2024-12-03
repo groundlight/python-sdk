@@ -65,7 +65,7 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     The only subtlety here is that currently confidence of None means
     human label, which is treated as confident.
     """
-    return iq.result.confidence >= confidence_threshold
+    return iq.result.confidence >= confidence_threshold  # type: ignore
 
 
 def iq_is_answered(iq: ImageQuery) -> bool:
