@@ -888,27 +888,27 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
-                   - filename (string) of a jpeg file
-                   - byte array or BytesIO or BufferedReader with jpeg bytes
-                   - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-                     (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-                   - PIL Image: Any binary format must be JPEG-encoded already.
-                     Any pixel format will get converted to JPEG at high quality before sending to service.
+            - filename (string) of a jpeg file
+            - byte array or BytesIO or BufferedReader with jpeg bytes
+            - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+              (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+            - PIL Image: Any binary format must be JPEG-encoded already.
+              Any pixel format will get converted to JPEG at high quality before sending to service.
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
-                           The longer the patience_time, the more likely Groundlight will arrive at a
-                           confident answer. This is a soft server-side timeout. If not set, use the
-                           detector's patience_time.
+            The longer the patience_time, the more likely Groundlight will arrive at a
+            confident answer. This is a soft server-side timeout. If not set, use the
+            detector's patience_time.
         :param confidence_threshold: The confidence threshold to wait for.
-                                  If not set, use the detector's confidence threshold.
+            If not set, use the detector's confidence threshold.
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
-                          only if the ML prediction is not confident.
-                          If set to `ALWAYS`, always send the image query for human review.
-                          If set to `NEVER`, never send the image query for human review.
+            only if the ML prediction is not confident.
+            If set to `ALWAYS`, always send the image query for human review.
+            If set to `NEVER`, never send the image query for human review.
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
-                      the image query (limited to 1KB). You can retrieve this metadata later by calling
-                      `get_image_query()`.
+            the image query (limited to 1KB). You can retrieve this metadata later by calling
+            `get_image_query()`.
         :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
-                           this is the ID of the inspection to associate with the image query.
+            this is the ID of the inspection to associate with the image query.
 
         :return: ImageQuery with result set to None (result will be computed asynchronously)
         :raises ApiTokenError: If API token is invalid
@@ -1084,14 +1084,12 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             rois = [ROI(x=100, y=100, width=50, height=50)]
             gl.add_label(image_query, "YES", rois=rois)
 
-        :param image_query: Either an ImageQuery object (returned from methods like
-                          `ask_ml`) or an image query ID string starting with "iq_".
-        :param label: The label value to assign, typically "YES" or "NO" for binary
-                     classification detectors. For multi-class detectors, use one of
-                     the defined class names.
-        :param rois: Optional list of ROI objects defining regions of interest in the
-                    image. Each ROI specifies a bounding box with x, y coordinates
-                    and width, height.
+        :param image_query: Either an ImageQuery object (returned from methods like :meth:`ask_ml`) or an image query ID
+            string starting with "iq_".
+        :param label: The label value to assign, typically "YES" or "NO" for binary classification detectors.
+            For multi-class detectors, use one of the defined class names.
+        :param rois: Optional list of ROI objects defining regions of interest in the image.
+            Each ROI specifies a bounding box with x, y coordinates and width, height.
 
         :return: None
         """
