@@ -20,7 +20,7 @@ install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
 install-generator: install ## Install dependencies for SDK code generator
-	npm install --save remark-math@6 rehype-katex@7
+	npm install
 
 generate: install-generator  ## Generate the SDK from our public openapi spec
 	node_modules/.bin/openapi-generator-cli generate -i spec/public-api.yaml \
@@ -107,7 +107,7 @@ docs-comprehensive: apidocs  ## Builds docs comprehensively (integrating API ref
 	cd docs && npm run build
 
 apidocs:  ## Installs necessary npm packages and builds API reference documentation using Sphinx.
-	cd docs && npm install --save remark-math@6 rehype-katex@7
+	cd docs && npm install
 	poetry run make html
 
 html:  ## Builds HTML reference documentation using Sphinx.
