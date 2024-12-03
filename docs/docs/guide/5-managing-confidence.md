@@ -3,7 +3,7 @@
 ## Introduction to Confidence Thresholds
 When creating a Detector or submitting an ImageQuery, you can set the necessary confidence level for your use case. We call this the `confidence_threshold`. Tuning this value allows you to balance the trade-offs between accuracy and latency / cost.
 
-Confidence scores represent the model's internal assessment of its prediction reliability. Groundlight models provide *calibrated* confidence scores, which means that, when a model makes a prediction with a confidence of 0.95, we expect that (under typical conditions) 95% of the time that prediction will be correct. In other words, a prediction with a confidence of 0.95 is expected to be correct 19 out of 20 times.
+Confidence scores represent the model's internal assessment of its prediction reliability. Groundlight models provide *calibrated* confidence scores, which means that, when a model makes a prediction with a confidence of 0.95, we expect that (under typical conditions) 95% of the time that prediction will be correct. In other words, a prediction with a confidence of 0.95 is expected to be correct 19 out of 20 times. Confidence calibration kicks in after a sufficient number of labeled images have been collected. 
 
 Confidence thresholds represent a minimum confidence that must be achieved for Groundlight to return an answer. If a confidence above the confidence threshold is not achieved, Groundlight will escalate your query up our heirarchy to stronger models and human reviewers. Confidence thresholds should be determined based on your application's acceptable error rate and the potential impact of those errors.
 
