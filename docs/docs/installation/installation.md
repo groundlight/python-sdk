@@ -1,17 +1,28 @@
-# Installation
+# Installation Guide for Groundlight Python SDK
 
-Welcome to the Groundlight SDK installation guide. In this guide, you'll find step-by-step instructions on how to install and set up the Groundlight SDK on various platforms.
+The Groundlight Python SDK requires Python 3.9 or higher and can be installed on all major platforms. Follow the installation guide for your specific operating system or device below.
 
-## Platform-specific Installation Guides
+## Operating System Installation Guides
 
-Choose your platform from the list below and follow the instructions in the corresponding guide:
+For desktop and server installations:
 
-- [Linux](1-linux.md)
-- [macOS](2-macos.md)
-- [Windows](3-windows.md)
-- [Raspberry Pi](4-raspberry-pi.md)
-- [NVIDIA Jetson](5-nvidia-jetson.md)
-- [Linux with Monitoring Notification Server](7-monitoring-notification-server.md)
-- [ESP32 Camera Device](/docs/iot)
+- [Linux Installation Guide](1-linux.md) - For Ubuntu, Debian, Fedora and other Linux distributions
+- [macOS Installation Guide](2-macos.md) - For Intel and Apple Silicon Macs
+- [Windows Installation Guide](3-windows.md) - For Windows 10 and 11
 
-After completing the installation process for your platform, you'll be ready to start [building visual applications](/docs/building-applications/) using the Groundlight SDK.
+## Edge Device Installation Guides
+
+For IoT and edge computing devices:
+
+- [Raspberry Pi Installation Guide](5-raspberry-pi.md) - For Raspberry Pi 4 and 5 devices
+- [NVIDIA Jetson Installation Guide](6-nvidia-jetson.md) - For Jetson Nano, Xavier and Orin devices
+
+## Alternative Groundlight Usage Options
+
+Explore different ways to utilize Groundlight:
+
+- [Streaming Processor with Docker](../other-ways-to-use/1-stream-processor.md)
+- [ESP32 Camera Integration](../other-ways-to-use/2-iot.md)
+- [Linux with Monitoring and Notification Server](../other-ways-to-use/3-monitoring-notification-server.md)
+
+Once you've completed the installation for your platform, you can begin [developing visual applications](/docs/guide/) using the Groundlight SDK.

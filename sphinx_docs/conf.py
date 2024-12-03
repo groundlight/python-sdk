@@ -9,6 +9,7 @@
 
 import os
 import sys
+from datetime import datetime
 
 import toml
 
@@ -26,7 +27,7 @@ def get_version_name() -> str:
 
 
 project = "Groundlight Python SDK"
-copyright = "2023, Groundlight AI <support@groundlight.ai>"
+copyright = f"{datetime.now().year}, Groundlight AI <support@groundlight.ai>"
 author = "Groundlight AI <support@groundlight.ai>"
 version = get_version_name()
 release = version
