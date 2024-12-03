@@ -56,7 +56,8 @@ class ApiTokenError(GroundlightClientError):
 
 class Groundlight:  # pylint: disable=too-many-instance-attributes
     """
-    Client for accessing the Groundlight cloud service.
+    Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,
+    submit images for analysis, and retrieve predictions.
 
     The API token (auth) is specified through the **GROUNDLIGHT_API_TOKEN** environment variable by default.
 
@@ -64,27 +65,45 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         gl = Groundlight()
         detector = gl.get_or_create_detector(
-                        name="door",
-                        query="Is the door locked?",
-                        confidence_threshold=0.9
-                    )
+            name="door_detector",
+            query="Is the door open?",
+            confidence_threshold=0.9
+        )
+
+        # Submit image and get prediction
         image_query = gl.submit_image_query(
-                        detector=detector,
-                        image="path/to/image.jpeg",
-                        wait=0.0,
-                        human_review="ALWAYS"
-                    )
-        print(f"Image query confidence = {image_query.result.confidence}")
+            detector=detector,
+            image="path/to/image.jpg",
+            wait=30.0
+        )
+        print(f"Answer: {image_query.result.label}")
 
-        # Poll the backend service for a confident answer
+        # Async submission with human review
+        image_query = gl.ask_async(
+            detector=detector,
+            image="path/to/image.jpg",
+            human_review="ALWAYS"
+        )
+
+        # Later, get the result
         image_query = gl.wait_for_confident_result(
-                        image_query=image_query,
-                        confidence_threshold=0.9,
-                        timeout_sec=60.0
-                    )
+            image_query=image_query,
+            confidence_threshold=0.95,
+            timeout_sec=60.0
+        )
 
-        # Examine new confidence after a continuously trained ML model has re-evaluated the image query
-        print(f"Image query confidence = {image_query.result.confidence}")
+    :param endpoint: Optional custom API endpoint URL. If not specified, uses the default Groundlight endpoint.
+    :param api_token: Authentication token for API access. If not provided, will attempt to read from
+            the "GROUNDLIGHT_API_TOKEN" environment variable.
+    :param disable_tls_verification: If True, disables SSL/TLS certificate verification for API calls.
+            When not specified, checks the "DISABLE_TLS_VERIFY" environment variable (1=disable, 0=enable).
+            Certificate verification is enabled by default.
+
+            Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using
+            self-signed certificates. For security, always keep verification enabled when using the
+            Groundlight cloud service.
+
+    :return: Groundlight client instance
     """
 
     DEFAULT_WAIT: float = 30.0
@@ -98,24 +117,22 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,
         disable_tls_verification: Optional[bool] = None,
-    ) -> None:
+    ):
         """
-        Constructs a Groundlight client.
+        Initialize a new Groundlight client instance.
 
-        :param endpoint: optionally specify a different endpoint
+        :param endpoint: Optional custom API endpoint URL. If not specified, uses the default Groundlight endpoint.
 
-        :param api_token: use this API token for your API calls.
-                        If unset, fallback to the environment variable "GROUNDLIGHT_API_TOKEN".
+        :param api_token: Authentication token for API access.
+                        If not provided, will attempt to read from the "GROUNDLIGHT_API_TOKEN" environment variable.
 
-        :param disable_tls_verification: Set this to `True` to skip verifying SSL/TLS certificates
-                                        when calling API from https server. If unset, the fallback will check
-                                        the environment variable "DISABLE_TLS_VERIFY" for `1` or `0`. By default,
-                                        certificates are verified.
+        :param disable_tls_verification: If True, disables SSL/TLS certificate verification for API calls.
+                                       When not specified, checks the "DISABLE_TLS_VERIFY" environment variable
+                                       (1=disable, 0=enable). Certificate verification is enabled by default.
 
-                                        Disable verification if using a self-signed TLS certificate with a Groundlight
-                                        Edge Endpoint.  It is unadvised to disable verification  if connecting directly
-                                        to the Groundlight cloud service.
-        :type disable_tls_verification: Optional[bool]
+                                       Warning: Only disable verification when connecting to a Groundlight Edge
+                                       Endpoint using self-signed certificates. For security, always keep
+                                       verification enabled when using the Groundlight cloud service.
 
         :return: Groundlight client
         """
@@ -203,9 +220,17 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def whoami(self) -> str:
         """
-        Return the username associated with the API token.
+        Return the username (email address) associated with the current API token.
 
-        :return: str
+        This method verifies that the API token is valid and returns the email address of the authenticated user.
+        It can be used to confirm that authentication is working correctly.
+
+        Returns:
+            str: The email address of the authenticated user
+
+        Raises:
+            ApiTokenError: If the API token is invalid
+            GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
         obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return obj["email"]
@@ -220,7 +245,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
-        Get a detector by id
+        Get a Detector by id.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            detector = gl.get_detector(id="det_12345")
+            print(detector)
 
         :param id: the detector id
 
@@ -238,7 +269,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
-        Get a detector by name
+        Get a Detector by name.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            detector = gl.get_detector_by_name(name="door_detector")
+            print(detector)
 
         :param name: the detector name
 
@@ -248,7 +285,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
         """
-        List out detectors you own
+        Retrieve a paginated list of detectors associated with your account.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            detectors = gl.list_detectors(page=1, page_size=5)
+            for detector in detectors.items:
+                print(detector)
 
         :param page: the page number
 
@@ -305,7 +349,35 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
-        Create a new detector with a given name and query
+        Create a new Detector with a given name and query.
+
+        **Example usage**::
+
+            gl = Groundlight()
+
+            # Create a basic binary detector
+            detector = gl.create_detector(
+                name="dog-on-couch-detector",
+                query="Is there a dog on the couch?",
+                confidence_threshold=0.9,
+                patience_time=30.0
+            )
+
+            # Create a detector with metadata
+            detector = gl.create_detector(
+                name="door-monitor",
+                query="Is the door open?",
+                metadata={"location": "front-entrance", "building": "HQ"},
+                confidence_threshold=0.95
+            )
+
+            # Create a detector in a specific group
+            detector = gl.create_detector(
+                name="vehicle-counter",
+                query="How many vehicles are in the parking lot?",
+                group_name="parking-monitoring",
+                patience_time=60.0
+            )
 
         :param name: the detector name
 
@@ -351,25 +423,40 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
-        Tries to look up the detector by name.  If a detector with that name, query, and
-        confidence exists, return it. Otherwise, create a detector with the specified query and
+        Tries to look up the Detector by name. If a Detector with that name, query, and
+        confidence exists, return it. Otherwise, create a Detector with the specified query and
         config.
 
+        **Example usage**::
+
+            gl = Groundlight()
+
+            detector = gl.get_or_create_detector(
+                name="service-counter-usage",
+                query="Is there a customer at the service counter?",
+                group_name="retail-analytics",
+                confidence_threshold=0.95,
+                metadata={"location": "store-123"}
+            )
+
         :param name: the detector name
-
         :param query: the detector query
-
         :param group_name: the detector group that the new detector should belong to
-
         :param confidence_threshold: the confidence threshold
-
         :param pipeline_config: the pipeline config
-
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
-            the detector (limited to 1KB). You can retrieve this metadata later by calling
-            `get_detector()`.
+            the detector (limited to 1KB). You can retrieve this metadata later by calling `get_detector()`.
 
-        :return: Detector
+        :return: Detector with the specified configuration
+        :raises ValueError: If an existing detector is found but has different configuration
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+
+        .. note::
+            If a detector with the given name exists, this method verifies that its
+            configuration (query, group_name, etc.) matches what was requested. If
+            there are any mismatches, it raises ValueError rather than modifying the
+            existing detector.
         """
         try:
             existing_detector = self.get_detector_by_name(name)
@@ -405,11 +492,24 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         """
-        Get an image query by id
+        Get an ImageQuery by its ID. This is useful for retrieving the status and results of a previously submitted query.
 
-        :param id: the image query id
+        **Example Usage:**
 
-        :return: ImageQuery
+            gl = Groundlight()
+
+            # Get an existing image query by ID
+            image_query = gl.get_image_query("iq_abc123")
+
+            # Get the result if available
+            if image_query.result is not None:
+                print(f"Answer: {image_query.result.label}")
+                print(f"Source: {image_query.result.source}")
+                print(f"Confidence: {image_query.result.confidence}")  # e.g. 0.98
+
+        :param id: The ImageQuery ID to look up. This ID is returned when submitting a new ImageQuery.
+
+        :return: ImageQuery object containing the query details and results
         """
         obj = self.image_queries_api.get_image_query(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         iq = ImageQuery.parse_obj(obj.to_dict())
@@ -417,13 +517,24 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
         """
-        List out image queries you own
+        List all image queries associated with your account, with pagination support.
 
-        :param page: the page number
+        **Example Usage:**
 
-        :param page_size: the page size
+            gl = Groundlight()
 
-        :return: PaginatedImageQueryList
+            # Get first page of 10 image queries
+            queries = gl.list_image_queries(page=1, page_size=10)
+
+            # Access results
+            for query in queries.results:
+                print(f"Query ID: {query.id}")
+                print(f"Result: {query.result.label if query.result else 'No result yet'}")
+
+        :param page: Which page of results to return, starting from 1. Default is 1.
+        :param page_size: Number of image queries to return per page. Default is 10.
+        :return: PaginatedImageQueryList containing the requested page of image queries and pagination metadata
+                like total count and links to next/previous pages.
         """
         obj = self.image_queries_api.list_image_queries(
             page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
@@ -447,49 +558,90 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         image_query_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Evaluates an image with Groundlight.
+        Evaluates an image with Groundlight. This is the core method for getting predictions about images.
+
+        **Example Usage:**
+
+            from groundlight import Groundlight
+            from PIL import Image
+
+            gl = Groundlight()
+            det = gl.get_or_create_detector(
+                name="parking-space",
+                query="Is there a car in the leftmost parking space?"
+            )
+
+            # Basic synchronous usage
+            image = "path/to/image.jpg"
+            image_query = gl.submit_image_query(detector=det, image=image)
+            print(f"The answer is {image_query.result.label}")
+
+            # Asynchronous usage with custom confidence
+            image = Image.open("path/to/image.jpg")
+            image_query = gl.submit_image_query(
+                detector=det,
+                image=image,
+                wait=0,  # Don't wait for result
+                confidence_threshold=0.95,
+                want_async=True
+            )
+            print(f"Submitted image_query {image_query.id}")
+
+            # With metadata and mandatory human review
+            image_query = gl.submit_image_query(
+                detector=det,
+                image=image,
+                metadata={"location": "entrance", "camera": "cam1"},
+                human_review="ALWAYS"
+            )
+
+        .. note::
+            This method supports both synchronous and asynchronous workflows, configurable confidence thresholds,
+            and optional human review.
+
+        .. seealso::
+            :meth:`ask_confident` for a simpler synchronous workflow
+
+            :meth:`ask_async` for a simpler asynchronous workflow
+
+            :meth:`ask_ml` for faster ML predictions without waiting for a confident answer
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-
         :param image: The image, in several possible formats:
-          - filename (string) of a jpeg file
-          - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image: Any binary format must be JPEG-encoded already.
-            Any pixel format will get converted to JPEG at high quality before sending to service.
-
-        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout.
-
+            - filename (string) of a jpeg file
+            - byte array or BytesIO or BufferedReader with jpeg bytes
+            - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+                (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+            - PIL Image: Any binary format must be JPEG-encoded already.
+                Any pixel format will get converted to JPEG at high quality before sending to service.
+        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout. Default is 30.0.
+                   Set to 0 for async operation.
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
             The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
             Within patience_time, Groundlight will update ML predictions based on stronger findings,
             and, additionally, Groundlight will prioritize human review of the image query if necessary.
             This is a soft server-side timeout. If not set, use the detector's patience_time.
-
         :param confidence_threshold: The confidence threshold to wait for.
-            If not set, use the detector's confidence threshold.
-
+                                  If not set, use the detector's confidence threshold.
         :param human_review: If `None` or `DEFAULT`, send the image query for human review
-            only if the ML prediction is not confident.
-            If set to `ALWAYS`, always send the image query for human review.
-            If set to `NEVER`, never send the image query for human review.
-
-        :param want_async: If True, the client will return as soon as the image query is submitted and will not wait for
-            an ML/human prediction. The returned `ImageQuery` will have a `result` of None. Must set `wait` to 0 to use
-            want_async.
-
+                          only if the ML prediction is not confident.
+                          If set to `ALWAYS`, always send the image query for human review.
+                          If set to `NEVER`, never send the image query for human review.
+        :param want_async: If True, return immediately without waiting for result.
+                        Must set `wait=0` when using this option.
         :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
-                            this is the ID of the inspection to associate with the image query.
-
+                           this is the ID of the inspection to associate with the image query.
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
-            the image query (limited to 1KB). You can retrieve this metadata later by calling
-            `get_image_query()`.
+                      the image query (limited to 1KB). You can retrieve this metadata later by calling
+                      `get_image_query()`.
+        :param image_query_id: The ID for the image query. This is to enable specific functionality
+                            and is not intended for general external use. If not set, a random ID
+                            will be generated.
 
-        :param image_query_id: The ID for the image query. This is to enable specific functionality and is not intended
-            for general external use. If not set, a random ID will be generated.
-
-        :return: ImageQuery
+        :return: ImageQuery with query details and result (if wait > 0)
+        :raises ValueError: If wait > 0 when want_async=True
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
         """
         if wait is None:
             wait = self.DEFAULT_WAIT
@@ -549,8 +701,22 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Evaluates an image with Groundlight waiting until an answer above the confidence threshold
-        of the detector is reached or the wait period has passed.
+        Evaluates an image with Groundlight, waiting until an answer above the confidence threshold
+        is reached or the wait period has passed.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            image_query = gl.ask_confident(
+                detector="det_12345",
+                image="path/to/image.jpg",
+                confidence_threshold=0.9,
+                wait=30.0
+            )
+            if image_query.result.confidence >= 0.9:
+                print(f"Confident answer: {image_query.result.label}")
+            else:
+                print("Could not get confident answer within timeout")
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
 
@@ -572,7 +738,18 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
 
-        :return: ImageQuery
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
+                           this is the ID of the inspection to associate with the image query.
+
+        :return: ImageQuery containing the prediction result
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+
+        .. seealso::
+            :meth:`ask_ml` for getting the first ML prediction without waiting an answer above the confidence threshold
+            :meth:`ask_async` for submitting queries asynchronously
+            :meth:`submit_image_query` for submitting queries with more control over the process
+
         """
         return self.submit_image_query(
             detector,
@@ -594,10 +771,29 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Evaluates an image with Groundlight, getting the first answer Groundlight can provide.
+        Evaluates an image with Groundlight, getting the first ML prediction without waiting
+        for high confidence or human review.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            detector = gl.get_detector("det_12345")  # or create one with create_detector()
+
+            # Get quick ML prediction for an image
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+
+            # The image_query may have low confidence since we're never waiting for human review
+            print(f"Quick ML prediction: {image_query.result.label}")
+            print(f"Confidence: {image_query.result.confidence}")
+
+            # You can also pass metadata to track additional information
+            image_query = gl.ask_ml(
+                detector=detector,
+                image="path/to/image.jpg",
+                metadata={"camera_id": "front_door", "timestamp": "2023-01-01T12:00:00Z"}
+            )
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
@@ -606,14 +802,25 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
-
-        :param wait: How long to wait (in seconds) for any answer.
-
+        :param wait: How long to wait (in seconds) for any ML prediction.
+                   Default is 30.0 seconds.
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
+                           this is the ID of the inspection to associate with the image query.
 
-        :return: ImageQuery
+        :return: ImageQuery containing the ML prediction
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+
+        .. note::
+            This method returns the first available ML prediction, which may have low confidence.
+            For answers above a configured confidence_threshold, use :meth:`ask_confident` instead.
+
+        .. seealso::
+            :meth:`ask_confident` for waiting until a high-confidence prediction is available
+            :meth:`ask_async` for submitting queries asynchronously
         """
         iq = self.submit_image_query(
             detector,
@@ -638,76 +845,74 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         inspection_id: Optional[str] = None,
     ) -> ImageQuery:
         """
-        Convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling
-        `submit_image_query` with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the
-        ImageQuery.
+        Submit an image query asynchronously. This is equivalent to calling `submit_image_query`
+        with `want_async=True` and `wait=0`.
 
-        :param detector: the Detector object, or string id of a detector like `det_12345`
-
-        :param image: The image, in several possible formats:
-
-          - filename (string) of a jpeg file
-          - byte array or BytesIO or BufferedReader with jpeg bytes
-          - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-            (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
-          - PIL Image: Any binary format must be JPEG-encoded already.
-            Any pixel format will get converted to JPEG at high quality before sending to service.
-
-
-        :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
-            The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
-            Within patience_time, Groundlight will update ML predictions based on stronger findings,
-            and, additionally, Groundlight will prioritize human review of the image query if necessary.
-            This is a soft server-side timeout. If not set, use the detector's patience_time.
-
-        :param confidence_threshold: The confidence threshold to wait for.
-            If not set, use the detector's confidence threshold.
-
-        :param human_review: If `None` or `DEFAULT`, send the image query for human review
-            only if the ML prediction is not confident.
-            If set to `ALWAYS`, always send the image query for human review.
-            If set to `NEVER`, never send the image query for human review.
-
-        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
-                            this is the ID of the inspection to associate with the image query.
-
-        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
-            the image query (limited to 1KB). You can retrieve this metadata later by calling
-            `get_image_query()`.
-
-        :return: ImageQuery
-
+        .. note::
+            The returned ImageQuery will have result=None since the prediction is computed
+            asynchronously. Use :meth:`wait_for_confident_result`, :meth:`wait_for_ml_result`,
+            or :meth:`get_image_query` to retrieve the result later.
 
         **Example usage**::
 
             gl = Groundlight()
-            detector = gl.get_or_create_detector(
-                            name="door",
-                            query="Is the door locked?",
-                            confidence_threshold=0.9
-                        )
 
+            # Submit query asynchronously
             image_query = gl.ask_async(
-                            detector=detector,
-                            image="path/to/image.jpeg")
+                detector="det_12345",
+                image="path/to/image.jpg",
+                confidence_threshold=0.9,
+                human_review="ALWAYS"
+            )
+            print(f"Query submitted with ID: {query.id}")
 
-            # the image_query will have an id for later retrieval
-            assert image_query.id is not None
+            # Later, retrieve the result
+            image_query = gl.wait_for_confident_result(
+                image_query=query,
+                confidence_threshold=0.9,
+                timeout_sec=60.0
+            )
+            print(f"Answer: {image_query.result.label}")
 
-            # Do not attempt to access the result of this query as the result for all async queries
-            # will be None. Your result is being computed asynchronously and will be available later
-            assert image_query.result is None
-
-            # retrieve the result later or on another machine by calling gl.wait_for_confident_result()
-            # with the id of the image_query above. This will block until the result is available.
-            image_query = gl.wait_for_confident_result(image_query.id)
-
-            # now the result will be available for your use
-            assert image_query.result is not None
-
-            # alternatively, you can check if the result is available (without blocking) by calling
-            # gl.get_image_query() with the id of the image_query above.
+            # Alternatively, check if result is ready without blocking
             image_query = gl.get_image_query(image_query.id)
+            if image_query.result:
+                print(f"Result ready: {image_query.result.label}")
+            else:
+                print("Still processing...")
+
+        :param detector: the Detector object, or string id of a detector like `det_12345`
+        :param image: The image, in several possible formats:
+                   - filename (string) of a jpeg file
+                   - byte array or BytesIO or BufferedReader with jpeg bytes
+                   - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
+                     (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+                   - PIL Image: Any binary format must be JPEG-encoded already.
+                     Any pixel format will get converted to JPEG at high quality before sending to service.
+        :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
+                           The longer the patience_time, the more likely Groundlight will arrive at a
+                           confident answer. This is a soft server-side timeout. If not set, use the
+                           detector's patience_time.
+        :param confidence_threshold: The confidence threshold to wait for.
+                                  If not set, use the detector's confidence threshold.
+        :param human_review: If `None` or `DEFAULT`, send the image query for human review
+                          only if the ML prediction is not confident.
+                          If set to `ALWAYS`, always send the image query for human review.
+                          If set to `NEVER`, never send the image query for human review.
+        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
+                      the image query (limited to 1KB). You can retrieve this metadata later by calling
+                      `get_image_query()`.
+        :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
+                           this is the ID of the inspection to associate with the image query.
+
+        :return: ImageQuery with result set to None (result will be computed asynchronously)
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+
+        .. seealso::
+            :meth:`wait_for_confident_result` for waiting until a confident result is available
+            :meth:`wait_for_ml_result` for waiting until the first ML result is available
+            :meth:`get_image_query` for checking if a result is ready without blocking
         """
         return self.submit_image_query(
             detector,
@@ -728,35 +933,93 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         timeout_sec: float = 30.0,
     ) -> ImageQuery:
         """
-        Waits for an image query result's confidence level to reach the specified value.
-        Currently this is done by polling with an exponential back-off.
+        Waits for an image query result's confidence level to reach the specified confidence_threshold.
+        Uses polling with exponential back-off to check for results.
 
-        :param image_query: An ImageQuery object to poll
+        .. note::
+            This method blocks until either:
+            1. A result with confidence >= confidence_threshold is available
+            2. The timeout_sec is reached
+            3. An error occurs
 
+        **Example usage**::
+
+            gl = Groundlight()
+            query = gl.ask_async(
+                            detector="det_12345",
+                            image="path/to/image.jpg"
+                        )
+            try:
+                result = gl.wait_for_confident_result(
+                                query,
+                                confidence_threshold=0.9,
+                                timeout_sec=60.0
+                            )
+                print(f"Got confident answer: {result.result.label}")
+            except TimeoutError:
+                print("Timed out waiting for confident result")
+
+        :param image_query: An ImageQuery object or query ID string to poll
         :param confidence_threshold: The confidence threshold to wait for.
-            If not set, use the detector's confidence threshold.
-
+                                  If not set, use the detector's confidence threshold.
         :param timeout_sec: The maximum number of seconds to wait.
+                         Default is 30.0 seconds.
 
-        :return: ImageQuery
+        :return: ImageQuery with confident result
+        :raises TimeoutError: If no confident result is available within timeout_sec
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+
+        .. seealso::
+            :meth:`ask_async` for submitting queries asynchronously
+            :meth:`get_image_query` for checking result status without blocking
+            :meth:`wait_for_ml_result` for waiting until the first ML result is available
         """
-        if confidence_threshold is None:
-            if isinstance(image_query, str):
-                image_query = self.get_image_query(image_query)
+        if isinstance(image_query, str):
+            image_query = self.get_image_query(image_query)
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)
         return self._wait_for_result(image_query, condition=confidence_above_thresh, timeout_sec=timeout_sec)
 
     def wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
-        """Waits for the first ml result to be returned.
-        Currently this is done by polling with an exponential back-off.
+        """
+        Waits for the first ML result to be returned for an image query.
+        Uses polling with exponential back-off to check for results.
 
-        :param image_query: An ImageQuery object to poll
+        .. note::
+            This method blocks until either:
+            1. An ML result is available
+            2. The timeout_sec is reached
+            3. An error occurs
 
+        **Example usage**::
+
+            gl = Groundlight()
+            query = gl.ask_async(
+                detector="det_12345",
+                image="path/to/image.jpg"
+            )
+
+            try:
+                result = gl.wait_for_ml_result(query, timeout_sec=3.0)
+                print(f"Got ML result: {result.result.label}")
+            except TimeoutError:
+                print("Timed out waiting for ML result")
+
+        :param image_query: An ImageQuery object or ImageQuery ID string to poll
         :param timeout_sec: The maximum number of seconds to wait.
+                         Default is 30.0 seconds.
 
-        :return: ImageQuery
+        :return: ImageQuery with ML result
+        :raises TimeoutError: If no ML result is available within timeout_sec
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+
+        .. seealso::
+            :meth:`ask_async` for submitting queries asynchronously
+            :meth:`get_image_query` for checking result status without blocking
+            :meth:`wait_for_confident_result` for waiting until a confident result is available
         """
         return self._wait_for_result(image_query, condition=iq_is_answered, timeout_sec=timeout_sec)
 
@@ -802,17 +1065,32 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
     ):
         """
-        Add a new label to an image query.  This answers the detector's
-        question.
+        Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
+        for training detectors, or to correct the results of detectors.
 
-        :param image_query: Either an ImageQuery object (returned from
-                            `ask_ml` or similar method) or an image_query id as a
-                            string.
+        **Example usage**::
 
-        :param label: The string "YES" or the string "NO" in answer to the
-            query.
-        :param rois: An option list of regions of interest (ROIs) to associate
-            with the label. (This feature experimental)
+            # Using an ImageQuery object
+            image_query = client.ask_ml(detector_id, image_data)
+            client.add_label(image_query, "YES")
+
+            # Using an image query ID string directly
+            client.add_label("iq_abc123", "NO")
+
+            # With regions of interest (ROIs)
+            rois = [ROI(x=100, y=100, width=50, height=50)]
+            client.add_label(image_query, "YES", rois=rois)
+
+        :param image_query: Either an ImageQuery object (returned from methods like
+                          `ask_ml`) or an image query ID string starting with "iq_".
+
+        :param label: The label value to assign, typically "YES" or "NO" for binary
+                     classification detectors. For multi-class detectors, use one of
+                     the defined class names.
+
+        :param rois: Optional list of ROI objects defining regions of interest in the
+                    image. Each ROI specifies a bounding box with x, y coordinates
+                    and width, height.
 
         :return: None
         """
@@ -823,7 +1101,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         else:
             image_query_id = str(image_query)
             # Some old imagequery id's started with "chk_"
-            # TODO: handle iqe_ for image_queries returned from edge endpoints
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         api_label = convert_display_label_to_internal(image_query_id, label)
