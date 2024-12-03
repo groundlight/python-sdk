@@ -34,12 +34,12 @@ Create a playful home automation system that detects when your dog is on the cou
 
 [Build your own dog detector →](/docs/sample-applications/dog-on-couch)
 
-## Live Stream Monitor
+## Live Stream Monitor: Bird Feeder Edition
 
-Monitor YouTube live streams with automated alerts using Groundlight's vision API. Features include:
+Monitor live streams with automated alerts using Groundlight's vision API. Features include:
 
 - Frame capture from live streams
 - Alert system integration
 - Simple command-line interface
 
-[Create a stream monitor →](/docs/sample-applications/streaming-ffmpeg)
+[Create a monitor for birds at your feeder →](/docs/sample-applications/streaming-with-alerts)

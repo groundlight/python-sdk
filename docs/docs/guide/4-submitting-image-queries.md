@@ -50,22 +50,6 @@ image_query = gl.ask_confident(detector=detector, image="path/to/image.jpg")
 # highlight-end
 ```
 
-### Get the first available answer, regardless of confidence
-`ask_ml` evaluates an image with Groundlight and returns the first answer Groundlight can provide, agnostic of confidence. There is no wait period when using this method. It is called `ask_ml` because our machine learning models are earliest on our escalation ladder and thus always the fastest to respond.
-
-```python notest
-from groundlight import Groundlight
-
-gl = Groundlight()
-detector = gl.get_detector(id="det_abcdef...")
-
-# highlight-start
-image_query = gl.ask_ml(detector=detector, image="path/to/image.jpg")
-# highlight-end
-```
-
-When using this method, low-confidence Image Queries will still be escalated to human review - this allows our models to continue to improve over time.
-
 ### Submit an ImageQuery asynchronously
 `ask_async` is a convenience method for submitting an `ImageQuery` asynchronously. This is equivalent to calling `submit_image_query` with `want_async=True` and `wait=0`. Use `get_image_query` to retrieve the `result` of the ImageQuery.
 
@@ -91,9 +75,31 @@ image_query = gl.get_image_query(id=image_query.id)
 
 See this [guide](./7-async-queries.md) for more information on ImageQueries submitted asynchronously.
 
+### (Advanced) Get the first available answer, regardless of confidence
+`ask_ml` evaluates an image with Groundlight and returns the first answer Groundlight can provide, agnostic of confidence. There is no wait period when using this method. It is called `ask_ml` because our machine learning models are earliest on our escalation ladder and thus always the fastest to respond.
+
+:::note
+
+We recommend using the `ask_confident` or the `ask_async` methods whenever possible for best results.
+
+:::
+
+```python notest
+from groundlight import Groundlight
+
+gl = Groundlight()
+detector = gl.get_detector(id="det_abcdef...")
+
+# highlight-start
+image_query = gl.ask_ml(detector=detector, image="path/to/image.jpg")
+# highlight-end
+```
+
+When using this method, low-confidence Image Queries will still be escalated to human review - this allows our models to continue to improve over time.
+
 ## Working with Image Queries Post-Submission
 
-### Retrieve an Image Query
+### Retrieve an Image Query result
 
 In practice, you may want to check for a new result on your query. For example, after a cloud reviewer labels your query. For example, you can use the `image_query.id` after the above `submit_image_query()` call.
 

@@ -16,6 +16,12 @@ A snooze period can be configured to prevent the alert from triggering multiple 
 
 Optionally, you can configure the alert to include the triggering image in the alert message.
 
+:::tip
+
+Consider configuring a "no queries submitted" alert to monitor system health. If your application is expected to submit queries regularly (e.g., monitoring a camera feed), setting an alert for when no queries are received for a few minutes can help quickly identify if your system has gone offline or is experiencing connectivity issues.
+
+:::
+
 ## Alert Mediums
 
 Groundlight supports the following alerts via Email and Text Message (SMS), with webhook support coming soon.

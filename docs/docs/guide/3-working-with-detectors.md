@@ -63,6 +63,12 @@ detectors = gl.list_detectors(page=1, page_size=5)
 ### [BETA] Create a Counting Detector
 So far, all of the detectors we've created have been binary classification detectors. But what if you want to count the number of objects in an image? You can create a counting detector to do just that. Counting detectors also return bounding boxes around the objects they count.
 
+:::note
+
+Counting Detectors are available on [Pro, Business, and Enterprise plans](https://www.groundlight.ai/pricing).
+
+:::
+
 ```python notest
 from groundlight import ExperimentalApi
 

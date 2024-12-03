@@ -17,6 +17,7 @@ The Stream Processor can be combined with [Groundlight Alerts](../guide/9-alerts
 You will need:
 1. A [Groundlight account](https://dashboard.groundlight.ai/)
 2. An API token from the [Groundlight dashboard](https://dashboard.groundlight.ai/reef/my-account/api-tokens)
+3. [Docker](https://www.docker.com/) installed on your system
 
 Set your Groundlight API token as an environment variable:
 ```bash
