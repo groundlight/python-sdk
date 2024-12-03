@@ -399,12 +399,13 @@ class ExperimentalApi(Groundlight):
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
 
-        response = requests.post(url, headers=headers, data=data, files=files, params=params)
+        response = requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
         response.raise_for_status()  # Raise an exception for error status codes
 
     def create_detector_group(self, name: str) -> DetectorGroup:
         """
-        Creates a detector group with the given name. A detector group allows you to organize related detectors together.
+        Creates a detector group with the given name. A detector group allows you to organize
+        related detectors together.
 
         .. note::
             You can specify a detector group when creating a detector without the need to create it ahead of time.

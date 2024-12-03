@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 import logging
 import os
 import time
@@ -298,7 +299,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             for detector in detectors.items:
                 print(detector)
 
-        :param page: The page number to retrieve (1-based indexing). Use this parameter to navigate through multiple pages of detectors.
+        :param page: The page number to retrieve (1-based indexing). Use this parameter to navigate
+            through multiple pages of detectors.
         :param page_size: The number of detectors to return per page.
 
         :return: PaginatedDetectorList containing the requested page of detectors and pagination metadata
@@ -502,7 +504,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
         """
-        Get an ImageQuery by its ID. This is useful for retrieving the status and results of a previously submitted query.
+        Get an ImageQuery by its ID. This is useful for retrieving the status and results of a
+        previously submitted query.
 
         **Example Usage:**
 
@@ -541,7 +544,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 print(f"Query ID: {query.id}")
                 print(f"Result: {query.result.label if query.result else 'No result yet'}")
 
-        :param page: Which page of results to return, starting from 1. Default is 1.
+        :param page: The page number to retrieve (1-based indexing). Use this parameter to navigate
+            through multiple pages of image queries.
         :param page_size: Number of image queries to return per page. Default is 10.
         :return: PaginatedImageQueryList containing the requested page of image queries and pagination metadata
                 like total count and links to next/previous pages.
@@ -624,8 +628,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
             - PIL Image: Any binary format must be JPEG-encoded already.
                 Any pixel format will get converted to JPEG at high quality before sending to service.
-        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout. Default is 30.0.
-                   Set to 0 for async operation.
+        :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout.
+            Default is 30.0. Set to 0 for async operation.
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
             The longer the patience_time, the more likely Groundlight will arrive at a confident answer.
             Within patience_time, Groundlight will update ML predictions based on stronger findings,
