@@ -1,6 +1,6 @@
 # pylint: disable=deprecated-module
-from pathlib import Path
 from io import BufferedReader, BytesIO, IOBase
+from pathlib import Path
 from typing import Union
 
 from groundlight.optional_imports import Image, np
@@ -29,6 +29,7 @@ class ByteStreamWrapper(IOBase):
 
     def close(self) -> None:
         pass
+
 
 def bytestream_from_filename(image_filename: str, jpeg_quality: int = DEFAULT_JPEG_QUALITY) -> ByteStreamWrapper:
     """Determines what to do with an arbitrary filename
