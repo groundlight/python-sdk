@@ -124,6 +124,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
+            gl = ExperimentalApi()
+
             # Create a rule to send email alerts when door is detected as open
             rule = gl.create_rule(
                 detector="door_detector",
@@ -204,7 +206,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Get an existing rule by ID
             rule = gl.get_rule(action_id=123)
             print(f"Rule name: {rule.name}")
@@ -221,7 +224,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Delete a specific rule
             gl.delete_rule(action_id=123)
 
@@ -235,7 +239,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Get first page of rules
             rules = gl.list_rules(page=1, page_size=10)
             print(f"Total rules: {rules.count}")
@@ -257,11 +262,15 @@ class ExperimentalApi(Groundlight):
     def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
         """
         Deletes all rules associated with the given detector. If no detector is specified,
-        deletes all rules.
+        deletes all rules in the account.
+
+        WARNING: If no detector is specified, this will delete ALL rules in your account.
+        This action cannot be undone. Use with caution.
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Delete all rules for a specific detector
             detector = gl.get_detector("my_detector")
             num_deleted = gl.delete_all_rules(detector)
@@ -295,7 +304,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Get image from an image query
             iq = gl.get_image_query("iq_123")
             image_bytes = gl.get_image(iq.id)
@@ -329,7 +339,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             detector = gl.get_detector("det_123")
             notes = gl.get_notes(detector)
             # notes = {
@@ -356,7 +367,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             detector = gl.get_detector("det_123")
             gl.create_note(detector, "Please label doors that are slightly ajar as 'YES'")
 
@@ -400,7 +412,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Create a group for all door-related detectors
             door_group = gl.create_detector_group("door-detectors")
 
@@ -424,7 +437,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Get all detector groups
             groups = gl.list_detector_groups()
 
@@ -449,11 +463,12 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             # Create an ROI for a door in the image
             door_roi = gl.create_roi(
                 label="door",
-                top_left=(0.2, 0.3),    # Coordinates are normalized (0-1)
+                top_left=(0.2, 0.3),     # Coordinates are normalized (0-1)
                 bottom_right=(0.4, 0.8)  # Coordinates are normalized (0-1)
             )
 
@@ -494,7 +509,7 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Using an ImageQuery object
             image_query = gl.ask_ml(detector_id, image_data)
@@ -553,7 +568,7 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Using a detector object
             detector = gl.get_detector("det_abc123")
@@ -577,7 +592,7 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Using a detector object
             detector = gl.get_detector("det_abc123")
@@ -603,7 +618,7 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Using a detector object
             detector = gl.get_detector("det_abc123")
@@ -637,7 +652,7 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Using a detector object
             detector = gl.get_detector("det_abc123")
@@ -684,7 +699,7 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Create a detector that counts people up to 5
             detector = gl.create_counting_detector(
@@ -753,7 +768,8 @@ class ExperimentalApi(Groundlight):
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
+
             detector = gl.create_multiclass_detector(
                 name="Traffic Light Detector",
                 query="What color is the traffic light?",

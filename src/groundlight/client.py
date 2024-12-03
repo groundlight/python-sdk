@@ -291,7 +291,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         **Example usage**::
 
             gl = Groundlight()
+
+            # Get first page of 5 detectors
             detectors = gl.list_detectors(page=1, page_size=5)
+
             for detector in detectors.items:
                 print(detector)
 
