@@ -122,10 +122,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         Initialize a new Groundlight client instance.
 
         :param endpoint: Optional custom API endpoint URL. If not specified, uses the default Groundlight endpoint.
-
         :param api_token: Authentication token for API access.
                         If not provided, will attempt to read from the "GROUNDLIGHT_API_TOKEN" environment variable.
-
         :param disable_tls_verification: If True, disables SSL/TLS certificate verification for API calls.
                                        When not specified, checks the "DISABLE_TLS_VERIFY" environment variable
                                        (1=disable, 0=enable). Certificate verification is enabled by default.
@@ -225,12 +223,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         This method verifies that the API token is valid and returns the email address of the authenticated user.
         It can be used to confirm that authentication is working correctly.
 
-        Returns:
-            str: The email address of the authenticated user
+        **Example usage**::
 
-        Raises:
-            ApiTokenError: If the API token is invalid
-            GroundlightClientError: If there are connectivity issues with the Groundlight service
+            gl = Groundlight()
+            username = gl.whoami()
+            print(f"Authenticated as {username}")
+
+        :return: The email address of the authenticated user
+        :raises ApiTokenError: If the API token is invalid
+        :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
         obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return obj["email"]
@@ -294,11 +295,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             for detector in detectors.items:
                 print(detector)
 
-        :param page: the page number
+        :param page: The page number to retrieve (1-based indexing). Use this parameter to navigate through multiple pages of detectors.
+        :param page_size: The number of detectors to return per page.
 
-        :param page_size: the page size
-
-        :return: PaginatedDetectorList
+        :return: PaginatedDetectorList containing the requested page of detectors and pagination metadata
         """
         obj = self.detectors_api.list_detectors(
             page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
@@ -378,26 +378,25 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 group_name="parking-monitoring",
                 patience_time=60.0
             )
+        :param name: A short, descriptive name for the detector. This name should be unique within your account
+                    and help identify the detector's purpose.
+        :param query: The question that the detector will answer about images. For binary classification,
+                     this should be a yes/no question (e.g. "Is there a person in the image?").
+        :param group_name: Optional name of a group to organize related detectors together. If not specified,
+                         the detector will be placed in the default group.
+        :param confidence_threshold: A value between 0.5 and 1 that sets the minimum confidence level required
+                                  for the ML model's predictions. If confidence is below this threshold,
+                                  the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
 
-        :param name: the detector name
-
-        :param query: the detector query
-
-        :param group_name: the detector group that the new detector should belong to. If none,
-            defaults to default_group
-
-        :param confidence_threshold: the confidence threshold
-
-        :param patience_time: the patience time, or how long Groundlight should work to generate a
-            confident answer. Defaults to 30 seconds.
-
-        :param pipeline_config: the pipeline config
-
-        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
-            the detector (limited to 1KB). You can retrieve this metadata later by calling
-            `get_detector()`.
-
-        :return: Detector
+        :return: The created Detector object
         """
 
         detector_creation_input = self._prep_create_detector(
@@ -439,13 +438,21 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 metadata={"location": "store-123"}
             )
 
-        :param name: the detector name
-        :param query: the detector query
-        :param group_name: the detector group that the new detector should belong to
-        :param confidence_threshold: the confidence threshold
-        :param pipeline_config: the pipeline config
-        :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
-            the detector (limited to 1KB). You can retrieve this metadata later by calling `get_detector()`.
+        :param name: A short, descriptive name for the detector. This name should be unique within your account
+                    and help identify the detector's purpose.
+        :param query: The question that the detector will answer about images. For binary classification,
+                     this should be a yes/no question (e.g. "Is there a person in the image?").
+        :param group_name: Optional name of a group to organize related detectors together. If not specified,
+                         the detector will be placed in the default group.
+        :param confidence_threshold: A value between 0.5 and 1 that sets the minimum confidence level required
+                                  for the ML model's predictions. If confidence is below this threshold,
+                                  the query may be sent for human review.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
 
         :return: Detector with the specified configuration
         :raises ValueError: If an existing detector is found but has different configuration
@@ -519,7 +526,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         List all image queries associated with your account, with pagination support.
 
-        **Example Usage:**
+        **Example Usage**::
 
             gl = Groundlight()
 
@@ -560,7 +567,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.
 
-        **Example Usage:**
+        **Example Usage**::
 
             from groundlight import Groundlight
             from PIL import Image
@@ -719,7 +726,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 print("Could not get confident answer within timeout")
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
-
         :param image: The image, in several possible formats:
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
@@ -728,16 +734,12 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
           - PIL Image
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
-
         :param confidence_threshold: The confidence threshold to wait for.
             If not set, use the detector's confidence threshold.
-
         :param wait: How long to wait (in seconds) for a confident answer.
-
         :param metadata: A dictionary or JSON string of custom key/value metadata to associate with
             the image query (limited to 1KB). You can retrieve this metadata later by calling
             `get_image_query()`.
-
         :param inspection_id: Most users will omit this. For accounts with Inspection Reports enabled,
                            this is the ID of the inspection to associate with the image query.
 
@@ -962,8 +964,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :param image_query: An ImageQuery object or query ID string to poll
         :param confidence_threshold: The confidence threshold to wait for.
                                   If not set, use the detector's confidence threshold.
-        :param timeout_sec: The maximum number of seconds to wait.
-                         Default is 30.0 seconds.
+        :param timeout_sec: The maximum number of seconds to wait. Default is 30.0 seconds.
 
         :return: ImageQuery with confident result
         :raises TimeoutError: If no confident result is available within timeout_sec
@@ -1008,8 +1009,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 print("Timed out waiting for ML result")
 
         :param image_query: An ImageQuery object or ImageQuery ID string to poll
-        :param timeout_sec: The maximum number of seconds to wait.
-                         Default is 30.0 seconds.
+        :param timeout_sec: The maximum number of seconds to wait. Default is 30.0 seconds.
 
         :return: ImageQuery with ML result
         :raises TimeoutError: If no ML result is available within timeout_sec
@@ -1029,10 +1029,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """Performs polling with exponential back-off until the condition is met for the image query.
 
         :param image_query: An ImageQuery object to poll
-
         :param condition: A callable that takes an ImageQuery and returns True or False
             whether to keep waiting for a better result.
-
         :param timeout_sec: The maximum number of seconds to wait.
 
         :return: ImageQuery
@@ -1070,24 +1068,24 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
+            gl = Groundlight()
+
             # Using an ImageQuery object
-            image_query = client.ask_ml(detector_id, image_data)
-            client.add_label(image_query, "YES")
+            image_query = gl.ask_ml(detector_id, image_data)
+            gl.add_label(image_query, "YES")
 
             # Using an image query ID string directly
-            client.add_label("iq_abc123", "NO")
+            gl.add_label("iq_abc123", "NO")
 
             # With regions of interest (ROIs)
             rois = [ROI(x=100, y=100, width=50, height=50)]
-            client.add_label(image_query, "YES", rois=rois)
+            gl.add_label(image_query, "YES", rois=rois)
 
         :param image_query: Either an ImageQuery object (returned from methods like
                           `ask_ml`) or an image query ID string starting with "iq_".
-
         :param label: The label value to assign, typically "YES" or "NO" for binary
                      classification detectors. For multi-class detectors, use one of
                      the defined class names.
-
         :param rois: Optional list of ROI objects defining regions of interest in the
                     image. Each ROI specifies a bounding box with x, y coordinates
                     and width, height.
