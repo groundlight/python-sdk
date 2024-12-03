@@ -6,7 +6,7 @@ on:
   push:
 
 env:
-  PYTHON_VERSION: "3.10"
+  PYTHON_VERSION: "3.11"
   POETRY_VERSION: "1.7.1"
 jobs:
   # Run our linter on every push to the repository.
@@ -65,7 +65,7 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
-  # Check that the docs build.  (No broken links, etc.)
+  # Check that the docs build. (No broken links, etc.)
   test-docs:
     runs-on: ubuntu-latest
     defaults:
@@ -77,14 +77,14 @@ jobs:
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
           cache: npm
       - name: Install dependencies
         run: npm install
       - name: Build website
         run: npm run build
 
-    # Checks that the API reference docs built with shpinx build
+  # Checks that the API reference docs built with sphinx build
   test-api-reference-docs:
     runs-on: ubuntu-latest
     steps:
@@ -135,6 +135,7 @@ jobs:
             "3.10",
             "3.11",
             "3.12",
+            "3.13",
           ]
         install_extras: [true, false]
     steps:
@@ -257,7 +258,7 @@ jobs:
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
           cache: npm
       - name: Install dependencies
         run: npm install
@@ -292,8 +293,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test-comprehensive
-      # For now, we'll require the comprehensive tests to succeed, but not the linter checks.
-      # - lint
+      - lint
     env:
       POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
