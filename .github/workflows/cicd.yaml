@@ -77,7 +77,7 @@ jobs:
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 21
           cache: npm
       - name: Install dependencies
         run: npm install
@@ -101,7 +101,7 @@ jobs:
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 21
           cache: npm
       - name: Install dependencies
         run: make install-sphinx-deps
@@ -261,7 +261,7 @@ jobs:
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 21
           cache: npm
       - name: Install dependencies
         run: npm install
