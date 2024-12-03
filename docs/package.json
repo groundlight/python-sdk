@@ -19,9 +19,9 @@
     "@docusaurus/plugin-client-redirects": "^3.0.0",
     "@docusaurus/preset-classic": "3.0.0",
     "@easyops-cn/docusaurus-search-local": "^0.38.0",
-    "@mdx-js/react": "^3.0.0",
-    "clsx": "^1.2.1",
-    "prism-react-renderer": "^2.3.0",
+    "@mdx-js/react": "^3.1.0",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "rehype-katex": "^7.0.1",
@@ -46,6 +46,6 @@
     ]
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=22.0"
   }
 }
