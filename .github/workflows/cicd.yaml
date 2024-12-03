@@ -94,14 +94,17 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - name: install poetry
+      - name: Install poetry
         uses: snok/install-poetry@v1
         with:
           version: ${{ env.POETRY_VERSION }}
-
+      - name: Setup npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: npm
       - name: Install dependencies
         run: make install-sphinx-deps
-
       - name: Build API documentation
         run: |
           make apidocs
