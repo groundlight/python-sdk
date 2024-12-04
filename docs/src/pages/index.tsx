@@ -1,15 +1,12 @@
-import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import HomepageFeatures from "@site/src/components/HomepageFeatures";
 import Layout from "@theme/Layout";
-import { useLocation } from "react-router-dom"; 
-import clsx from "clsx";
+import { useLocation } from "react-router-dom";
 // There should be a line here that says
 // import React from "react";
 // VSCode might try to delete it, but that will break the site.
-import React, { useState, useEffect } from "react";
-import baseStyles from '../css/style.module.css'
-import '../css/home.css'
+import { useEffect, useState } from "react";
+import baseStyles from '../css/style.module.css';
+import "../css/styles.css";
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -47,17 +44,20 @@ export default function Home(): JSX.Element {
 
   const location = useLocation();
   const isBasePath = location.pathname === "/python-sdk/";
+
   useEffect(() => {
     // Add or remove the class on the <body> tag
-    if (isBasePath) {
-      document.querySelector('#__docusaurus').classList.add("home-page");
-    } else {
-      document.querySelector('#__docusaurus').classList.remove("home-page");
-    }
+    const mainWrapper = document.querySelector('#__docusaurus')
 
+    if (isBasePath) {
+      mainWrapper.classList.add("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
+    } else {
+      mainWrapper.classList.remove("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
+    }
+    
     // Cleanup on component unmount
     return () => {
-      document.querySelector('#__docusaurus').classList.remove("home-page");
+      mainWrapper.classList.remove("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
     };
   }, [isBasePath]);
 
@@ -90,7 +90,7 @@ print(iq);
       description="Computer Vision powered by Natural Language"
     >
       <HomepageHeader />
-      <main className={clsx({ "home-page": isBasePath })}>
+      <main>
         <section className={baseStyles.munbannersection}>
           <div className={baseStyles.container}>
             <div className={baseStyles.bannerwrapper}>
@@ -159,7 +159,7 @@ print(iq);
                   <img src="img/logo-github.png" alt="icon"/>
                   <img src="img/logo-boston-dynamics.png" alt="icon"/>
                   <img src="img/logo-aws.png" alt="icon"/>
-                  <img src="img/universal-roboticslogo.png" alt="icon"/>
+                  <img src="img/universal-robotics-logo.png" alt="icon"/>
                 </div>
               </div>
               <span className={baseStyles.pipe}></span>
@@ -193,7 +193,7 @@ print(iq);
           </div>
         </section>
 
-        <section className={baseStyles.codesection}>
+        <section className={baseStyles.muncodesection}>
           <div className={baseStyles.container}>
             <h2 className={baseStyles.sectiontitle}>Build a <span style={{color: "#991EFF"}}>working computer vision application</span> in just
               a few lines of code:</h2>
