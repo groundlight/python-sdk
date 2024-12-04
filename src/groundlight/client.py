@@ -1070,7 +1070,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
     # pylint: disable=duplicate-code
     def add_label(
-        self, image_query: Union[ImageQuery, str], label: Union[Label, int, str], rois: Union[List[ROI], str, None] = None
+        self,
+        image_query: Union[ImageQuery, str],
+        label: Union[Label, int, str],
+        rois: Union[List[ROI], str, None] = None,
     ):
         """
         Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
