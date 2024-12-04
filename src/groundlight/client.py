@@ -1068,7 +1068,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             image_query = self._fixup_image_query(image_query)
         return image_query
 
-    # pylint: disable=duplicate-code
     def add_label(
         self, image_query: Union[ImageQuery, str], label: Union[Label, int, str], rois: Union[List[ROI], str, None] = None
     ):
@@ -1078,7 +1077,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Using an ImageQuery object
             image_query = gl.ask_ml(detector_id, image_data)
@@ -1113,7 +1112,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         else:
             image_query_id = str(image_query)
             # Some old imagequery id's started with "chk_"
-            # TODO: handle iqe_ for image_queries returned from edge endpoints
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
         geometry_requests = [BBoxGeometryRequest(**roi.geometry.dict()) for roi in rois] if rois else None
