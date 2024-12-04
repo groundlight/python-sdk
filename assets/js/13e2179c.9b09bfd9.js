@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcode_groundlight_ai=self.webpackChunkcode_groundlight_ai||[]).push([[854],{6832:e=>{e.exports=JSON.parse('{"metadata":{"permalink":"/python-sdk/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":2,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);

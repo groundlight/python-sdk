@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcode_groundlight_ai=self.webpackChunkcode_groundlight_ai||[]).push([[1903],{1912:o=>{o.exports=JSON.parse('{"blogBasePath":"/python-sdk/blog","blogTitle":"Blog","authorsListPath":"/python-sdk/blog/authors"}')}}]);
