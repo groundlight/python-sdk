@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from groundlight import ExperimentalApi, ApiException
+from groundlight import ApiException, ExperimentalApi
 
 
 def test_binary_labels(gl_experimental: ExperimentalApi):
@@ -20,6 +20,7 @@ def test_binary_labels(gl_experimental: ExperimentalApi):
     with pytest.raises(ApiException) as _:
         gl_experimental.add_label(iq1, "MAYBE")
 
+
 def test_counting_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
     det = gl_experimental.create_counting_detector(name, "test_query")
@@ -34,6 +35,7 @@ def test_counting_labels(gl_experimental: ExperimentalApi):
         gl_experimental.add_label(iq1, "MAYBE")
     with pytest.raises(ApiException) as _:
         gl_experimental.add_label(iq1, -999)
+
 
 def test_multiclass_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
