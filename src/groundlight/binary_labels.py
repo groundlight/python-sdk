@@ -53,25 +53,3 @@ def convert_internal_label_to_display(
 
     logger.warning(f"Unrecognized internal label {label} - leaving it alone as a string.")
     return label
-
-
-def convert_display_label_to_internal(
-    context: Union[ImageQuery, Detector, str],  # pylint: disable=unused-argument
-    label: Union[Label, str],
-) -> str:
-    """Convert a label that comes from the user into the label string that we send to the server. We
-    are strict here, and only allow YES/NO.
-
-    NOTE: We accept case-insensitive label strings from the user, but we send UPPERCASE labels to
-    the server. E.g., user inputs "yes" -> the label is returned as "YES".
-    """
-    # NOTE: In the future we should validate against actually supported labels for the detector
-    if not isinstance(label, str):
-        raise ValueError(f"Expected a string label, but got {label} of type {type(label)}")
-    upper = label.upper()
-    if upper == Label.YES:
-        return DeprecatedLabel.PASS.value
-    if upper == Label.NO:
-        return DeprecatedLabel.FAIL.value
-
-    raise ValueError(f"Invalid label string '{label}'.  Must be one of '{Label.YES.value}','{Label.NO.value}'.")

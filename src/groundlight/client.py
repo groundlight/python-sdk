@@ -13,9 +13,11 @@ from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
 from model import (
     ROI,
     BinaryClassificationResult,
@@ -26,7 +28,7 @@ from model import (
 )
 from urllib3.exceptions import InsecureRequestWarning
 
-from groundlight.binary_labels import Label, convert_display_label_to_internal, convert_internal_label_to_display
+from groundlight.binary_labels import Label, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types
@@ -1066,8 +1068,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             image_query = self._fixup_image_query(image_query)
         return image_query
 
+    # pylint: disable=duplicate-code
     def add_label(
-        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
+        self, image_query: Union[ImageQuery, str], label: Union[Label, int, str], rois: Union[List[ROI], str, None] = None
     ):
         """
         Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
@@ -1075,7 +1078,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = Groundlight()
+            gl = ExperimentalApi()
 
             # Using an ImageQuery object
             image_query = gl.ask_ml(detector_id, image_data)
@@ -1088,27 +1091,41 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             rois = [ROI(x=100, y=100, width=50, height=50)]
             gl.add_label(image_query, "YES", rois=rois)
 
-        :param image_query: Either an ImageQuery object (returned from methods like :meth:`ask_ml`) or an image query ID
-            string starting with "iq_".
-        :param label: The label value to assign, typically "YES" or "NO" for binary classification detectors.
-            For multi-class detectors, use one of the defined class names.
-        :param rois: Optional list of ROI objects defining regions of interest in the image.
-            Each ROI specifies a bounding box with x, y coordinates and width, height.
+        :param image_query: Either an ImageQuery object (returned from methods like
+                          `ask_ml`) or an image query ID string starting with "iq_".
+
+        :param label: The label value to assign, typically "YES" or "NO" for binary
+                     classification detectors. For multi-class detectors, use one of
+                     the defined class names.
+
+        :param rois: Optional list of ROI objects defining regions of interest in the
+                    image. Each ROI specifies a bounding box with x, y coordinates
+                    and width, height.
 
         :return: None
         """
         if isinstance(rois, str):
             raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
+        if isinstance(label, int):
+            label = str(label)
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
         else:
             image_query_id = str(image_query)
             # Some old imagequery id's started with "chk_"
+            # TODO: handle iqe_ for image_queries returned from edge endpoints
             if not image_query_id.startswith(("chk_", "iq_")):
                 raise ValueError(f"Invalid image query id {image_query_id}")
-        api_label = convert_display_label_to_internal(image_query_id, label)
-        rois_json = [roi.dict() for roi in rois] if rois else None
-        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=rois_json)
+        geometry_requests = [BBoxGeometryRequest(**roi.geometry.dict()) for roi in rois] if rois else None
+        roi_requests = (
+            [
+                ROIRequest(label=roi.label, score=roi.score, geometry=geometry)
+                for roi, geometry in zip(rois, geometry_requests)
+            ]
+            if rois and geometry_requests
+            else None
+        )
+        request_params = LabelValueRequest(label=label, image_query_id=image_query_id, rois=roi_requests)
         self.labels_api.create_label(request_params)
 
     def start_inspection(self) -> str:
