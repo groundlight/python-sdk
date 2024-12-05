@@ -1,6 +1,4 @@
 .gitignore
-.gitlab-ci.yml
-.travis.yml
 README.md
 docs/Action.md
 docs/ActionList.md
