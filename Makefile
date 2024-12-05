@@ -1,4 +1,8 @@
-.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-integ test-local
+.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-integ test-local help
+
+help:  ## Print all targets with their descriptions
+	@grep -E '^[a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {if (NF == 1) {printf "\033[36m%-30s\033[0m %s\n", $$1, ""} else {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}}'
+
 
 install:  ## Install the package from source
 	poetry install
@@ -16,7 +20,7 @@ install-pre-commit: install  ## Install pre-commit hooks
 	poetry run pre-commit install
 
 install-generator: install ## Install dependencies for SDK code generator
-	npm install --save remark-math@6 rehype-katex@7
+	npm install
 
 generate: install-generator  ## Generate the SDK from our public openapi spec
 	node_modules/.bin/openapi-generator-cli generate -i spec/public-api.yaml \
@@ -73,7 +77,7 @@ format: install-lint  ## Run standard python formatting
 	./code-quality/format ${LINT_PATHS}
 
 
-# Targets for sphinx documentation
+# Targets for building code.groundlight.ai and API reference documentation
 
 install-sphinx-deps: ## Only install the sphinx dependencies
 	poetry install --no-root --only sphinx-deps
@@ -86,19 +90,15 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = sphinx_docs
 BUILDDIR      = build
 
-sphinx-help:
+sphinx-help:  ## Print help for Sphinx build options (Sphinx is used to build our API reference documentation)
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-
-# Start an interactive server to test docs locally.
-# Before running this, make sure that you have installed the node modules
-# by running `node install` in the docs directory.
-develop-docs-comprehensive: docs-comprehensive
+## Before running this, make sure that you have installed the node modules
+## by running `node install` in the docs directory.
+develop-docs-comprehensive: docs-comprehensive  ## Start an interactive server to test docs locally.
 	cd docs && npm start
 
-## Builds docs comprehensively (integrating API reference docs built
-## with sphinx into the docusaurus docs).
-docs-comprehensive: apidocs
+docs-comprehensive: apidocs  ## Builds docs comprehensively (integrating API reference docs built with sphinx into the docusaurus docs).
 	rm -rf docs/static/api-reference-docs
 	rm -rf docs/build/api-reference-docs
 	mkdir docs/static/api-reference-docs
@@ -106,10 +106,10 @@ docs-comprehensive: apidocs
 
 	cd docs && npm run build
 
-apidocs:
-	cd docs && npm install --save remark-math@6 rehype-katex@7
+apidocs:  ## Installs necessary npm packages and builds API reference documentation using Sphinx.
+	cd docs && npm install
 	poetry run make html
 
-html:
+html:  ## Builds HTML reference documentation using Sphinx.
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(0)
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

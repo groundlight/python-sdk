@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "code-groundlight-ai",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -15,22 +15,22 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "3.0.0",
-    "@docusaurus/plugin-client-redirects": "^3.0.0",
-    "@docusaurus/preset-classic": "3.0.0",
-    "@easyops-cn/docusaurus-search-local": "^0.38.0",
-    "@mdx-js/react": "^3.0.0",
-    "clsx": "^1.2.1",
-    "prism-react-renderer": "^2.3.0",
+    "@docusaurus/core": "^3.6.3",
+    "@docusaurus/plugin-client-redirects": "^3.6.3",
+    "@docusaurus/preset-classic": "^3.6.3",
+    "@easyops-cn/docusaurus-search-local": "^0.46.1",
+    "@mdx-js/react": "^3.1.0",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.0.0",
-    "@docusaurus/tsconfig": "3.0.0",
-    "@docusaurus/types": "3.0.0",
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/tsconfig": "^3.6.3",
+    "@docusaurus/types": "^3.6.3",
     "typescript": "~5.2.2"
   },
   "browserslist": {
@@ -46,6 +46,6 @@
     ]
   },
   "engines": {
-    "node": ">=18.0"
+    "node": ">=21.0"
   }
 }

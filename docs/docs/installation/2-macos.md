@@ -1,17 +1,17 @@
 # Installing on macOS
 
-This guide will help you install the Groundlight SDK on macOS. The Groundlight SDK requires Python 3.8 or higher.
+This guide will help you install the Groundlight SDK on macOS. The Groundlight SDK requires Python 3.9 or higher.
 
 ## Prerequisites
 
 Ensure that you have the following installed on your system:
 
-- Python 3.8 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 
 ## Basic Installation
 
-Assuming you have Python 3.8 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
+Assuming you have Python 3.9 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
 
 ### Installing Groundlight SDK
 
@@ -37,6 +37,11 @@ To check if the Groundlight SDK is installed and to display its version, you can
 python -c "import groundlight; print(groundlight.__version__)"
 ```
 
+or the groundlight command line tool that comes with the SDK:
+
+```bash
+groundlight --help
+```
 ### Upgrading Groundlight SDK
 
 If you need to upgrade the Groundlight SDK to the latest version, use the following pip command:
@@ -61,7 +66,7 @@ To check your installed Python version, open a terminal and run:
 python --version
 ```
 
-If you see a version number starting with "3.8" or higher (e.g., "3.8.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
+If you see a version number starting with "3.9" or higher (e.g., "3.9.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
 
 ### Upgrading Python on MacOS
 
@@ -75,6 +80,4 @@ After upgrading, verify the Python version by running `python --version` or `pyt
 
 ## Ready to go!
 
-You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](/docs/getting-started/api-tokens) and [Building Applications](/docs/building-applications) documentation pages.
-
-
+You're now ready to start using the Groundlight SDK in your projects. For more information on using the SDK, refer to the [API Tokens](../getting-started/5-api-tokens.md) documentation and the [Building Applications Guide](../guide/).

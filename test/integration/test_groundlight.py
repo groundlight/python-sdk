@@ -470,11 +470,16 @@ def test_submit_image_query_bad_filename(gl: Groundlight, detector: Detector):
 
 
 def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(ApiException) as exc_info:
         _image_query = gl.submit_image_query(
             detector=detector.id, image="test/assets/blankfile.jpeg", human_review="NEVER"
         )
-    assert "jpeg" in str(exc_info).lower()
+    assert "uploaded image is empty or corrupted" in exc_info.value.body.lower()
+    with pytest.raises(ValueError) as exc_info:
+        _image_query = gl.submit_image_query(
+            detector=detector.id, image="test/assets/blankfile.jpeeeg", human_review="NEVER"
+        )
+    assert "we only support jpeg and png" in str(exc_info).lower()
 
 
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore

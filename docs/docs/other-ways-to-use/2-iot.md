@@ -1,6 +1,6 @@
 ---
 id: esp32cam
-title: "Setting up an ESP32 Camera Board"
+title: "No-Code deployment on an ESP32 Camera Board"
 sidebar_position: 1
 ---
 

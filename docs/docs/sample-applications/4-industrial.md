@@ -1,7 +1,3 @@
----
-sidebar_position: 7
----
-
 # Industrial and Manufacturing Applications
 
 Modern natural language-based computer vision is transforming industrial and manufacturing applications by enabling more intuitive interaction with automation systems. Groundlight offers cutting-edge computer vision technology that can be seamlessly integrated into various industrial processes, enhancing efficiency, productivity, and quality control.

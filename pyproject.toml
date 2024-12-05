@@ -9,14 +9,14 @@ packages = [
     {include = "**/*.py", from = "src"},
 ]
 readme = "README.md"
-version = "0.19.0"
+version = "0.20.0"
 
 [tool.poetry.dependencies]
 # For certifi, use ">=" instead of "^" since it upgrades its "major version" every year, not really following semver
 certifi = ">=2023.7.22"
 frozendict = "^2.3.2"
-pillow = ">=9.0.0" # TODO: We may want to mark pillow (and numpy) as extra (https://python-poetry.org/docs/master/pyproject#extras)
-pydantic = ">=2.0,<3.0.0"
+pillow = ">=11.0.0" # TODO: We may want to mark pillow (and numpy) as extra (https://python-poetry.org/docs/master/pyproject#extras)
+pydantic = "^2.0.0"
 python = ">=3.9,<4.0"
 python-dateutil = "^2.9.0"
 requests = "^2.28.2"
@@ -42,14 +42,14 @@ types-requests = "^2.28.11.17"
 
 [tool.poetry.group.sphinx-deps.dependencies]
 # These are extra / stricter dependencies required to build the API reference docs
-Sphinx = {version = "7.2.6", python = ">=3.9.0,<4.0"}
-autodoc-pydantic = {version = "2.0.1", python = ">=3.9.0,<4.0"}
-pillow = "^9.0.0"
-pydantic = "^2.0"
-python = ">=3.9.0,<4.0"
+Sphinx = {version = "^7.2.6", python = ">=3.9,<4.0"}
+autodoc-pydantic = {version = "^2.0.1", python = ">=3.9,<4.0"}
+pillow = "^11.0.0"
+pydantic = "^2.0.0"
+python = ">=3.9,<4.0"
 python-dateutil = "^2.8.2"
-sphinx-rtd-theme = {version = "1.3.0", python = ">=3.9.0,<4.0"}
-toml = "0.10.2"
+sphinx-rtd-theme = {version = "^1.3.0", python = ">=3.9,<4.0"}
+toml = "^0.10.2"
 
 [tool.poetry.scripts]
 groundlight = "groundlight.cli:groundlight"
@@ -58,19 +58,19 @@ groundlight = "groundlight.cli:groundlight"
 [tool.black]
 line-length = 120
 preview = true
-target-version = ["py37"]
+target-version = ["py39"]
 
 # https://mypy.readthedocs.io/en/stable/config_file.html
 [tool.mypy]
 ignore_missing_imports = true
-python_version = "3.8"
+python_version = "3.9"
 
 # https://beta.ruff.rs/docs/configuration/#using-pyprojecttoml
 [tool.ruff]
 exclude = ["__init__.py"]
 line-length = 120
 select = ["E", "F", "I", "N", "PL"] # shorthand names for plugins
-target-version = "py37"
+target-version = "py39"
 
 # https://toml-sort.readthedocs.io/en/latest/#configuration-file
 [tool.tomlsort]
