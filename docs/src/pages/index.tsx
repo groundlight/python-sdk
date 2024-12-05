@@ -61,29 +61,23 @@ export default function Home(): JSX.Element {
     };
   }, [isBasePath]);
 
-const code = `Install necessary dependencies:;
-bash;
-pip install groundlight framegrab;
-Ask questions of your images:;
+const code = `import groundlight
+from framegrab import FrameGrabber
 
-pythonimport framegrabimport groundlight;
-# Initialize Groundlight client and create a Detector;
-gl = groundlight.Groundlight();
-det = gl.get_or_create_detector(name="doorway", query="Is the doorway open?");
+# Initialize Groundlight client and create a Detector
+gl = groundlight.Groundlight()
+detector = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
 
-# Grab an image from a camera or video stream;
-grabber = framegrab.auto_discover()[0];
-image = grabber.grab_frame();
+# Grab an image from a camera or video stream
+grabber = list(FrameGrabber.autodiscover().values())[0]
+image = grabber.grab()
 
-
-# Process image and get a confident answer to the Detector's query;
-iq = gl.ask_confident(det, image);
-print(iq);
-<show output of printed iq here>`;
-
-  // Split the code into lines
+# Process image and get a confident answer to the Detector's query
+image_query = gl.ask_confident(detector, image)
+print(image_query)`;
+// Split the code into lines
   const codeLines = code.split("\n");
-
+  
   return (
     <Layout
       title={`${siteConfig.title}`}
@@ -211,7 +205,7 @@ print(iq);
       {/* Code container */}
       <pre className={baseStyles.codecontent}>
         {codeLines.map((line, index) => (
-          <div key={index}>{line === "" ? "" : line}</div>
+          <div key={index} className={baseStyles.codeline}>{line === "" ? "" : line}</div>
         ))}
       </pre>
     </div>

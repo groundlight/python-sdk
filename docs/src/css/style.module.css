@@ -602,3 +602,7 @@
 .muncodecontainer .codecontent {
   background-color: transparent;
 }
+
+.codecontent .codeline {
+  min-height: 19.28px;
+}
