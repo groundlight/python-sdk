@@ -24,7 +24,7 @@ function HomepageHeader() {
           <ul className={`${baseStyles.menu} ${isActive ? baseStyles.active : ""}`}>
             <li className={baseStyles.containlogo}><a href="" className={baseStyles.logo}><img src="img/logo.png" alt=""/></a></li>
             <li className={baseStyles.menuitem}><a className={baseStyles.menulink} href="/python-sdk/docs/getting-started">Docs</a></li>
-            <li className={baseStyles.menuitem}><a className={baseStyles.menulink} href="/python-sdk/docs/building-applications">Applications</a></li>
+            <li className={baseStyles.menuitem}><a className={baseStyles.menulink} href="/python-sdk/docs/sample-applications">Applications</a></li>
             <li className={baseStyles.menuitem}><a className={baseStyles.menulink} href="/python-sdk/api-reference-docs/">API Reference</a></li>
             <li className={baseStyles.menuitem}><a className={baseStyles.menulink} href="https://github.com/groundlight/python-sdk">GitHub</a></li>
             <li className={baseStyles.menuitem}><a href="https://dashboard.groundlight.ai/" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Login</a></li>
@@ -263,7 +263,7 @@ print(image_query)`;
                 <h3 className={baseStyles.title}>Documentation</h3>
                 <ul className={baseStyles.footerlinks}>
                   <li><a href="/python-sdk/docs/getting-started">Getting Started</a></li>
-                  <li><a href="/python-sdk/docs/building-applications">Building Applications</a></li>
+                  <li><a href="/python-sdk/docs/sample-applications">Building Applications</a></li>
                   <li><a href="/python-sdk/docs/installation">Installation</a></li>
                 </ul>
               </div>
