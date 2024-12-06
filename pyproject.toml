@@ -78,12 +78,12 @@ no_sort_tables = true
 spaces_indent_inline_array = 4
 trailing_comma_inline_array = true
 
-[build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core>=1.2.0"]
-
 [tool.pytest.ini_options]
 markers = [
     "skip_for_edge_endpoint",
     "run_only_for_edge_endpoint",
 ]
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.2.0"]
