@@ -17,7 +17,7 @@ function HomepageHeader() {
 
 
   return (
-    <header className={baseStyles.munheader}>
+    <header className={baseStyles.header}>
       <div className={baseStyles.container}>
         <div className={baseStyles.headerwrapper}>
           <a href="" className={baseStyles.logo}><img src="img/dev_logo_dark.svg" alt="logo"/></a>
@@ -85,7 +85,7 @@ print(image_query)`;
     >
       <HomepageHeader />
       <main>
-        <section className={baseStyles.munbannersection}>
+        <section className={baseStyles.bannersection}>
           <div className={baseStyles.container}>
             <div className={baseStyles.bannerwrapper}>
               <h1 className={baseStyles.title}>Build custom computer vision apps - faster & more reliably</h1>
@@ -102,7 +102,7 @@ print(image_query)`;
           </div>
         </section>
 
-        <section className={baseStyles.munfeaturesection}>
+        <section className={baseStyles.featuresection}>
           <div className={baseStyles.container}>
             <div className={baseStyles.featurewrapper}>
               <div className={baseStyles.featureitem}>
@@ -137,11 +137,11 @@ print(image_query)`;
           </div>
         </section>
 
-        <section className={baseStyles.munintegrationcompatibility}>
+        <section className={baseStyles.integrationcompatibility}>
           <div className={baseStyles.container}>
             <h2 className={baseStyles.sectiontitle}>Groundlight <span style={{color: '#FF00D4'}}>integrations</span> and <span
                 style={{color: '#991EFF'}}>compatibility</span></h2>
-            <div className={baseStyles.munintegrationcompatibilitywrapper}>
+            <div className={baseStyles.integrationcompatibilitywrapper}>
               <div className={baseStyles.leftcontent}>
                 <p>Groundlight is compatible across major development platforms and available through a REST API or Python
                   SDK. Enjoy easy deployments using Arduino, Raspberry Pi, or any number of hardware kits.</p>
@@ -158,24 +158,24 @@ print(image_query)`;
               </div>
               <span className={baseStyles.pipe}></span>
               <div className={baseStyles.rightcontent}>
-                <div className={baseStyles.munintegrationcompatibilitygrid}>
-                  <div className={baseStyles.munintegrationcompatibilityitem}>
+                <div className={baseStyles.integrationcompatibilitygrid}>
+                  <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>Python SDK</h3>
                     <p>With only a few lines of code, you can have custom computer vision inside your application.</p>
                     <a href="/python-sdk/docs/getting-started" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
                   </div>
-                  <div className={baseStyles.munintegrationcompatibilityitem}>
+                  <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>API</h3>
                     <p>API to let you access your models in the cloud - no need to run your own models or hardware.</p>
                     <a href="/python-sdk/docs/getting-started " className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
                   </div>
-                  <div className={baseStyles.munintegrationcompatibilityitem}>
+                  <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>Fast Edge Inference</h3>
                     <p>We offer specialized hardware for local inference. Reduce latency, cost, network bandwidth, and energy.
                     </p>
                     <a href="https://www.groundlight.ai/products/groundlight-hub " className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
                   </div>
-                  <div className={baseStyles.munintegrationcompatibilityitem}>
+                  <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>ROS</h3>
                     <p>Seamlessly integrate AI-driven perception into ROS2 projects, enabling natural language queries and
                       real-time decision-making for smarter, more adaptable robotic systems.</p>
@@ -187,15 +187,15 @@ print(image_query)`;
           </div>
         </section>
 
-        <section className={baseStyles.muncodesection}>
+        <section className={baseStyles.codesection}>
           <div className={baseStyles.container}>
             <h2 className={baseStyles.sectiontitle}>Build a <span style={{color: "#991EFF"}}>working computer vision application</span> in just
               a few lines of code:</h2>
-              <div className={baseStyles.muncodeheader}>
+              <div className={baseStyles.codeheader}>
               <div className={baseStyles.title}>Code Block</div>
               <div className={baseStyles.codelang}>PYTHON</div>
             </div>
-            <div className={baseStyles.muncodecontainer}>
+            <div className={baseStyles.codecontainer}>
       {/* Line numbers container */}
       <div className={baseStyles.linenumbers}>
         {codeLines.map((_, index) => (
@@ -221,8 +221,10 @@ print(image_query)`;
                   <img src="img/youtube.png" alt="youtube"/>
                 </div>
                 <div className={baseStyles.content}>
-                  <h3 className={baseStyles.title}>YouTube</h3>
-                  <p>Watch our tutorials and learn how computer vision can be applied to various industries. </p>
+                  <div>
+                    <h3 className={baseStyles.title}>YouTube</h3>
+                    <p>Watch our tutorials and learn how computer vision can be applied to various industries. </p>
+                  </div>
                   <a href="https://www.youtube.com/@Groundlight-AI " className={baseStyles.cmnButton}>Go to YouTube</a>
                 </div>
               </div>
@@ -231,8 +233,10 @@ print(image_query)`;
                   <img src="img/x.png" alt="x"/>
                 </div>
                 <div className={baseStyles.content}>
-                  <h3 className={baseStyles.title}>X</h3>
-                  <p>Follow us at @GroundlightAI - we post about the latest in machine learning and more.</p>
+                  <div>
+                    <h3 className={baseStyles.title}>X</h3>
+                    <p>Follow us at @GroundlightAI - we post about the latest in machine learning and more.</p>
+                  </div>
                   <a href="https://x.com/GroundlightAI " className={baseStyles.cmnButton}>Follow us on X</a>
                 </div>
               </div>
@@ -241,8 +245,10 @@ print(image_query)`;
                   <img src="img/support.png" alt="support"/>
                 </div>
                 <div className={baseStyles.content}>
-                  <h3 className={baseStyles.title}>Support</h3>
-                  <p>Reach out to us for questions and get an answer from a real human being.</p>
+                  <div>
+                    <h3 className={baseStyles.title}>Support</h3>
+                    <p>Reach out to us for questions and get an answer from a real human being.</p>
+                  </div>
                   <a href="support@groundlight.ai" className={baseStyles.cmnButton}>Contact us</a>
                 </div>
               </div>
@@ -250,10 +256,10 @@ print(image_query)`;
           </div>
         </section>
 
-        <footer className={baseStyles.munfooter}>
+        <footer className={baseStyles.footer}>
           <div className={baseStyles.container}>
-            <div className={baseStyles.munfooterwrapper}>
-              <div className={baseStyles.munfooterwidget}>
+            <div className={baseStyles.footerwrapper}>
+              <div className={baseStyles.footerwidget}>
                 <h3 className={baseStyles.title}>Documentation</h3>
                 <ul className={baseStyles.footerlinks}>
                   <li><a href="/python-sdk/docs/getting-started">Getting Started</a></li>
@@ -261,7 +267,7 @@ print(image_query)`;
                   <li><a href="/python-sdk/docs/installation">Installation</a></li>
                 </ul>
               </div>
-              <div className={baseStyles.munfooterwidget}>
+              <div className={baseStyles.footerwidget}>
                 <h3 className={baseStyles.title}>Company</h3>
                 <ul className={baseStyles.footerlinks}>
                   <li><a href="https://www.groundlight.ai/">About</a></li>
@@ -270,7 +276,7 @@ print(image_query)`;
                   <li><a href="https://dashboard.groundlight.ai/">Sign in</a></li>
                 </ul>
               </div>
-              <div className={baseStyles.munfooterwidget}>
+              <div className={baseStyles.footerwidget}>
                 <h3 className={baseStyles.title}>Code</h3>
                 <ul className={baseStyles.footerlinks}>
                   <li><a href="https://github.com/groundlight/">GitHub</a></li>
