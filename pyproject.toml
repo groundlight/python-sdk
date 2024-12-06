@@ -85,4 +85,5 @@ requires = ["poetry-core>=1.2.0"]
 [tool.pytest.ini_options]
 markers = [
     "skip_for_edge_endpoint",
+    "run_only_for_edge_endpoint",
 ]
