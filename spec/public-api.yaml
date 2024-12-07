@@ -2,8 +2,7 @@ openapi: 3.0.3
 info:
   title: Groundlight API
   version: 0.18.2
-  description:
-    Groundlight makes it simple to understand images. You can easily create
+  description: Groundlight makes it simple to understand images. You can easily create
     computer vision detectors just by describing what you want to know using natural
     language.
   contact:
@@ -15,136 +14,136 @@ paths:
       operationId: List detector rules
       description: List all rules for a detector
       parameters:
-        - in: path
-          name: detector_id
-          schema:
-            type: string
-          required: true
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
       tags:
-        - actions
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedRuleList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedRuleList'
+          description: ''
     post:
       operationId: Create rule
       description: Create a new rule for a detector
       parameters:
-        - in: path
-          name: detector_id
-          schema:
-            type: string
-          required: true
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
       tags:
-        - actions
+      - actions
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RuleRequest"
+              $ref: '#/components/schemas/RuleRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/RuleRequest"
+              $ref: '#/components/schemas/RuleRequest'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/RuleRequest"
+              $ref: '#/components/schemas/RuleRequest'
         required: true
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Rule"
-          description: ""
+                $ref: '#/components/schemas/Rule'
+          description: ''
   /v1/actions/rules:
     get:
       operationId: List rules
       description: Lists all rules over all detectors owned by the requester.
       parameters:
-        - name: page
-          required: false
-          in: query
-          description: A page number within the paginated result set.
-          schema:
-            type: integer
-        - name: page_size
-          required: false
-          in: query
-          description: Number of results to return per page.
-          schema:
-            type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
-        - actions
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedRuleList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedRuleList'
+          description: ''
   /v1/actions/rules/{id}:
     get:
       operationId: Get rule
       description: Retrieve a rule
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
       tags:
-        - actions
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Rule"
-          description: ""
+                $ref: '#/components/schemas/Rule'
+          description: ''
     delete:
       operationId: Delete rule
       description: Delete a rule
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
       tags:
-        - actions
+      - actions
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "204":
+        '204':
           description: No response body
   /v1/detector-groups:
     get:
       operationId: Get Detector Groups
       description: List all detector groups
       tags:
-        - detector-groups
+      - detector-groups
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/DetectorGroup"
-          description: ""
+                  $ref: '#/components/schemas/DetectorGroup'
+          description: ''
     post:
       operationId: Create Detector Group
       description: |-
@@ -154,187 +153,187 @@ paths:
           Required:
             - name (str) - name of the predictor set
       tags:
-        - detector-groups
+      - detector-groups
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DetectorGroupRequest"
+              $ref: '#/components/schemas/DetectorGroupRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/DetectorGroupRequest"
+              $ref: '#/components/schemas/DetectorGroupRequest'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/DetectorGroupRequest"
+              $ref: '#/components/schemas/DetectorGroupRequest'
         required: true
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DetectorGroup"
-          description: ""
+                $ref: '#/components/schemas/DetectorGroup'
+          description: ''
   /v1/detector-reset/{id}:
     delete:
       operationId: Reset detector
       description: Deletes all image queries on the detector
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
       tags:
-        - detector-reset
+      - detector-reset
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "204":
+        '204':
           description: No response body
   /v1/detectors:
     get:
       operationId: List detectors
       description: Retrieve a list of detectors.
       parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: A page number within the paginated result set.
-        - in: query
-          name: page_size
-          schema:
-            type: integer
-          description: Number of items to return per page.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated result set.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of items to return per page.
       tags:
-        - detectors
+      - detectors
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedDetectorList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedDetectorList'
+          description: ''
     post:
       operationId: Create detector
       description: Create a new detector.
       tags:
-        - detectors
+      - detectors
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DetectorCreationInputRequest"
+              $ref: '#/components/schemas/DetectorCreationInputRequest'
         required: true
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Detector"
-          description: ""
+                $ref: '#/components/schemas/Detector'
+          description: ''
   /v1/detectors/{id}:
     get:
       operationId: Get detector
       description: Retrieve a detector by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Choose a detector by its ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
       tags:
-        - detectors
+      - detectors
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Detector"
-          description: ""
+                $ref: '#/components/schemas/Detector'
+          description: ''
     patch:
       operationId: Update detector
       description: Update a detector
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
       tags:
-        - detectors
+      - detectors
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatchedDetectorRequest"
+              $ref: '#/components/schemas/PatchedDetectorRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/PatchedDetectorRequest"
+              $ref: '#/components/schemas/PatchedDetectorRequest'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/PatchedDetectorRequest"
+              $ref: '#/components/schemas/PatchedDetectorRequest'
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Detector"
-          description: ""
+                $ref: '#/components/schemas/Detector'
+          description: ''
     delete:
       operationId: Delete detector
       description: Delete a detector by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Choose a detector by its ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
       tags:
-        - detectors
+      - detectors
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "204":
+        '204':
           description: No response body
   /v1/image-queries:
     get:
       operationId: List image queries
       description: Retrieve a list of image-queries.
       parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: A page number within the paginated result set.
-        - in: query
-          name: page_size
-          schema:
-            type: integer
-          description: Number of items to return per page.
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: A page number within the paginated result set.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: Number of items to return per page.
       tags:
-        - image-queries
+      - image-queries
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PaginatedImageQueryList"
-          description: ""
+                $ref: '#/components/schemas/PaginatedImageQueryList'
+          description: ''
     post:
       operationId: Submit image query
       description: |2
@@ -348,61 +347,59 @@ paths:
             --data-binary @path/to/filename.jpeg
         ```
       parameters:
-        - in: query
-          name: confidence_threshold
-          schema:
-            type: number
-            format: float
-            minimum: 0
-            maximum: 1
-          description: The confidence threshold for the image query.
-        - in: query
-          name: detector_id
-          schema:
-            type: string
-          description: Choose a detector by its ID.
-          required: true
-        - in: query
-          name: human_review
-          schema:
-            type: string
-          description: |-
-            If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
-            If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
-            If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
-        - in: query
-          name: image_query_id
-          schema:
-            type: string
-          description: The ID to assign to the created image query.
-        - in: query
-          name: inspection_id
-          schema:
-            type: string
-          description: Associate the image query with an inspection.
-        - in: query
-          name: metadata
-          schema:
-            type: string
-          description:
-            A dictionary of custom key/value metadata to associate with the
-            image query (limited to 1KB).
-        - in: query
-          name: patience_time
-          schema:
-            type: number
-            format: float
-          description: How long to wait for a confident response.
-        - in: query
-          name: want_async
-          schema:
-            type: string
-          description:
-            If "true" then submitting an image query returns immediately
-            without a result. The result will be computed asynchronously and can be
-            retrieved later.
+      - in: query
+        name: confidence_threshold
+        schema:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        description: The confidence threshold for the image query.
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Choose a detector by its ID.
+        required: true
+      - in: query
+        name: human_review
+        schema:
+          type: string
+        description: |-
+          If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident).
+          If set to `ALWAYS`, always send the image query for human review even if the ML model is confident.
+          If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
+      - in: query
+        name: image_query_id
+        schema:
+          type: string
+        description: The ID to assign to the created image query.
+      - in: query
+        name: inspection_id
+        schema:
+          type: string
+        description: Associate the image query with an inspection.
+      - in: query
+        name: metadata
+        schema:
+          type: string
+        description: A dictionary of custom key/value metadata to associate with the
+          image query (limited to 1KB).
+      - in: query
+        name: patience_time
+        schema:
+          type: number
+          format: float
+        description: How long to wait for a confident response.
+      - in: query
+        name: want_async
+        schema:
+          type: string
+        description: If "true" then submitting an image query returns immediately
+          without a result. The result will be computed asynchronously and can be
+          retrieved later.
       tags:
-        - image-queries
+      - image-queries
       requestBody:
         content:
           image/jpeg:
@@ -434,59 +431,59 @@ paths:
               type: string
               format: binary
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImageQuery"
-          description: ""
+                $ref: '#/components/schemas/ImageQuery'
+          description: ''
   /v1/image-queries/{id}:
     get:
       operationId: Get image query
       description: Retrieve an image-query by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Choose an image query by its ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Choose an image query by its ID.
+        required: true
       tags:
-        - image-queries
+      - image-queries
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImageQuery"
-          description: ""
+                $ref: '#/components/schemas/ImageQuery'
+          description: ''
   /v1/image-queries/{id}/image:
     get:
       operationId: Get image
       description: Retrieve an image by its ID.
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          description: Retrieve the image associated with the image query ID.
-          required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: Retrieve the image associated with the image query ID.
+        required: true
       tags:
-        - image-queries
+      - image-queries
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             image/jpeg:
               schema:
                 type: string
                 format: binary
-          description: ""
+          description: ''
   /v1/labels:
     post:
       operationId: create label
@@ -494,38 +491,38 @@ paths:
         Create a new LabelValue and attach it to an image query. This will trigger
         asynchronous fine-tuner model training.
       tags:
-        - labels
+      - labels
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LabelValueRequest"
+              $ref: '#/components/schemas/LabelValueRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/LabelValueRequest"
+              $ref: '#/components/schemas/LabelValueRequest'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/LabelValueRequest"
+              $ref: '#/components/schemas/LabelValueRequest'
         required: true
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "201":
+        '201':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LabelValue"
-          description: ""
+                $ref: '#/components/schemas/LabelValue'
+          description: ''
   /v1/me:
     get:
       operationId: Who am I
       description: Retrieve the current user.
       tags:
-        - user
+      - user
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
@@ -534,59 +531,58 @@ paths:
                   username:
                     type: string
                     description: The user's username
-          description: ""
+          description: ''
   /v1/notes:
     get:
       operationId: get notes
-      description:
-        Get all the notes from a given detector and return the answer in
+      description: Get all the notes from a given detector and return the answer in
         lists, one for each note_category
       parameters:
-        - in: query
-          name: detector_id
-          schema:
-            type: string
-          description: the detector whose notes to retrieve
-          required: true
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: the detector whose notes to retrieve
+        required: true
       tags:
-        - notes
+      - notes
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AllNotes"
-          description: ""
+                $ref: '#/components/schemas/AllNotes'
+          description: ''
     post:
       operationId: Create note
       description: Create a new note
       parameters:
-        - in: query
-          name: detector_id
-          schema:
-            type: string
-          description: the detector to associate the new note with
-          required: true
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: the detector to associate the new note with
+        required: true
       tags:
-        - notes
+      - notes
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/NoteRequest"
+              $ref: '#/components/schemas/NoteRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/NoteRequest"
+              $ref: '#/components/schemas/NoteRequest'
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/NoteRequest"
+              $ref: '#/components/schemas/NoteRequest'
         required: true
       security:
-        - ApiToken: []
+      - ApiToken: []
       responses:
-        "204":
+        '204':
           description: No response body
 components:
   schemas:
@@ -599,18 +595,18 @@ components:
         CUSTOMER:
           type: array
           items:
-            $ref: "#/components/schemas/Note"
+            $ref: '#/components/schemas/Note'
         GL:
           type: array
           items:
-            $ref: "#/components/schemas/Note"
+            $ref: '#/components/schemas/Note'
       required:
-        - CUSTOMER
-        - GL
+      - CUSTOMER
+      - GL
     AnnotationsRequestedEnum:
       enum:
-        - BINARY_CLASSIFICATION
-        - BOUNDING_BOXES
+      - BINARY_CLASSIFICATION
+      - BOUNDING_BOXES
       type: string
       description: |-
         * `BINARY_CLASSIFICATION` - Binary Classification
@@ -640,12 +636,12 @@ components:
           format: double
           readOnly: true
       required:
-        - bottom
-        - left
-        - right
-        - top
-        - x
-        - y
+      - bottom
+      - left
+      - right
+      - top
+      - x
+      - y
     BBoxGeometryRequest:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -663,35 +659,35 @@ components:
           type: number
           format: double
       required:
-        - bottom
-        - left
-        - right
-        - top
+      - bottom
+      - left
+      - right
+      - top
     BlankEnum:
       enum:
-        - ""
+      - ''
     Condition:
       type: object
       properties:
         verb:
-          $ref: "#/components/schemas/VerbEnum"
+          $ref: '#/components/schemas/VerbEnum'
         parameters:
           type: object
           additionalProperties: {}
       required:
-        - parameters
-        - verb
+      - parameters
+      - verb
     ConditionRequest:
       type: object
       properties:
         verb:
-          $ref: "#/components/schemas/VerbEnum"
+          $ref: '#/components/schemas/VerbEnum'
         parameters:
           type: object
           additionalProperties: {}
       required:
-        - parameters
-        - verb
+      - parameters
+      - verb
     Detector:
       type: object
       description: Spec for serializing a detector object in the public API.
@@ -702,7 +698,7 @@ components:
           description: A unique ID for this object.
         type:
           allOf:
-            - $ref: "#/components/schemas/DetectorTypeEnum"
+          - $ref: '#/components/schemas/DetectorTypeEnum'
           readOnly: true
           description: The type of this object.
         created_at:
@@ -728,8 +724,7 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description:
-            If the detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
         patience_time:
           type: number
@@ -746,7 +741,7 @@ components:
           description: Metadata about the detector.
         mode:
           allOf:
-            - $ref: "#/components/schemas/ModeEnum"
+          - $ref: '#/components/schemas/ModeEnum'
           readOnly: true
         mode_configuration:
           type: object
@@ -755,26 +750,26 @@ components:
           readOnly: true
         status:
           oneOf:
-            - $ref: "#/components/schemas/StatusEnum"
-            - $ref: "#/components/schemas/BlankEnum"
+          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
           allOf:
-            - $ref: "#/components/schemas/EscalationTypeEnum"
+          - $ref: '#/components/schemas/EscalationTypeEnum'
           description: |-
             Category that define internal proccess for labeling image queries
 
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       required:
-        - created_at
-        - group_name
-        - id
-        - metadata
-        - mode
-        - mode_configuration
-        - name
-        - query
-        - type
+      - created_at
+      - group_name
+      - id
+      - metadata
+      - mode
+      - mode_configuration
+      - name
+      - query
+      - type
       x-internal: true
     DetectorCreationInputRequest:
       type: object
@@ -801,8 +796,7 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description:
-            If the detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
         patience_time:
           type: number
@@ -814,21 +808,19 @@ components:
         pipeline_config:
           type: string
           nullable: true
-          description:
-            (Advanced usage) Configuration needed to instantiate a prediction
+          description: (Advanced usage) Configuration needed to instantiate a prediction
             pipeline.
           maxLength: 100
         metadata:
           type: string
           minLength: 1
-          description:
-            Base64-encoded metadata for the detector. This should be a
+          description: Base64-encoded metadata for the detector. This should be a
             JSON object with string keys. The size after encoding should not exceed
             1362 bytes, corresponding to 1KiB before encoding.
           maxLength: 1362
         mode:
           allOf:
-            - $ref: "#/components/schemas/ModeEnum"
+          - $ref: '#/components/schemas/ModeEnum'
           default: BINARY
           description: |-
             Mode in which this detector will work.
@@ -838,12 +830,12 @@ components:
             * `MULTI_CLASS` - MULTI_CLASS
         mode_configuration:
           oneOf:
-            - $ref: "#/components/schemas/CountModeConfiguration"
-            - $ref: "#/components/schemas/MultiClassModeConfiguration"
+          - $ref: '#/components/schemas/CountModeConfiguration'
+          - $ref: '#/components/schemas/MultiClassModeConfiguration'
           nullable: true
       required:
-        - name
-        - query
+      - name
+      - query
       x-internal: true
     DetectorGroup:
       type: object
@@ -855,8 +847,8 @@ components:
           type: string
           maxLength: 100
       required:
-        - id
-        - name
+      - id
+      - name
     DetectorGroupRequest:
       type: object
       properties:
@@ -865,15 +857,15 @@ components:
           minLength: 1
           maxLength: 100
       required:
-        - name
+      - name
     DetectorTypeEnum:
       enum:
-        - detector
+      - detector
       type: string
     EscalationTypeEnum:
       enum:
-        - STANDARD
-        - NO_HUMAN_LABELING
+      - STANDARD
+      - NO_HUMAN_LABELING
       type: string
       description: |-
         * `STANDARD` - STANDARD
@@ -894,7 +886,7 @@ components:
           description: A unique ID for this object.
         type:
           allOf:
-            - $ref: "#/components/schemas/ImageQueryTypeEnum"
+          - $ref: '#/components/schemas/ImageQueryTypeEnum'
           readOnly: true
           description: The type of this object.
         created_at:
@@ -912,14 +904,14 @@ components:
           description: Which detector was used on this image query?
         result_type:
           allOf:
-            - $ref: "#/components/schemas/ResultTypeEnum"
+          - $ref: '#/components/schemas/ResultTypeEnum'
           readOnly: true
           description: What type of result are we returning?
         result:
           oneOf:
-            - $ref: "#/components/schemas/BinaryClassificationResult"
-            - $ref: "#/components/schemas/CountingResult"
-            - $ref: "#/components/schemas/MultiClassificationResult"
+          - $ref: '#/components/schemas/BinaryClassificationResult'
+          - $ref: '#/components/schemas/CountingResult'
+          - $ref: '#/components/schemas/MultiClassificationResult'
           nullable: true
         patience_time:
           type: number
@@ -934,11 +926,10 @@ components:
         rois:
           type: array
           items:
-            $ref: "#/components/schemas/ROI"
+            $ref: '#/components/schemas/ROI'
           readOnly: true
           nullable: true
-          description:
-            An array of regions of interest (bounding boxes) collected
+          description: An array of regions of interest (bounding boxes) collected
             on image
         text:
           type: string
@@ -946,22 +937,22 @@ components:
           readOnly: true
           description: A text field on image query.
       required:
-        - confidence_threshold
-        - created_at
-        - detector_id
-        - id
-        - metadata
-        - patience_time
-        - query
-        - result
-        - result_type
-        - rois
-        - text
-        - type
+      - confidence_threshold
+      - created_at
+      - detector_id
+      - id
+      - metadata
+      - patience_time
+      - query
+      - result
+      - result_type
+      - rois
+      - text
+      - type
       x-internal: true
     ImageQueryTypeEnum:
       enum:
-        - image_query
+      - image_query
       type: string
     LabelValue:
       type: object
@@ -979,13 +970,13 @@ components:
         rois:
           type: array
           items:
-            $ref: "#/components/schemas/ROI"
+            $ref: '#/components/schemas/ROI'
           nullable: true
         annotations_requested:
           type: array
           items:
             allOf:
-              - $ref: "#/components/schemas/AnnotationsRequestedEnum"
+            - $ref: '#/components/schemas/AnnotationsRequestedEnum'
             description: |-
               The type of annotation requested
 
@@ -1002,7 +993,7 @@ components:
           readOnly: true
         source:
           allOf:
-            - $ref: "#/components/schemas/SourceEnum"
+          - $ref: '#/components/schemas/SourceEnum'
           readOnly: true
         text:
           type: string
@@ -1010,13 +1001,13 @@ components:
           nullable: true
           description: Text annotations
       required:
-        - annotations_requested
-        - class_name
-        - confidence
-        - created_at
-        - detector_id
-        - source
-        - text
+      - annotations_requested
+      - class_name
+      - confidence
+      - created_at
+      - detector_id
+      - source
+      - text
     LabelValueRequest:
       type: object
       properties:
@@ -1031,16 +1022,16 @@ components:
         rois:
           type: array
           items:
-            $ref: "#/components/schemas/ROIRequest"
+            $ref: '#/components/schemas/ROIRequest'
           nullable: true
       required:
-        - image_query_id
-        - label
+      - image_query_id
+      - label
     ModeEnum:
       enum:
-        - BINARY
-        - COUNT
-        - MULTI_CLASS
+      - BINARY
+      - COUNT
+      - MULTI_CLASS
       type: string
     Note:
       type: object
@@ -1052,8 +1043,8 @@ components:
           type: string
           description: Text content of the note.
       required:
-        - content
-        - detector_id
+      - content
+      - detector_id
     NoteRequest:
       type: object
       properties:
@@ -1067,12 +1058,12 @@ components:
           writeOnly: true
           nullable: true
       required:
-        - content
+      - content
     PaginatedDetectorList:
       type: object
       required:
-        - count
-        - results
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -1090,12 +1081,12 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/Detector"
+            $ref: '#/components/schemas/Detector'
     PaginatedImageQueryList:
       type: object
       required:
-        - count
-        - results
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -1113,12 +1104,12 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/ImageQuery"
+            $ref: '#/components/schemas/ImageQuery'
     PaginatedRuleList:
       type: object
       required:
-        - count
-        - results
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -1136,7 +1127,7 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/Rule"
+            $ref: '#/components/schemas/Rule'
     PatchedDetectorRequest:
       type: object
       description: Spec for serializing a detector object in the public API.
@@ -1152,8 +1143,7 @@ components:
           maximum: 1.0
           minimum: 0.0
           default: 0.9
-          description:
-            If the detector's prediction is below this confidence threshold,
+          description: If the detector's prediction is below this confidence threshold,
             send the image query for human review.
         patience_time:
           type: number
@@ -1164,11 +1154,11 @@ components:
           description: How long Groundlight will attempt to generate a confident prediction
         status:
           oneOf:
-            - $ref: "#/components/schemas/StatusEnum"
-            - $ref: "#/components/schemas/BlankEnum"
+          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
           allOf:
-            - $ref: "#/components/schemas/EscalationTypeEnum"
+          - $ref: '#/components/schemas/EscalationTypeEnum'
           description: |-
             Category that define internal proccess for labeling image queries
 
@@ -1188,11 +1178,11 @@ components:
           readOnly: true
           description: The confidence of the bounding box.
         geometry:
-          $ref: "#/components/schemas/BBoxGeometry"
+          $ref: '#/components/schemas/BBoxGeometry'
       required:
-        - geometry
-        - label
-        - score
+      - geometry
+      - label
+      - score
     ROIRequest:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1202,15 +1192,15 @@ components:
           minLength: 1
           description: The label of the bounding box.
         geometry:
-          $ref: "#/components/schemas/BBoxGeometryRequest"
+          $ref: '#/components/schemas/BBoxGeometryRequest'
       required:
-        - geometry
-        - label
+      - geometry
+      - label
     ResultTypeEnum:
       enum:
-        - binary_classification
-        - counting
-        - multi_classification
+      - binary_classification
+      - counting
+      - multi_classification
       type: string
     Rule:
       type: object
@@ -1239,24 +1229,24 @@ components:
           default: 0
         snooze_time_unit:
           allOf:
-            - $ref: "#/components/schemas/SnoozeTimeUnitEnum"
+          - $ref: '#/components/schemas/SnoozeTimeUnitEnum'
           default: DAYS
         human_review_required:
           type: boolean
           default: false
         condition:
-          $ref: "#/components/schemas/Condition"
+          $ref: '#/components/schemas/Condition'
         action:
           oneOf:
-            - $ref: "#/components/schemas/Action"
-            - $ref: "#/components/schemas/ActionList"
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
-        - action
-        - condition
-        - detector_id
-        - detector_name
-        - id
-        - name
+      - action
+      - condition
+      - detector_id
+      - detector_name
+      - id
+      - name
     RuleRequest:
       type: object
       properties:
@@ -1276,27 +1266,27 @@ components:
           default: 0
         snooze_time_unit:
           allOf:
-            - $ref: "#/components/schemas/SnoozeTimeUnitEnum"
+          - $ref: '#/components/schemas/SnoozeTimeUnitEnum'
           default: DAYS
         human_review_required:
           type: boolean
           default: false
         condition:
-          $ref: "#/components/schemas/ConditionRequest"
+          $ref: '#/components/schemas/ConditionRequest'
         action:
           oneOf:
-            - $ref: "#/components/schemas/Action"
-            - $ref: "#/components/schemas/ActionList"
+          - $ref: '#/components/schemas/Action'
+          - $ref: '#/components/schemas/ActionList'
       required:
-        - action
-        - condition
-        - name
+      - action
+      - condition
+      - name
     SnoozeTimeUnitEnum:
       enum:
-        - DAYS
-        - HOURS
-        - MINUTES
-        - SECONDS
+      - DAYS
+      - HOURS
+      - MINUTES
+      - SECONDS
       type: string
       description: |-
         * `DAYS` - DAYS
@@ -1305,13 +1295,13 @@ components:
         * `SECONDS` - SECONDS
     SourceEnum:
       enum:
-        - INITIAL_PLACEHOLDER
-        - CLOUD
-        - CUST
-        - HUMAN_CLOUD_ENSEMBLE
-        - ALG
-        - ALG_REC
-        - ALG_UNCLEAR
+      - INITIAL_PLACEHOLDER
+      - CLOUD
+      - CUST
+      - HUMAN_CLOUD_ENSEMBLE
+      - ALG
+      - ALG_REC
+      - ALG_UNCLEAR
       type: string
       description: |-
         * `INITIAL_PLACEHOLDER` - InitialPlaceholder
@@ -1323,19 +1313,19 @@ components:
         * `ALG_UNCLEAR` - AlgorithmUnclear
     StatusEnum:
       enum:
-        - "ON"
-        - "OFF"
+      - 'ON'
+      - 'OFF'
       type: string
       description: |-
         * `ON` - ON
         * `OFF` - OFF
     VerbEnum:
       enum:
-        - ANSWERED_CONSECUTIVELY
-        - ANSWERED_WITHIN_TIME
-        - CHANGED_TO
-        - NO_CHANGE
-        - NO_QUERIES
+      - ANSWERED_CONSECUTIVELY
+      - ANSWERED_WITHIN_TIME
+      - CHANGED_TO
+      - NO_CHANGE
+      - NO_QUERIES
       type: string
       description: |-
         * `ANSWERED_CONSECUTIVELY` - ANSWERED_CONSECUTIVELY
@@ -1354,19 +1344,19 @@ components:
         source:
           type: string
           enum:
-            - STILL_PROCESSING
-            - CLOUD
-            - USER
-            - CLOUD_ENSEMBLE
-            - ALGORITHM
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         label:
           type: string
           enum:
-            - "YES"
-            - "NO"
-            - UNCLEAR
+          - 'YES'
+          - 'NO'
+          - UNCLEAR
       required:
-        - label
+      - label
     CountingResult:
       type: object
       properties:
@@ -1378,18 +1368,18 @@ components:
         source:
           type: string
           enum:
-            - STILL_PROCESSING
-            - CLOUD
-            - USER
-            - CLOUD_ENSEMBLE
-            - ALGORITHM
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         count:
           type: integer
           minimum: 0
         greater_than_max:
           type: boolean
       required:
-        - count
+      - count
     MultiClassificationResult:
       type: object
       properties:
@@ -1401,15 +1391,15 @@ components:
         source:
           type: string
           enum:
-            - STILL_PROCESSING
-            - CLOUD
-            - USER
-            - CLOUD_ENSEMBLE
-            - ALGORITHM
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
         label:
           type: string
       required:
-        - label
+      - label
     CountModeConfiguration:
       type: object
       properties:
@@ -1420,7 +1410,7 @@ components:
         class_name:
           type: string
       required:
-        - class_name
+      - class_name
     MultiClassModeConfiguration:
       type: object
       properties:
@@ -1431,40 +1421,41 @@ components:
         num_classes:
           type: integer
       required:
-        - class_names
+      - class_names
     ChannelEnum:
       type: string
       enum:
-        - TEXT
-        - EMAIL
+      - TEXT
+      - EMAIL
     Action:
       type: object
       properties:
         channel:
-          $ref: "#/components/schemas/ChannelEnum"
+          $ref: '#/components/schemas/ChannelEnum'
         recipient:
           type: string
         include_image:
           type: boolean
       required:
-        - channel
-        - recipient
-        - include_image
+      - channel
+      - recipient
+      - include_image
     ActionList:
       type: array
       items:
-        $ref: "#/components/schemas/Action"
+        $ref: '#/components/schemas/Action'
   securitySchemes:
     ApiToken:
       name: x-api-token
       type: apiKey
       in: header
 servers:
-  - url: https://api.groundlight.ai/device-api
-    description: Prod
-  - url: https://api.integ.groundlight.ai/device-api
-    description: Integ
-  - url: https://device.positronix.ai/device-api
-    description: Device Prod
-  - url: https://device.integ.positronix.ai/device-api
-    description: Device Integ
+- url: https://api.groundlight.ai/device-api
+  description: Prod
+- url: https://api.integ.groundlight.ai/device-api
+  description: Integ
+- url: https://device.positronix.ai/device-api
+  description: Device Prod
+- url: https://device.integ.positronix.ai/device-api
+  description: Device Integ
+
