@@ -167,7 +167,7 @@ print(image_query)`;
                   <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>API</h3>
                     <p>API to let you access your models in the cloud - no need to run your own models or hardware.</p>
-                    <a href="/python-sdk/docs/api-reference-docs" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
+                    <a href="/python-sdk/api-reference-docs/" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
                   </div>
                   <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>Fast Edge Inference</h3>
