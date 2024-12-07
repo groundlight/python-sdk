@@ -54,7 +54,7 @@ export default function Home(): JSX.Element {
     } else {
       mainWrapper.classList.remove("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
     }
-    
+
     // Cleanup on component unmount
     return () => {
       mainWrapper.classList.remove("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
@@ -77,7 +77,7 @@ image_query = gl.ask_confident(detector, image)
 print(image_query)`;
 // Split the code into lines
   const codeLines = code.split("\n");
-  
+
   return (
     <Layout
       title={`${siteConfig.title}`}
@@ -167,7 +167,7 @@ print(image_query)`;
                   <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>API</h3>
                     <p>API to let you access your models in the cloud - no need to run your own models or hardware.</p>
-                    <a href="/python-sdk/docs/getting-started " className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
+                    <a href="/python-sdk/api-reference-docs/" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
                   </div>
                   <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>Fast Edge Inference</h3>
@@ -249,7 +249,7 @@ print(image_query)`;
                     <h3 className={baseStyles.title}>Support</h3>
                     <p>Reach out to us for questions and get an answer from a real human being.</p>
                   </div>
-                  <a href="support@groundlight.ai" className={baseStyles.cmnButton}>Contact us</a>
+                  <a href="mailto:support@groundlight.ai" className={baseStyles.cmnButton}>Contact us</a>
                 </div>
               </div>
             </div>
@@ -286,7 +286,7 @@ print(image_query)`;
                 </ul>
               </div>
             </div>
-            <div className={baseStyles.copyright}>Copyright © 2024 Groundlight AI.</div>
+            <div className={baseStyles.copyright}>Copyright © {new Date().getFullYear()} Groundlight AI.</div>
           </div>
         </footer>
       </main>
