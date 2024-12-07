@@ -17,22 +17,18 @@ from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
-from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
-from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import ROI, BBoxGeometry, Detector, DetectorGroup, ImageQuery, ModeEnum, PaginatedRuleList, Rule
+from model import ROI, BBoxGeometry, Detector, DetectorGroup, ModeEnum, PaginatedRuleList, Rule
 
-from groundlight.binary_labels import Label, convert_display_label_to_internal
 from groundlight.images import parse_supported_image_types
 from groundlight.optional_imports import Image, np
 
@@ -498,66 +494,6 @@ class ExperimentalApi(Groundlight):
                 y=(top_left[1] + bottom_right[1]) / 2,
             ),
         )
-
-    # TODO: remove duplicate method on subclass
-    # pylint: disable=duplicate-code
-    def add_label(
-        self, image_query: Union[ImageQuery, str], label: Union[Label, str], rois: Union[List[ROI], str, None] = None
-    ):
-        """
-        Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
-        for training detectors, or to correct the results of detectors.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Using an ImageQuery object
-            image_query = gl.ask_ml(detector_id, image_data)
-            gl.add_label(image_query, "YES")
-
-            # Using an image query ID string directly
-            gl.add_label("iq_abc123", "NO")
-
-            # With regions of interest (ROIs)
-            rois = [ROI(x=100, y=100, width=50, height=50)]
-            gl.add_label(image_query, "YES", rois=rois)
-
-        :param image_query: Either an ImageQuery object (returned from methods like
-                          `ask_ml`) or an image query ID string starting with "iq_".
-
-        :param label: The label value to assign, typically "YES" or "NO" for binary
-                     classification detectors. For multi-class detectors, use one of
-                     the defined class names.
-
-        :param rois: Optional list of ROI objects defining regions of interest in the
-                    image. Each ROI specifies a bounding box with x, y coordinates
-                    and width, height.
-
-        :return: None
-        """
-        if isinstance(rois, str):
-            raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
-        if isinstance(image_query, ImageQuery):
-            image_query_id = image_query.id
-        else:
-            image_query_id = str(image_query)
-            # Some old imagequery id's started with "chk_"
-            # TODO: handle iqe_ for image_queries returned from edge endpoints
-            if not image_query_id.startswith(("chk_", "iq_")):
-                raise ValueError(f"Invalid image query id {image_query_id}")
-        api_label = convert_display_label_to_internal(image_query_id, label)
-        geometry_requests = [BBoxGeometryRequest(**roi.geometry.dict()) for roi in rois] if rois else None
-        roi_requests = (
-            [
-                ROIRequest(label=roi.label, score=roi.score, geometry=geometry)
-                for roi, geometry in zip(rois, geometry_requests)
-            ]
-            if rois and geometry_requests
-            else None
-        )
-        request_params = LabelValueRequest(label=api_label, image_query_id=image_query_id, rois=roi_requests)
-        self.labels_api.create_label(request_params)
 
     def reset_detector(self, detector: Union[str, Detector]) -> None:
         """
