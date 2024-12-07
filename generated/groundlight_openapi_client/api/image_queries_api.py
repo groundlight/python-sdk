@@ -170,7 +170,6 @@ class ImageQueriesApi(object):
             params_map={
                 "all": [
                     "detector_id",
-                    "confidence_threshold",
                     "human_review",
                     "image_query_id",
                     "inspection_id",
@@ -184,21 +183,13 @@ class ImageQueriesApi(object):
                 ],
                 "nullable": [],
                 "enum": [],
-                "validation": [
-                    "confidence_threshold",
-                ],
+                "validation": [],
             },
             root_map={
-                "validations": {
-                    ("confidence_threshold",): {
-                        "inclusive_maximum": 1,
-                        "inclusive_minimum": 0,
-                    },
-                },
+                "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
-                    "confidence_threshold": (float,),
                     "human_review": (str,),
                     "image_query_id": (str,),
                     "inspection_id": (str,),
@@ -209,7 +200,6 @@ class ImageQueriesApi(object):
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
-                    "confidence_threshold": "confidence_threshold",
                     "human_review": "human_review",
                     "image_query_id": "image_query_id",
                     "inspection_id": "inspection_id",
@@ -219,7 +209,6 @@ class ImageQueriesApi(object):
                 },
                 "location_map": {
                     "detector_id": "query",
-                    "confidence_threshold": "query",
                     "human_review": "query",
                     "image_query_id": "query",
                     "inspection_id": "query",
@@ -432,7 +421,6 @@ class ImageQueriesApi(object):
             detector_id (str): Choose a detector by its ID.
 
         Keyword Args:
-            confidence_threshold (float): The confidence threshold for the image query.. [optional]
             human_review (str): If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident.. [optional]
             image_query_id (str): The ID to assign to the created image query.. [optional]
             inspection_id (str): Associate the image query with an inspection.. [optional]

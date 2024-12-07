@@ -64,9 +64,6 @@ class CountingResult(ModelNormal):
     }
 
     validations = {
-        ("count",): {
-            "inclusive_minimum": 0,
-        },
         ("confidence",): {
             "inclusive_maximum": 1.0,
             "inclusive_minimum": 0.0,
