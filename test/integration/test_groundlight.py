@@ -320,6 +320,18 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+def test_submit_image_query_with_confidence_threshold(gl: Groundlight, detector: Detector):
+    confidence_threshold = 0.5234  # Arbitrary specific value
+    _image_query = gl.submit_image_query(
+        detector=detector.id,
+        image="test/assets/dog.jpeg",
+        wait=10,
+        confidence_threshold=confidence_threshold,
+        human_review="NEVER",
+    )
+    assert _image_query.confidence_threshold == confidence_threshold
+
+
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing an image query ID.")
 def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     # submit_image_query
