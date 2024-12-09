@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import baseStyles from '../css/style.module.css';
 
@@ -33,7 +32,7 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  
+
 const code = `import groundlight
 from framegrab import FrameGrabber
 
@@ -50,7 +49,7 @@ image_query = gl.ask_confident(detector, image)
 print(image_query)`;
 // Split the code into lines
   const codeLines = code.split("\n");
-  
+
   return (
     <div className={baseStyles["landing-page-container"]}>
       <HomepageHeader />
@@ -64,7 +63,7 @@ print(image_query)`;
                   computer vision application. Groundlight’s fully managed computer vision solution takes care of the ML so
                   you can focus on building.</p>
                 <div className={baseStyles.buttonwrapper}>
-                  <a href="https://dashboard.groundlight.ai" className={baseStyles.cmnButton}>Start building</a>
+                  <a href="https://login.groundlight.ai/oauth2/register?tenantId=aad3d06b-ef57-454e-b952-91e9d3d347b1&client_id=ac8aac5d-c278-4c14-a549-e039f5ac54bb&nonce=&redirect_uri=https%3A%2F%2Fdashboard.groundlight.ai%2Fdevice-api%2Fauthz%2Fcallback&response_type=code&scope=openid%20profile%20email%20offline_access" className={baseStyles.cmnButton}>Start building</a>
                   <a href="/python-sdk/docs/getting-started" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>See the docs</a>
                 </div>
               </div>
