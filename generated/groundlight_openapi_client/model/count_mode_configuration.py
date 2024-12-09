@@ -93,6 +93,7 @@ class CountModeConfiguration(ModelNormal):
                 and the value is attribute type.
         """
         return {
+            "class_name": (str,),  # noqa: E501
             "max_count": (int,),  # noqa: E501
         }
 
@@ -101,6 +102,7 @@ class CountModeConfiguration(ModelNormal):
         return None
 
     attribute_map = {
+        "class_name": "class_name",  # noqa: E501
         "max_count": "max_count",  # noqa: E501
     }
 
@@ -110,8 +112,11 @@ class CountModeConfiguration(ModelNormal):
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(cls, *args, **kwargs):  # noqa: E501
+    def _from_openapi_data(cls, class_name, *args, **kwargs):  # noqa: E501
         """CountModeConfiguration - a model defined in OpenAPI
+
+        Args:
+            class_name (str):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -173,6 +178,7 @@ class CountModeConfiguration(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.class_name = class_name
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -195,8 +201,11 @@ class CountModeConfiguration(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, *args, **kwargs):  # noqa: E501
+    def __init__(self, class_name, *args, **kwargs):  # noqa: E501
         """CountModeConfiguration - a model defined in OpenAPI
+
+        Args:
+            class_name (str):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -256,6 +265,7 @@ class CountModeConfiguration(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.class_name = class_name
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
