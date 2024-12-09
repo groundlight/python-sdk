@@ -100,7 +100,7 @@ def test_counting_detector(gl_experimental: ExperimentalApi):
     verify that we can create and submit to a counting detector
     """
     name = f"Test {datetime.utcnow()}"
-    created_detector = gl_experimental.create_counting_detector(name, "How many dogs")
+    created_detector = gl_experimental.create_counting_detector(name, "How many dogs", "dog")
     assert created_detector is not None
     count_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert count_iq.result.count is not None

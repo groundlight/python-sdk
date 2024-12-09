@@ -669,6 +669,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         if patience_time is not None:
             params["patience_time"] = patience_time
 
+        if confidence_threshold is not None:
+            params["confidence_threshold"] = confidence_threshold
+
         if human_review is not None:
             params["human_review"] = human_review
 
