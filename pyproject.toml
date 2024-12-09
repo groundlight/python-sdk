@@ -9,7 +9,7 @@ packages = [
     {include = "**/*.py", from = "src"},
 ]
 readme = "README.md"
-version = "0.20.0"
+version = "0.21.0"
 
 [tool.poetry.dependencies]
 # For certifi, use ">=" instead of "^" since it upgrades its "major version" every year, not really following semver
@@ -77,6 +77,12 @@ target-version = "py39"
 no_sort_tables = true
 spaces_indent_inline_array = 4
 trailing_comma_inline_array = true
+
+[tool.pytest.ini_options]
+markers = [
+    "skip_for_edge_endpoint",
+    "run_only_for_edge_endpoint",
+]
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

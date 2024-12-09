@@ -1407,6 +1407,10 @@ components:
           type: integer
           minimum: 1
           maximum: 50
+        class_name:
+          type: string
+      required:
+      - class_name
     MultiClassModeConfiguration:
       type: object
       properties:

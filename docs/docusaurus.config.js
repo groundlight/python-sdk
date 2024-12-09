@@ -2,8 +2,8 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 // Libraries that support mathematics in documentation
-import rehypeKatex from 'rehype-katex';
-import remarkMath from 'remark-math';
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
 
 // Options: https://github.com/FormidableLabs/prism-react-renderer/tree/master/src/themes
 const lightCodeTheme = require("prism-react-renderer").themes.github;
@@ -54,14 +54,13 @@ const config = {
           // there will be a third one for real URLs.  :)
         },
         gtag: {
-          trackingID: 'G-WG1Q5X6F6L',
+          trackingID: "G-WG1Q5X6F6L",
         },
         blog: {
           showReadingTime: true,
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
-          editUrl:
-            "https://github.com/groundlight/python-sdk/tree/main/docs/blog/",
+          editUrl: "https://github.com/groundlight/python-sdk/tree/main/docs/blog/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -72,11 +71,10 @@ const config = {
 
   stylesheets: [
     {
-      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
-      type: 'text/css',
-      integrity:
-        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
-      crossorigin: 'anonymous',
+      href: "https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css",
+      type: "text/css",
+      integrity: "sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM",
+      crossorigin: "anonymous",
     },
   ],
 
@@ -143,9 +141,9 @@ const config = {
             position: "right",
           },
           {
-            to: 'blog',
-            label: 'Blog',
-            position: 'left',
+            to: "blog",
+            label: "Blog",
+            position: "left",
           },
         ],
       },
@@ -242,15 +240,15 @@ const config = {
           },
           {
             to: "https://www.groundlight.ai/blog/introducing-groundlights-framegrab-library",
-            from: "/blog/introducing-framegrab"
+            from: "/blog/introducing-framegrab",
           },
           {
             to: "https://www.groundlight.ai/blog/best-practices-for-best-results-with-groundlight",
-            from: "/blog/best-practices"
+            from: "/blog/best-practices",
           },
           {
             to: "https://www.groundlight.ai/blog/linux-os-images-for-computer-vision-on-raspberry-pi",
-            from: "/blog/raspberry-pi-computer-vision"
+            from: "/blog/raspberry-pi-computer-vision",
           },
         ],
       },
