@@ -28,9 +28,10 @@ def test_counting_labels(gl_experimental: ExperimentalApi):
     gl_experimental.add_label(iq1, 0)
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.count == 0
-    gl_experimental.add_label(iq1, 5)
+    good_label = 5
+    gl_experimental.add_label(iq1, good_label)
     iq1 = gl_experimental.get_image_query(iq1.id)
-    assert iq1.result.count == 5
+    assert iq1.result.count == good_label
     with pytest.raises(ApiException) as _:
         gl_experimental.add_label(iq1, "MAYBE")
     with pytest.raises(ApiException) as _:
