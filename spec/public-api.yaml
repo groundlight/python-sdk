@@ -323,6 +323,11 @@ paths:
         schema:
           type: integer
         description: Number of items to return per page.
+      - in: query
+        name: predictor_id
+        schema:
+          type: string
+        description: Optionally filter image queries by detector ID.
       tags:
       - image-queries
       security:
@@ -347,6 +352,14 @@ paths:
             --data-binary @path/to/filename.jpeg
         ```
       parameters:
+      - in: query
+        name: confidence_threshold
+        schema:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        description: The confidence threshold for the image query.
       - in: query
         name: detector_id
         schema:
@@ -1367,8 +1380,7 @@ components:
           - ALGORITHM
         count:
           type: integer
-          minimum: null
-          maximum: null
+          minimum: 0
         greater_than_max:
           type: boolean
       required:
@@ -1400,7 +1412,10 @@ components:
           type: integer
           minimum: 1
           maximum: 50
-      required: []
+        class_name:
+          type: string
+      required:
+      - class_name
     MultiClassModeConfiguration:
       type: object
       properties:
@@ -1410,8 +1425,6 @@ components:
             type: string
         num_classes:
           type: integer
-          minimum: null
-          maximum: null
       required:
       - class_names
     ChannelEnum:

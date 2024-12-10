@@ -1,15 +1,7 @@
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import Layout from "@theme/Layout";
-import { useLocation } from "react-router-dom";
-// There should be a line here that says
-// import React from "react";
-// VSCode might try to delete it, but that will break the site.
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import baseStyles from '../css/style.module.css';
-import "../css/styles.css";
 
 function HomepageHeader() {
-  const { siteConfig } = useDocusaurusContext();
   const [isActive, setIsActive] = useState(false);
   const toggleMenu = () => {
     setIsActive((prevState) => !prevState);
@@ -40,26 +32,6 @@ function HomepageHeader() {
 }
 
 export default function Home(): JSX.Element {
-  const { siteConfig } = useDocusaurusContext();
-
-  const location = useLocation();
-  const isBasePath = location.pathname === "/python-sdk/";
-
-  useEffect(() => {
-    // Add or remove the class on the <body> tag
-    const mainWrapper = document.querySelector('#__docusaurus')
-
-    if (isBasePath) {
-      mainWrapper.classList.add("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
-    } else {
-      mainWrapper.classList.remove("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
-    }
-    
-    // Cleanup on component unmount
-    return () => {
-      mainWrapper.classList.remove("remove-default-components", "landing-page-container", "custom-head", "custom-a", "custom-img");
-    };
-  }, [isBasePath]);
 
 const code = `import groundlight
 from framegrab import FrameGrabber
@@ -77,12 +49,9 @@ image_query = gl.ask_confident(detector, image)
 print(image_query)`;
 // Split the code into lines
   const codeLines = code.split("\n");
-  
+
   return (
-    <Layout
-      title={`${siteConfig.title}`}
-      description="Computer Vision powered by Natural Language"
-    >
+    <div className={baseStyles["landing-page-container"]}>
       <HomepageHeader />
       <main>
         <section className={baseStyles.bannersection}>
@@ -94,7 +63,7 @@ print(image_query)`;
                   computer vision application. Groundlight’s fully managed computer vision solution takes care of the ML so
                   you can focus on building.</p>
                 <div className={baseStyles.buttonwrapper}>
-                  <a href="https://dashboard.groundlight.ai" className={baseStyles.cmnButton}>Start building</a>
+                  <a href="https://login.groundlight.ai/oauth2/register?tenantId=aad3d06b-ef57-454e-b952-91e9d3d347b1&client_id=ac8aac5d-c278-4c14-a549-e039f5ac54bb&nonce=&redirect_uri=https%3A%2F%2Fdashboard.groundlight.ai%2Fdevice-api%2Fauthz%2Fcallback&response_type=code&scope=openid%20profile%20email%20offline_access" className={baseStyles.cmnButton}>Start building</a>
                   <a href="/python-sdk/docs/getting-started" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>See the docs</a>
                 </div>
               </div>
@@ -167,7 +136,7 @@ print(image_query)`;
                   <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>API</h3>
                     <p>API to let you access your models in the cloud - no need to run your own models or hardware.</p>
-                    <a href="/python-sdk/docs/getting-started " className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
+                    <a href="/python-sdk/api-reference-docs/" className={`${baseStyles.cmnButton} ${baseStyles.outline}`}>Learn More</a>
                   </div>
                   <div className={baseStyles.integrationcompatibilityitem}>
                     <h3 className={baseStyles.title}>Fast Edge Inference</h3>
@@ -249,7 +218,7 @@ print(image_query)`;
                     <h3 className={baseStyles.title}>Support</h3>
                     <p>Reach out to us for questions and get an answer from a real human being.</p>
                   </div>
-                  <a href="support@groundlight.ai" className={baseStyles.cmnButton}>Contact us</a>
+                  <a href="mailto:support@groundlight.ai" className={baseStyles.cmnButton}>Contact us</a>
                 </div>
               </div>
             </div>
@@ -286,10 +255,10 @@ print(image_query)`;
                 </ul>
               </div>
             </div>
-            <div className={baseStyles.copyright}>Copyright © 2024 Groundlight AI.</div>
+           <div className={baseStyles.copyright}>Copyright © {new Date().getFullYear()} Groundlight AI.</div>
           </div>
         </footer>
       </main>
-    </Layout>
+    </div>
   );
 }

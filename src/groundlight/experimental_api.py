@@ -623,6 +623,7 @@ class ExperimentalApi(Groundlight):
         self,
         name: str,
         query: str,
+        class_name: str,
         *,
         max_count: Optional[int] = None,
         group_name: Optional[str] = None,
@@ -642,6 +643,7 @@ class ExperimentalApi(Groundlight):
             detector = gl.create_counting_detector(
                 name="people_counter",
                 query="How many people are in the image?",
+                class_name="person",
                 max_count=5,
                 confidence_threshold=0.9,
                 patience_time=30.0
@@ -654,6 +656,7 @@ class ExperimentalApi(Groundlight):
 
         :param name: A short, descriptive name for the detector.
         :param query: A question about the count of an object in the image.
+        :param class_name: The class name of the object to count.
         :param max_count: Maximum number of objects to count (default: 10)
         :param group_name: Optional name of a group to organize related detectors together.
         :param confidence_threshold: A value that sets the minimum confidence level required for the ML model's
@@ -683,7 +686,7 @@ class ExperimentalApi(Groundlight):
         # TODO: pull the BE defined default
         if max_count is None:
             max_count = 10
-        mode_config = CountModeConfiguration(max_count=max_count)
+        mode_config = CountModeConfiguration(max_count=max_count, class_name=class_name)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())

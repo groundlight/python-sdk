@@ -320,6 +320,18 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+def test_submit_image_query_with_confidence_threshold(gl: Groundlight, detector: Detector):
+    confidence_threshold = 0.5234  # Arbitrary specific value
+    _image_query = gl.submit_image_query(
+        detector=detector.id,
+        image="test/assets/dog.jpeg",
+        wait=10,
+        confidence_threshold=confidence_threshold,
+        human_review="NEVER",
+    )
+    assert _image_query.confidence_threshold == confidence_threshold
+
+
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing an image query ID.")
 def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     # submit_image_query
@@ -562,6 +574,19 @@ def test_list_image_queries(gl: Groundlight):
             assert str(image_query)
             assert isinstance(image_query, ImageQuery)
             assert is_valid_display_result(image_query.result)
+
+
+def test_list_image_queries_with_filter(gl: Groundlight):
+    # We want a fresh detector so we know exactly what image queries are associated with it
+    detector = gl.create_detector(name=f"Test {datetime.utcnow()}", query="Is there a dog?")
+    image_query_yes = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+    image_query_no = gl.ask_async(detector=detector.id, image="test/assets/cat.jpeg", human_review="NEVER")
+    iq_ids = [image_query_yes.id, image_query_no.id]
+
+    image_queries = gl.list_image_queries(detector_id=detector.id)
+    assert len(image_queries.results) == 2
+    for image_query in image_queries.results:
+        assert image_query.id in iq_ids
 
 
 def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
