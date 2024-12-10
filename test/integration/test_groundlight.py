@@ -625,7 +625,9 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
     with pytest.raises(TypeError):
         gl.add_label(iqid_yes, None)  # type: ignore
     with pytest.raises(TypeError):
-        import IPython; IPython.embed()  # type: ignore
+        import IPython
+
+        IPython.embed()  # type: ignore
         gl.add_label(iqid_yes, True)  # type: ignore
     with pytest.raises(TypeError):
         gl.add_label(iqid_yes, False)  # type: ignore
