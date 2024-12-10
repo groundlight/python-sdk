@@ -531,7 +531,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         return self._fixup_image_query(iq)
 
     def list_image_queries(
-        self, page: int = 1, page_size: int = 10, detector_id: Union[str, None] = None
+        self, page: int = 1, page_size: int = 10
     ) -> PaginatedImageQueryList:
         """
         List all image queries associated with your account, with pagination support.
@@ -554,10 +554,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: PaginatedImageQueryList containing the requested page of image queries and pagination metadata
                 like total count and links to next/previous pages.
         """
-        params = {"page": page, "page_size": page_size, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
-        if detector_id:
-            params["detector_id"] = detector_id
-        obj = self.image_queries_api.list_image_queries(**params)
+        obj = self.image_queries_api.list_image_queries(
+            page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
+        )
         image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]

@@ -576,19 +576,6 @@ def test_list_image_queries(gl: Groundlight):
             assert is_valid_display_result(image_query.result)
 
 
-def test_list_image_queries_with_filter(gl: Groundlight):
-    # We want a fresh detector so we know exactly what image queries are associated with it
-    detector = gl.create_detector(name=f"Test {datetime.utcnow()}", query="Is there a dog?")
-    image_query_yes = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
-    image_query_no = gl.ask_async(detector=detector.id, image="test/assets/cat.jpeg", human_review="NEVER")
-    iq_ids = [image_query_yes.id, image_query_no.id]
-
-    image_queries = gl.list_image_queries(detector_id=detector.id)
-    assert len(image_queries.results) == 2
-    for image_query in image_queries.results:
-        assert image_query.id in iq_ids
-
-
 def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     _image_query = gl.get_image_query(id=image_query_yes.id)
     assert str(_image_query)
