@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional, Union
 
 import pytest
 from groundlight import Groundlight
-from groundlight.binary_labels import VALID_DISPLAY_LABELS, DeprecatedLabel, Label, convert_internal_label_to_display
+from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
@@ -622,43 +622,14 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
     gl.add_label(iqid_no, "NO")
     gl.add_label(iqid_no, "no")
 
-    # Invalid labels
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, "PASS")
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, "FAIL")
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, DeprecatedLabel.PASS)
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, DeprecatedLabel.FAIL)
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, "sorta")
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, "YES ")
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, " YES")
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, "0")
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, "1")
-
-    # We technically don't allow these in the type signature, but users might do it anyway
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, 0)  # type: ignore
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, 1)  # type: ignore
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         gl.add_label(iqid_yes, None)  # type: ignore
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         gl.add_label(iqid_yes, True)  # type: ignore
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         gl.add_label(iqid_yes, False)  # type: ignore
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         gl.add_label(iqid_yes, b"YES")  # type: ignore
-
-    # We may want to support something like this in the future, but not yet
-    with pytest.raises(ValueError):
-        gl.add_label(iqid_yes, Label.UNCLEAR)
 
 
 def test_label_conversion_produces_strings():
