@@ -5,7 +5,7 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
-from typing import Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
@@ -552,7 +552,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: PaginatedImageQueryList containing the requested page of image queries and pagination metadata
                 like total count and links to next/previous pages.
         """
-        params = {"page": page, "page_size": page_size, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params: dict[str, Any] = {"page": page, "page_size": page_size, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
         if detector_id:
             params["detector_id"] = detector_id
         obj = self.image_queries_api.list_image_queries(**params)
