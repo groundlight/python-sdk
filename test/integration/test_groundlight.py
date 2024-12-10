@@ -584,7 +584,8 @@ def test_list_image_queries_with_filter(gl: Groundlight):
     iq_ids = [image_query_yes.id, image_query_no.id]
 
     image_queries = gl.list_image_queries(detector_id=detector.id)
-    assert len(image_queries.results) == 2
+    num_image_queries = 2
+    assert len(image_queries.results) == num_image_queries
     for image_query in image_queries.results:
         assert image_query.id in iq_ids
 
