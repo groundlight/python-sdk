@@ -622,6 +622,16 @@ def test_add_label_names(gl: Groundlight, image_query_yes: ImageQuery, image_que
     gl.add_label(iqid_no, "NO")
     gl.add_label(iqid_no, "no")
 
+    with pytest.raises(TypeError):
+        gl.add_label(iqid_yes, None)  # type: ignore
+    with pytest.raises(TypeError):
+        import IPython; IPython.embed()  # type: ignore
+        gl.add_label(iqid_yes, True)  # type: ignore
+    with pytest.raises(TypeError):
+        gl.add_label(iqid_yes, False)  # type: ignore
+    with pytest.raises(TypeError):
+        gl.add_label(iqid_yes, b"YES")  # type: ignore
+
 
 def test_label_conversion_produces_strings():
     # In our code, it's easier to work with enums, but we allow users to pass in strings or enums

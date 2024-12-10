@@ -1111,8 +1111,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         if isinstance(rois, str):
             raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
-        if isinstance(label, int):
+
+        # NOTE: bool is a subclass of int
+        if type(label) == int: # noqa: E721
             label = str(label)
+        elif not isinstance(label, (str, Label)):
+            raise TypeError("label must be a string or integer")
+
         if isinstance(image_query, ImageQuery):
             image_query_id = image_query.id
         else:
