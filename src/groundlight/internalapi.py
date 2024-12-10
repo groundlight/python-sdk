@@ -87,7 +87,7 @@ class InternalApiError(ApiException, RuntimeError):
         super().__init__(status, reason, http_resp)
 
 
-class RequestsRetryDecorator:
+class RequestsRetryDecorator: # pylint: disable=too-few-public-methods
     """
     Decorate a function to retry sending HTTP requests.
 
