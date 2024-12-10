@@ -1113,7 +1113,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             raise TypeError("rois must be a list of ROI objects. CLI support is not implemented")
 
         # NOTE: bool is a subclass of int
-        if type(label) == int: # noqa: E721 pylint: disable=unidiomatic-typecheck
+        if type(label) == int:  # noqa: E721 pylint: disable=unidiomatic-typecheck
             label = str(label)
         elif not isinstance(label, (str, Label)):
             raise TypeError("label must be a string or integer")
