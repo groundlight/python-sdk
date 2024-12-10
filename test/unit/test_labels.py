@@ -23,7 +23,7 @@ def test_binary_labels(gl_experimental: ExperimentalApi):
 
 def test_counting_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
-    det = gl_experimental.create_counting_detector(name, "test_query")
+    det = gl_experimental.create_counting_detector(name, "test_query", "test_object_class")
     iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     gl_experimental.add_label(iq1, 0)
     iq1 = gl_experimental.get_image_query(iq1.id)
