@@ -530,9 +530,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         iq = ImageQuery.parse_obj(obj.to_dict())
         return self._fixup_image_query(iq)
 
-    def list_image_queries(
-        self, page: int = 1, page_size: int = 10
-    ) -> PaginatedImageQueryList:
+    def list_image_queries(self, page: int = 1, page_size: int = 10) -> PaginatedImageQueryList:
         """
         List all image queries associated with your account, with pagination support.
 
