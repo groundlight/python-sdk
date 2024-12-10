@@ -323,6 +323,11 @@ paths:
         schema:
           type: integer
         description: Number of items to return per page.
+      - in: query
+        name: predictor_id
+        schema:
+          type: string
+        description: Optionally filter image queries by detector ID.
       tags:
       - image-queries
       security:
