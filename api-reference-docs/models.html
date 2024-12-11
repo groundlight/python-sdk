@@ -73,7 +73,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.ExperimentalApi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.add_label"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.add_label()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_counting_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_counting_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_detector_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_detector_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_multiclass_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_multiclass_detector()</span></code></a></li>
@@ -275,7 +274,7 @@ verification enabled when using the Groundlight cloud service.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="groundlight.Groundlight.add_label">
-<span class="sig-name descname"><span class="pre">add_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Label</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#groundlight.Groundlight.add_label" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Label</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#groundlight.Groundlight.add_label" title="Link to this definition"></a></dt>
 <dd><p>Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
 for training detectors, or to correct the results of detectors.</p>
 <p><strong>Example usage</strong>:</p>
@@ -296,12 +295,14 @@ for training detectors, or to correct the results of detectors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>image_query</strong> (<a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><em>ImageQuery</em></a><em> | </em><em>str</em>) – Either an ImageQuery object (returned from methods like <a class="reference internal" href="#groundlight.Groundlight.ask_ml" title="groundlight.Groundlight.ask_ml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ask_ml()</span></code></a>) or an image query ID
-string starting with “<a href="#id1"><span class="problematic" id="id2">iq_</span></a>”.</p></li>
-<li><p><strong>label</strong> (<em>Label</em><em> | </em><em>str</em>) – The label value to assign, typically “YES” or “NO” for binary classification detectors.
-For multi-class detectors, use one of the defined class names.</p></li>
-<li><p><strong>rois</strong> (<em>List</em><em>[</em><em>ROI</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional list of ROI objects defining regions of interest in the image.
-Each ROI specifies a bounding box with x, y coordinates and width, height.</p></li>
+<li><p><strong>image_query</strong> (<a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><em>ImageQuery</em></a><em> | </em><em>str</em>) – Either an ImageQuery object (returned from methods like
+<cite>ask_ml</cite>) or an image query ID string starting with “<a href="#id1"><span class="problematic" id="id2">iq_</span></a>”.</p></li>
+<li><p><strong>label</strong> (<em>Label</em><em> | </em><em>int</em><em> | </em><em>str</em>) – The label value to assign, typically “YES” or “NO” for binary
+classification detectors. For multi-class detectors, use one of
+the defined class names.</p></li>
+<li><p><strong>rois</strong> (<em>List</em><em>[</em><em>ROI</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional list of ROI objects defining regions of interest in the
+image. Each ROI specifies a bounding box with x, y coordinates
+and width, height.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1204,45 +1205,6 @@ Groundlight cloud service.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.add_label">
-<span class="sig-name descname"><span class="pre">add_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Label</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#groundlight.ExperimentalApi.add_label" title="Link to this definition"></a></dt>
-<dd><p>Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
-for training detectors, or to correct the results of detectors.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Using an ImageQuery object</span>
-<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector_id</span><span class="p">,</span> <span class="n">image_data</span><span class="p">)</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="n">image_query</span><span class="p">,</span> <span class="s2">&quot;YES&quot;</span><span class="p">)</span>
-
-<span class="c1"># Using an image query ID string directly</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="s2">&quot;iq_abc123&quot;</span><span class="p">,</span> <span class="s2">&quot;NO&quot;</span><span class="p">)</span>
-
-<span class="c1"># With regions of interest (ROIs)</span>
-<span class="n">rois</span> <span class="o">=</span> <span class="p">[</span><span class="n">ROI</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">50</span><span class="p">)]</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="n">image_query</span><span class="p">,</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span> <span class="n">rois</span><span class="o">=</span><span class="n">rois</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image_query</strong> (<a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><em>ImageQuery</em></a><em> | </em><em>str</em>) – Either an ImageQuery object (returned from methods like
-<cite>ask_ml</cite>) or an image query ID string starting with “<a href="#id3"><span class="problematic" id="id4">iq_</span></a>”.</p></li>
-<li><p><strong>label</strong> (<em>Label</em><em> | </em><em>str</em>) – The label value to assign, typically “YES” or “NO” for binary
-classification detectors. For multi-class detectors, use one of
-the defined class names.</p></li>
-<li><p><strong>rois</strong> (<em>List</em><em>[</em><em>ROI</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional list of ROI objects defining regions of interest in the
-image. Each ROI specifies a bounding box with x, y coordinates
-and width, height.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_counting_detector">
 <span class="sig-name descname"><span class="pre">create_counting_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_counting_detector" title="Link to this definition"></a></dt>
 <dd><p>Creates a counting detector that can count objects in images up to a specified maximum count.</p>
@@ -1762,7 +1724,7 @@ the detector to its initial state, allowing you to start fresh with new training
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id5"><span class="problematic" id="id6">det_</span></a>”.
+<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id3"><span class="problematic" id="id4">det_</span></a>”.
 The detector whose data should be reset.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1798,7 +1760,7 @@ When set to “STANDARD”, low-confidence queries may be sent to human labelers
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id7"><span class="problematic" id="id8">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id5"><span class="problematic" id="id6">det_</span></a>”.
 The detector whose escalation type should be updated.</p></li>
 <li><p><strong>escalation_type</strong> (<em>str</em>) – The new escalation type setting. Must be one of:
 - “STANDARD”: Allow human labeling for low-confidence queries
@@ -1835,7 +1797,7 @@ The detector whose escalation type should be updated.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id9"><span class="problematic" id="id10">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id7"><span class="problematic" id="id8">det_</span></a>”.
 The detector whose name should be updated.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – The new name to assign to the detector</p></li>
 </ul>
@@ -1868,7 +1830,7 @@ it will not accept or process any new image queries. Existing queries will not b
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id11"><span class="problematic" id="id12">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id9"><span class="problematic" id="id10">det_</span></a>”.
 The detector whose status should be updated.</p></li>
 <li><p><strong>enabled</strong> (<em>bool</em>) – Boolean indicating whether the detector should be enabled (True) or
 disabled (False). When disabled, the detector will not process new queries.</p></li>
