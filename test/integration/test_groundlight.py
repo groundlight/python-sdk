@@ -20,6 +20,7 @@ from model import (
     CountingResult,
     Detector,
     ImageQuery,
+    MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
@@ -30,7 +31,11 @@ IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
-    if not isinstance(result, BinaryClassificationResult) and not isinstance(result, CountingResult):
+    if (
+        not isinstance(result, BinaryClassificationResult)
+        and not isinstance(result, CountingResult)
+        and not isinstance(result, MultiClassificationResult)
+    ):
         return False
     if not is_valid_display_label(result.label):
         return False
