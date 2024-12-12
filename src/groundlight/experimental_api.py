@@ -214,9 +214,9 @@ class ExperimentalApi(Groundlight):
         """
         return Rule.model_validate(self.actions_api.get_rule(action_id).to_dict())
 
-    def list_detector_rules(self, detector: Union[str, Detector]) -> List[Rule]:
+    def list_detector_rules(self, detector: Union[str, Detector], page=1, page_size=10) -> PaginatedRuleList:
         """
-        Gets all rules associated with the given detector.
+        Gets a paginated list of rules associated with the given detector.
 
         **Example usage**::
 
@@ -224,15 +224,22 @@ class ExperimentalApi(Groundlight):
 
             # Get all rules for a specific detector
             rules = gl.list_detector_rules(det_mydetectorid)
-            for rule in rules:
+            for rule in rules.results:
                 print(f"Rule {rule.id}: {rule.name}")
 
+                # Get next page
+                next_page = gl.list_detector_rules(det_mydetectorid, page=2)
+
         :param detector: the detector or detector_id to get the rules for
+        :param page: the page number to retrieve (default: 1)
+        :param page_size: the number of rules per page (default: 10)
         :return: a list of Rule objects associated with the given detector
         """
         if isinstance(detector, Detector):
             detector = detector.id
-        return [Rule.model_validate(rule.to_dict()) for rule in self.actions_api.list_detector_rules(detector)]
+        return PaginatedRuleList.parse_obj(
+            self.actions_api.list_detector_rules(detector, page=page, page_size=page_size).to_dict()
+        )
 
     def delete_rule(self, action_id: int) -> None:
         """
