@@ -230,7 +230,9 @@ class ExperimentalApi(Groundlight):
         :param detector: the detector or detector_id to get the rules for
         :return: a list of Rule objects associated with the given detector
         """
-        return [Rule.model_validate(rule.to_dict()) for rule in self.actions_api.list_detector_rules(detector.id)]
+        if isinstance(detector, Detector):
+            detector = detector.id
+        return [Rule.model_validate(rule.to_dict()) for rule in self.actions_api.list_detector_rules(detector)]
 
     def delete_rule(self, action_id: int) -> None:
         """
