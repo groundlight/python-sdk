@@ -214,6 +214,24 @@ class ExperimentalApi(Groundlight):
         """
         return Rule.model_validate(self.actions_api.get_rule(action_id).to_dict())
 
+    def list_detector_rules(self, detector: Union[str, Detector]) -> List[Rule]:
+        """
+        Gets all rules associated with the given detector.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get all rules for a specific detector
+            rules = gl.list_detector_rules(det_mydetectorid)
+            for rule in rules:
+                print(f"Rule {rule.id}: {rule.name}")
+
+        :param detector: the detector or detector_id to get the rules for
+        :return: a list of Rule objects associated with the given detector
+        """
+        return [Rule.model_validate(rule.to_dict()) for rule in self.actions_api.list_detector_rules(detector.id)]
+
     def delete_rule(self, action_id: int) -> None:
         """
         Deletes the rule with the given id.
