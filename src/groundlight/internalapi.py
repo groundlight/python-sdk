@@ -65,7 +65,7 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
     The only subtlety here is that currently confidence of None means
     human label, which is treated as confident.
     """
-    if not iq.result:
+    if not iq.result and not iq.result.confidence:
         return False
     return iq.result.confidence >= confidence_threshold  # type: ignore
 
@@ -74,7 +74,7 @@ def iq_is_answered(iq: ImageQuery) -> bool:
     """Returns True if the image query has a ML or human label.
     Placeholder and special labels (out of domain) have confidences exactly 0.5
     """
-    if not iq.result:
+    if not iq.result and not iq.result.source:
         return False
     if (iq.result.source == Source.STILL_PROCESSING) or (iq.result.source is None):  # Should never be None
         return False

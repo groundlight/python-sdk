@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 from groundlight import ExperimentalApi, Groundlight
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
 
 def pytest_configure(config):
@@ -46,3 +46,19 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
 @pytest.fixture(name="gl_experimental")
 def _gl() -> ExperimentalApi:
     return ExperimentalApi()
+
+@pytest.fixture(name="initial_iq")
+def fixture_initial_iq() -> ImageQuery:
+    ImageQuery(
+        id="iq_fakeidhere",
+        type=ImageQueryTypeEnum.image_query,
+        created_at=datetime.utcnow(),
+        query = "Is there a dog?",
+        detector_id="det_fakeidhere",
+        result_type=ResultTypeEnum.binary_classification,
+        result=None,
+        patience_time=30,
+        confidence_threshold=0.9,
+        rois=None,
+        text=None,
+    )
