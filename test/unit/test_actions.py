@@ -26,6 +26,7 @@ def test_get_all_actions(gl_experimental: ExperimentalApi):
     assert rules.count > num_test_rules
     assert len(rules.results) == gl_experimental.ITEMS_PER_PAGE
 
+
 def test_delete_actions(gl_experimental: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
     num_test_rules = 13  # needs to be larger than the default page size
@@ -37,6 +38,7 @@ def test_delete_actions(gl_experimental: ExperimentalApi):
     gl_experimental.delete_all_rules(det.id)
     rules = gl_experimental.list_detector_rules(det.id)
     assert rules.count == 0
+
 
 def test_create_action_with_human_review(gl_experimental: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
