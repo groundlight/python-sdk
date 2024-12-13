@@ -47,6 +47,7 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
 def _gl() -> ExperimentalApi:
     return ExperimentalApi()
 
+
 @pytest.fixture(name="initial_iq")
 def fixture_initial_iq() -> ImageQuery:
     return ImageQuery(
@@ -54,7 +55,7 @@ def fixture_initial_iq() -> ImageQuery:
         id="iq_fakeidhere",
         type=ImageQueryTypeEnum.image_query,
         created_at=datetime.utcnow(),
-        query = "Is there a dog?",
+        query="Is there a dog?",
         detector_id="det_fakeidhere",
         result_type=ResultTypeEnum.binary_classification,
         result=None,
