@@ -49,7 +49,8 @@ def _gl() -> ExperimentalApi:
 
 @pytest.fixture(name="initial_iq")
 def fixture_initial_iq() -> ImageQuery:
-    ImageQuery(
+    return ImageQuery(
+        metadata=None,
         id="iq_fakeidhere",
         type=ImageQueryTypeEnum.image_query,
         created_at=datetime.utcnow(),
