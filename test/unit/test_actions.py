@@ -33,9 +33,6 @@ def test_delete_actions(gl_experimental: ExperimentalApi):
     det = gl_experimental.get_or_create_detector(name, "test_query")
     for i in range(num_test_rules):
         _ = gl_experimental.create_rule(det, f"test_rule_{i}", "EMAIL", "test@example.com")
-    import IPython
-
-    IPython.embed()
     rules = gl_experimental.list_detector_rules(det.id)
     assert rules.count == num_test_rules
     gl_experimental.delete_all_rules(det.id)
