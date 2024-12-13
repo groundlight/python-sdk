@@ -19,6 +19,18 @@ paths:
         schema:
           type: string
         required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - actions
       security:
@@ -313,6 +325,11 @@ paths:
       operationId: List image queries
       description: Retrieve a list of image-queries.
       parameters:
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Optionally filter image queries by detector ID.
       - in: query
         name: page
         schema:
