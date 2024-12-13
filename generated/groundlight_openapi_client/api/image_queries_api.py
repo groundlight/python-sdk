@@ -129,7 +129,7 @@ class ImageQueriesApi(object):
                 "all": [
                     "page",
                     "page_size",
-                    "predictor_id",
+                    "detector_id",
                 ],
                 "required": [],
                 "nullable": [],
@@ -142,17 +142,17 @@ class ImageQueriesApi(object):
                 "openapi_types": {
                     "page": (int,),
                     "page_size": (int,),
-                    "predictor_id": (str,),
+                    "detector_id": (str,),
                 },
                 "attribute_map": {
                     "page": "page",
                     "page_size": "page_size",
-                    "predictor_id": "predictor_id",
+                    "detector_id": "detector_id",
                 },
                 "location_map": {
                     "page": "query",
                     "page_size": "query",
-                    "predictor_id": "query",
+                    "detector_id": "query",
                 },
                 "collection_format_map": {},
             },
@@ -379,7 +379,7 @@ class ImageQueriesApi(object):
         Keyword Args:
             page (int): A page number within the paginated result set.. [optional]
             page_size (int): Number of items to return per page.. [optional]
-            predictor_id (str): Optionally filter image queries by detector ID.. [optional]
+            detector_id (str): Optionally filter image queries by detector ID.. [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object
