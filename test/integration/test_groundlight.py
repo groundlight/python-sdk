@@ -20,6 +20,7 @@ from model import (
     CountingResult,
     Detector,
     ImageQuery,
+    MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
@@ -30,7 +31,11 @@ IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
-    if not isinstance(result, BinaryClassificationResult) and not isinstance(result, CountingResult):
+    if (
+        not isinstance(result, BinaryClassificationResult)
+        and not isinstance(result, CountingResult)
+        and not isinstance(result, MultiClassificationResult)
+    ):
         return False
     if not is_valid_display_label(result.label):
         return False
@@ -574,6 +579,20 @@ def test_list_image_queries(gl: Groundlight):
             assert str(image_query)
             assert isinstance(image_query, ImageQuery)
             assert is_valid_display_result(image_query.result)
+
+
+def test_list_image_queries_with_filter(gl: Groundlight):
+    # We want a fresh detector so we know exactly what image queries are associated with it
+    detector = gl.create_detector(name=f"Test {datetime.utcnow()}", query="Is there a dog?")
+    image_query_yes = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+    image_query_no = gl.ask_async(detector=detector.id, image="test/assets/cat.jpeg", human_review="NEVER")
+    iq_ids = [image_query_yes.id, image_query_no.id]
+
+    image_queries = gl.list_image_queries(detector_id=detector.id)
+    num_image_queries = 2
+    assert len(image_queries.results) == num_image_queries
+    for image_query in image_queries.results:
+        assert image_query.id in iq_ids
 
 
 def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
