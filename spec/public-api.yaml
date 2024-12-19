@@ -1381,6 +1381,7 @@ components:
         count:
           type: integer
           minimum: 0
+          nullable: true
         greater_than_max:
           type: boolean
       required:

@@ -21,6 +21,7 @@ from groundlight_openapi_client.model.roi_request import ROIRequest
 from model import (
     ROI,
     BinaryClassificationResult,
+    CountingResult,
     Detector,
     ImageQuery,
     PaginatedDetectorList,
@@ -527,6 +528,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: ImageQuery object containing the query details and results
         """
         obj = self.image_queries_api.get_image_query(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        if obj.result_type == 'counting' and getattr(obj.result, 'label', None):
+            obj.result.pop('label')
+            obj.result['count'] = None
         iq = ImageQuery.parse_obj(obj.to_dict())
         return self._fixup_image_query(iq)
 
