@@ -326,11 +326,6 @@ paths:
       description: Retrieve a list of image-queries.
       parameters:
       - in: query
-        name: detector_id
-        schema:
-          type: string
-        description: Optionally filter image queries by detector ID.
-      - in: query
         name: page
         schema:
           type: integer
@@ -340,6 +335,11 @@ paths:
         schema:
           type: integer
         description: Number of items to return per page.
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Optionally filter image queries by detector ID.
       tags:
       - image-queries
       security:
