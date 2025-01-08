@@ -107,7 +107,10 @@ class BinaryClassificationResult(ModelNormal):
         """
         return {
             "label": (str,),  # noqa: E501
-            "confidence": (float,),  # noqa: E501
+            "confidence": (
+                float,
+                none_type,
+            ),  # noqa: E501
             "source": (str,),  # noqa: E501
         }
 
@@ -164,7 +167,7 @@ class BinaryClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): [optional]  # noqa: E501
+            confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
         """
 
@@ -254,7 +257,7 @@ class BinaryClassificationResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): [optional]  # noqa: E501
+            confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
         """
 

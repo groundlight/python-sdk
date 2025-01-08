@@ -104,8 +104,14 @@ class CountingResult(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "count": (int,),  # noqa: E501
-            "confidence": (float,),  # noqa: E501
+            "count": (
+                int,
+                none_type,
+            ),  # noqa: E501
+            "confidence": (
+                float,
+                none_type,
+            ),  # noqa: E501
             "source": (str,),  # noqa: E501
             "greater_than_max": (bool,),  # noqa: E501
         }
@@ -131,7 +137,7 @@ class CountingResult(ModelNormal):
         """CountingResult - a model defined in OpenAPI
 
         Args:
-            count (int):
+            count (int, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -164,7 +170,7 @@ class CountingResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): [optional]  # noqa: E501
+            confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
@@ -222,7 +228,7 @@ class CountingResult(ModelNormal):
         """CountingResult - a model defined in OpenAPI
 
         Args:
-            count (int):
+            count (int, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -255,7 +261,7 @@ class CountingResult(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            confidence (float): [optional]  # noqa: E501
+            confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """

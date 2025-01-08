@@ -9,11 +9,11 @@ Method | HTTP request | Description
 
 
 # **create_note**
-> create_note(detector_id, note_request)
+> create_note(detector_id)
 
 
 
-Create a new note
+Creates a new note.
 
 ### Example
 
@@ -49,12 +49,20 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     detector_id = "detector_id_example" # str | the detector to associate the new note with
     note_request = NoteRequest(
         content="content_example",
+        is_pinned=True,
         image=open('/path/to/file', 'rb'),
-    ) # NoteRequest | 
+    ) # NoteRequest |  (optional)
 
     # example passing only required values which don't have defaults set
     try:
-        api_instance.create_note(detector_id, note_request)
+        api_instance.create_note(detector_id)
+    except groundlight_openapi_client.ApiException as e:
+        print("Exception when calling NotesApi->create_note: %s\n" % e)
+
+    # example passing only required values which don't have defaults set
+    # and optional values
+    try:
+        api_instance.create_note(detector_id, note_request=note_request)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling NotesApi->create_note: %s\n" % e)
 ```
@@ -65,7 +73,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| the detector to associate the new note with |
- **note_request** | [**NoteRequest**](NoteRequest.md)|  |
+ **note_request** | [**NoteRequest**](NoteRequest.md)|  | [optional]
 
 ### Return type
 
@@ -94,7 +102,7 @@ void (empty response body)
 
 
 
-Get all the notes from a given detector and return the answer in lists, one for each note_category
+Retrieves all notes from a given detector and returns them in lists, one for each note_category.
 
 ### Example
 
