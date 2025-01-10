@@ -37,7 +37,8 @@ def is_valid_display_result(result: Any) -> bool:
         and not isinstance(result, MultiClassificationResult)
     ):
         return False
-    if not is_valid_display_label(result.label):
+
+    if isinstance(result, BinaryClassificationResult) and not is_valid_display_label(result.label):
         return False
     return True
 
