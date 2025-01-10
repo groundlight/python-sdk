@@ -60,10 +60,11 @@ def test_create_alert_multiple_actions(gl_experimental: ExperimentalApi):
     condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
     action1 = gl_experimental.make_action("EMAIL", "test@groundlight.ai", False)
     action2 = gl_experimental.make_action("EMAIL", "test@groundlight.ai", False)
+    actions = [action1, action2]
     alert = gl_experimental.create_alert(
         det,
         f"test_alert_{name}",
         condition,
-        [action1, action2],
+        actions,
     )
-    assert len(alert.action.root) == 2
+    assert len(alert.action.root) == len(actions)
