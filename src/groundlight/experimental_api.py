@@ -28,7 +28,18 @@ from groundlight_openapi_client.model.patched_detector_request import PatchedDet
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
-from model import ROI, Action, ActionList, BBoxGeometry, Condition, Detector, DetectorGroup, ModeEnum, PaginatedRuleList, Rule
+from model import (
+    ROI,
+    Action,
+    ActionList,
+    BBoxGeometry,
+    Condition,
+    Detector,
+    DetectorGroup,
+    ModeEnum,
+    PaginatedRuleList,
+    Rule,
+)
 
 from groundlight.images import parse_supported_image_types
 from groundlight.optional_imports import Image, np
@@ -94,33 +105,29 @@ class ExperimentalApi(Groundlight):
 
     ITEMS_PER_PAGE = 100
 
-    def make_condition(
-            self,
-            verb: str,
-            parameters: dict
-        ) -> Condition:
-            """
-            Creates a Condition object for use in creating alerts
+    def make_condition(self, verb: str, parameters: dict) -> Condition:
+        """
+        Creates a Condition object for use in creating alerts
 
-            This function serves as a convenience method; Condition objects can also be created directly.
+        This function serves as a convenience method; Condition objects can also be created directly.
 
-            **Example usage**::
+        **Example usage**::
 
-                gl = ExperimentalApi()
+            gl = ExperimentalApi()
 
-                # Create a condition for a rule
-                condition = gl.make_condition("CHANGED_TO", {"label": "YES"})
+            # Create a condition for a rule
+            condition = gl.make_condition("CHANGED_TO", {"label": "YES"})
 
-            :param verb: The condition verb to use. One of "ANSWERED_CONSECUTIVELY", "ANSWERED_WITHIN_TIME",
-                        "CHANGED_TO", "NO_CHANGE", "NO_QUERIES"
-            :param condition_parameters: Additional parameters for the condition, dependant on the verb:
-                - For ANSWERED_CONSECUTIVELY: {"num_consecutive_labels": N, "label": "YES/NO"}
-                - For CHANGED_TO: {"label": "YES/NO"}
-                - For ANSWERED_WITHIN_TIME: {"time_value": N, "time_unit": "MINUTES/HOURS/DAYS"}
+        :param verb: The condition verb to use. One of "ANSWERED_CONSECUTIVELY", "ANSWERED_WITHIN_TIME",
+                    "CHANGED_TO", "NO_CHANGE", "NO_QUERIES"
+        :param condition_parameters: Additional parameters for the condition, dependant on the verb:
+            - For ANSWERED_CONSECUTIVELY: {"num_consecutive_labels": N, "label": "YES/NO"}
+            - For CHANGED_TO: {"label": "YES/NO"}
+            - For ANSWERED_WITHIN_TIME: {"time_value": N, "time_unit": "MINUTES/HOURS/DAYS"}
 
-            :return: The created Condition object
-            """
-            return Condition(verb=verb, parameters=parameters)
+        :return: The created Condition object
+        """
+        return Condition(verb=verb, parameters=parameters)
 
     def make_action(
         self,
@@ -215,7 +222,12 @@ class ExperimentalApi(Groundlight):
         if isinstance(detector, Detector):
             detector = detector.id
         # translate pydantic type to the openapi type
-        actions = [ActionRequest(channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image) for action in actions]
+        actions = [
+            ActionRequest(
+                channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
+            )
+            for action in actions
+        ]
         rule_input = RuleRequest(
             detector_id=detector,
             name=name,
