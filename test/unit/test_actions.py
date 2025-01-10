@@ -52,3 +52,18 @@ def test_delete_action(gl_experimental: ExperimentalApi):
     gl_experimental.delete_rule(rule.id)
     with pytest.raises(NotFoundException) as _:
         gl_experimental.get_rule(rule.id)
+
+
+def test_create_alert_multiple_actions(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    action1 = gl_experimental.make_action("EMAIL", "test@groundlight.ai", False)
+    action2 = gl_experimental.make_action("EMAIL", "test@groundlight.ai", False)
+    alert = gl_experimental.create_alert(
+        det,
+        f"test_alert_{name}",
+        condition,
+        [action1, action2],
+    )
+    assert len(alert.action.root) == 2
