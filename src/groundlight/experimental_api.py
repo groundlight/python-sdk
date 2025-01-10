@@ -143,12 +143,12 @@ class ExperimentalApi(Groundlight):
 
             gl = ExperimentalApi()
 
-            # Create an action for a rule
+            # Create an action for an alert
             action = gl.make_action("EMAIL", "example@example.com", include_image=True)
 
         :param channel: The notification channel to use. One of "EMAIL" or "TEXT"
         :param recipient: The email address or phone number to send notifications to
-        :param include_image: Whether to include the triggering image in notifications
+        :param include_image: Whether to include the triggering image in action message
         """
         return Action(
             channel=channel,
@@ -176,7 +176,7 @@ class ExperimentalApi(Groundlight):
         such as when a detector's prediction changes or maintains a particular state.
 
         .. note::
-            Currently, only binary mode detectors (YES/NO answers) are supported for notification rules.
+            Currently, only binary mode detectors (YES/NO answers) are supported for alerts.
 
         **Example usage**::
 
@@ -204,9 +204,9 @@ class ExperimentalApi(Groundlight):
                 actions=[action1, action2]
             )
 
-        :param detector: The detector ID or Detector object to add the rule to
-        :param name: A unique name to identify this rule
-        :param enabled: Whether the rule should be active when created (default True)
+        :param detector: The detector ID or Detector object to add the alert to
+        :param name: A unique name to identify this alert
+        :param enabled: Whether the alert should be active when created (default True)
         :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
         :param snooze_time_value: Duration of snooze period (default 3600)
         :param snooze_time_unit: Unit for snooze duration - "SECONDS", "MINUTES", "HOURS", or "DAYS" (default "SECONDS")
