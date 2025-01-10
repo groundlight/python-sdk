@@ -156,7 +156,7 @@ class ExperimentalApi(Groundlight):
             include_image=include_image,
         )
 
-    def create_alert( # pylint: disable=too-many-locals  # noqa: PLR0913
+    def create_alert(  # pylint: disable=too-many-locals  # noqa: PLR0913
         self,
         detector: Union[str, Detector],
         name,
