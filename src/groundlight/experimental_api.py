@@ -17,7 +17,6 @@ from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
@@ -28,6 +27,7 @@ from groundlight_openapi_client.model.patched_detector_request import PatchedDet
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
+from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
     ROI,
     Action,
@@ -250,19 +250,27 @@ class ExperimentalApi(Groundlight):
         if isinstance(webhook_actions, WebhookAction):
             webhook_actions = [webhook_actions]
         # translate pydantic type to the openapi type
-        actions = [
-            ActionRequest(
-                channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
-            )
-            for action in actions
-        ] if actions else []
-        webhook_actions = [
-            WebhookActionRequest(
-                url=str(webhook_action.url),
-                include_image=webhook_action.include_image,
-            )
-            for webhook_action in webhook_actions
-        ] if webhook_actions else []
+        actions = (
+            [
+                ActionRequest(
+                    channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
+                )
+                for action in actions
+            ]
+            if actions
+            else []
+        )
+        webhook_actions = (
+            [
+                WebhookActionRequest(
+                    url=str(webhook_action.url),
+                    include_image=webhook_action.include_image,
+                )
+                for webhook_action in webhook_actions
+            ]
+            if webhook_actions
+            else []
+        )
         rule_input = RuleRequest(
             detector_id=detector,
             name=name,
