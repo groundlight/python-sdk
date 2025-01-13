@@ -73,6 +73,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.ExperimentalApi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_alert"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_alert()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_counting_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_counting_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_detector_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_detector_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_multiclass_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_multiclass_detector()</span></code></a></li>
@@ -86,6 +87,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_rule()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_detector_groups"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_detector_groups()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_rules()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_action"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_action()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_condition"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_condition()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.reset_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.reset_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.update_detector_escalation_type"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.update_detector_escalation_type()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.update_detector_name"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.update_detector_name()</span></code></a></li>
@@ -1206,6 +1209,65 @@ Groundlight cloud service.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_alert">
+<span class="sig-name descname"><span class="pre">create_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Action</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Action</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ActionList</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snooze_time_enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snooze_time_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snooze_time_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SECONDS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_review_required</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Rule" title="model.Rule"><span class="pre">Rule</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_alert" title="Link to this definition"></a></dt>
+<dd><p>Creates an alert for a detector that will trigger actions based on specified conditions.</p>
+<p>An alert allows you to configure automated actions when certain conditions are met,
+such as when a detector’s prediction changes or maintains a particular state.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, only binary mode detectors (YES/NO answers) are supported for alerts.</p>
+</div>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="c1"># Create a rule to send email alerts when door is detected as open</span>
+<span class="n">condition</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">make_condition</span><span class="p">(</span>
+    <span class="n">verb</span><span class="o">=</span><span class="s2">&quot;CHANGED_TO&quot;</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">action1</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">make_action</span><span class="p">(</span>
+    <span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;alerts@company.com&quot;</span><span class="p">,</span>
+    <span class="n">include_image</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">action2</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">make_action</span><span class="p">(</span>
+    <span class="s2">&quot;TEXT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;+1234567890&quot;</span><span class="p">,</span>
+    <span class="n">include_image</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+<span class="n">alert</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_alert</span><span class="p">(</span>
+    <span class="n">detector</span><span class="o">=</span><span class="s2">&quot;det_idhere&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Door Open Alert&quot;</span><span class="p">,</span>
+    <span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span>
+    <span class="n">actions</span><span class="o">=</span><span class="p">[</span><span class="n">action1</span><span class="p">,</span> <span class="n">action2</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – The detector ID or Detector object to add the alert to</p></li>
+<li><p><strong>name</strong> – A unique name to identify this alert</p></li>
+<li><p><strong>enabled</strong> (<em>bool</em>) – Whether the alert should be active when created (default True)</p></li>
+<li><p><strong>snooze_time_enabled</strong> (<em>bool</em>) – Enable notification snoozing to prevent alert spam (default False)</p></li>
+<li><p><strong>snooze_time_value</strong> (<em>int</em>) – Duration of snooze period (default 3600)</p></li>
+<li><p><strong>snooze_time_unit</strong> (<em>str</em>) – Unit for snooze duration - “SECONDS”, “MINUTES”, “HOURS”, or “DAYS” (default “SECONDS”)</p></li>
+<li><p><strong>human_review_required</strong> (<em>bool</em>) – Require human verification before sending alerts (default False)</p></li>
+<li><p><strong>condition</strong> (<em>Condition</em>)</p></li>
+<li><p><strong>actions</strong> (<em>Action</em><em> | </em><em>List</em><em>[</em><em>Action</em><em>] </em><em>| </em><em>ActionList</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created Alert object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Rule" title="model.Rule"><em>Rule</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_counting_detector">
 <span class="sig-name descname"><span class="pre">create_counting_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_counting_detector" title="Link to this definition"></a></dt>
 <dd><p>Creates a counting detector that can count objects in images up to a specified maximum count.</p>
@@ -1699,6 +1761,65 @@ where each source maps to a list of note strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#model.PaginatedRuleList" title="model.PaginatedRuleList"><em>PaginatedRuleList</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.make_action">
+<span class="sig-name descname"><span class="pre">make_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recipient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Action</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.make_action" title="Link to this definition"></a></dt>
+<dd><p>Creates an Action object for use in creating alerts</p>
+<p>This function serves as a convenience method; Action objects can also be created directly.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="c1"># Create an action for an alert</span>
+<span class="n">action</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">make_action</span><span class="p">(</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">,</span> <span class="s2">&quot;example@example.com&quot;</span><span class="p">,</span> <span class="n">include_image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>str</em>) – The notification channel to use. One of “EMAIL” or “TEXT”</p></li>
+<li><p><strong>recipient</strong> (<em>str</em>) – The email address or phone number to send notifications to</p></li>
+<li><p><strong>include_image</strong> (<em>bool</em>) – Whether to include the triggering image in action message</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Action</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.make_condition">
+<span class="sig-name descname"><span class="pre">make_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Condition</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.make_condition" title="Link to this definition"></a></dt>
+<dd><p>Creates a Condition object for use in creating alerts</p>
+<p>This function serves as a convenience method; Condition objects can also be created directly.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="c1"># Create a condition for a rule</span>
+<span class="n">condition</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">make_condition</span><span class="p">(</span><span class="s2">&quot;CHANGED_TO&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>verb</strong> (<em>str</em>) – The condition verb to use. One of “ANSWERED_CONSECUTIVELY”, “ANSWERED_WITHIN_TIME”,
+“CHANGED_TO”, “NO_CHANGE”, “NO_QUERIES”</p></li>
+<li><p><strong>condition_parameters</strong> – Additional parameters for the condition, dependant on the verb:
+- For ANSWERED_CONSECUTIVELY: {“num_consecutive_labels”: N, “label”: “YES/NO”}
+- For CHANGED_TO: {“label”: “YES/NO”}
+- For ANSWERED_WITHIN_TIME: {“time_value”: N, “time_unit”: “MINUTES/HOURS/DAYS”}</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created Condition object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Condition</em></p>
 </dd>
 </dl>
 </dd></dl>
