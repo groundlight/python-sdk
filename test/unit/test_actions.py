@@ -75,7 +75,7 @@ def test_create_alert_webhook_action(gl_experimental: ExperimentalApi):
     det = gl_experimental.get_or_create_detector(name, "test_query")
     condition = gl_experimental.make_condition("ANSWERED_CONSECUTIVELY", {"num_consecutive_labels": 1, "label": "YES"})
     webhook_url = "https://hooks.slack.com/services/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"
-    webhook_action = gl_experimental.make_webhook_action(webhook_url, include_image=True)
+    webhook_action = gl_experimental.make_webhook_action(webhook_url, include_image=False)
     alert = gl_experimental.create_alert(
         det,
         f"test_alert_{name}",
@@ -84,3 +84,23 @@ def test_create_alert_webhook_action(gl_experimental: ExperimentalApi):
     )
     assert len(alert.webhook_action) == 1
     assert len(alert.action.root) == 0
+
+def test_create_alert_multiple_webhook_actions(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    webhook_action_1 = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True)
+    webhook_action_2 = gl_experimental.make_webhook_action("https://example.com/webhook", include_image=False)
+    alert = gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=[webhook_action_1, webhook_action_2])
+    assert len(alert.webhook_action) == 2
+    assert len(alert.action.root) == 0
+
+def test_create_alert_webhook_action_and_other_action(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    webhook_action = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True)
+    email_action = gl_experimental.make_action("EMAIL", "test@groundlight.ai", False)
+    alert = gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action, actions=email_action)
+    assert len(alert.webhook_action) == 1
+    assert len(alert.action.root) == 1
