@@ -34,11 +34,13 @@ def lazy_import():
     from groundlight_openapi_client.model.action_list import ActionList
     from groundlight_openapi_client.model.condition import Condition
     from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
+    from groundlight_openapi_client.model.webhook_action import WebhookAction
 
     globals()["Action"] = Action
     globals()["ActionList"] = ActionList
     globals()["Condition"] = Condition
     globals()["SnoozeTimeUnitEnum"] = SnoozeTimeUnitEnum
+    globals()["WebhookAction"] = WebhookAction
 
 
 class Rule(ModelNormal):
@@ -114,17 +116,6 @@ class Rule(ModelNormal):
             "detector_name": (str,),  # noqa: E501
             "name": (str,),  # noqa: E501
             "condition": (Condition,),  # noqa: E501
-            "action": (
-                bool,
-                date,
-                datetime,
-                dict,
-                float,
-                int,
-                list,
-                str,
-                none_type,
-            ),  # noqa: E501
             "enabled": (bool,),  # noqa: E501
             "snooze_time_enabled": (bool,),  # noqa: E501
             "snooze_time_value": (int,),  # noqa: E501
@@ -140,6 +131,18 @@ class Rule(ModelNormal):
                 none_type,
             ),  # noqa: E501
             "human_review_required": (bool,),  # noqa: E501
+            "action": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
+            "webhook_action": ([WebhookAction],),  # noqa: E501
         }
 
     @cached_property
@@ -152,12 +155,13 @@ class Rule(ModelNormal):
         "detector_name": "detector_name",  # noqa: E501
         "name": "name",  # noqa: E501
         "condition": "condition",  # noqa: E501
-        "action": "action",  # noqa: E501
         "enabled": "enabled",  # noqa: E501
         "snooze_time_enabled": "snooze_time_enabled",  # noqa: E501
         "snooze_time_value": "snooze_time_value",  # noqa: E501
         "snooze_time_unit": "snooze_time_unit",  # noqa: E501
         "human_review_required": "human_review_required",  # noqa: E501
+        "action": "action",  # noqa: E501
+        "webhook_action": "webhook_action",  # noqa: E501
     }
 
     read_only_vars = {
@@ -170,7 +174,7 @@ class Rule(ModelNormal):
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(cls, id, detector_id, detector_name, name, condition, action, *args, **kwargs):  # noqa: E501
+    def _from_openapi_data(cls, id, detector_id, detector_name, name, condition, *args, **kwargs):  # noqa: E501
         """Rule - a model defined in OpenAPI
 
         Args:
@@ -179,7 +183,6 @@ class Rule(ModelNormal):
             detector_name (str):
             name (str):
             condition (Condition):
-            action (bool, date, datetime, dict, float, int, list, str, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -217,6 +220,8 @@ class Rule(ModelNormal):
             snooze_time_value (int): [optional] if omitted the server will use the default value of 0  # noqa: E501
             snooze_time_unit (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
             human_review_required (bool): [optional] if omitted the server will use the default value of False  # noqa: E501
+            action (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            webhook_action ([WebhookAction]): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -250,7 +255,6 @@ class Rule(ModelNormal):
         self.detector_name = detector_name
         self.name = name
         self.condition = condition
-        self.action = action
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -273,12 +277,11 @@ class Rule(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, name, condition, action, *args, **kwargs):  # noqa: E501
+    def __init__(self, name, condition, *args, **kwargs):  # noqa: E501
         """Rule - a model defined in OpenAPI
 
             name (str):
             condition (Condition):
-            action (bool, date, datetime, dict, float, int, list, str, none_type):
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -316,6 +319,8 @@ class Rule(ModelNormal):
             snooze_time_value (int): [optional] if omitted the server will use the default value of 0  # noqa: E501
             snooze_time_unit (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
             human_review_required (bool): [optional] if omitted the server will use the default value of False  # noqa: E501
+            action (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            webhook_action ([WebhookAction]): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -344,7 +349,6 @@ class Rule(ModelNormal):
 
         self.name = name
         self.condition = condition
-        self.action = action
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map

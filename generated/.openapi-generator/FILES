@@ -50,6 +50,8 @@ docs/SourceEnum.md
 docs/StatusEnum.md
 docs/UserApi.md
 docs/VerbEnum.md
+docs/WebhookAction.md
+docs/WebhookActionRequest.md
 git_push.sh
 groundlight_openapi_client/__init__.py
 groundlight_openapi_client/api/__init__.py
@@ -108,6 +110,8 @@ groundlight_openapi_client/model/snooze_time_unit_enum.py
 groundlight_openapi_client/model/source_enum.py
 groundlight_openapi_client/model/status_enum.py
 groundlight_openapi_client/model/verb_enum.py
+groundlight_openapi_client/model/webhook_action.py
+groundlight_openapi_client/model/webhook_action_request.py
 groundlight_openapi_client/model_utils.py
 groundlight_openapi_client/models/__init__.py
 groundlight_openapi_client/rest.py
@@ -116,4 +120,6 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_webhook_action.py
+test/test_webhook_action_request.py
 tox.ini

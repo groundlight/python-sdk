@@ -90,6 +90,12 @@ rule_request = RuleRequest(
             },
         ),
         action=None,
+        webhook_action=[
+            WebhookActionRequest(
+                url="url_example",
+                include_image=True,
+            ),
+        ],
     ) # RuleRequest | 
 
     try:
@@ -172,6 +178,8 @@ Class | Method | HTTP request | Description
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
  - [VerbEnum](docs/VerbEnum.md)
+ - [WebhookAction](docs/WebhookAction.md)
+ - [WebhookActionRequest](docs/WebhookActionRequest.md)
 
 
 ## Documentation For Authorization

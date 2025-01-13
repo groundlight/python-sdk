@@ -68,3 +68,19 @@ def test_create_alert_multiple_actions(gl_experimental: ExperimentalApi):
         actions,
     )
     assert len(alert.action.root) == len(actions)
+
+
+def test_create_alert_webhook_action(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("ANSWERED_CONSECUTIVELY", {"num_consecutive_labels": 1, "label": "YES"})
+    webhook_url = "https://hooks.slack.com/services/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"
+    webhook_action = gl_experimental.make_webhook_action(webhook_url, include_image=True)
+    alert = gl_experimental.create_alert(
+        det,
+        f"test_alert_{name}",
+        condition,
+        webhook_actions=webhook_action,
+    )
+    assert len(alert.webhook_action) == 1
+    assert len(alert.action.root) == 0
