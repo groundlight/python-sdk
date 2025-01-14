@@ -364,6 +364,33 @@ class ExperimentalApi(Groundlight):
         """
         return Rule.model_validate(self.actions_api.get_rule(action_id).to_dict())
 
+    def list_detector_rules(self, detector: Union[str, Detector], page=1, page_size=10) -> PaginatedRuleList:
+        """
+        Gets a paginated list of rules associated with the given detector.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get all rules for a specific detector
+            rules = gl.list_detector_rules(det_mydetectorid)
+            for rule in rules.results:
+                print(f"Rule {rule.id}: {rule.name}")
+
+                # Get next page
+                next_page = gl.list_detector_rules(det_mydetectorid, page=2)
+
+        :param detector: the detector or detector_id to get the rules for
+        :param page: the page number to retrieve (default: 1)
+        :param page_size: the number of rules per page (default: 10)
+        :return: a list of Rule objects associated with the given detector
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        return PaginatedRuleList.parse_obj(
+            self.actions_api.list_detector_rules(detector, page=page, page_size=page_size).to_dict()
+        )
+
     def delete_rule(self, action_id: int) -> None:
         """
         Deletes the rule with the given id.
@@ -405,13 +432,11 @@ class ExperimentalApi(Groundlight):
         obj = self.actions_api.list_rules(page=page, page_size=page_size)
         return PaginatedRuleList.parse_obj(obj.to_dict())
 
-    def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
+    def delete_all_rules(self, detector: Union[str, Detector]) -> int:
         """
-        Deletes all rules associated with the given detector. If no detector is specified,
-        deletes all rules in the account.
+        Deletes all rules associated with the given detector.
 
-        WARNING: If no detector is specified, this will delete ALL rules in your account.
-        This action cannot be undone. Use with caution.
+        WARNING: This action cannot be undone. Use with caution.
 
         **Example usage**::
 
@@ -422,11 +447,7 @@ class ExperimentalApi(Groundlight):
             num_deleted = gl.delete_all_rules(detector)
             print(f"Deleted {num_deleted} rules")
 
-            # Delete all rules in the account
-            num_deleted = gl.delete_all_rules()
-            print(f"Deleted {num_deleted} rules")
-
-        :param detector: the detector to delete the rules from. If None, deletes all rules.
+        :param detector: the detector to delete the rules from.
 
         :return: the number of rules deleted
         """
@@ -436,9 +457,7 @@ class ExperimentalApi(Groundlight):
         num_rules = self.list_rules().count
         for page in range(1, (num_rules // self.ITEMS_PER_PAGE) + 2):
             for rule in self.list_rules(page=page, page_size=self.ITEMS_PER_PAGE).results:
-                if det_id is None:
-                    ids_to_delete.append(rule.id)
-                elif rule.detector_id == det_id:
+                if rule.detector_id == det_id:
                     ids_to_delete.append(rule.id)
         for rule_id in ids_to_delete:
             self.delete_rule(rule_id)
