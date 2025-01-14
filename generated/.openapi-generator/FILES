@@ -48,6 +48,7 @@ docs/RuleRequest.md
 docs/SnoozeTimeUnitEnum.md
 docs/SourceEnum.md
 docs/StatusEnum.md
+docs/TextRecognitionResult.md
 docs/UserApi.md
 docs/VerbEnum.md
 git_push.sh
@@ -107,6 +108,7 @@ groundlight_openapi_client/model/rule_request.py
 groundlight_openapi_client/model/snooze_time_unit_enum.py
 groundlight_openapi_client/model/source_enum.py
 groundlight_openapi_client/model/status_enum.py
+groundlight_openapi_client/model/text_recognition_result.py
 groundlight_openapi_client/model/verb_enum.py
 groundlight_openapi_client/model_utils.py
 groundlight_openapi_client/models/__init__.py
@@ -116,4 +118,5 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_text_recognition_result.py
 tox.ini

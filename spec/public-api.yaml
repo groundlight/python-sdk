@@ -19,6 +19,18 @@ paths:
         schema:
           type: string
         required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - actions
       security:
@@ -314,6 +326,11 @@ paths:
       description: Retrieve a list of image-queries.
       parameters:
       - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Optionally filter image queries by detector ID.
+      - in: query
         name: page
         schema:
           type: integer
@@ -323,11 +340,6 @@ paths:
         schema:
           type: integer
         description: Number of items to return per page.
-      - in: query
-        name: detector_id
-        schema:
-          type: string
-        description: Optionally filter image queries by detector ID.
       tags:
       - image-queries
       security:
@@ -540,8 +552,8 @@ paths:
   /v1/notes:
     get:
       operationId: get notes
-      description: Get all the notes from a given detector and return the answer in
-        lists, one for each note_category
+      description: Retrieves all notes from a given detector and returns them in lists,
+        one for each note_category.
       parameters:
       - in: query
         name: detector_id
@@ -562,7 +574,7 @@ paths:
           description: ''
     post:
       operationId: Create note
-      description: Create a new note
+      description: Creates a new note.
       parameters:
       - in: query
         name: detector_id
@@ -583,7 +595,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/NoteRequest'
-        required: true
       security:
       - ApiToken: []
       responses:
@@ -833,10 +844,12 @@ components:
             * `BINARY` - BINARY
             * `COUNT` - COUNT
             * `MULTI_CLASS` - MULTI_CLASS
+            * `TEXT` - TEXT
         mode_configuration:
           oneOf:
           - $ref: '#/components/schemas/CountModeConfiguration'
           - $ref: '#/components/schemas/MultiClassModeConfiguration'
+          - $ref: '#/components/schemas/TextModeConfiguration'
           nullable: true
       required:
       - name
@@ -917,6 +930,7 @@ components:
           - $ref: '#/components/schemas/BinaryClassificationResult'
           - $ref: '#/components/schemas/CountingResult'
           - $ref: '#/components/schemas/MultiClassificationResult'
+          - $ref: '#/components/schemas/TextRecognitionResult'
           nullable: true
         patience_time:
           type: number
@@ -1037,6 +1051,7 @@ components:
       - BINARY
       - COUNT
       - MULTI_CLASS
+      - TEXT
       type: string
     Note:
       type: object
@@ -1046,24 +1061,28 @@ components:
           readOnly: true
         content:
           type: string
+          nullable: true
           description: Text content of the note.
+        is_pinned:
+          type: boolean
+          nullable: true
       required:
-      - content
       - detector_id
     NoteRequest:
       type: object
       properties:
         content:
           type: string
-          minLength: 1
+          nullable: true
           description: Text content of the note.
+        is_pinned:
+          type: boolean
+          nullable: true
         image:
           type: string
           format: binary
           writeOnly: true
           nullable: true
-      required:
-      - content
     PaginatedDetectorList:
       type: object
       required:
@@ -1206,6 +1225,7 @@ components:
       - binary_classification
       - counting
       - multi_classification
+      - text_recognition
       type: string
     Rule:
       type: object
@@ -1346,6 +1366,7 @@ components:
           format: float
           minimum: 0.0
           maximum: 1.0
+          nullable: true
         source:
           type: string
           enum:
@@ -1370,6 +1391,7 @@ components:
           format: float
           minimum: 0.0
           maximum: 1.0
+          nullable: true
         source:
           type: string
           enum:
@@ -1381,6 +1403,7 @@ components:
         count:
           type: integer
           minimum: 0
+          nullable: true
         greater_than_max:
           type: boolean
       required:
@@ -1393,6 +1416,7 @@ components:
           format: float
           minimum: 0.0
           maximum: 1.0
+          nullable: true
         source:
           type: string
           enum:
@@ -1405,6 +1429,30 @@ components:
           type: string
       required:
       - label
+    TextRecognitionResult:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          nullable: true
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+        text:
+          type: string
+        truncated:
+          type: boolean
+      required:
+      - text
+      - truncated
     CountModeConfiguration:
       type: object
       properties:
@@ -1412,6 +1460,7 @@ components:
           type: integer
           minimum: 1
           maximum: 50
+          nullable: false
         class_name:
           type: string
       required:
@@ -1425,8 +1474,11 @@ components:
             type: string
         num_classes:
           type: integer
+          nullable: false
       required:
       - class_names
+    TextModeConfiguration:
+      type: object
     ChannelEnum:
       type: string
       enum:
