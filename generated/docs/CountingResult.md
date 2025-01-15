@@ -4,7 +4,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**count** | **int** |  | 
+**count** | **int, none_type** |  | 
 **confidence** | **float** |  | [optional] 
 **source** | **str** |  | [optional] 
 **greater_than_max** | **bool** |  | [optional] 

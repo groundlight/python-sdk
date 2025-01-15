@@ -25,13 +25,20 @@ def test_counting_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
     det = gl_experimental.create_counting_detector(name, "test_query", "test_object_class")
     iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+
     gl_experimental.add_label(iq1, 0)
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.count == 0
+
     good_label = 5
     gl_experimental.add_label(iq1, good_label)
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.count == good_label
+
+    gl_experimental.add_label(iq1, "UNCLEAR")
+    iq1 = gl_experimental.get_image_query(iq1.id)
+    assert iq1.result.count is None
+
     with pytest.raises(ApiException) as _:
         gl_experimental.add_label(iq1, "MAYBE")
     with pytest.raises(ApiException) as _:
