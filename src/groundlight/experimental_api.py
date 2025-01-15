@@ -904,3 +904,60 @@ class ExperimentalApi(Groundlight):
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
+
+
+    def create_read_all_text_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a read all text detector with the given name.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            detector = gl.create_read_all_text_detector(
+                name="Sign Reader",
+            )
+
+            # Use the detector to classify a traffic light
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+            print(f"Traffic light is {image_query.result.text}")
+            print(f"Confidence: {image_query.result.confidence}")
+
+        :param name: A short, descriptive name for the detector.
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value between 1/num_classes and 1 that sets the minimum confidence level required
+                                  for the ML model's predictions. If confidence is below this threshold,
+                                  the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+
+        :return: The created Detector object
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query="Read all text in the image",
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        detector_creation_input.mode = ModeEnum.TEXT
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
