@@ -1000,14 +1000,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)  # type: ignore
 
-        def is_from_edge(iq: ImageQuery) -> bool:
-            return iq.metadata and iq.metadata.get("is_from_edge", False)
-
-        if is_from_edge(image_query) and not confidence_above_thresh(image_query):
-            # If the query is from the edge and the confidence is not above the threshold, it means the client wants
-            # only edge answers, so we don't want to poll the cloud.
-            return image_query
-
         return self._wait_for_result(image_query, condition=confidence_above_thresh, timeout_sec=timeout_sec)
 
     def wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
@@ -1082,8 +1074,21 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until result is available")
             time.sleep(sleep_time)
             next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
-            image_query = self.get_image_query(image_query.id)
-            image_query = self._fixup_image_query(image_query)
+
+            def is_from_edge(iq: ImageQuery) -> bool:
+                return iq.metadata and iq.metadata.get("is_from_edge", False)
+
+            if is_from_edge(image_query) and not condition(image_query):
+                # If the query is from the edge and the condition is not met, it means the client wanted only edge
+                # answers, so we don't want to poll the cloud and we should eventually return whatever the edge response
+                # was. We'll wait the remaining time to stay consistent with the behavior of the wait parameter.
+                logger.debug(
+                    "The image query is from the edge and the client wanted only edge answers, so we are not"
+                    " attempting to get a result from the cloud."
+                )
+            else:
+                image_query = self.get_image_query(image_query.id)
+                image_query = self._fixup_image_query(image_query)
         return image_query
 
     def add_label(
