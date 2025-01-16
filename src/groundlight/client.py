@@ -999,7 +999,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)  # type: ignore
-
         return self._wait_for_result(image_query, condition=confidence_above_thresh, timeout_sec=timeout_sec)
 
     def wait_for_ml_result(self, image_query: Union[ImageQuery, str], timeout_sec: float = 30.0) -> ImageQuery:
