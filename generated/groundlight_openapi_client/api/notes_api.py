@@ -52,7 +52,6 @@ class NotesApi(object):
                 ],
                 "required": [
                     "detector_id",
-                    "note_request",
                 ],
                 "nullable": [],
                 "enum": [],
@@ -121,21 +120,21 @@ class NotesApi(object):
             api_client=api_client,
         )
 
-    def create_note(self, detector_id, note_request, **kwargs):
+    def create_note(self, detector_id, **kwargs):
         """create_note  # noqa: E501
 
-        Create a new note  # noqa: E501
+        Creates a new note.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.create_note(detector_id, note_request, async_req=True)
+        >>> thread = api.create_note(detector_id, async_req=True)
         >>> result = thread.get()
 
         Args:
             detector_id (str): the detector to associate the new note with
-            note_request (NoteRequest):
 
         Keyword Args:
+            note_request (NoteRequest): [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object
@@ -178,13 +177,12 @@ class NotesApi(object):
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["detector_id"] = detector_id
-        kwargs["note_request"] = note_request
         return self.create_note_endpoint.call_with_http_info(**kwargs)
 
     def get_notes(self, detector_id, **kwargs):
         """get_notes  # noqa: E501
 
-        Get all the notes from a given detector and return the answer in lists, one for each note_category  # noqa: E501
+        Retrieves all notes from a given detector and returns them in lists, one for each note_category.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 

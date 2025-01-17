@@ -55,11 +55,7 @@ class NoteRequest(ModelNormal):
 
     allowed_values = {}
 
-    validations = {
-        ("content",): {
-            "min_length": 1,
-        },
-    }
+    validations = {}
 
     @cached_property
     def additional_properties_type():
@@ -92,7 +88,14 @@ class NoteRequest(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "content": (str,),  # noqa: E501
+            "content": (
+                str,
+                none_type,
+            ),  # noqa: E501
+            "is_pinned": (
+                bool,
+                none_type,
+            ),  # noqa: E501
             "image": (
                 file_type,
                 none_type,
@@ -105,6 +108,7 @@ class NoteRequest(ModelNormal):
 
     attribute_map = {
         "content": "content",  # noqa: E501
+        "is_pinned": "is_pinned",  # noqa: E501
         "image": "image",  # noqa: E501
     }
 
@@ -114,11 +118,8 @@ class NoteRequest(ModelNormal):
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(cls, content, *args, **kwargs):  # noqa: E501
+    def _from_openapi_data(cls, *args, **kwargs):  # noqa: E501
         """NoteRequest - a model defined in OpenAPI
-
-        Args:
-            content (str): Text content of the note.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -151,6 +152,8 @@ class NoteRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            content (str, none_type): Text content of the note.. [optional]  # noqa: E501
+            is_pinned (bool, none_type): [optional]  # noqa: E501
             image (file_type, none_type): [optional]  # noqa: E501
         """
 
@@ -180,7 +183,6 @@ class NoteRequest(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
-        self.content = content
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -203,11 +205,8 @@ class NoteRequest(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, content, *args, **kwargs):  # noqa: E501
+    def __init__(self, *args, **kwargs):  # noqa: E501
         """NoteRequest - a model defined in OpenAPI
-
-        Args:
-            content (str): Text content of the note.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -240,6 +239,8 @@ class NoteRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            content (str, none_type): Text content of the note.. [optional]  # noqa: E501
+            is_pinned (bool, none_type): [optional]  # noqa: E501
             image (file_type, none_type): [optional]  # noqa: E501
         """
 
@@ -267,7 +268,6 @@ class NoteRequest(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
-        self.content = content
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
