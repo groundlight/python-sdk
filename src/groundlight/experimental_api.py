@@ -48,7 +48,7 @@ from groundlight.optional_imports import Image, np
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, logger
 
 
-class ExperimentalApi(Groundlight):
+class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
     def __init__(
         self,
         endpoint: Union[str, None] = None,
@@ -174,7 +174,7 @@ class ExperimentalApi(Groundlight):
             include_image=include_image,
         )
 
-    def create_alert(  # pylint: disable=too-many-locals  # noqa: PLR0913
+    def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
         self,
         detector: Union[str, Detector],
         name,
