@@ -227,7 +227,8 @@ class ExperimentalApi(Groundlight):
         :param name: A unique name to identify this alert
         :param condition: The condition to use for the alert
         :param actions: The actions to use for the alert. Optional if webhook_actions are provided (default None)
-        :param webhook_actions: The webhook actions to use for the alert. Optional if actions are provided (default None)
+        :param webhook_actions: The webhook actions to use for the alert. Optional if actions are provided (default 
+            None)
         :param enabled: Whether the alert should be active when created (default True)
         :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
         :param snooze_time_value: Duration of snooze period (default 3600)

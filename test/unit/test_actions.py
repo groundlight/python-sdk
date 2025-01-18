@@ -92,10 +92,11 @@ def test_create_alert_multiple_webhook_actions(gl_experimental: ExperimentalApi)
     condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
     webhook_action_1 = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True)
     webhook_action_2 = gl_experimental.make_webhook_action("https://example.com/webhook", include_image=False)
+    webhook_actions = [webhook_action_1, webhook_action_2]
     alert = gl_experimental.create_alert(
-        det, f"test_alert_{name}", condition, webhook_actions=[webhook_action_1, webhook_action_2]
+        det, f"test_alert_{name}", condition, webhook_actions=webhook_actions
     )
-    assert len(alert.webhook_action) == 2
+    assert len(alert.webhook_action) == len(webhook_actions)
     assert len(alert.action.root) == 0
 
 
