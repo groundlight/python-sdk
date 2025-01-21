@@ -62,7 +62,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
     Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,
     submit images for analysis, and retrieve predictions.
 
-    The API token (auth) is specified through the **GROUNDLIGHT_API_TOKEN** environment variable by default.
+    The API token (auth) is specified through the **GROUNDLIGHT_API_TOKEN** environment variable by
+    default.
+    If you are using a Groundlight Edge device, you can specify the endpoint through the
+    **GROUNDLIGHT_ENDPOINT** environment variable.
 
     **Example usage**::
 
