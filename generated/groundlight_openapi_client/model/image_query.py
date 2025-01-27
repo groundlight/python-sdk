@@ -36,6 +36,7 @@ def lazy_import():
     from groundlight_openapi_client.model.multi_classification_result import MultiClassificationResult
     from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
     from groundlight_openapi_client.model.roi import ROI
+    from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
 
     globals()["BinaryClassificationResult"] = BinaryClassificationResult
     globals()["CountingResult"] = CountingResult
@@ -43,6 +44,7 @@ def lazy_import():
     globals()["MultiClassificationResult"] = MultiClassificationResult
     globals()["ROI"] = ROI
     globals()["ResultTypeEnum"] = ResultTypeEnum
+    globals()["TextRecognitionResult"] = TextRecognitionResult
 
 
 class ImageQuery(ModelNormal):

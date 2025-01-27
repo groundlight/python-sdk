@@ -27,6 +27,7 @@ from groundlight_openapi_client.model.patched_detector_request import PatchedDet
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
+from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
     ROI,
     Action,
@@ -38,6 +39,7 @@ from model import (
     ModeEnum,
     PaginatedRuleList,
     Rule,
+    WebhookAction,
 )
 
 from groundlight.images import parse_supported_image_types
@@ -46,7 +48,7 @@ from groundlight.optional_imports import Image, np
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, logger
 
 
-class ExperimentalApi(Groundlight):
+class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
     def __init__(
         self,
         endpoint: Union[str, None] = None,
@@ -156,12 +158,29 @@ class ExperimentalApi(Groundlight):
             include_image=include_image,
         )
 
-    def create_alert(  # pylint: disable=too-many-locals  # noqa: PLR0913
+    def make_webhook_action(self, url: str, include_image: bool) -> WebhookAction:
+        """
+        Creates a WebhookAction object for use in creating alerts
+        This function serves as a convenience method; WebhookAction objects can also be created directly.
+        **Example usage**::
+            gl = ExperimentalApi()
+            # Create a webhook action for an alert
+            action = gl.make_webhook_action("https://example.com/webhook", include_image=True)
+        :param url: The URL to send the webhook to
+        :param include_image: Whether to include the triggering image in the webhook payload
+        """
+        return WebhookAction(
+            url=str(url),
+            include_image=include_image,
+        )
+
+    def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
         self,
         detector: Union[str, Detector],
         name,
         condition: Condition,
-        actions: Union[Action, List[Action], ActionList],
+        actions: Optional[Union[Action, List[Action], ActionList]] = None,
+        webhook_actions: Optional[Union[WebhookAction, List[WebhookAction]]] = None,
         *,
         enabled: bool = True,
         snooze_time_enabled: bool = False,
@@ -206,6 +225,10 @@ class ExperimentalApi(Groundlight):
 
         :param detector: The detector ID or Detector object to add the alert to
         :param name: A unique name to identify this alert
+        :param condition: The condition to use for the alert
+        :param actions: The actions to use for the alert. Optional if webhook_actions are provided (default None)
+        :param webhook_actions: The webhook actions to use for the alert. Optional if actions are provided (default
+            None)
         :param enabled: Whether the alert should be active when created (default True)
         :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
         :param snooze_time_value: Duration of snooze period (default 3600)
@@ -220,13 +243,30 @@ class ExperimentalApi(Groundlight):
             actions = actions.root
         if isinstance(detector, Detector):
             detector = detector.id
+        if isinstance(webhook_actions, WebhookAction):
+            webhook_actions = [webhook_actions]
         # translate pydantic type to the openapi type
-        actions = [
-            ActionRequest(
-                channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
-            )
-            for action in actions
-        ]
+        actions = (
+            [
+                ActionRequest(
+                    channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
+                )
+                for action in actions
+            ]
+            if actions
+            else []
+        )
+        webhook_actions = (
+            [
+                WebhookActionRequest(
+                    url=str(webhook_action.url),
+                    include_image=webhook_action.include_image,
+                )
+                for webhook_action in webhook_actions
+            ]
+            if webhook_actions
+            else []
+        )
         rule_input = RuleRequest(
             detector_id=detector,
             name=name,
@@ -237,6 +277,7 @@ class ExperimentalApi(Groundlight):
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
             human_review_required=human_review_required,
+            webhook_action=webhook_actions,
         )
         return Rule.model_validate(self.actions_api.create_rule(detector, rule_input).to_dict())
 
@@ -257,6 +298,8 @@ class ExperimentalApi(Groundlight):
         human_review_required: bool = False,
     ) -> Rule:
         """
+        DEPRECATED: Use create_alert instead.
+
         Creates a notification rule for a detector that will send alerts based on specified conditions.
 
         A notification rule allows you to configure automated alerts when certain conditions are met,

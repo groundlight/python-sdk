@@ -50,4 +50,7 @@ from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
 from groundlight_openapi_client.model.source_enum import SourceEnum
 from groundlight_openapi_client.model.status_enum import StatusEnum
+from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
 from groundlight_openapi_client.model.verb_enum import VerbEnum
+from groundlight_openapi_client.model.webhook_action import WebhookAction
+from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
