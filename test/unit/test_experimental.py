@@ -1,5 +1,5 @@
-from datetime import datetime
 import time
+from datetime import datetime
 
 import pytest
 from groundlight import ExperimentalApi
@@ -124,7 +124,6 @@ def test_counting_detector_async(gl_experimental: ExperimentalApi):
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl_experimental.get_image_query(id=async_iq.id)
     assert _image_query.result is not None
-
 
 
 @pytest.mark.skip(
