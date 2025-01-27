@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 import pytest
@@ -104,6 +105,25 @@ def test_counting_detector(gl_experimental: ExperimentalApi):
     assert created_detector is not None
     count_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert count_iq.result.count is not None
+
+
+def test_counting_detector_async(gl_experimental: ExperimentalApi):
+    """
+    verify that we can create and submit to a counting detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    created_detector = gl_experimental.create_counting_detector(name, "How many dogs", "dog")
+    assert created_detector is not None
+    async_iq = gl_experimental.ask_async(created_detector, "test/assets/dog.jpeg")
+    # attempting to access fields within the result should raise an exception
+    with pytest.raises(AttributeError):
+        _ = async_iq.result.label  # type: ignore
+    with pytest.raises(AttributeError):
+        _ = async_iq.result.confidence  # type: ignore
+    time.sleep(5)
+    # you should be able to get a "real" result by retrieving an updated image query object from the server
+    _image_query = gl_experimental.get_image_query(id=async_iq.id)
+    assert _image_query.result is not None
 
 
 @pytest.mark.skip(
