@@ -962,7 +962,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         obj = self.edge_api.get_model_urls(detector)
         return EdgeModelInfo.parse_obj(obj.to_dict())
 
-    def download_mlbinary(self, detector: Union[str, Detector], output_path: str) -> None:
+    def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:
         """
         Downloads the model binary files for the given detector to the specified output path.
 
@@ -991,7 +991,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         if isinstance(detector, Detector):
             detector = detector.id
-        output_path = Path(output_path)
         edge_model_info = self._download_mlbinary_url(detector)
-        _download_and_save(edge_model_info.model_binary_url, output_path / edge_model_info.model_binary_id)
-        _download_and_save(edge_model_info.oodd_model_binary_url, output_path / edge_model_info.oodd_model_binary_id)
+        _download_and_save(edge_model_info.model_binary_url, Path(output_dir) / edge_model_info.model_binary_id)
+        _download_and_save(edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id)
