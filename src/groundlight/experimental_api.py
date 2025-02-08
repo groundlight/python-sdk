@@ -981,7 +981,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :return: None
         """
 
-        def _download_and_save(url: str, output_path: str) -> None:
+        def _download_and_save(url: str, output_path: str) -> bytes:
             try:
                 response = requests.get(url, timeout=10)
             except Exception as e:
