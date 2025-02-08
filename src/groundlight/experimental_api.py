@@ -953,9 +953,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
-    def _download_mlbinary_url(self, detector: Union[str, Detector]) -> str:
+    def _download_mlbinary_url(self, detector: Union[str, Detector]) -> EdgeModelInfo:
         """
-        Gets a temporary presigned URL to download the model binaries for the given detector, along with relevant metadata
+        Gets a temporary presigned URL to download the model binaries for the given detector, along
+        with relevant metadata
         """
         if isinstance(detector, Detector):
             detector = detector.id
@@ -983,8 +984,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         def _download_and_save(url: str, output_path: str) -> None:
             try:
                 response = requests.get(url, timeout=10)
-            except:
-                raise GroundlightClientError(f"Failed to retrieve data from {url}.")
+            except Exception as e:
+                raise GroundlightClientError(f"Failed to retrieve data from {url}.") from e
             with open(output_path, "wb") as file:
                 file.write(response.content)
             return response.content
@@ -992,5 +993,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         if isinstance(detector, Detector):
             detector = detector.id
         edge_model_info = self._download_mlbinary_url(detector)
-        _download_and_save(edge_model_info.model_binary_url, Path(output_dir) / edge_model_info.model_binary_id)
-        _download_and_save(edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id)
+        _download_and_save(
+            edge_model_info.model_binary_url,
+            Path(output_dir) / edge_model_info.model_binary_id
+        )
+        _download_and_save(
+            edge_model_info.oodd_model_binary_url,
+            Path(output_dir) / edge_model_info.oodd_model_binary_id
+        )
