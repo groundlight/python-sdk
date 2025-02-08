@@ -993,11 +993,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         if isinstance(detector, Detector):
             detector = detector.id
         edge_model_info = self._download_mlbinary_url(detector)
+        _download_and_save(edge_model_info.model_binary_url, Path(output_dir) / edge_model_info.model_binary_id)
         _download_and_save(
-            edge_model_info.model_binary_url,
-            Path(output_dir) / edge_model_info.model_binary_id
-        )
-        _download_and_save(
-            edge_model_info.oodd_model_binary_url,
-            Path(output_dir) / edge_model_info.oodd_model_binary_id
+            edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id
         )
