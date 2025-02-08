@@ -22,6 +22,8 @@ docs/DetectorGroupsApi.md
 docs/DetectorResetApi.md
 docs/DetectorTypeEnum.md
 docs/DetectorsApi.md
+docs/EdgeApi.md
+docs/EdgeModelInfo.md
 docs/EscalationTypeEnum.md
 docs/ImageQueriesApi.md
 docs/ImageQuery.md
@@ -60,6 +62,7 @@ groundlight_openapi_client/api/actions_api.py
 groundlight_openapi_client/api/detector_groups_api.py
 groundlight_openapi_client/api/detector_reset_api.py
 groundlight_openapi_client/api/detectors_api.py
+groundlight_openapi_client/api/edge_api.py
 groundlight_openapi_client/api/image_queries_api.py
 groundlight_openapi_client/api/labels_api.py
 groundlight_openapi_client/api/notes_api.py
@@ -87,6 +90,7 @@ groundlight_openapi_client/model/detector_creation_input_request.py
 groundlight_openapi_client/model/detector_group.py
 groundlight_openapi_client/model/detector_group_request.py
 groundlight_openapi_client/model/detector_type_enum.py
+groundlight_openapi_client/model/edge_model_info.py
 groundlight_openapi_client/model/escalation_type_enum.py
 groundlight_openapi_client/model/image_query.py
 groundlight_openapi_client/model/image_query_type_enum.py
@@ -122,7 +126,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_text_recognition_result.py
-test/test_webhook_action.py
-test/test_webhook_action_request.py
 tox.ini
