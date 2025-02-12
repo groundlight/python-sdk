@@ -109,3 +109,14 @@ def test_create_alert_webhook_action_and_other_action(gl_experimental: Experimen
     )
     assert len(alert.webhook_action) == 1
     assert len(alert.action.root) == 1
+
+def test_create_alert_webhook_action_with_payload_template(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    payload_template = gl_experimental.make_payload_template("{\"text\": \"This should be a valid payload\"}")
+    webhook_action = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True, payload_template=payload_template)
+    alert = gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
+
+    assert len(alert.webhook_action) == 1
+    assert alert.webhook_action[0].payload_template.template == "{\"text\": \"This should be a valid payload\"}"
