@@ -320,28 +320,6 @@ paths:
       responses:
         '204':
           description: No response body
-  /v1/edge/fetch-model-urls/{detector_id}/:
-    get:
-      operationId: Get Model URLs
-      description: Gets time limited pre-authenticated URLs to download a detector's
-        edge model and oodd model.
-      parameters:
-      - in: path
-        name: detector_id
-        schema:
-          type: string
-        required: true
-      tags:
-      - edge
-      security:
-      - ApiToken: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EdgeModelInfo'
-          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -728,12 +706,7 @@ components:
       - verb
     Detector:
       type: object
-      description: |-
-        Groundlight Detectors provide answers to natural language questions about images.
-
-        Each detector can answer a single question, and multiple detectors can be strung together for
-        more complex logic. Detectors can be created through the create_detector method, or through the
-        create_[MODE]_detector methods for pro tier users
+      description: Spec for serializing a detector object in the public API.
       properties:
         id:
           type: string
@@ -907,22 +880,6 @@ components:
       enum:
       - detector
       type: string
-    EdgeModelInfo:
-      type: object
-      description: Information for the model running on edge, including temporary
-        presigned urls to the model binaries
-      properties:
-        model_binary_id:
-          type: string
-        model_binary_url:
-          type: string
-        oodd_model_binary_id:
-          type: string
-        oodd_model_binary_url:
-          type: string
-        pipeline_config: {}
-        oodd_pipeline_config: {}
-        predictor_metadata: {}
     EscalationTypeEnum:
       enum:
       - STANDARD
@@ -933,8 +890,7 @@ components:
         * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
     ImageQuery:
       type: object
-      description: ImageQuery objects are the answers to natural language questions
-        about images created by detectors.
+      description: Spec for serializing a image-query object in the public API.
       properties:
         metadata:
           type: object
@@ -1198,12 +1154,7 @@ components:
             $ref: '#/components/schemas/Rule'
     PatchedDetectorRequest:
       type: object
-      description: |-
-        Groundlight Detectors provide answers to natural language questions about images.
-
-        Each detector can answer a single question, and multiple detectors can be strung together for
-        more complex logic. Detectors can be created through the create_detector method, or through the
-        create_[MODE]_detector methods for pro tier users
+      description: Spec for serializing a detector object in the public API.
       properties:
         name:
           type: string
@@ -1238,6 +1189,21 @@ components:
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       x-internal: true
+    PayloadTemplate:
+      type: object
+      properties:
+        template:
+          type: string
+      required:
+      - template
+    PayloadTemplateRequest:
+      type: object
+      properties:
+        template:
+          type: string
+          minLength: 1
+      required:
+      - template
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1422,6 +1388,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplate'
+          nullable: true
       required:
       - url
     WebhookActionRequest:
@@ -1434,6 +1404,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplateRequest'
+          nullable: true
       required:
       - url
     BinaryClassificationResult:

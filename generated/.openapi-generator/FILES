@@ -22,8 +22,6 @@ docs/DetectorGroupsApi.md
 docs/DetectorResetApi.md
 docs/DetectorTypeEnum.md
 docs/DetectorsApi.md
-docs/EdgeApi.md
-docs/EdgeModelInfo.md
 docs/EscalationTypeEnum.md
 docs/ImageQueriesApi.md
 docs/ImageQuery.md
@@ -42,6 +40,8 @@ docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/PaginatedRuleList.md
 docs/PatchedDetectorRequest.md
+docs/PayloadTemplate.md
+docs/PayloadTemplateRequest.md
 docs/ROI.md
 docs/ROIRequest.md
 docs/ResultTypeEnum.md
@@ -62,7 +62,6 @@ groundlight_openapi_client/api/actions_api.py
 groundlight_openapi_client/api/detector_groups_api.py
 groundlight_openapi_client/api/detector_reset_api.py
 groundlight_openapi_client/api/detectors_api.py
-groundlight_openapi_client/api/edge_api.py
 groundlight_openapi_client/api/image_queries_api.py
 groundlight_openapi_client/api/labels_api.py
 groundlight_openapi_client/api/notes_api.py
@@ -90,7 +89,6 @@ groundlight_openapi_client/model/detector_creation_input_request.py
 groundlight_openapi_client/model/detector_group.py
 groundlight_openapi_client/model/detector_group_request.py
 groundlight_openapi_client/model/detector_type_enum.py
-groundlight_openapi_client/model/edge_model_info.py
 groundlight_openapi_client/model/escalation_type_enum.py
 groundlight_openapi_client/model/image_query.py
 groundlight_openapi_client/model/image_query_type_enum.py
@@ -106,6 +104,8 @@ groundlight_openapi_client/model/paginated_detector_list.py
 groundlight_openapi_client/model/paginated_image_query_list.py
 groundlight_openapi_client/model/paginated_rule_list.py
 groundlight_openapi_client/model/patched_detector_request.py
+groundlight_openapi_client/model/payload_template.py
+groundlight_openapi_client/model/payload_template_request.py
 groundlight_openapi_client/model/result_type_enum.py
 groundlight_openapi_client/model/roi.py
 groundlight_openapi_client/model/roi_request.py
@@ -126,4 +126,6 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_payload_template.py
+test/test_payload_template_request.py
 tox.ini
