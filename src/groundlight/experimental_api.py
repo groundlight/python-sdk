@@ -26,11 +26,11 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
-from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from model import (
     ROI,
     Action,
@@ -42,9 +42,9 @@ from model import (
     EdgeModelInfo,
     ModeEnum,
     PaginatedRuleList,
+    PayloadTemplate,
     Rule,
     WebhookAction,
-    PayloadTemplate,
 )
 
 from groundlight.images import parse_supported_image_types
