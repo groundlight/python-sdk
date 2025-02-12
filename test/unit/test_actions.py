@@ -120,3 +120,21 @@ def test_create_alert_webhook_action_with_payload_template(gl_experimental: Expe
 
     assert len(alert.webhook_action) == 1
     assert alert.webhook_action[0].payload_template.template == "{\"text\": \"This should be a valid payload\"}"
+
+def test_create_alert_webhook_action_with_invalid_payload_template(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    payload_template = gl_experimental.make_payload_template("{\"text\": \"This should not be a valid payload, jinja brackets are not closed properly {{detector_id}\"}")
+    webhook_action = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True, payload_template=payload_template)
+
+    with pytest.raises(Exception) as e:
+        gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
+        assert e.value.status_code == 400
+
+    payload_template = gl_experimental.make_payload_template("This should not be a valid payload, it's valid jinja but won't produce valid json")
+    webhook_action = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True, payload_template=payload_template)
+
+    with pytest.raises(Exception) as e:
+        gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
+        assert e.value.status_code == 400
