@@ -24,4 +24,4 @@ Consider configuring a "no queries submitted" alert to monitor system health. If
 
 ## Alert Mediums
 
-Groundlight supports the following alerts via Email and Text Message (SMS), with webhook support coming soon.
+Groundlight supports the following alerts via Email, Text Message (SMS), and Webhooks.
