@@ -165,7 +165,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             include_image=include_image,
         )
 
-    def make_webhook_action(self, url: str, include_image: bool, payload_template: Optional[str] = None) -> WebhookAction:
+    def make_webhook_action(
+        self, url: str, include_image: bool, payload_template: Optional[str] = None
+    ) -> WebhookAction:
         """
         Creates a WebhookAction object for use in creating alerts
         This function serves as a convenience method; WebhookAction objects can also be created directly.
@@ -182,7 +184,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         return WebhookAction(
             url=str(url),
             include_image=include_image,
-            payload_template=PayloadTemplate(template=payload_template),
+            payload_template=payload_template,
         )
 
     def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
@@ -272,7 +274,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                 WebhookActionRequest(
                     url=str(webhook_action.url),
                     include_image=webhook_action.include_image,
-                    payload_template=PayloadTemplateRequest(template=webhook_action.payload_template) if webhook_action.payload_template else None,
+                    payload_template=(
+                        PayloadTemplateRequest(template=webhook_action.payload_template)
+                        if webhook_action.payload_template
+                        else None
+                    ),
                 )
                 for webhook_action in webhook_actions
             ]
