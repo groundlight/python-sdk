@@ -30,6 +30,7 @@ from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
+from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from model import (
     ROI,
     Action,
@@ -43,6 +44,7 @@ from model import (
     PaginatedRuleList,
     Rule,
     WebhookAction,
+    PayloadTemplate,
 )
 
 from groundlight.images import parse_supported_image_types
@@ -163,7 +165,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             include_image=include_image,
         )
 
-    def make_webhook_action(self, url: str, include_image: bool) -> WebhookAction:
+    def make_webhook_action(self, url: str, include_image: bool, payload_template: Optional[str] = None) -> WebhookAction:
         """
         Creates a WebhookAction object for use in creating alerts
         This function serves as a convenience method; WebhookAction objects can also be created directly.
@@ -173,10 +175,14 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             action = gl.make_webhook_action("https://example.com/webhook", include_image=True)
         :param url: The URL to send the webhook to
         :param include_image: Whether to include the triggering image in the webhook payload
+        :param payload_template: Optional custom template for the webhook payload. The template will be rendered with
+            the alert data. The template must be a valid Jinja2 template which produces valid JSON when rendered. If no
+            template is provided, the default template designed for Slack will be used.
         """
         return WebhookAction(
             url=str(url),
             include_image=include_image,
+            payload_template=PayloadTemplate(template=payload_template),
         )
 
     def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
@@ -266,6 +272,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                 WebhookActionRequest(
                     url=str(webhook_action.url),
                     include_image=webhook_action.include_image,
+                    payload_template=PayloadTemplateRequest(template=webhook_action.payload_template) if webhook_action.payload_template else None,
                 )
                 for webhook_action in webhook_actions
             ]
