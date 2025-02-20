@@ -997,6 +997,18 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             :meth:`get_image_query` for checking result status without blocking
             :meth:`wait_for_ml_result` for waiting until the first ML result is available
         """
+
+        def is_from_edge(iq: ImageQuery) -> bool:
+            return iq.metadata and iq.metadata.get("is_from_edge", False)
+
+        if is_from_edge(image_query):
+            # If the query is from the edge, there is nothing to wait for.
+            logger.debug(
+                "The image query is from the edge and the client wanted only edge answers, so we are not"
+                " attempting to get a result from the cloud."
+            )
+            return image_query
+
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
@@ -1076,21 +1088,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             logger.debug(f"Polling ({target_delay:.1f}/{timeout_sec:.0f}s) {image_query} until result is available")
             time.sleep(sleep_time)
             next_delay *= self.POLLING_EXPONENTIAL_BACKOFF
-
-            def is_from_edge(iq: ImageQuery) -> bool:
-                return iq.metadata and iq.metadata.get("is_from_edge", False)
-
-            if is_from_edge(image_query) and not condition(image_query):
-                # If the query is from the edge and the condition is not met, it means the client wanted only edge
-                # answers, so we don't want to poll the cloud and we should eventually return whatever the edge response
-                # was. We'll wait the remaining time to stay consistent with the behavior of the wait parameter.
-                logger.debug(
-                    "The image query is from the edge and the client wanted only edge answers, so we are not"
-                    " attempting to get a result from the cloud."
-                )
-            else:
-                image_query = self.get_image_query(image_query.id)
-                image_query = self._fixup_image_query(image_query)
+            image_query = self.get_image_query(image_query.id)
+            image_query = self._fixup_image_query(image_query)
         return image_query
 
     def add_label(
