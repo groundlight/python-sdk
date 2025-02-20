@@ -8,12 +8,14 @@ modifications or potentially be removed in future releases, which could lead to 
 
 import json
 from io import BufferedReader, BytesIO
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
+from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
@@ -27,6 +29,7 @@ from groundlight_openapi_client.model.patched_detector_request import PatchedDet
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
+from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
     ROI,
     Action,
@@ -35,18 +38,20 @@ from model import (
     Condition,
     Detector,
     DetectorGroup,
+    EdgeModelInfo,
     ModeEnum,
     PaginatedRuleList,
     Rule,
+    WebhookAction,
 )
 
 from groundlight.images import parse_supported_image_types
 from groundlight.optional_imports import Image, np
 
-from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, logger
+from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 
 
-class ExperimentalApi(Groundlight):
+class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
     def __init__(
         self,
         endpoint: Union[str, None] = None,
@@ -102,6 +107,8 @@ class ExperimentalApi(Groundlight):
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
+        self.edge_api = EdgeApi(self.api_client)
+
     ITEMS_PER_PAGE = 100
 
     def make_condition(self, verb: str, parameters: dict) -> Condition:
@@ -156,12 +163,29 @@ class ExperimentalApi(Groundlight):
             include_image=include_image,
         )
 
-    def create_alert(  # pylint: disable=too-many-locals  # noqa: PLR0913
+    def make_webhook_action(self, url: str, include_image: bool) -> WebhookAction:
+        """
+        Creates a WebhookAction object for use in creating alerts
+        This function serves as a convenience method; WebhookAction objects can also be created directly.
+        **Example usage**::
+            gl = ExperimentalApi()
+            # Create a webhook action for an alert
+            action = gl.make_webhook_action("https://example.com/webhook", include_image=True)
+        :param url: The URL to send the webhook to
+        :param include_image: Whether to include the triggering image in the webhook payload
+        """
+        return WebhookAction(
+            url=str(url),
+            include_image=include_image,
+        )
+
+    def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
         self,
         detector: Union[str, Detector],
         name,
         condition: Condition,
-        actions: Union[Action, List[Action], ActionList],
+        actions: Optional[Union[Action, List[Action], ActionList]] = None,
+        webhook_actions: Optional[Union[WebhookAction, List[WebhookAction]]] = None,
         *,
         enabled: bool = True,
         snooze_time_enabled: bool = False,
@@ -206,6 +230,10 @@ class ExperimentalApi(Groundlight):
 
         :param detector: The detector ID or Detector object to add the alert to
         :param name: A unique name to identify this alert
+        :param condition: The condition to use for the alert
+        :param actions: The actions to use for the alert. Optional if webhook_actions are provided (default None)
+        :param webhook_actions: The webhook actions to use for the alert. Optional if actions are provided (default
+            None)
         :param enabled: Whether the alert should be active when created (default True)
         :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
         :param snooze_time_value: Duration of snooze period (default 3600)
@@ -220,13 +248,30 @@ class ExperimentalApi(Groundlight):
             actions = actions.root
         if isinstance(detector, Detector):
             detector = detector.id
+        if isinstance(webhook_actions, WebhookAction):
+            webhook_actions = [webhook_actions]
         # translate pydantic type to the openapi type
-        actions = [
-            ActionRequest(
-                channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
-            )
-            for action in actions
-        ]
+        actions = (
+            [
+                ActionRequest(
+                    channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
+                )
+                for action in actions
+            ]
+            if actions
+            else []
+        )
+        webhook_actions = (
+            [
+                WebhookActionRequest(
+                    url=str(webhook_action.url),
+                    include_image=webhook_action.include_image,
+                )
+                for webhook_action in webhook_actions
+            ]
+            if webhook_actions
+            else []
+        )
         rule_input = RuleRequest(
             detector_id=detector,
             name=name,
@@ -237,6 +282,7 @@ class ExperimentalApi(Groundlight):
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
             human_review_required=human_review_required,
+            webhook_action=webhook_actions,
         )
         return Rule.model_validate(self.actions_api.create_rule(detector, rule_input).to_dict())
 
@@ -257,6 +303,8 @@ class ExperimentalApi(Groundlight):
         human_review_required: bool = False,
     ) -> Rule:
         """
+        DEPRECATED: Use create_alert instead.
+
         Creates a notification rule for a detector that will send alerts based on specified conditions.
 
         A notification rule allows you to configure automated alerts when certain conditions are met,
@@ -904,3 +952,48 @@ class ExperimentalApi(Groundlight):
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
+
+    def _download_mlbinary_url(self, detector: Union[str, Detector]) -> EdgeModelInfo:
+        """
+        Gets a temporary presigned URL to download the model binaries for the given detector, along
+        with relevant metadata
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.edge_api.get_model_urls(detector)
+        return EdgeModelInfo.parse_obj(obj.to_dict())
+
+    def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:
+        """
+        Downloads the model binary files for the given detector to the specified output path.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Download the model binary for a detector
+            detector = gl.get_detector("det_abc123")
+            gl.download_mlbinary(detector, "path/to/output/model.bin")
+
+        :param detector: The detector object or detector ID string to download the model binary for.
+        :param output_path: The path to save the model binary file to.
+
+        :return: None
+        """
+
+        def _download_and_save(url: str, output_path: str) -> bytes:
+            try:
+                response = requests.get(url, timeout=10)
+            except Exception as e:
+                raise GroundlightClientError(f"Failed to retrieve data from {url}.") from e
+            with open(output_path, "wb") as file:
+                file.write(response.content)
+            return response.content
+
+        if isinstance(detector, Detector):
+            detector = detector.id
+        edge_model_info = self._download_mlbinary_url(detector)
+        _download_and_save(edge_model_info.model_binary_url, Path(output_dir) / edge_model_info.model_binary_id)
+        _download_and_save(
+            edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id
+        )

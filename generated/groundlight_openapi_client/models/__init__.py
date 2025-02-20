@@ -27,6 +27,7 @@ from groundlight_openapi_client.model.detector_creation_input_request import Det
 from groundlight_openapi_client.model.detector_group import DetectorGroup
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.detector_type_enum import DetectorTypeEnum
+from groundlight_openapi_client.model.edge_model_info import EdgeModelInfo
 from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
 from groundlight_openapi_client.model.image_query import ImageQuery
 from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
@@ -50,4 +51,7 @@ from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
 from groundlight_openapi_client.model.source_enum import SourceEnum
 from groundlight_openapi_client.model.status_enum import StatusEnum
+from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
 from groundlight_openapi_client.model.verb_enum import VerbEnum
+from groundlight_openapi_client.model.webhook_action import WebhookAction
+from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest

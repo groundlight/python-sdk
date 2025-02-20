@@ -173,6 +173,8 @@ class ActionsApi(object):
             params_map={
                 "all": [
                     "detector_id",
+                    "page",
+                    "page_size",
                 ],
                 "required": [
                     "detector_id",
@@ -186,12 +188,18 @@ class ActionsApi(object):
                 "allowed_values": {},
                 "openapi_types": {
                     "detector_id": (str,),
+                    "page": (int,),
+                    "page_size": (int,),
                 },
                 "attribute_map": {
                     "detector_id": "detector_id",
+                    "page": "page",
+                    "page_size": "page_size",
                 },
                 "location_map": {
                     "detector_id": "path",
+                    "page": "query",
+                    "page_size": "query",
                 },
                 "collection_format_map": {},
             },
@@ -434,6 +442,8 @@ class ActionsApi(object):
             detector_id (str):
 
         Keyword Args:
+            page (int): A page number within the paginated result set.. [optional]
+            page_size (int): Number of results to return per page.. [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object

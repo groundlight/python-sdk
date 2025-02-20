@@ -1,6 +1,6 @@
 # PatchedDetectorRequest
 
-Spec for serializing a detector object in the public API.
+Groundlight Detectors provide answers to natural language questions about images.  Each detector can answer a single question, and multiple detectors can be strung together for more complex logic. Detectors can be created through the create_detector method, or through the create_[MODE]_detector methods for pro tier users
 
 ## Properties
 Name | Type | Description | Notes

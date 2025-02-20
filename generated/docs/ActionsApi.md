@@ -65,6 +65,12 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
             },
         ),
         action=None,
+        webhook_action=[
+            WebhookActionRequest(
+                url="url_example",
+                include_image=True,
+            ),
+        ],
     ) # RuleRequest | 
 
     # example passing only required values which don't have defaults set
@@ -296,10 +302,20 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = actions_api.ActionsApi(api_client)
     detector_id = "detector_id_example" # str | 
+    page = 1 # int | A page number within the paginated result set. (optional)
+    page_size = 1 # int | Number of results to return per page. (optional)
 
     # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.list_detector_rules(detector_id)
+        pprint(api_response)
+    except groundlight_openapi_client.ApiException as e:
+        print("Exception when calling ActionsApi->list_detector_rules: %s\n" % e)
+
+    # example passing only required values which don't have defaults set
+    # and optional values
+    try:
+        api_response = api_instance.list_detector_rules(detector_id, page=page, page_size=page_size)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ActionsApi->list_detector_rules: %s\n" % e)
@@ -311,6 +327,8 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**|  |
+ **page** | **int**| A page number within the paginated result set. | [optional]
+ **page_size** | **int**| Number of results to return per page. | [optional]
 
 ### Return type
 

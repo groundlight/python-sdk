@@ -19,6 +19,18 @@ paths:
         schema:
           type: string
         required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - actions
       security:
@@ -308,11 +320,38 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/edge/fetch-model-urls/{detector_id}/:
+    get:
+      operationId: Get Model URLs
+      description: Gets time limited pre-authenticated URLs to download a detector's
+        edge model and oodd model.
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdgeModelInfo'
+          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
       description: Retrieve a list of image-queries.
       parameters:
+      - in: query
+        name: detector_id
+        schema:
+          type: string
+        description: Optionally filter image queries by detector ID.
       - in: query
         name: page
         schema:
@@ -323,11 +362,6 @@ paths:
         schema:
           type: integer
         description: Number of items to return per page.
-      - in: query
-        name: detector_id
-        schema:
-          type: string
-        description: Optionally filter image queries by detector ID.
       tags:
       - image-queries
       security:
@@ -540,8 +574,8 @@ paths:
   /v1/notes:
     get:
       operationId: get notes
-      description: Get all the notes from a given detector and return the answer in
-        lists, one for each note_category
+      description: Retrieves all notes from a given detector and returns them in lists,
+        one for each note_category.
       parameters:
       - in: query
         name: detector_id
@@ -562,7 +596,7 @@ paths:
           description: ''
     post:
       operationId: Create note
-      description: Create a new note
+      description: Creates a new note.
       parameters:
       - in: query
         name: detector_id
@@ -583,7 +617,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/NoteRequest'
-        required: true
       security:
       - ApiToken: []
       responses:
@@ -695,7 +728,12 @@ components:
       - verb
     Detector:
       type: object
-      description: Spec for serializing a detector object in the public API.
+      description: |-
+        Groundlight Detectors provide answers to natural language questions about images.
+
+        Each detector can answer a single question, and multiple detectors can be strung together for
+        more complex logic. Detectors can be created through the create_detector method, or through the
+        create_[MODE]_detector methods for pro tier users
       properties:
         id:
           type: string
@@ -833,10 +871,12 @@ components:
             * `BINARY` - BINARY
             * `COUNT` - COUNT
             * `MULTI_CLASS` - MULTI_CLASS
+            * `TEXT` - TEXT
         mode_configuration:
           oneOf:
           - $ref: '#/components/schemas/CountModeConfiguration'
           - $ref: '#/components/schemas/MultiClassModeConfiguration'
+          - $ref: '#/components/schemas/TextModeConfiguration'
           nullable: true
       required:
       - name
@@ -867,6 +907,22 @@ components:
       enum:
       - detector
       type: string
+    EdgeModelInfo:
+      type: object
+      description: Information for the model running on edge, including temporary
+        presigned urls to the model binaries
+      properties:
+        model_binary_id:
+          type: string
+        model_binary_url:
+          type: string
+        oodd_model_binary_id:
+          type: string
+        oodd_model_binary_url:
+          type: string
+        pipeline_config: {}
+        oodd_pipeline_config: {}
+        predictor_metadata: {}
     EscalationTypeEnum:
       enum:
       - STANDARD
@@ -877,7 +933,8 @@ components:
         * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
     ImageQuery:
       type: object
-      description: Spec for serializing a image-query object in the public API.
+      description: ImageQuery objects are the answers to natural language questions
+        about images created by detectors.
       properties:
         metadata:
           type: object
@@ -917,6 +974,7 @@ components:
           - $ref: '#/components/schemas/BinaryClassificationResult'
           - $ref: '#/components/schemas/CountingResult'
           - $ref: '#/components/schemas/MultiClassificationResult'
+          - $ref: '#/components/schemas/TextRecognitionResult'
           nullable: true
         patience_time:
           type: number
@@ -1037,6 +1095,7 @@ components:
       - BINARY
       - COUNT
       - MULTI_CLASS
+      - TEXT
       type: string
     Note:
       type: object
@@ -1046,24 +1105,28 @@ components:
           readOnly: true
         content:
           type: string
+          nullable: true
           description: Text content of the note.
+        is_pinned:
+          type: boolean
+          nullable: true
       required:
-      - content
       - detector_id
     NoteRequest:
       type: object
       properties:
         content:
           type: string
-          minLength: 1
+          nullable: true
           description: Text content of the note.
+        is_pinned:
+          type: boolean
+          nullable: true
         image:
           type: string
           format: binary
           writeOnly: true
           nullable: true
-      required:
-      - content
     PaginatedDetectorList:
       type: object
       required:
@@ -1135,7 +1198,12 @@ components:
             $ref: '#/components/schemas/Rule'
     PatchedDetectorRequest:
       type: object
-      description: Spec for serializing a detector object in the public API.
+      description: |-
+        Groundlight Detectors provide answers to natural language questions about images.
+
+        Each detector can answer a single question, and multiple detectors can be strung together for
+        more complex logic. Detectors can be created through the create_detector method, or through the
+        create_[MODE]_detector methods for pro tier users
       properties:
         name:
           type: string
@@ -1206,6 +1274,7 @@ components:
       - binary_classification
       - counting
       - multi_classification
+      - text_recognition
       type: string
     Rule:
       type: object
@@ -1245,8 +1314,11 @@ components:
           oneOf:
           - $ref: '#/components/schemas/Action'
           - $ref: '#/components/schemas/ActionList'
+        webhook_action:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookAction'
       required:
-      - action
       - condition
       - detector_id
       - detector_name
@@ -1282,8 +1354,11 @@ components:
           oneOf:
           - $ref: '#/components/schemas/Action'
           - $ref: '#/components/schemas/ActionList'
+        webhook_action:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookActionRequest'
       required:
-      - action
       - condition
       - name
     SnoozeTimeUnitEnum:
@@ -1338,6 +1413,29 @@ components:
         * `CHANGED_TO` - CHANGED_TO
         * `NO_CHANGE` - NO_CHANGE
         * `NO_QUERIES` - NO_QUERIES
+    WebhookAction:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 200
+        include_image:
+          type: boolean
+      required:
+      - url
+    WebhookActionRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 200
+        include_image:
+          type: boolean
+      required:
+      - url
     BinaryClassificationResult:
       type: object
       properties:
@@ -1346,6 +1444,7 @@ components:
           format: float
           minimum: 0.0
           maximum: 1.0
+          nullable: true
         source:
           type: string
           enum:
@@ -1370,6 +1469,7 @@ components:
           format: float
           minimum: 0.0
           maximum: 1.0
+          nullable: true
         source:
           type: string
           enum:
@@ -1394,6 +1494,7 @@ components:
           format: float
           minimum: 0.0
           maximum: 1.0
+          nullable: true
         source:
           type: string
           enum:
@@ -1406,6 +1507,30 @@ components:
           type: string
       required:
       - label
+    TextRecognitionResult:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          nullable: true
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+        text:
+          type: string
+        truncated:
+          type: boolean
+      required:
+      - text
+      - truncated
     CountModeConfiguration:
       type: object
       properties:
@@ -1413,6 +1538,7 @@ components:
           type: integer
           minimum: 1
           maximum: 50
+          nullable: false
         class_name:
           type: string
       required:
@@ -1426,8 +1552,11 @@ components:
             type: string
         num_classes:
           type: integer
+          nullable: false
       required:
       - class_names
+    TextModeConfiguration:
+      type: object
     ChannelEnum:
       type: string
       enum:

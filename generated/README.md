@@ -90,6 +90,12 @@ rule_request = RuleRequest(
             },
         ),
         action=None,
+        webhook_action=[
+            WebhookActionRequest(
+                url="url_example",
+                include_image=True,
+            ),
+        ],
     ) # RuleRequest | 
 
     try:
@@ -118,6 +124,7 @@ Class | Method | HTTP request | Description
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *DetectorsApi* | [**update_detector**](docs/DetectorsApi.md#update_detector) | **PATCH** /v1/detectors/{id} | 
+*EdgeApi* | [**get_model_urls**](docs/EdgeApi.md#get_model_urls) | **GET** /v1/edge/fetch-model-urls/{detector_id}/ | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
@@ -148,6 +155,7 @@ Class | Method | HTTP request | Description
  - [DetectorGroup](docs/DetectorGroup.md)
  - [DetectorGroupRequest](docs/DetectorGroupRequest.md)
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
+ - [EdgeModelInfo](docs/EdgeModelInfo.md)
  - [EscalationTypeEnum](docs/EscalationTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
@@ -171,7 +179,10 @@ Class | Method | HTTP request | Description
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
+ - [TextRecognitionResult](docs/TextRecognitionResult.md)
  - [VerbEnum](docs/VerbEnum.md)
+ - [WebhookAction](docs/WebhookAction.md)
+ - [WebhookActionRequest](docs/WebhookActionRequest.md)
 
 
 ## Documentation For Authorization
