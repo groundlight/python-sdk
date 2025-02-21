@@ -363,52 +363,46 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         Create a new Detector with a given name and query.
 
         Counting and Multiclass detectors are in Beta, and can be created through the
-        ExperimentalApi via the `create_counting_detector` and `create_multiclass_detector` methods.
+        ExperimentalApi via the :meth:`ExperimentalApi.create_counting_detector` and
+        :meth:`ExperimentalApi.create_multiclass_detector` methods.
 
         **Example usage**::
 
             gl = Groundlight()
 
-            # Create a basic binary detector
-            detector = gl.create_detector(
-                name="dog-on-couch-detector",
-                query="Is there a dog on the couch?",
-                confidence_threshold=0.9,
-                patience_time=30.0
+            # Create a basic binary detector detector = gl.create_detector(
+                name="dog-on-couch-detector", query="Is there a dog on the couch?",
+                confidence_threshold=0.9, patience_time=30.0
             )
 
-            # Create a detector with metadata
-            detector = gl.create_detector(
-                name="door-monitor",
-                query="Is the door open?",
-                metadata={"location": "front-entrance", "building": "HQ"},
-                confidence_threshold=0.95
+            # Create a detector with metadata detector = gl.create_detector(
+                name="door-monitor", query="Is the door open?", metadata={"location":
+                "front-entrance", "building": "HQ"}, confidence_threshold=0.95
             )
 
-            # Create a detector in a specific group
-            detector = gl.create_detector(
-                name="vehicle-monitor",
-                query="Are there vehicles are in the parking lot?",
-                group_name="parking-monitoring",
-                patience_time=60.0
+            # Create a detector in a specific group detector = gl.create_detector(
+                name="vehicle-monitor", query="Are there vehicles are in the parking lot?",
+                group_name="parking-monitoring", patience_time=60.0
             )
-        :param name: A short, descriptive name for the detector. This name should be unique within your account
-                    and help identify the detector's purpose.
-        :param query: The question that the detector will answer about images. For binary classification,
-                     this should be a yes/no question (e.g. "Is there a person in the image?").
-        :param group_name: Optional name of a group to organize related detectors together. If not specified,
-                         the detector will be placed in the default group.
-        :param confidence_threshold: A value between 0.5 and 1 that sets the minimum confidence level required
-                                  for the ML model's predictions. If confidence is below this threshold,
-                                  the query may be sent for human review.
-        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
-                            confident prediction before falling back to human review. Defaults to 30 seconds.
-        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
-                              prediction pipeline for this detector.
-        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
-                        the detector (limited to 1KB). This metadata can be used to store additional
-                        information like location, purpose, or related system IDs. You can retrieve this
-                        metadata later by calling `get_detector()`.
+        :param name: A short, descriptive name for the detector. This name should be unique within
+                    your account and help identify the detector's purpose.
+        :param query: The question that the detector will answer about images. For binary
+                     classification, this should be a yes/no question (e.g. "Is there a person in
+                     the image?").
+        :param group_name: Optional name of a group to organize related detectors together. If not
+                         specified, the detector will be placed in the default group.
+        :param confidence_threshold: A value between 0.5 and 1 that sets the minimum confidence
+                                  level required for the ML model's predictions. If confidence is
+                                  below this threshold, the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate
+                            a confident prediction before falling back to human review. Defaults to
+                            30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a
+                              specific prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate
+                        with the detector (limited to 1KB). This metadata can be used to store
+                        additional information like location, purpose, or related system IDs. You
+                        can retrieve this metadata later by calling `get_detector()`.
 
         :return: The created Detector object
         """
