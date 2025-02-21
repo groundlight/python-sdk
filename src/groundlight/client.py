@@ -1004,6 +1004,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
+
+        if confidence_threshold is None:
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)  # type: ignore
