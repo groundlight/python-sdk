@@ -207,7 +207,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
                 f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or unreachable? "
                 "Check https://status.groundlight.ai/ for service status."
-
                 f"Original Error was: {str(e)}"
             )
             raise GroundlightClientError(msg) from e
