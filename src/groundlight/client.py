@@ -388,7 +388,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
             # Create a detector in a specific group
             detector = gl.create_detector(
-                name="vehicle-counter",
+                name="vehicle-monitor",
                 query="Are there vehicles are in the parking lot?",
                 group_name="parking-monitoring",
                 patience_time=60.0
