@@ -82,6 +82,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_rule()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.delete_all_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.delete_all_rules()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.delete_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.delete_rule()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.download_mlbinary"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.download_mlbinary()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_image"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_notes"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_notes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_rule()</span></code></a></li>
@@ -558,6 +559,9 @@ For answers above a configured confidence_threshold, use <a class="reference int
 <dt class="sig sig-object py" id="groundlight.Groundlight.create_detector">
 <span class="sig-name descname"><span class="pre">create_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_detector" title="Link to this definition"></a></dt>
 <dd><p>Create a new Detector with a given name and query.</p>
+<p>Counting and Multiclass detectors are in Beta, and can be created through the
+ExperimentalApi via the <a class="reference internal" href="#groundlight.ExperimentalApi.create_counting_detector" title="groundlight.ExperimentalApi.create_counting_detector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExperimentalApi.create_counting_detector()</span></code></a> and
+<a class="reference internal" href="#groundlight.ExperimentalApi.create_multiclass_detector" title="groundlight.ExperimentalApi.create_multiclass_detector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExperimentalApi.create_multiclass_detector()</span></code></a> methods.</p>
 <p><strong>Example usage</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
 
@@ -579,8 +583,8 @@ For answers above a configured confidence_threshold, use <a class="reference int
 
 <span class="c1"># Create a detector in a specific group</span>
 <span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vehicle-counter&quot;</span><span class="p">,</span>
-    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;How many vehicles are in the parking lot?&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vehicle-monitor&quot;</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Are there vehicles are in the parking lot?&quot;</span><span class="p">,</span>
     <span class="n">group_name</span><span class="o">=</span><span class="s2">&quot;parking-monitoring&quot;</span><span class="p">,</span>
     <span class="n">patience_time</span><span class="o">=</span><span class="mf">60.0</span>
 <span class="p">)</span>
@@ -1616,6 +1620,35 @@ This action cannot be undone. Use with caution.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.download_mlbinary">
+<span class="sig-name descname"><span class="pre">download_mlbinary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.download_mlbinary" title="Link to this definition"></a></dt>
+<dd><p>Downloads the model binary files for the given detector to the specified output path.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="c1"># Download the model binary for a detector</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">download_mlbinary</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;path/to/output/model.bin&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – The detector object or detector ID string to download the model binary for.</p></li>
+<li><p><strong>output_path</strong> – The path to save the model binary file to.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.get_image">
 <span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iq_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_image" title="Link to this definition"></a></dt>
 <dd><p>Get the image associated with the given image query ID.</p>
@@ -2007,11 +2040,14 @@ disabled (False). When disabled, the detector will not process new queries.</p><
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="model.Detector">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">Detector</span></span><a class="headerlink" href="#model.Detector" title="Link to this definition"></a></dt>
-<dd><p>Spec for serializing a detector object in the public API.</p>
+<dd><p>Groundlight Detectors provide answers to natural language questions about images.</p>
+<p>Each detector can answer a single question, and multiple detectors can be strung together for
+more complex logic. Detectors can be created through the create_detector method, or through the
+create_[MODE]_detector methods for pro tier users</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Detector&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Spec for serializing a detector object in the public API.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Groundlight Detectors provide answers to natural language questions about images.\n\nEach detector can answer a single question, and multiple detectors can be strung together for\nmore complex logic. Detectors can be created through the create_detector method, or through the\ncreate_[MODE]_detector methods for pro tier users&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2299,11 +2335,11 @@ disabled (False). When disabled, the detector will not process new queries.</p><
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="model.ImageQuery">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">ImageQuery</span></span><a class="headerlink" href="#model.ImageQuery" title="Link to this definition"></a></dt>
-<dd><p>Spec for serializing a image-query object in the public API.</p>
+<dd><p>ImageQuery objects are the answers to natural language questions about images created by detectors.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQuery&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Spec for serializing a image-query object in the public API.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQuery objects are the answers to natural language questions about images created by detectors.&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2852,7 +2888,7 @@ disabled (False). When disabled, the detector will not process new queries.</p><
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;Detector&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Spec for serializing a detector object in the public API.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Groundlight Detectors provide answers to natural language questions about images.\n\nEach detector can answer a single question, and multiple detectors can be strung together for\nmore complex logic. Detectors can be created through the create_detector method, or through the\ncreate_[MODE]_detector methods for pro tier users&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A unique ID for this object.&quot;</span><span class="p">,</span>
@@ -3231,7 +3267,7 @@ disabled (False). When disabled, the detector will not process new queries.</p><
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;ImageQuery&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Spec for serializing a image-query object in the public API.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ImageQuery objects are the answers to natural language questions about images created by detectors.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
