@@ -1077,7 +1077,6 @@ components:
         label:
           type: string
           writeOnly: true
-          minLength: 1
         image_query_id:
           type: string
           writeOnly: true
@@ -1238,6 +1237,21 @@ components:
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       x-internal: true
+    PayloadTemplate:
+      type: object
+      properties:
+        template:
+          type: string
+      required:
+      - template
+    PayloadTemplateRequest:
+      type: object
+      properties:
+        template:
+          type: string
+          minLength: 1
+      required:
+      - template
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1422,6 +1436,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplate'
+          nullable: true
       required:
       - url
     WebhookActionRequest:
@@ -1434,6 +1452,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplateRequest'
+          nullable: true
       required:
       - url
     BinaryClassificationResult:
@@ -1505,6 +1527,7 @@ components:
           - ALGORITHM
         label:
           type: string
+          nullable: false
       required:
       - label
     TextRecognitionResult:
@@ -1526,6 +1549,7 @@ components:
           - ALGORITHM
         text:
           type: string
+          nullable: true
         truncated:
           type: boolean
       required:
@@ -1541,6 +1565,7 @@ components:
           nullable: false
         class_name:
           type: string
+          nullable: false
       required:
       - class_name
     MultiClassModeConfiguration:
@@ -1550,6 +1575,7 @@ components:
           type: array
           items:
             type: string
+            nullable: false
         num_classes:
           type: integer
           nullable: false
@@ -1557,6 +1583,12 @@ components:
       - class_names
     TextModeConfiguration:
       type: object
+      properties:
+        value_max_length:
+          type: integer
+          minimum: 1
+          maximum: 250
+          nullable: false
     ChannelEnum:
       type: string
       enum:

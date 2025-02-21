@@ -42,6 +42,8 @@ docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/PaginatedRuleList.md
 docs/PatchedDetectorRequest.md
+docs/PayloadTemplate.md
+docs/PayloadTemplateRequest.md
 docs/ROI.md
 docs/ROIRequest.md
 docs/ResultTypeEnum.md
@@ -50,6 +52,7 @@ docs/RuleRequest.md
 docs/SnoozeTimeUnitEnum.md
 docs/SourceEnum.md
 docs/StatusEnum.md
+docs/TextModeConfiguration.md
 docs/TextRecognitionResult.md
 docs/UserApi.md
 docs/VerbEnum.md
@@ -106,6 +109,8 @@ groundlight_openapi_client/model/paginated_detector_list.py
 groundlight_openapi_client/model/paginated_image_query_list.py
 groundlight_openapi_client/model/paginated_rule_list.py
 groundlight_openapi_client/model/patched_detector_request.py
+groundlight_openapi_client/model/payload_template.py
+groundlight_openapi_client/model/payload_template_request.py
 groundlight_openapi_client/model/result_type_enum.py
 groundlight_openapi_client/model/roi.py
 groundlight_openapi_client/model/roi_request.py
@@ -114,6 +119,7 @@ groundlight_openapi_client/model/rule_request.py
 groundlight_openapi_client/model/snooze_time_unit_enum.py
 groundlight_openapi_client/model/source_enum.py
 groundlight_openapi_client/model/status_enum.py
+groundlight_openapi_client/model/text_mode_configuration.py
 groundlight_openapi_client/model/text_recognition_result.py
 groundlight_openapi_client/model/verb_enum.py
 groundlight_openapi_client/model/webhook_action.py
@@ -126,4 +132,6 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_payload_template.py
+test/test_payload_template_request.py
 tox.ini

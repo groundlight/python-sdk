@@ -43,6 +43,8 @@ from groundlight_openapi_client.model.paginated_detector_list import PaginatedDe
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.payload_template import PayloadTemplate
+from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.roi import ROI
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
@@ -51,6 +53,7 @@ from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
 from groundlight_openapi_client.model.source_enum import SourceEnum
 from groundlight_openapi_client.model.status_enum import StatusEnum
+from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
 from groundlight_openapi_client.model.verb_enum import VerbEnum
 from groundlight_openapi_client.model.webhook_action import WebhookAction
