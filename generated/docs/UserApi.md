@@ -8,7 +8,7 @@ Method | HTTP request | Description
 
 
 # **who_am_i**
-> InlineResponse200 who_am_i()
+> InlineResponse2002 who_am_i()
 
 
 
@@ -22,7 +22,7 @@ Retrieve the current user.
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import user_api
-from groundlight_openapi_client.model.inline_response200 import InlineResponse200
+from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -60,7 +60,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**InlineResponse200**](InlineResponse200.md)
+[**InlineResponse2002**](InlineResponse2002.md)
 
 ### Authorization
 
