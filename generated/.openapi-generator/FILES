@@ -22,11 +22,18 @@ docs/DetectorGroupsApi.md
 docs/DetectorResetApi.md
 docs/DetectorTypeEnum.md
 docs/DetectorsApi.md
+docs/EdgeApi.md
+docs/EdgeModelInfo.md
 docs/EscalationTypeEnum.md
 docs/ImageQueriesApi.md
 docs/ImageQuery.md
 docs/ImageQueryTypeEnum.md
 docs/InlineResponse200.md
+docs/InlineResponse2001.md
+docs/InlineResponse2001EvaluationResults.md
+docs/InlineResponse2002.md
+docs/InlineResponse200Summary.md
+docs/InlineResponse200SummaryClassCounts.md
 docs/LabelValue.md
 docs/LabelValueRequest.md
 docs/LabelsApi.md
@@ -48,6 +55,7 @@ docs/RuleRequest.md
 docs/SnoozeTimeUnitEnum.md
 docs/SourceEnum.md
 docs/StatusEnum.md
+docs/TextModeConfiguration.md
 docs/TextRecognitionResult.md
 docs/UserApi.md
 docs/VerbEnum.md
@@ -60,6 +68,7 @@ groundlight_openapi_client/api/actions_api.py
 groundlight_openapi_client/api/detector_groups_api.py
 groundlight_openapi_client/api/detector_reset_api.py
 groundlight_openapi_client/api/detectors_api.py
+groundlight_openapi_client/api/edge_api.py
 groundlight_openapi_client/api/image_queries_api.py
 groundlight_openapi_client/api/labels_api.py
 groundlight_openapi_client/api/notes_api.py
@@ -87,10 +96,16 @@ groundlight_openapi_client/model/detector_creation_input_request.py
 groundlight_openapi_client/model/detector_group.py
 groundlight_openapi_client/model/detector_group_request.py
 groundlight_openapi_client/model/detector_type_enum.py
+groundlight_openapi_client/model/edge_model_info.py
 groundlight_openapi_client/model/escalation_type_enum.py
 groundlight_openapi_client/model/image_query.py
 groundlight_openapi_client/model/image_query_type_enum.py
 groundlight_openapi_client/model/inline_response200.py
+groundlight_openapi_client/model/inline_response2001.py
+groundlight_openapi_client/model/inline_response2001_evaluation_results.py
+groundlight_openapi_client/model/inline_response2002.py
+groundlight_openapi_client/model/inline_response200_summary.py
+groundlight_openapi_client/model/inline_response200_summary_class_counts.py
 groundlight_openapi_client/model/label_value.py
 groundlight_openapi_client/model/label_value_request.py
 groundlight_openapi_client/model/mode_enum.py
@@ -110,6 +125,7 @@ groundlight_openapi_client/model/rule_request.py
 groundlight_openapi_client/model/snooze_time_unit_enum.py
 groundlight_openapi_client/model/source_enum.py
 groundlight_openapi_client/model/status_enum.py
+groundlight_openapi_client/model/text_mode_configuration.py
 groundlight_openapi_client/model/text_recognition_result.py
 groundlight_openapi_client/model/verb_enum.py
 groundlight_openapi_client/model/webhook_action.py
@@ -122,7 +138,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_text_recognition_result.py
-test/test_webhook_action.py
-test/test_webhook_action_request.py
 tox.ini

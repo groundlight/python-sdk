@@ -250,6 +250,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/Detector'
           description: ''
+  /v1/detectors/{detector_id}/metrics:
+    get:
+      operationId: get detector metrics
+      description: Get Detector metrics, primarily the counts of different types of
+        labels
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: object
+                    properties:
+                      num_ground_truth:
+                        type: integer
+                      num_current_source_human:
+                        type: integer
+                      class_counts:
+                        type: object
+                        properties:
+                          source_ml:
+                            type: object
+                          source_human:
+                            type: object
+                          cloud_labeler:
+                            type: object
+                          cloud:
+                            type: object
+                          total:
+                            type: object
+                      unconfident_counts:
+                        type: object
+                      total_iqs:
+                        type: integer
+                    nullable: true
+          description: ''
   /v1/detectors/{id}:
     get:
       operationId: Get detector
@@ -320,6 +368,81 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detectors/{id}/evaluation:
+    get:
+      operationId: get detector evaluation
+      description: Get Detector evaluation results Is null if there isn't enough ground
+        truth data to evaluate the detector.returns the time of the evaulation, total
+        ground truth labels, the ml based kfold accuracies, and the system accuracies
+        at different confidence thresholds
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  evaluation_results:
+                    type: object
+                    properties:
+                      eval_timestamp:
+                        type: string
+                        format: date-time
+                      total_ground_truth_examples:
+                        type: integer
+                        nullable: true
+                      kfold_pooled__balanced_accuracy:
+                        type: number
+                        format: float
+                      kfold_pooled__positive_accuracy:
+                        type: number
+                        format: float
+                      kfold_pooled__negative_accuracy:
+                        type: number
+                        format: float
+                      balanced_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                      positive_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                      negative_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                    nullable: true
+          description: ''
+  /v1/edge/fetch-model-urls/{detector_id}/:
+    get:
+      operationId: Get Model URLs
+      description: Gets time limited pre-authenticated URLs to download a detector's
+        edge model and oodd model.
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdgeModelInfo'
+          description: ''
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -706,7 +829,12 @@ components:
       - verb
     Detector:
       type: object
-      description: Spec for serializing a detector object in the public API.
+      description: |-
+        Groundlight Detectors provide answers to natural language questions about images.
+
+        Each detector can answer a single question, and multiple detectors can be strung together for
+        more complex logic. Detectors can be created through the create_detector method, or through the
+        create_[MODE]_detector methods for pro tier users
       properties:
         id:
           type: string
@@ -880,6 +1008,22 @@ components:
       enum:
       - detector
       type: string
+    EdgeModelInfo:
+      type: object
+      description: Information for the model running on edge, including temporary
+        presigned urls to the model binaries
+      properties:
+        model_binary_id:
+          type: string
+        model_binary_url:
+          type: string
+        oodd_model_binary_id:
+          type: string
+        oodd_model_binary_url:
+          type: string
+        pipeline_config: {}
+        oodd_pipeline_config: {}
+        predictor_metadata: {}
     EscalationTypeEnum:
       enum:
       - STANDARD
@@ -890,7 +1034,8 @@ components:
         * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
     ImageQuery:
       type: object
-      description: Spec for serializing a image-query object in the public API.
+      description: ImageQuery objects are the answers to natural language questions
+        about images created by detectors.
       properties:
         metadata:
           type: object
@@ -1033,7 +1178,6 @@ components:
         label:
           type: string
           writeOnly: true
-          minLength: 1
         image_query_id:
           type: string
           writeOnly: true
@@ -1154,7 +1298,12 @@ components:
             $ref: '#/components/schemas/Rule'
     PatchedDetectorRequest:
       type: object
-      description: Spec for serializing a detector object in the public API.
+      description: |-
+        Groundlight Detectors provide answers to natural language questions about images.
+
+        Each detector can answer a single question, and multiple detectors can be strung together for
+        more complex logic. Detectors can be created through the create_detector method, or through the
+        create_[MODE]_detector methods for pro tier users
       properties:
         name:
           type: string
@@ -1373,6 +1522,7 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+          nullable: true
       required:
       - url
     WebhookActionRequest:
@@ -1508,6 +1658,12 @@ components:
       - class_names
     TextModeConfiguration:
       type: object
+      properties:
+        value_max_length:
+          type: integer
+          minimum: 1
+          maximum: 250
+          nullable: false
     ChannelEnum:
       type: string
       enum:

@@ -1,6 +1,6 @@
 # ImageQuery
 
-Spec for serializing a image-query object in the public API.
+ImageQuery objects are the answers to natural language questions about images created by detectors.
 
 ## Properties
 Name | Type | Description | Notes

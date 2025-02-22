@@ -947,3 +947,30 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
+
+    def get_detector_evaluation(self, detector: Union[str, Detector]) -> dict:
+        """
+        Get a specific evaluation for a detector
+
+        :param detector: the detector to get the evaluation for
+        :param evaluation_id: the evaluation id to get
+
+        :return: The DetectorEvaluation object
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.detectors_api.get_detector_evaluation(detector)
+        return obj.to_dict()
+
+    def get_detector_metrics(self, detector: Union[str, Detector]) -> dict:
+        """
+        Get the metrics for a detector
+
+        :param detector: the detector to get the metrics for
+
+        :return: The DetectorMetrics object
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.detectors_api.get_detector_metrics(detector)
+        return obj.to_dict()

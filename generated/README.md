@@ -122,8 +122,11 @@ Class | Method | HTTP request | Description
 *DetectorsApi* | [**create_detector**](docs/DetectorsApi.md#create_detector) | **POST** /v1/detectors | 
 *DetectorsApi* | [**delete_detector**](docs/DetectorsApi.md#delete_detector) | **DELETE** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
+*DetectorsApi* | [**get_detector_evaluation**](docs/DetectorsApi.md#get_detector_evaluation) | **GET** /v1/detectors/{id}/evaluation | 
+*DetectorsApi* | [**get_detector_metrics**](docs/DetectorsApi.md#get_detector_metrics) | **GET** /v1/detectors/{detector_id}/metrics | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *DetectorsApi* | [**update_detector**](docs/DetectorsApi.md#update_detector) | **PATCH** /v1/detectors/{id} | 
+*EdgeApi* | [**get_model_urls**](docs/EdgeApi.md#get_model_urls) | **GET** /v1/edge/fetch-model-urls/{detector_id}/ | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
@@ -154,10 +157,16 @@ Class | Method | HTTP request | Description
  - [DetectorGroup](docs/DetectorGroup.md)
  - [DetectorGroupRequest](docs/DetectorGroupRequest.md)
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
+ - [EdgeModelInfo](docs/EdgeModelInfo.md)
  - [EscalationTypeEnum](docs/EscalationTypeEnum.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
  - [InlineResponse200](docs/InlineResponse200.md)
+ - [InlineResponse2001](docs/InlineResponse2001.md)
+ - [InlineResponse2001EvaluationResults](docs/InlineResponse2001EvaluationResults.md)
+ - [InlineResponse2002](docs/InlineResponse2002.md)
+ - [InlineResponse200Summary](docs/InlineResponse200Summary.md)
+ - [InlineResponse200SummaryClassCounts](docs/InlineResponse200SummaryClassCounts.md)
  - [LabelValue](docs/LabelValue.md)
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)
@@ -177,6 +186,7 @@ Class | Method | HTTP request | Description
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
+ - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
  - [VerbEnum](docs/VerbEnum.md)
  - [WebhookAction](docs/WebhookAction.md)

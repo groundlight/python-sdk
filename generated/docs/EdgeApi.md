@@ -1,18 +1,18 @@
-# groundlight_openapi_client.UserApi
+# groundlight_openapi_client.EdgeApi
 
 All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**who_am_i**](UserApi.md#who_am_i) | **GET** /v1/me | 
+[**get_model_urls**](EdgeApi.md#get_model_urls) | **GET** /v1/edge/fetch-model-urls/{detector_id}/ | 
 
 
-# **who_am_i**
-> InlineResponse2002 who_am_i()
+# **get_model_urls**
+> EdgeModelInfo get_model_urls(detector_id)
 
 
 
-Retrieve the current user.
+Gets time limited pre-authenticated URLs to download a detector's edge model and oodd model.
 
 ### Example
 
@@ -21,8 +21,8 @@ Retrieve the current user.
 ```python
 import time
 import groundlight_openapi_client
-from groundlight_openapi_client.api import user_api
-from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
+from groundlight_openapi_client.api import edge_api
+from groundlight_openapi_client.model.edge_model_info import EdgeModelInfo
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -44,23 +44,27 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = user_api.UserApi(api_client)
+    api_instance = edge_api.EdgeApi(api_client)
+    detector_id = "detector_id_example" # str | 
 
-    # example, this endpoint has no required or optional parameters
+    # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.who_am_i()
+        api_response = api_instance.get_model_urls(detector_id)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling UserApi->who_am_i: %s\n" % e)
+        print("Exception when calling EdgeApi->get_model_urls: %s\n" % e)
 ```
 
 
 ### Parameters
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **detector_id** | **str**|  |
 
 ### Return type
 
-[**InlineResponse2002**](InlineResponse2002.md)
+[**EdgeModelInfo**](EdgeModelInfo.md)
 
 ### Authorization
 
