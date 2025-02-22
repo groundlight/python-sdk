@@ -182,6 +182,7 @@ Class | Method | HTTP request | Description
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
+ - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
  - [VerbEnum](docs/VerbEnum.md)
  - [WebhookAction](docs/WebhookAction.md)

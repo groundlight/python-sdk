@@ -207,6 +207,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 f"Error connecting to Groundlight using API token '{self.api_token_prefix}...'"
                 f" at endpoint '{self.endpoint}'.  Endpoint might be invalid or unreachable? "
                 "Check https://status.groundlight.ai/ for service status."
+                f"Original Error was: {str(e)}"
             )
             raise GroundlightClientError(msg) from e
 
@@ -361,6 +362,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         Create a new Detector with a given name and query.
 
+        Counting and Multiclass detectors are in Beta, and can be created through the
+        ExperimentalApi via the :meth:`ExperimentalApi.create_counting_detector` and
+        :meth:`ExperimentalApi.create_multiclass_detector` methods.
+
         **Example usage**::
 
             gl = Groundlight()
@@ -383,8 +388,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
             # Create a detector in a specific group
             detector = gl.create_detector(
-                name="vehicle-counter",
-                query="How many vehicles are in the parking lot?",
+                name="vehicle-monitor",
+                query="Are there vehicles are in the parking lot?",
                 group_name="parking-monitoring",
                 patience_time=60.0
             )
@@ -999,6 +1004,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
+
+        if confidence_threshold is None:
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
 
         confidence_above_thresh = partial(iq_is_confident, confidence_threshold=confidence_threshold)  # type: ignore

@@ -52,6 +52,7 @@ docs/RuleRequest.md
 docs/SnoozeTimeUnitEnum.md
 docs/SourceEnum.md
 docs/StatusEnum.md
+docs/TextModeConfiguration.md
 docs/TextRecognitionResult.md
 docs/UserApi.md
 docs/VerbEnum.md
@@ -118,6 +119,7 @@ groundlight_openapi_client/model/rule_request.py
 groundlight_openapi_client/model/snooze_time_unit_enum.py
 groundlight_openapi_client/model/source_enum.py
 groundlight_openapi_client/model/status_enum.py
+groundlight_openapi_client/model/text_mode_configuration.py
 groundlight_openapi_client/model/text_recognition_result.py
 groundlight_openapi_client/model/verb_enum.py
 groundlight_openapi_client/model/webhook_action.py

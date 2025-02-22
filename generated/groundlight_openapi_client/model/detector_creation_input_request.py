@@ -33,10 +33,12 @@ def lazy_import():
     from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
     from groundlight_openapi_client.model.mode_enum import ModeEnum
     from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
+    from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 
     globals()["CountModeConfiguration"] = CountModeConfiguration
     globals()["ModeEnum"] = ModeEnum
     globals()["MultiClassModeConfiguration"] = MultiClassModeConfiguration
+    globals()["TextModeConfiguration"] = TextModeConfiguration
 
 
 class DetectorCreationInputRequest(ModelNormal):
