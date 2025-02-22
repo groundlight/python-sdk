@@ -8,12 +8,14 @@ modifications or potentially be removed in future releases, which could lead to 
 
 import json
 from io import BufferedReader, BytesIO
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
+from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
@@ -36,6 +38,7 @@ from model import (
     Condition,
     Detector,
     DetectorGroup,
+    EdgeModelInfo,
     ModeEnum,
     PaginatedRuleList,
     Rule,
@@ -45,7 +48,7 @@ from model import (
 from groundlight.images import parse_supported_image_types
 from groundlight.optional_imports import Image, np
 
-from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, logger
+from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 
 
 class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
@@ -103,6 +106,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
+
+        self.edge_api = EdgeApi(self.api_client)
 
     ITEMS_PER_PAGE = 100
 
@@ -947,6 +952,51 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
+
+    def _download_mlbinary_url(self, detector: Union[str, Detector]) -> EdgeModelInfo:
+        """
+        Gets a temporary presigned URL to download the model binaries for the given detector, along
+        with relevant metadata
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.edge_api.get_model_urls(detector)
+        return EdgeModelInfo.parse_obj(obj.to_dict())
+
+    def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:
+        """
+        Downloads the model binary files for the given detector to the specified output path.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Download the model binary for a detector
+            detector = gl.get_detector("det_abc123")
+            gl.download_mlbinary(detector, "path/to/output/model.bin")
+
+        :param detector: The detector object or detector ID string to download the model binary for.
+        :param output_path: The path to save the model binary file to.
+
+        :return: None
+        """
+
+        def _download_and_save(url: str, output_path: str) -> bytes:
+            try:
+                response = requests.get(url, timeout=10)
+            except Exception as e:
+                raise GroundlightClientError(f"Failed to retrieve data from {url}.") from e
+            with open(output_path, "wb") as file:
+                file.write(response.content)
+            return response.content
+
+        if isinstance(detector, Detector):
+            detector = detector.id
+        edge_model_info = self._download_mlbinary_url(detector)
+        _download_and_save(edge_model_info.model_binary_url, Path(output_dir) / edge_model_info.model_binary_id)
+        _download_and_save(
+            edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id
+        )
 
     def get_detector_evaluation(self, detector: Union[str, Detector]) -> dict:
         """

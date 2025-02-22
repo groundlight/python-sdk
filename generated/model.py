@@ -241,7 +241,7 @@ class MultiClassificationResult(BaseModel):
 class TextRecognitionResult(BaseModel):
     confidence: Optional[confloat(ge=0.0, le=1.0)] = None
     source: Optional[Source] = None
-    text: str
+    text: Optional[str] = Field(...)
     truncated: bool
 
 
