@@ -138,9 +138,11 @@ def test_create_alert_webhook_action_with_invalid_payload_template(gl_experiment
         url="https://groundlight.ai", include_image=True, payload_template=payload_template
     )
 
+    bad_request_exception_status_code = 400
+
     with pytest.raises(ApiException) as e:
         gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
-    assert e.value.status == 400
+    assert e.value.status == bad_request_exception_status_code
 
     payload_template = gl_experimental.make_payload_template(
         "This should not be a valid payload, it's valid jinja but won't produce valid json"
@@ -151,4 +153,4 @@ def test_create_alert_webhook_action_with_invalid_payload_template(gl_experiment
 
     with pytest.raises(ApiException) as e:
         gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
-    assert e.value.status == 400
+    assert e.value.status == bad_request_exception_status_code
