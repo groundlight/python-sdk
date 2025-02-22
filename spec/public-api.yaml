@@ -1237,6 +1237,21 @@ components:
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       x-internal: true
+    PayloadTemplate:
+      type: object
+      properties:
+        template:
+          type: string
+      required:
+      - template
+    PayloadTemplateRequest:
+      type: object
+      properties:
+        template:
+          type: string
+          minLength: 1
+      required:
+      - template
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1421,6 +1436,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplate'
+          nullable: true
       required:
       - url
     WebhookActionRequest:
@@ -1433,6 +1452,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplateRequest'
+          nullable: true
       required:
       - url
     BinaryClassificationResult:

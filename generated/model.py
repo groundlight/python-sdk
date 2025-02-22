@@ -109,6 +109,14 @@ class NoteRequest(BaseModel):
     image: Optional[bytes] = None
 
 
+class PayloadTemplate(BaseModel):
+    template: str
+
+
+class PayloadTemplateRequest(BaseModel):
+    template: constr(min_length=1)
+
+
 class ROI(BaseModel):
     """
     Mixin for serializers to handle data in the StrictBaseModel format
@@ -198,11 +206,13 @@ class VerbEnum(str, Enum):
 class WebhookAction(BaseModel):
     url: AnyUrl
     include_image: Optional[bool] = None
+    payload_template: Optional[PayloadTemplate] = None
 
 
 class WebhookActionRequest(BaseModel):
     url: AnyUrl
     include_image: Optional[bool] = None
+    payload_template: Optional[PayloadTemplateRequest] = None
 
 
 class Source(str, Enum):

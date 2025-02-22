@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from groundlight import ExperimentalApi
+from groundlight import ApiException, ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
 
@@ -90,8 +90,8 @@ def test_create_alert_multiple_webhook_actions(gl_experimental: ExperimentalApi)
     name = f"Test {datetime.utcnow()}"
     det = gl_experimental.get_or_create_detector(name, "test_query")
     condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
-    webhook_action_1 = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True)
-    webhook_action_2 = gl_experimental.make_webhook_action("https://example.com/webhook", include_image=False)
+    webhook_action_1 = gl_experimental.make_webhook_action(url="https://groundlight.ai", include_image=True)
+    webhook_action_2 = gl_experimental.make_webhook_action(url="https://example.com/webhook", include_image=False)
     webhook_actions = [webhook_action_1, webhook_action_2]
     alert = gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_actions)
     assert len(alert.webhook_action) == len(webhook_actions)
@@ -102,10 +102,55 @@ def test_create_alert_webhook_action_and_other_action(gl_experimental: Experimen
     name = f"Test {datetime.utcnow()}"
     det = gl_experimental.get_or_create_detector(name, "test_query")
     condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
-    webhook_action = gl_experimental.make_webhook_action("https://groundlight.ai", include_image=True)
+    webhook_action = gl_experimental.make_webhook_action(url="https://groundlight.ai", include_image=True)
     email_action = gl_experimental.make_action("EMAIL", "test@groundlight.ai", False)
     alert = gl_experimental.create_alert(
         det, f"test_alert_{name}", condition, webhook_actions=webhook_action, actions=email_action
     )
     assert len(alert.webhook_action) == 1
     assert len(alert.action.root) == 1
+
+
+def test_create_alert_webhook_action_with_payload_template(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    payload_template = gl_experimental.make_payload_template('{"text": "This should be a valid payload"}')
+    webhook_action = gl_experimental.make_webhook_action(
+        url="https://hooks.slack.com/services/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",
+        include_image=True,
+        payload_template=payload_template,
+    )
+    alert = gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
+
+    assert len(alert.webhook_action) == 1
+    assert alert.webhook_action[0].payload_template.template == '{"text": "This should be a valid payload"}'
+
+
+def test_create_alert_webhook_action_with_invalid_payload_template(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
+    payload_template = gl_experimental.make_payload_template(
+        '{"text": "This should not be a valid payload, jinja brackets are not closed properly {{detector_id}"}'
+    )
+    webhook_action = gl_experimental.make_webhook_action(
+        url="https://groundlight.ai", include_image=True, payload_template=payload_template
+    )
+
+    bad_request_exception_status_code = 400
+
+    with pytest.raises(ApiException) as e:
+        gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
+    assert e.value.status == bad_request_exception_status_code
+
+    payload_template = gl_experimental.make_payload_template(
+        "This should not be a valid payload, it's valid jinja but won't produce valid json"
+    )
+    webhook_action = gl_experimental.make_webhook_action(
+        url="https://groundlight.ai", include_image=True, payload_template=payload_template
+    )
+
+    with pytest.raises(ApiException) as e:
+        gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
+    assert e.value.status == bad_request_exception_status_code
