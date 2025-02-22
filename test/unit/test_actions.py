@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from groundlight import ExperimentalApi, ApiException
+from groundlight import ApiException, ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
 
 
