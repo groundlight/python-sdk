@@ -3,7 +3,8 @@ from datetime import datetime
 import pytest
 from groundlight import ApiException, ExperimentalApi
 from groundlight_openapi_client.exceptions import NotFoundException
-
+from groundlight_openapi_client.model.payload_template import PayloadTemplate
+import json
 
 def test_create_action(gl_experimental: ExperimentalApi):
     # We first clear out any rules in case the account has any left over from a previous test
@@ -154,3 +155,33 @@ def test_create_alert_webhook_action_with_invalid_payload_template(gl_experiment
     with pytest.raises(ApiException) as e:
         gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
     assert e.value.status == bad_request_exception_status_code
+
+def test_create_alert_webhook_action_headers(gl_experimental: ExperimentalApi):
+    name = f"Test {datetime.utcnow()}"
+    det = gl_experimental.get_or_create_detector(name, "test_query")
+    condition = gl_experimental.make_condition("ANSWERED_CONSECUTIVELY", {"num_consecutive_labels": 1, "label": "YES"})
+
+    test_api_key = "test_api_key"
+    url = "https://example.com/webhook"
+    headers = {
+        "Authorization": f"Bearer {test_api_key}",
+    }
+
+    template = """{"records": [{"fields": {"detector_id": "{{ detector_id }}", "image_query_id": "{{ image_query_id }}", "activation_time": "{{ activation_time }}" } }]}"""
+    
+    payload_template = {
+        "template": template,
+        "headers": headers
+    }
+    webhook_action = gl_experimental.make_webhook_action(url=url, include_image=False, payload_template=payload_template)
+
+    alert = gl_experimental.create_alert(
+        det,
+        f"test_alert_{name}",
+        condition,
+        webhook_actions=webhook_action,
+    )
+
+    assert len(alert.webhook_action) == 1
+    assert alert.webhook_action[0].payload_template.template == template
+    assert alert.webhook_action[0].payload_template.headers == headers
