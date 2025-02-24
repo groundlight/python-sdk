@@ -1242,6 +1242,8 @@ components:
       properties:
         template:
           type: string
+        headers:
+          nullable: true
       required:
       - template
     PayloadTemplateRequest:
@@ -1250,6 +1252,8 @@ components:
         template:
           type: string
           minLength: 1
+        headers:
+          nullable: true
       required:
       - template
     ROI:
