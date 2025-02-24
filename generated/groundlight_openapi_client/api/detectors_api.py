@@ -498,7 +498,7 @@ class DetectorsApi(object):
     def get_detector_evaluation(self, id, **kwargs):
         """get_detector_evaluation  # noqa: E501
 
-        Get Detector evaluation results Is null if there isn't enough ground truth data to evaluate the detector.returns the time of the evaulation, total ground truth labels, the ml based kfold accuracies, and the system accuracies at different confidence thresholds  # noqa: E501
+        Get Detector evaluation results. The result is null if there isn't enough ground truth data to evaluate the detector. Returns the time of the evaulation, total ground truth labels, the ml based kfold accuracies, and the system accuracies at different confidence thresholds  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 

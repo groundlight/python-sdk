@@ -1004,9 +1004,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         Get a specific evaluation for a detector
 
         :param detector: the detector to get the evaluation for
-        :param evaluation_id: the evaluation id to get
 
-        :return: The DetectorEvaluation object
+        :return: a dictionary containing the evaluation results
         """
         if isinstance(detector, Detector):
             detector = detector.id
@@ -1019,7 +1018,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         :param detector: the detector to get the metrics for
 
-        :return: The DetectorMetrics object
+        :return: a dictionary containing the metrics for the detector
         """
         if isinstance(detector, Detector):
             detector = detector.id

@@ -371,10 +371,10 @@ paths:
   /v1/detectors/{id}/evaluation:
     get:
       operationId: get detector evaluation
-      description: Get Detector evaluation results Is null if there isn't enough ground
-        truth data to evaluate the detector.returns the time of the evaulation, total
-        ground truth labels, the ml based kfold accuracies, and the system accuracies
-        at different confidence thresholds
+      description: Get Detector evaluation results. The result is null if there isn't
+        enough ground truth data to evaluate the detector. Returns the time of the
+        evaulation, total ground truth labels, the ml based kfold accuracies, and
+        the system accuracies at different confidence thresholds
       parameters:
       - in: path
         name: id
@@ -1338,6 +1338,21 @@ components:
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       x-internal: true
+    PayloadTemplate:
+      type: object
+      properties:
+        template:
+          type: string
+      required:
+      - template
+    PayloadTemplateRequest:
+      type: object
+      properties:
+        template:
+          type: string
+          minLength: 1
+      required:
+      - template
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1522,6 +1537,9 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplate'
           nullable: true
       required:
       - url
@@ -1535,6 +1553,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplateRequest'
+          nullable: true
       required:
       - url
     BinaryClassificationResult:
@@ -1606,7 +1628,6 @@ components:
           - ALGORITHM
         label:
           type: string
-          nullable: false
       required:
       - label
     TextRecognitionResult:
@@ -1628,7 +1649,6 @@ components:
           - ALGORITHM
         text:
           type: string
-          nullable: true
         truncated:
           type: boolean
       required:
@@ -1644,7 +1664,6 @@ components:
           nullable: false
         class_name:
           type: string
-          nullable: false
       required:
       - class_name
     MultiClassModeConfiguration:
@@ -1654,7 +1673,6 @@ components:
           type: array
           items:
             type: string
-            nullable: false
         num_classes:
           type: integer
           nullable: false

@@ -94,6 +94,7 @@ rule_request = RuleRequest(
             WebhookActionRequest(
                 url="url_example",
                 include_image=True,
+                payload_template=None,
             ),
         ],
     ) # RuleRequest | 
@@ -178,6 +179,8 @@ Class | Method | HTTP request | Description
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)
  - [PatchedDetectorRequest](docs/PatchedDetectorRequest.md)
+ - [PayloadTemplate](docs/PayloadTemplate.md)
+ - [PayloadTemplateRequest](docs/PayloadTemplateRequest.md)
  - [ROI](docs/ROI.md)
  - [ROIRequest](docs/ROIRequest.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)

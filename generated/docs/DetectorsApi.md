@@ -258,7 +258,7 @@ Name | Type | Description  | Notes
 
 
 
-Get Detector evaluation results Is null if there isn't enough ground truth data to evaluate the detector.returns the time of the evaulation, total ground truth labels, the ml based kfold accuracies, and the system accuracies at different confidence thresholds
+Get Detector evaluation results. The result is null if there isn't enough ground truth data to evaluate the detector. Returns the time of the evaulation, total ground truth labels, the ml based kfold accuracies, and the system accuracies at different confidence thresholds
 
 ### Example
 
