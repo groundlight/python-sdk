@@ -282,7 +282,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                     url=str(webhook_action.url),
                     include_image=webhook_action.include_image,
                     payload_template=(
-                        PayloadTemplateRequest(template=webhook_action.payload_template.template, headers=webhook_action.payload_template.headers)
+                        PayloadTemplateRequest(
+                            template=webhook_action.payload_template.template,
+                            headers=webhook_action.payload_template.headers,
+                        )
                         if webhook_action.payload_template
                         else None
                     ),
