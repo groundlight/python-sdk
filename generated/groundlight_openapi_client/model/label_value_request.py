@@ -62,9 +62,6 @@ class LabelValueRequest(ModelNormal):
     allowed_values = {}
 
     validations = {
-        ("label",): {
-            "min_length": 1,
-        },
         ("image_query_id",): {
             "min_length": 1,
         },
