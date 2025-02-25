@@ -191,7 +191,7 @@ def test_create_alert_webhook_action_with_invalid_payload_template_headers(gl_ex
     det = gl_experimental.get_or_create_detector(name, "test_query")
     condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
     payload_template = gl_experimental.make_payload_template(
-        '{"template": "This is a fine template"}', headers="bad headers" # type: ignore
+        '{"template": "This is a fine template"}', headers="bad headers"  # type: ignore
     )
     webhook_action = gl_experimental.make_webhook_action(
         url="https://groundlight.ai", include_image=True, payload_template=payload_template
