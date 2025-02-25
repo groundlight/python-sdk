@@ -90,14 +90,7 @@ class PayloadTemplate(ModelNormal):
         return {
             "template": (str,),  # noqa: E501
             "headers": (
-                bool,
-                date,
-                datetime,
-                dict,
-                float,
-                int,
-                list,
-                str,
+                {str: (str,)},
                 none_type,
             ),  # noqa: E501
         }
@@ -154,7 +147,7 @@ class PayloadTemplate(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            headers (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            headers ({str: (str,)}, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -243,7 +236,7 @@ class PayloadTemplate(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            headers (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            headers ({str: (str,)}, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
