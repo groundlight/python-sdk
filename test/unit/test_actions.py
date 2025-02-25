@@ -167,7 +167,7 @@ def test_create_alert_webhook_action_headers(gl_experimental: ExperimentalApi):
         "Authorization": f"Bearer {test_api_key}",
     }
 
-    template = """{"records": [{"fields": {"detector_id": "{{ detector_id }}", "image_query_id": "{{ image_query_id }}", "activation_time": "{{ activation_time }}" } }]}"""
+    template = """{"records": [{"fields": {"detector_id": "{{ detector_id }}" } }]}"""
 
     payload_template = {"template": template, "headers": headers}
     webhook_action = gl_experimental.make_webhook_action(
@@ -185,12 +185,13 @@ def test_create_alert_webhook_action_headers(gl_experimental: ExperimentalApi):
     assert alert.webhook_action[0].payload_template.template == template
     assert alert.webhook_action[0].payload_template.headers == headers
 
+
 def test_create_alert_webhook_action_with_invalid_payload_template_headers(gl_experimental: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
     det = gl_experimental.get_or_create_detector(name, "test_query")
     condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
     payload_template = gl_experimental.make_payload_template(
-        '{"template": "This is a fine template"}', headers="bad headers"
+        '{"template": "This is a fine template"}', headers="bad headers" # type: ignore
     )
     webhook_action = gl_experimental.make_webhook_action(
         url="https://groundlight.ai", include_image=True, payload_template=payload_template
