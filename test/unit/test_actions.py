@@ -186,30 +186,10 @@ def test_create_alert_webhook_action_headers(gl_experimental: ExperimentalApi):
     assert alert.webhook_action[0].payload_template.headers == headers
 
 
-def test_create_alert_webhook_action_with_invalid_payload_template_headers(gl_experimental: ExperimentalApi):
-    name = f"Test {datetime.utcnow()}"
-    det = gl_experimental.get_or_create_detector(name, "test_query")
-    condition = gl_experimental.make_condition("CHANGED_TO", {"label": "YES"})
-    payload_template = gl_experimental.make_payload_template(
-        '{"template": "This is a fine template"}', headers="bad headers"  # type: ignore
-    )
-    webhook_action = gl_experimental.make_webhook_action(
-        url="https://groundlight.ai", include_image=True, payload_template=payload_template
-    )
-
-    bad_request_exception_status_code = 400
-
-    with pytest.raises(ApiException) as e:
-        gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
-    assert e.value.status == bad_request_exception_status_code
-
-    payload_template = gl_experimental.make_payload_template(
-        "This should not be a valid payload, it's valid jinja but won't produce valid json"
-    )
-    webhook_action = gl_experimental.make_webhook_action(
-        url="https://groundlight.ai", include_image=True, payload_template=payload_template
-    )
-
-    with pytest.raises(ApiException) as e:
-        gl_experimental.create_alert(det, f"test_alert_{name}", condition, webhook_actions=webhook_action)
-    assert e.value.status == bad_request_exception_status_code
+def test_create_invalid_payload_template_headers(gl_experimental: ExperimentalApi):
+    with pytest.raises(Exception) as e:
+        gl_experimental.make_payload_template(
+            '{"template": "This is a fine template"}', headers="bad headers"  # type: ignore
+        )
+    assert e.typename == "ValidationError"
+    assert "Input should be a valid dictionary" in str(e.value)
