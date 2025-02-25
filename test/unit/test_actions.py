@@ -185,6 +185,7 @@ def test_create_alert_webhook_action_headers(gl_experimental: ExperimentalApi):
     assert alert.webhook_action[0].payload_template.template == template
     assert alert.webhook_action[0].payload_template.headers == headers
 
+
 def test_create_alert_webhook_action_with_invalid_payload_template_headers(gl_experimental: ExperimentalApi):
     name = f"Test {datetime.utcnow()}"
     det = gl_experimental.get_or_create_detector(name, "test_query")
