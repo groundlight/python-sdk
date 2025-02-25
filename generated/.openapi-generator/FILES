@@ -29,6 +29,11 @@ docs/ImageQueriesApi.md
 docs/ImageQuery.md
 docs/ImageQueryTypeEnum.md
 docs/InlineResponse200.md
+docs/InlineResponse2001.md
+docs/InlineResponse2001EvaluationResults.md
+docs/InlineResponse2002.md
+docs/InlineResponse200Summary.md
+docs/InlineResponse200SummaryClassCounts.md
 docs/LabelValue.md
 docs/LabelValueRequest.md
 docs/LabelsApi.md
@@ -98,6 +103,11 @@ groundlight_openapi_client/model/escalation_type_enum.py
 groundlight_openapi_client/model/image_query.py
 groundlight_openapi_client/model/image_query_type_enum.py
 groundlight_openapi_client/model/inline_response200.py
+groundlight_openapi_client/model/inline_response2001.py
+groundlight_openapi_client/model/inline_response2001_evaluation_results.py
+groundlight_openapi_client/model/inline_response2002.py
+groundlight_openapi_client/model/inline_response200_summary.py
+groundlight_openapi_client/model/inline_response200_summary_class_counts.py
 groundlight_openapi_client/model/label_value.py
 groundlight_openapi_client/model/label_value_request.py
 groundlight_openapi_client/model/mode_enum.py
@@ -132,4 +142,6 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_payload_template.py
+test/test_payload_template_request.py
 tox.ini
