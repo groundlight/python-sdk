@@ -142,6 +142,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_payload_template.py
-test/test_payload_template_request.py
 tox.ini
