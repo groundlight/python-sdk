@@ -142,9 +142,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_inline_response2001.py
-test/test_inline_response2001_evaluation_results.py
-test/test_inline_response2002.py
-test/test_inline_response200_summary.py
-test/test_inline_response200_summary_class_counts.py
 tox.ini

@@ -101,10 +101,7 @@ class TextRecognitionResult(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "text": (
-                str,
-                none_type,
-            ),  # noqa: E501
+            "text": (str,),  # noqa: E501
             "truncated": (bool,),  # noqa: E501
             "confidence": (
                 float,
@@ -134,7 +131,7 @@ class TextRecognitionResult(ModelNormal):
         """TextRecognitionResult - a model defined in OpenAPI
 
         Args:
-            text (str, none_type):
+            text (str):
             truncated (bool):
 
         Keyword Args:
@@ -226,7 +223,7 @@ class TextRecognitionResult(ModelNormal):
         """TextRecognitionResult - a model defined in OpenAPI
 
         Args:
-            text (str, none_type):
+            text (str):
             truncated (bool):
 
         Keyword Args:

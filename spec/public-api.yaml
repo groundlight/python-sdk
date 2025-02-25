@@ -1639,7 +1639,6 @@ components:
           - ALGORITHM
         label:
           type: string
-          nullable: false
       required:
       - label
     TextRecognitionResult:
@@ -1661,7 +1660,6 @@ components:
           - ALGORITHM
         text:
           type: string
-          nullable: true
         truncated:
           type: boolean
       required:
@@ -1677,7 +1675,6 @@ components:
           nullable: false
         class_name:
           type: string
-          nullable: false
       required:
       - class_name
     MultiClassModeConfiguration:
@@ -1687,7 +1684,6 @@ components:
           type: array
           items:
             type: string
-            nullable: false
         num_classes:
           type: integer
           nullable: false

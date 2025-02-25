@@ -1020,3 +1020,29 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         _download_and_save(
             edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id
         )
+
+    def get_detector_evaluation(self, detector: Union[str, Detector]) -> dict:
+        """
+        Get a specific evaluation for a detector
+
+        :param detector: the detector to get the evaluation for
+
+        :return: a dictionary containing the evaluation results
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.detectors_api.get_detector_evaluation(detector)
+        return obj.to_dict()
+
+    def get_detector_metrics(self, detector: Union[str, Detector]) -> dict:
+        """
+        Get the metrics for a detector
+
+        :param detector: the detector to get the metrics for
+
+        :return: a dictionary containing the metrics for the detector
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.detectors_api.get_detector_metrics(detector)
+        return obj.to_dict()
