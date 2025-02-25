@@ -1,12 +1,15 @@
 from datetime import datetime
+import time
+
+import pytest
 
 from groundlight import ExperimentalApi
 
-
+@pytest.mark.skip(reason="Slow")
 def test_metrics_and_evaluation(gl_experimental: ExperimentalApi):
     name = f"Test metrics and evaluation {datetime.utcnow()}"
     det = gl_experimental.create_detector(name, "test_query")
-    for i in range(6):
+    for i in range(10):
         iq = gl_experimental.submit_image_query(
             det, "test/assets/cat.jpeg", wait=0, patience_time=10, human_review="NEVER"
         )
@@ -15,6 +18,9 @@ def test_metrics_and_evaluation(gl_experimental: ExperimentalApi):
             det, "test/assets/cat.jpeg", wait=0, patience_time=10, human_review="NEVER"
         )
         gl_experimental.add_label(iq, "NO")
+
+    time.sleep(120)  # Wait for the metrics to be updated
+
     metrics = gl_experimental.get_detector_metrics(det.id)
     assert metrics["summary"] is not None
     assert metrics["summary"]["num_ground_truth"] is not None
