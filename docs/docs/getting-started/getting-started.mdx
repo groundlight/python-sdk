@@ -1,59 +1,157 @@
+
 # Getting Started
 
-## Computer Vision powered by Natural Language
+## How to Build a Computer Vision Application with Groundlight's Python SDK
 
-Build a working computer vision system in just a few lines of python:
+If you're new to Groundlight AI, this is a good place to start. This is the equivalent of building a "Hello, world!" application.
 
-```python
-from groundlight import Groundlight
-
-gl = Groundlight()
-det = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
-img = "./docs/static/img/doorway.jpg"  # Image can be a file or a Python object
-image_query = gl.submit_image_query(detector=det, image=img)
-print(f"The answer is {image_query.result}")
-```
-
-### How does it work?
-
-Your images are first analyzed by machine learning (ML) models which are automatically trained on your data. If those models have high enough [confidence](docs/guide/5-managing-confidence.md), that's your answer. But if the models are unsure, then the images are progressively escalated to more resource-intensive analysis methods up to real-time human review. So what you get is a computer vision system that starts working right away without even needing to first gather and label a dataset. At first it will operate with high latency, because people need to review the image queries. But over time, the ML systems will learn and improve so queries come back faster with higher confidence.
-
-### Escalation Technology
-
-Groundlight's Escalation Technology combines the power of generative AI using our Visual LLM, along with the speed of edge computing, and the reliability of real-time human oversight.
-
-![diagram showing escalation technology](/img/escalation_diagram.jpg)
+Don't code? [Reach out to Groundlight AI](mailto:support@groundlight.ai) so we can build a custom computer vision application for you.
 
 
-## Building a simple visual application
+### What's below?
 
-1.  Install the `groundlight` SDK. Requires python version 3.9 or higher.
+    -   [Prerequisites](#prerequisites)
+    -   [Environment Setup](#environment-setup)
+    -   [Authentication](#authentication)
+    -   [Writing the code](#writing-the-code)
+    -   [Using your application](#using-your-computer-vision-application)
 
-    ```shell
-    pip3 install groundlight
+
+
+### Prerequisites
+
+Before getting started:
+
+- Make sure you have python installed
+- Install VSCode
+- Make sure your device has a c compiler. On Mac, this is provided through XCode while in Windows you can use the Microsoft Visual Studio Build Tools
+
+### Environment Setup
+
+Before you get started, you need to make sure you have python installed. Additionally, it’s good practice to set up a dedicated environment for your project. 
+
+You can download python from https://www.python.org/downloads/. Once installed, you should be able to run the following in the command line to create a new environment
+
+    ```bash
+    python3 -m venv gl_env
+    ```
+Once your environment is created, you can activate it with
+    ```bash
+    source gl_env/bin/activate
+    ```
+For Linux and Mac or if you’re on Windows you can run
+    ```bash
+    gl_env\Scripts\activate
+    ```
+The last step to setting up your python environment is to run
+    ```bash
+    pip install groundlight
+    pip install framegrab
+    ```
+in order to download Groundlight’s SDK and image capture libraries.
+
+
+
+### Authentication
+
+In order to verify your identity while connecting to your custom ML models through our SDK, you’ll need to create an API token.
+
+1. Head over to [https://dashboard.groundlight.ai/](https://dashboard.groundlight.ai/) and create or log into your account
+
+2. Once in, click on your username in the upper right hand corner of your dashboard:
+
+![](https://cdn.prod.website-files.com/664b7cc2ac49aeb2da6ef127/66cfb5e41e8dd9e0dd597419_AD_4nXeh8kPRLV3V4_broECuW9z1ELIqEIyJUelCjbWdE7RFtakxaov5ZgUylZBo6g4DAgqgTP2DnSrcJ26J7-pdFA2pjjnFfYxZykniuEv0axiniev3cmZiyIjaGvyHdj-381PLhvRHsm_jd4KtXXmCOV9ClNQx.png)
+
+3. Select API Tokens, then enter a name, like ‘personal-laptop-token’ for your api token.
+
+![](https://cdn.prod.website-files.com/664b7cc2ac49aeb2da6ef127/66cfb5f8b844596360c5c460_AD_4nXfkHlRPPBcdkFFjjAAYC42LwgXe91qbwDfwFs3V8lGFXhSoSFpjUBXo7RX0vyZVYUurzEIp3kFL9H8pghpLD8omBqLGswHQJUMxGo8dBDh--e8wj4LQZcwywrt0hotsz9DoBZb5owokq2YeJlPI4_trG-nJ.png)
+
+4. Copy the API Token for use in your code
+
+IMPORTANT: Keep your API token secure! Anyone who has access to it can impersonate you and will have access to your Groundlight data
+
+
+    ```bash
+    $env:GROUNDLIGHT_API_TOKEN="YOUR_API_TOKEN_HERE"
+    ```
+Or on Mac
+    ```bash
+    export GROUNDLIGHT_API_TOKEN="YOUR_API_TOKEN_HERE"
     ```
 
-1.  Head over to the [Groundlight dashboard](https://dashboard.groundlight.ai/) to create an [API token](https://dashboard.groundlight.ai/reef/my-account/api-tokens). You will
-    need to set the `GROUNDLIGHT_API_TOKEN` environment variable to access the API.
 
-    ```shell
-    export GROUNDLIGHT_API_TOKEN=api_2GdXMflhJi6L_example
+### Writing the code
+
+For your first and simple application you can build a binary detector, which is computer vision model where the answer will either be 'Yes' or 'No'. Groundlight AI will confirm if the thumb is facing up or down ("Is the thumb facing up?").
+
+You can start using Groundlight using just your laptop camera, but you can also use a USB camera if you have one.
+
+    ```python
+    import groundlight
+    import cv2
+    from framegrab import FrameGrabber
+    import time
+
+    gl = groundlight.Groundlight()
+
+    detector_name = "trash_detector"
+    detector_query = "Is the trash can overflowing"
+
+    detector = gl.get_or_create_detector(detector_name, detector_query)
+
+    grabber = list(FrameGrabber.autodiscover().values())[0]
+
+    WAIT_TIME = 5
+    last_capture_time = time.time() - WAIT_TIME
+
+    while True:
+        frame = grabber.grab()
+
+        cv2.imshow('Video Feed', frame)
+        key = cv2.waitKey(30)
+
+        if key == ord('q'):
+                break
+        # # Press enter to submit an image query
+        # elif key in (ord('\r'), ord('\n')):
+        # 	print(f'Asking question: {detector_query}')
+        # 	image_query = gl.submit_image_query(detector, frame)
+        # 	print(f'The answer is {image_query.result.label.value}')
+
+        # # Press 'y' or 'n' to submit a label
+        # elif key in (ord('y'), ord('n')):
+        # 	if key == ord('y'):
+        #     	label = 'YES'
+        # 	else:
+        #     	label = 'NO'
+        # 	image_query = gl.ask_async(detector, frame, human_review="NEVER")
+        # 	gl.add_label(image_query, label)
+        # 	print(f'Adding label {label} for image query {image_query.id}')
+
+        # Submit image queries in a timed loop
+        now = time.time()
+        if last_capture_time + WAIT_TIME < now:
+                last_capture_time = now
+
+                print(f'Asking question: {detector_query}')
+                image_query = gl.submit_image_query(detector, frame)
+                print(f'The answer is {image_query.result.label.value}')
+
+    grabber.release()
+    cv2.destroyAllWindows()
     ```
+    This code will take an image from your connected camera every minute and ask Groundlight a question in natural language, before printing out the answer.
 
-1.  Create a python script.
 
-    ```python title="ask.py"
-    from groundlight import Groundlight
 
-    gl = Groundlight()
-    det = gl.get_or_create_detector(name="doorway", query="Is the doorway open?")
-    img = "./docs/static/img/doorway.jpg"  # Image can be a file or a Python object
-    image_query = gl.submit_image_query(detector=det, image=img)
-    print(f"The answer is {image_query.result}")
-    ```
+### Using your computer vision application
 
-1.  Run it!
+Just like that, you have a complete computer vision application. You can change the code and configure a detector for your specific use case. Also, you can monitor and improve the performance of your detector at [https://dashboard.groundlight.ai/](https://dashboard.groundlight.ai/). Groundlight’s human-in-the-loop technology will monitor your image feed for unexpected changes and anomalies, and by verifying answers returned by Groundlight you can improve the process. At app.groundlight.ai, you can also set up text and email notifications, so you can be alerted when something of interest happens in your video stream.
 
-    ```shell
-    python ask.py
-    ```
+
+
+### If You're Looking for More:
+
+Now that you've built your first application, learn how to [write queries](https://code.groundlight.ai/python-sdk/docs/getting-started/writing-queries).
+
+Want to play around with sample applications built by Groundlight AI? Visit [Guides](https://www.groundlight.ai/guides) to build example applications, from detecting birds outside of your window to running Groundlight AI on a Raspberry Pi.
