@@ -1178,6 +1178,7 @@ components:
         label:
           type: string
           writeOnly: true
+          nullable: true
         image_query_id:
           type: string
           writeOnly: true
@@ -1508,6 +1509,7 @@ components:
       - ALG
       - ALG_REC
       - ALG_UNCLEAR
+      - EDGE
       type: string
       description: |-
         * `INITIAL_PLACEHOLDER` - InitialPlaceholder
@@ -1517,6 +1519,7 @@ components:
         * `ALG` - Algorithm
         * `ALG_REC` - AlgorithmReconciled
         * `ALG_UNCLEAR` - AlgorithmUnclear
+        * `EDGE` - EDGE
     StatusEnum:
       enum:
       - 'ON'
@@ -1587,6 +1590,11 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - binary_classification
         label:
           type: string
           enum:
@@ -1612,6 +1620,11 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - counting
         count:
           type: integer
           minimum: 0
@@ -1637,8 +1650,14 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - multi_classification
         label:
           type: string
+          nullable: false
       required:
       - label
     TextRecognitionResult:
@@ -1658,8 +1677,14 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - text_recognition
         text:
           type: string
+          nullable: true
         truncated:
           type: boolean
       required:
@@ -1675,6 +1700,7 @@ components:
           nullable: false
         class_name:
           type: string
+          nullable: false
       required:
       - class_name
     MultiClassModeConfiguration:
@@ -1684,6 +1710,7 @@ components:
           type: array
           items:
             type: string
+            nullable: false
         num_classes:
           type: integer
           nullable: false

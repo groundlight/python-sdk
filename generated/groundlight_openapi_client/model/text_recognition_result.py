@@ -60,6 +60,10 @@ class TextRecognitionResult(ModelNormal):
             "USER": "USER",
             "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
             "ALGORITHM": "ALGORITHM",
+            "EDGE": "EDGE",
+        },
+        ("result_type",): {
+            "TEXT_RECOGNITION": "text_recognition",
         },
     }
 
@@ -101,13 +105,17 @@ class TextRecognitionResult(ModelNormal):
                 and the value is attribute type.
         """
         return {
-            "text": (str,),  # noqa: E501
+            "text": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "truncated": (bool,),  # noqa: E501
             "confidence": (
                 float,
                 none_type,
             ),  # noqa: E501
             "source": (str,),  # noqa: E501
+            "result_type": (str,),  # noqa: E501
         }
 
     @cached_property
@@ -119,6 +127,7 @@ class TextRecognitionResult(ModelNormal):
         "truncated": "truncated",  # noqa: E501
         "confidence": "confidence",  # noqa: E501
         "source": "source",  # noqa: E501
+        "result_type": "result_type",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -131,7 +140,7 @@ class TextRecognitionResult(ModelNormal):
         """TextRecognitionResult - a model defined in OpenAPI
 
         Args:
-            text (str):
+            text (str, none_type):
             truncated (bool):
 
         Keyword Args:
@@ -167,6 +176,7 @@ class TextRecognitionResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "text_recognition"  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -223,7 +233,7 @@ class TextRecognitionResult(ModelNormal):
         """TextRecognitionResult - a model defined in OpenAPI
 
         Args:
-            text (str):
+            text (str, none_type):
             truncated (bool):
 
         Keyword Args:
@@ -259,6 +269,7 @@ class TextRecognitionResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "text_recognition"  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
