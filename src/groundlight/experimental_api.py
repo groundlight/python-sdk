@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 experimental_api.py
 
@@ -26,6 +27,7 @@ from groundlight_openapi_client.model.detector_group_request import DetectorGrou
 from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.verb_enum import VerbEnum
@@ -41,6 +43,7 @@ from model import (
     EdgeModelInfo,
     ModeEnum,
     PaginatedRuleList,
+    PayloadTemplate,
     Rule,
     WebhookAction,
 )
@@ -163,7 +166,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             include_image=include_image,
         )
 
-    def make_webhook_action(self, url: str, include_image: bool) -> WebhookAction:
+    def make_webhook_action(
+        self, url: str, include_image: bool, payload_template: Optional[PayloadTemplate] = None
+    ) -> WebhookAction:
         """
         Creates a WebhookAction object for use in creating alerts
         This function serves as a convenience method; WebhookAction objects can also be created directly.
@@ -173,11 +178,21 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             action = gl.make_webhook_action("https://example.com/webhook", include_image=True)
         :param url: The URL to send the webhook to
         :param include_image: Whether to include the triggering image in the webhook payload
+        :param payload_template: Optional custom template for the webhook payload. The template will be rendered with
+            the alert data. The template must be a valid Jinja2 template which produces valid JSON when rendered. If no
+            template is provided, the default template designed for Slack will be used.
         """
         return WebhookAction(
             url=str(url),
             include_image=include_image,
+            payload_template=payload_template,
         )
+
+    def make_payload_template(self, template: str, headers: Optional[Dict[str, str]] = None) -> PayloadTemplate:
+        """
+        Creates a PayloadTemplate object for use in creating alerts
+        """
+        return PayloadTemplate(template=template, headers=headers)
 
     def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
         self,
@@ -266,6 +281,14 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                 WebhookActionRequest(
                     url=str(webhook_action.url),
                     include_image=webhook_action.include_image,
+                    payload_template=(
+                        PayloadTemplateRequest(
+                            template=webhook_action.payload_template.template,
+                            headers=webhook_action.payload_template.headers,
+                        )
+                        if webhook_action.payload_template
+                        else None
+                    ),
                 )
                 for webhook_action in webhook_actions
             ]
@@ -997,3 +1020,29 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         _download_and_save(
             edge_model_info.oodd_model_binary_url, Path(output_dir) / edge_model_info.oodd_model_binary_id
         )
+
+    def get_detector_evaluation(self, detector: Union[str, Detector]) -> dict:
+        """
+        Get a specific evaluation for a detector
+
+        :param detector: the detector to get the evaluation for
+
+        :return: a dictionary containing the evaluation results
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.detectors_api.get_detector_evaluation(detector)
+        return obj.to_dict()
+
+    def get_detector_metrics(self, detector: Union[str, Detector]) -> dict:
+        """
+        Get the metrics for a detector
+
+        :param detector: the detector to get the metrics for
+
+        :return: a dictionary containing the metrics for the detector
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        obj = self.detectors_api.get_detector_metrics(detector)
+        return obj.to_dict()

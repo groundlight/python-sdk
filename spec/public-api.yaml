@@ -250,6 +250,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/Detector'
           description: ''
+  /v1/detectors/{detector_id}/metrics:
+    get:
+      operationId: get detector metrics
+      description: Get Detector metrics, primarily the counts of different types of
+        labels
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: object
+                    properties:
+                      num_ground_truth:
+                        type: integer
+                      num_current_source_human:
+                        type: integer
+                      class_counts:
+                        type: object
+                        properties:
+                          source_ml:
+                            type: object
+                          source_human:
+                            type: object
+                          cloud_labeler:
+                            type: object
+                          cloud:
+                            type: object
+                          total:
+                            type: object
+                      unconfident_counts:
+                        type: object
+                      total_iqs:
+                        type: integer
+                    nullable: true
+          description: ''
   /v1/detectors/{id}:
     get:
       operationId: Get detector
@@ -320,6 +368,59 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/detectors/{id}/evaluation:
+    get:
+      operationId: get detector evaluation
+      description: Get Detector evaluation results. The result is null if there isn't
+        enough ground truth data to evaluate the detector. Returns the time of the
+        evaulation, total ground truth labels, the ml based kfold accuracies, and
+        the system accuracies at different confidence thresholds
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  evaluation_results:
+                    type: object
+                    properties:
+                      eval_timestamp:
+                        type: string
+                        format: date-time
+                      total_ground_truth_examples:
+                        type: integer
+                        nullable: true
+                      kfold_pooled__balanced_accuracy:
+                        type: number
+                        format: float
+                      kfold_pooled__positive_accuracy:
+                        type: number
+                        format: float
+                      kfold_pooled__negative_accuracy:
+                        type: number
+                        format: float
+                      balanced_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                      positive_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                      negative_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                    nullable: true
+          description: ''
   /v1/edge/fetch-model-urls/{detector_id}/:
     get:
       operationId: Get Model URLs
@@ -1077,7 +1178,7 @@ components:
         label:
           type: string
           writeOnly: true
-          minLength: 1
+          nullable: true
         image_query_id:
           type: string
           writeOnly: true
@@ -1238,6 +1339,32 @@ components:
             * `STANDARD` - STANDARD
             * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
       x-internal: true
+    PayloadTemplate:
+      type: object
+      properties:
+        template:
+          type: string
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+      required:
+      - template
+    PayloadTemplateRequest:
+      type: object
+      properties:
+        template:
+          type: string
+          minLength: 1
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+          nullable: true
+      required:
+      - template
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1382,6 +1509,7 @@ components:
       - ALG
       - ALG_REC
       - ALG_UNCLEAR
+      - EDGE
       type: string
       description: |-
         * `INITIAL_PLACEHOLDER` - InitialPlaceholder
@@ -1391,6 +1519,7 @@ components:
         * `ALG` - Algorithm
         * `ALG_REC` - AlgorithmReconciled
         * `ALG_UNCLEAR` - AlgorithmUnclear
+        * `EDGE` - EDGE
     StatusEnum:
       enum:
       - 'ON'
@@ -1422,6 +1551,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplate'
+          nullable: true
       required:
       - url
     WebhookActionRequest:
@@ -1434,6 +1567,10 @@ components:
           maxLength: 200
         include_image:
           type: boolean
+        payload_template:
+          allOf:
+          - $ref: '#/components/schemas/PayloadTemplateRequest'
+          nullable: true
       required:
       - url
     BinaryClassificationResult:
@@ -1453,6 +1590,11 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - binary_classification
         label:
           type: string
           enum:
@@ -1478,6 +1620,11 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - counting
         count:
           type: integer
           minimum: 0
@@ -1503,8 +1650,14 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - multi_classification
         label:
           type: string
+          nullable: false
       required:
       - label
     TextRecognitionResult:
@@ -1524,8 +1677,14 @@ components:
           - USER
           - CLOUD_ENSEMBLE
           - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - text_recognition
         text:
           type: string
+          nullable: true
         truncated:
           type: boolean
       required:
@@ -1541,6 +1700,7 @@ components:
           nullable: false
         class_name:
           type: string
+          nullable: false
       required:
       - class_name
     MultiClassModeConfiguration:
@@ -1550,6 +1710,7 @@ components:
           type: array
           items:
             type: string
+            nullable: false
         num_classes:
           type: integer
           nullable: false
@@ -1557,6 +1718,12 @@ components:
       - class_names
     TextModeConfiguration:
       type: object
+      properties:
+        value_max_length:
+          type: integer
+          minimum: 1
+          maximum: 250
+          nullable: false
     ChannelEnum:
       type: string
       enum:

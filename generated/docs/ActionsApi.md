@@ -69,6 +69,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
             WebhookActionRequest(
                 url="url_example",
                 include_image=True,
+                payload_template=None,
             ),
         ],
     ) # RuleRequest | 

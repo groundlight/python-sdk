@@ -62,9 +62,6 @@ class LabelValueRequest(ModelNormal):
     allowed_values = {}
 
     validations = {
-        ("label",): {
-            "min_length": 1,
-        },
         ("image_query_id",): {
             "min_length": 1,
         },
@@ -103,7 +100,10 @@ class LabelValueRequest(ModelNormal):
         """
         lazy_import()
         return {
-            "label": (str,),  # noqa: E501
+            "label": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "image_query_id": (str,),  # noqa: E501
             "rois": (
                 [ROIRequest],
@@ -131,7 +131,7 @@ class LabelValueRequest(ModelNormal):
         """LabelValueRequest - a model defined in OpenAPI
 
         Args:
-            label (str):
+            label (str, none_type):
             image_query_id (str):
 
         Keyword Args:
@@ -222,7 +222,7 @@ class LabelValueRequest(ModelNormal):
         """LabelValueRequest - a model defined in OpenAPI
 
         Args:
-            label (str):
+            label (str, none_type):
             image_query_id (str):
 
         Keyword Args:
