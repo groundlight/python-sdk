@@ -8,9 +8,9 @@ Don't code? [Contact our team](mailto:support@groundlight.ai) and we'll build a 
 
 ### Prerequisites
 Before you begin, make sure you have:
-1. A [Groundlight account](https://dashboard.groundlight.ai/)
-2. An API token from the [Groundlight dashboard](https://dashboard.groundlight.ai/reef/my-account/api-tokens)
-3. Python 3.9 or newer
+1. A [Groundlight account](https://dashboard.groundlight.ai/)!
+2. An API token from the [Groundlight dashboard](https://dashboard.groundlight.ai/reef/my-account/api-tokens). See our [guide to API Tokens](http://localhost:3000/python-sdk/docs/getting-started/api-tokens) for more info.
+3. Python 3.9 or newer installed
 
 ### Installing the Groundlight SDK
 
@@ -32,22 +32,10 @@ pip install groundlight
 For more detailed installation instructions, see the [installation guide](/docs/installation/).
 
 ### Authentication
-
-In order to verify your identity while connecting to your custom ML models through our SDK, you’ll need to create an API token.
-
-1. Log into your previously created account at https://dashboard.groundlight.ai/
-
-2. Once in, click on your username in the upper right hand corner of your dashboard:
-
-![](https://cdn.prod.website-files.com/664b7cc2ac49aeb2da6ef127/66cfb5e41e8dd9e0dd597419_AD_4nXeh8kPRLV3V4_broECuW9z1ELIqEIyJUelCjbWdE7RFtakxaov5ZgUylZBo6g4DAgqgTP2DnSrcJ26J7-pdFA2pjjnFfYxZykniuEv0axiniev3cmZiyIjaGvyHdj-381PLhvRHsm_jd4KtXXmCOV9ClNQx.png)
-
-3. Select API Tokens, then enter a name for your api token, such as `personal-laptop-token`.
-
-![](https://cdn.prod.website-files.com/664b7cc2ac49aeb2da6ef127/66cfb5f8b844596360c5c460_AD_4nXfkHlRPPBcdkFFjjAAYC42LwgXe91qbwDfwFs3V8lGFXhSoSFpjUBXo7RX0vyZVYUurzEIp3kFL9H8pghpLD8omBqLGswHQJUMxGo8dBDh--e8wj4LQZcwywrt0hotsz9DoBZb5owokq2YeJlPI4_trG-nJ.png)
-
-4. Copy the API Token for use in your code
-
-Set the API token in your terminal:
+The Groundlight SDK uses API tokens to authenticate your requests to the Groundlight API.
+When you make API calls, the SDK automatically uses your token to verify your identity and permissions. It
+does this by checking the `GROUNDLIGHT_API_TOKEN` environment variable. In order to set this environment
+variable, run:
 ```bash
 # MacOS / Linux
 export GROUNDLIGHT_API_TOKEN='your-api-token'
@@ -64,8 +52,16 @@ Keep your API token secure! Anyone who has access to it can impersonate you and 
 
 Call the Groundlight API by creating a `Detector` and submitting an `ImageQuery`.
 
-You can start using Groundlight using just your laptop camera, but you can also use a USB camera if you have one.
+For example, lets say we have captured this image and saved it under `./docs/static/img/thumbs-up.jpg`:
+<img
+src={require('/img/thumbs-up.jpg').default}
+alt="Thumbs-Up Example Image"
+width={"50%"}
+/>
+<br />
+<br />
 
+We can now use Groundlight to ask a question about the image:
 ```python title="ask.py"
 from groundlight import Groundlight, Detector, ImageQuery
 
@@ -77,7 +73,7 @@ detector: Detector = gl.get_or_create_detector(
     query="Is the thumb facing up?",
 )
 
-img = "./docs/static/img/thumb.jpg"  # Image can be a file or a Python object
+img = "./docs/static/img/thumbs-up.jpg"  # Image can be a file or a Python object
 image_query = gl.submit_image_query(detector=det, image=img)
 
 print(f"The answer is {image_query.result.label}")
@@ -113,11 +109,17 @@ Congratulations! You now have a fully functional computer vision application. Yo
 Monitor and enhance your detector's performance through the [Groundlight Dashboard](https://dashboard.groundlight.ai/).
 Groundlight's human-in-the-loop technology intelligently monitors your image feed for anomalies and unexpected changes.
 By reviewing and verifying results, you continuously improve the system's accuracy. Through the dashboard, you can also
-configure text and email notifications to alert you when important events are detected in your video stream.
+[configure text and email notifications](/docs/guide/alerts) to alert you when important events are detected in your video stream.
 
 ### Next Steps
 
-Now that you've built your first application, learn how to write effective [queries](/docs/getting-started/writing-queries).
+Now that you've built your first application, you can:
+    1. Learn how to [write effective queries](/docs/getting-started/writing-queries).
+    2. Proceed to [capture images from a wide variety of sources](/docs/guide/grabbing-images) using [`framegrab`](https://github.com/groundlight/framegrab).
+    3. Read our guide to [confidence thresholds](/docs/guide/managing-confidence).
+
+
 
 Ready to explore more possibilities? Visit our [Guides](https://www.groundlight.ai/guides) to discover sample
-applications built with Groundlight AI — from bird detection systems to Raspberry Pi implementations.
+applications built with Groundlight AI — from [industrial inspection workflows](https://www.groundlight.ai/blog/lkq-corporation-uses-groundlight-ai-to-revolutionize-quality-control-and-inspection)
+to [hummingbird detection systems](https://www.groundlight.ai/guides/detecting-hummingbirds-with-groundlight-ai).
