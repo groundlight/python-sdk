@@ -25,6 +25,7 @@ from model import (
     ImageQuery,
     PaginatedDetectorList,
     PaginatedImageQueryList,
+    Source,
 )
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -969,6 +970,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             1. A result with confidence >= confidence_threshold is available
             2. The timeout_sec is reached
             3. An error occurs
+            If the image query is from the edge, the result is returned immediately and not waited for.
 
         **Example usage**::
 
@@ -1002,17 +1004,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             :meth:`get_image_query` for checking result status without blocking
             :meth:`wait_for_ml_result` for waiting until the first ML result is available
         """
-
-        def is_from_edge(iq: ImageQuery) -> bool:
-            return iq.metadata and iq.metadata.get("is_from_edge", False)
-
-        if is_from_edge(image_query):
-            # If the query is from the edge, there is nothing to wait for.
-            logger.debug(
-                "The image query is from the edge and the client wanted only edge answers, so we are not"
-                " attempting to get a result from the cloud."
-            )
-            return image_query
+        if isinstance(image_query, ImageQuery):
+            if image_query.result and image_query.result.source and image_query.result.source == Source.EDGE:
+                logger.debug(
+                    "The image query is from the edge, so we are returning it immediately and not waiting for a "
+                    "confident result."
+                )
+                return image_query
 
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
