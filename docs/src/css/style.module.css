@@ -4,8 +4,12 @@
 }
 
 a {
-  color: inherit;
+  color: #3498db;
   display: inline-block;
+}
+
+a:hover {
+  color: #2980b9;
 }
 
 h1,
