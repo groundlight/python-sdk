@@ -63,27 +63,27 @@ from groundlight import Groundlight, Detector, ImageQuery
 from framegrab import FrameGrabber
 
 gl = Groundlight()
-
-detector = gl.get_or_create_detector(detector_name, detector_query)
 detector: Detector = gl.get_or_create_detector(
     name="eagle-detector",
     query="Is there an eagle visible?",
 )
 
+# Big Bear Bald Eagle Nest live-stream
+youtube_live_url = 'https://www.youtube.com/watch?v=B4-L2nfGcuE'
+
 config = {
     'input_type': 'youtube_live',
-    'id': {
-        # Big Bear Bald Eagle Nest live-stream
-        'youtube_url': 'https://www.youtube.com/watch?v=B4-L2nfGcuE'
-    }
+    'id': {'youtube_url': youtube_live_url},
 }
 
-with FrameGrabber.create_grabber(config) as grabber:
+with FrameGrabber.create_grabber({
+    'input_type': 'youtube_live', 'id': {'youtube_url': youtube_live_url},
+}) as grabber:
     frame = grabber.grab()
     if frame is None:
         raise Exception("No frame captured")
 
-image_query = gl.submit_image_query(detector=det, image=frame)
+image_query = gl.submit_image_query(detector=detector, image=frame)
 
 print(f"The answer is {image_query.result.label}")
 print(image_query)
