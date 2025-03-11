@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDK Client &mdash; Groundlight Python SDK 0.22.2 documentation</title>
+  <title>SDK Client &mdash; Groundlight Python SDK 0.22.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c506fbac"></script>
+        <script src="_static/documentation_options.js?v=617e7fb5"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.22.2
+                0.22.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.confidence_threshold"><code class="docutils literal notranslate"><span class="pre">ImageQuery.confidence_threshold</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.created_at"><code class="docutils literal notranslate"><span class="pre">ImageQuery.created_at</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.detector_id"><code class="docutils literal notranslate"><span class="pre">ImageQuery.detector_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.done_processing"><code class="docutils literal notranslate"><span class="pre">ImageQuery.done_processing</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.id"><code class="docutils literal notranslate"><span class="pre">ImageQuery.id</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.metadata"><code class="docutils literal notranslate"><span class="pre">ImageQuery.metadata</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#model.ImageQuery.patience_time"><code class="docutils literal notranslate"><span class="pre">ImageQuery.patience_time</span></code></a></li>
@@ -2496,6 +2497,12 @@ create_[MODE]_detector methods for pro tier users</p>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A text field on image query.&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;done_processing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EDGE ONLY - Whether the image query has completed escalating and will receive no new results.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Done Processing&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2880,6 +2887,7 @@ create_[MODE]_detector methods for pro tier users</p>
 <li><p><a class="reference internal" href="#model.ImageQuery.confidence_threshold" title="model.ImageQuery.confidence_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">confidence_threshold</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.created_at" title="model.ImageQuery.created_at"><code class="xref py py-obj docutils literal notranslate"><span class="pre">created_at</span> <span class="pre">(datetime.datetime)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.detector_id" title="model.ImageQuery.detector_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">detector_id</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#model.ImageQuery.done_processing" title="model.ImageQuery.done_processing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">done_processing</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.id" title="model.ImageQuery.id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.metadata" title="model.ImageQuery.metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metadata</span> <span class="pre">(Dict[str,</span> <span class="pre">Any]</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#model.ImageQuery.patience_time" title="model.ImageQuery.patience_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">patience_time</span> <span class="pre">(float)</span></code></a></p></li>
@@ -2908,6 +2916,12 @@ create_[MODE]_detector methods for pro tier users</p>
 <dt class="sig sig-object py" id="model.ImageQuery.detector_id">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detector_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#model.ImageQuery.detector_id" title="Link to this definition"></a></dt>
 <dd><p>Which detector was used on this image query?</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="model.ImageQuery.done_processing">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">done_processing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#model.ImageQuery.done_processing" title="Link to this definition"></a></dt>
+<dd><p>EDGE ONLY - Whether the image query has completed escalating and will receive no new results.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -3525,6 +3539,12 @@ create_[MODE]_detector methods for pro tier users</p>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A text field on image query.&quot;</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Text&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;done_processing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EDGE ONLY - Whether the image query has completed escalating and will receive no new results.&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Done Processing&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
