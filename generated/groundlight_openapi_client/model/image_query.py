@@ -159,6 +159,7 @@ class ImageQuery(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "done_processing": (bool,),  # noqa: E501
         }
 
     @cached_property
@@ -178,6 +179,7 @@ class ImageQuery(ModelNormal):
         "confidence_threshold": "confidence_threshold",  # noqa: E501
         "rois": "rois",  # noqa: E501
         "text": "text",  # noqa: E501
+        "done_processing": "done_processing",  # noqa: E501
     }
 
     read_only_vars = {
@@ -262,6 +264,7 @@ class ImageQuery(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            done_processing (bool): EDGE ONLY - Whether the image query has completed escalating and will receive no new results.. [optional] if omitted the server will use the default value of False  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -359,6 +362,7 @@ class ImageQuery(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            done_processing (bool): EDGE ONLY - Whether the image query has completed escalating and will receive no new results.. [optional] if omitted the server will use the default value of False  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
