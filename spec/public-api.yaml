@@ -1100,10 +1100,18 @@ components:
           nullable: true
           readOnly: true
           description: A text field on image query.
+        done_processing:
+          type: boolean
+          nullable: true
+          readOnly: true
+          default: false
+          description: EDGE ONLY - Whether the image query has completed escalating
+            and will receive no new results.
       required:
       - confidence_threshold
       - created_at
       - detector_id
+      - done_processing
       - id
       - metadata
       - patience_time
