@@ -159,10 +159,7 @@ class ImageQuery(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
-            "done_processing": (
-                bool,
-                none_type,
-            ),  # noqa: E501
+            "done_processing": (bool,),  # noqa: E501
         }
 
     @cached_property
@@ -197,7 +194,6 @@ class ImageQuery(ModelNormal):
         "confidence_threshold",  # noqa: E501
         "rois",  # noqa: E501
         "text",  # noqa: E501
-        "done_processing",  # noqa: E501
     }
 
     _composed_schemas = {}
@@ -238,7 +234,6 @@ class ImageQuery(ModelNormal):
             text (str, none_type): A text field on image query.
 
         Keyword Args:
-            done_processing (bool, none_type): EDGE ONLY - Whether the image query has completed escalating and will receive no new results.. defaults to False  # noqa: E501
             _check_type (bool): if True, values for parameters in openapi_types
                                 will be type checked and a TypeError will be
                                 raised if the wrong type is input.
@@ -269,9 +264,9 @@ class ImageQuery(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            done_processing (bool): EDGE ONLY - Whether the image query has completed escalating and will receive no new results.. [optional] if omitted the server will use the default value of False  # noqa: E501
         """
 
-        done_processing = kwargs.get("done_processing", False)
         _check_type = kwargs.pop("_check_type", True)
         _spec_property_naming = kwargs.pop("_spec_property_naming", False)
         _path_to_item = kwargs.pop("_path_to_item", ())
@@ -310,7 +305,6 @@ class ImageQuery(ModelNormal):
         self.confidence_threshold = confidence_threshold
         self.rois = rois
         self.text = text
-        self.done_processing = done_processing
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -368,6 +362,7 @@ class ImageQuery(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            done_processing (bool): EDGE ONLY - Whether the image query has completed escalating and will receive no new results.. [optional] if omitted the server will use the default value of False  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
