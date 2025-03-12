@@ -970,7 +970,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             1. A result with confidence >= confidence_threshold is available
             2. The timeout_sec is reached
             3. An error occurs
-            If the image query is from the edge, the result is returned immediately and not waited for.
+
+            If the image query was answered on the edge or is done_processing, the result is returned immediately.
 
         **Example usage**::
 
