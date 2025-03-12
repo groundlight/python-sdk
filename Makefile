@@ -8,7 +8,7 @@ install:  ## Install the package from source
 	poetry install
 
 install-extras: install  ## Install the package from source with extra dependencies
-	poetry run pip install numpy
+	poetry run pip install numpy framegrab[youtube]
 
 install-lint:  ## Only install the linter dependencies
 	poetry install --only lint
@@ -61,10 +61,10 @@ test-integ: install  ## Run tests against the integ API server (needs GROUNDLIGH
 test-dev: install ## Run tests against a dev API server (needs GROUNDLIGHT_API_TOKEN and properly configured dns-hostmap)
 	GROUNDLIGHT_ENDPOINT="https://api.dev.groundlight.ai/" $(MAKE) test
 
-test-docs: install  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
+test-docs: install-extras  ## Run the example code and tests in our docs against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
-test-docs-integ: install  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
+test-docs-integ: install-extras  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
