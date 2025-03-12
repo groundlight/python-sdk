@@ -1,6 +1,7 @@
-from groundlight import ExperimentalApi
 from unittest.mock import patch
-from model import ImageQuery, Source, BinaryClassificationResult, Label
+
+from groundlight import ExperimentalApi
+from model import BinaryClassificationResult, ImageQuery, Label, Source
 
 
 def test_wait_for_confident_result_returns_immediately_when_no_better_result_expected(
