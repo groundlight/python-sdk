@@ -1004,16 +1004,28 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             :meth:`get_image_query` for checking result status without blocking
             :meth:`wait_for_ml_result` for waiting until the first ML result is available
         """
-        if isinstance(image_query, ImageQuery):
+
+        def should_stop_waiting(image_query: ImageQuery) -> bool:
+            """Checks if the image query should be returned immediately because no better answer is expected."""
+            if image_query.done_processing:
+                logger.debug(
+                    "The image query has completed escalating and will receive no new results, so we are "
+                    "returning it immediately."
+                )
+                return True
             if image_query.result and image_query.result.source and image_query.result.source == Source.EDGE:
                 logger.debug(
-                    "The image query is from the edge, so we are returning it immediately and not waiting for a "
-                    "confident result."
+                    "The image query was answered on the edge, so we are returning it immediately and not waiting for "
+                    "a confident result."
                 )
-                return image_query
+                return True
+            return False
 
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
+
+        if should_stop_waiting(image_query):
+            return image_query
 
         if confidence_threshold is None:
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
