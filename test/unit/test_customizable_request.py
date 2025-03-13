@@ -1,7 +1,7 @@
 from groundlight import ExperimentalApi
 from datetime import datetime
 
-gl = ExperimentalApi(endpoint="https://api.groundlight.ai/")
+gl = ExperimentalApi()
 
 def test_invalid_endpoint_config():
     print(gl.make_generic_api_request("/v1/me", "GET"))
