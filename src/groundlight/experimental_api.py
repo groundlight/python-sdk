@@ -11,10 +11,8 @@ import json
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
-from urllib3.response import HTTPResponse
 
 import requests
-from groundlight.internalapi import _generate_request_id
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
@@ -49,8 +47,10 @@ from model import (
     Rule,
     WebhookAction,
 )
+from urllib3.response import HTTPResponse
 
 from groundlight.images import parse_supported_image_types
+from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
@@ -1061,7 +1061,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         # We generate a unique request ID client-side for each request
         headers["X-Request-Id"] = _generate_request_id()
         headers["User-Agent"] = self.api_client.default_headers["User-Agent"]
-        headers['Accept'] = 'application/json'
+        headers["Accept"] = "application/json"
         return headers
 
     def make_raw_rest_request(self, method: str, endpoint: str, body: Union[dict, None] = None) -> dict:
@@ -1081,13 +1081,13 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         return response.json()
 
     def make_generic_api_request(
-            self,
-            endpoint: str,
-            method: str,
-            headers: dict = None,
-            body: Union[dict, None] = None,
-            files = None,
-        ) -> HTTPResponse:
+        self,
+        endpoint: str,
+        method: str,
+        headers: dict = None,
+        body: Union[dict, None] = None,
+        files=None,
+    ) -> HTTPResponse:
         """
         Make a generic API request to the specified endpoint, utilizing many of the provided tools from the generated api client
 
@@ -1104,11 +1104,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         return self.api_client.call_api(
             endpoint,
             method,
-            None, # Path Params
-            None, # Query params
-            headers, # header params
-            body = body, # body
-            files = files, # files
-            auth_settings = ['ApiToken'],
-            _preload_content = False, # This returns the urllib3 response rather than trying any type of processing
+            None,  # Path Params
+            None,  # Query params
+            headers,  # header params
+            body=body,  # body
+            files=files,  # files
+            auth_settings=["ApiToken"],
+            _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
