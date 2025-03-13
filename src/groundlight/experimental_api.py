@@ -1064,24 +1064,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         headers["Accept"] = "application/json"
         return headers
 
-    def make_raw_rest_request(self, method: str, endpoint: str, body: Union[dict, None] = None) -> dict:
-        """
-        Make a raw REST request to the specified URL
-
-        :param method: the HTTP method to use
-        :param endpoint: the endpoint to send the request to - the url path appended after the
-            endpoint including a / at the beginging
-        :param body: the request body
-
-        :return: a dictionary containing the raw response
-        """
-        headers = self.get_raw_headers()
-        url = f"{self.api_client.configuration.host}{endpoint}"
-        response = requests.request(method, url, headers=headers, json=body)
-        return response.json()
-
     def make_generic_api_request(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
+        *,
         endpoint: str,
         method: str,
         headers: Union[dict, None] = None,
