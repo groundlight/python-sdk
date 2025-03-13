@@ -1080,16 +1080,17 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         response = requests.request(method, url, headers=headers, json=body)
         return response.json()
 
-    def make_generic_api_request(
+    def make_generic_api_request(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         endpoint: str,
         method: str,
-        headers: dict = None,
+        headers: Union[dict, None] = None,
         body: Union[dict, None] = None,
         files=None,
     ) -> HTTPResponse:
         """
-        Make a generic API request to the specified endpoint, utilizing many of the provided tools from the generated api client
+        Make a generic API request to the specified endpoint, utilizing many of the provided tools
+        from the generated api client
 
         :param endpoint: the endpoint to send the request to - the url path appended after the
             endpoint including a / at the beginging
