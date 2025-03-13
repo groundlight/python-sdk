@@ -11,8 +11,10 @@ import json
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
+from urllib3.response import HTTPResponse
 
 import requests
+from groundlight.internalapi import _generate_request_id
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
@@ -1046,3 +1048,67 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             detector = detector.id
         obj = self.detectors_api.get_detector_metrics(detector)
         return obj.to_dict()
+
+    def get_raw_headers(self) -> dict:
+        """
+        Get the raw headers for the current API client
+
+        :return: a dictionary containing the raw headers
+        """
+        headers = {}
+        # see generated/groundlight_openapi_client/api_client.py update_params_for_auth
+        headers["x-api-token"] = self.api_client.configuration.api_key["ApiToken"]
+        # We generate a unique request ID client-side for each request
+        headers["X-Request-Id"] = _generate_request_id()
+        headers["User-Agent"] = self.api_client.default_headers["User-Agent"]
+        headers['Accept'] = 'application/json'
+        return headers
+
+    def make_raw_rest_request(self, method: str, endpoint: str, body: Union[dict, None] = None) -> dict:
+        """
+        Make a raw REST request to the specified URL
+
+        :param method: the HTTP method to use
+        :param endpoint: the endpoint to send the request to - the url path appended after the
+            endpoint including a / at the beginging
+        :param body: the request body
+
+        :return: a dictionary containing the raw response
+        """
+        headers = self.get_raw_headers()
+        url = f"{self.api_client.configuration.host}{endpoint}"
+        response = requests.request(method, url, headers=headers, json=body)
+        return response.json()
+
+    def make_generic_api_request(
+            self,
+            endpoint: str,
+            method: str,
+            headers: dict = None,
+            body: Union[dict, None] = None,
+            files = None,
+        ) -> HTTPResponse:
+        """
+        Make a generic API request to the specified endpoint, utilizing many of the provided tools from the generated api client
+
+        :param endpoint: the endpoint to send the request to - the url path appended after the
+            endpoint including a / at the beginging
+        :param method: the HTTP method to use
+        :param body: the request body
+
+        :return: a dictionary containing the response
+        """
+        # HEADERS MUST BE THE 4TH ARGUMENT, 0 INDEXED
+        if not headers:
+            headers = self.get_raw_headers()
+        return self.api_client.call_api(
+            endpoint,
+            method,
+            None, # Path Params
+            None, # Query params
+            headers, # header params
+            body = body, # body
+            files = files, # files
+            auth_settings = ['ApiToken'],
+            _preload_content = False, # This returns the urllib3 response rather than trying any type of processing
+        )
