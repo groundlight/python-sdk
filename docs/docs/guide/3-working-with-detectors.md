@@ -59,38 +59,3 @@ detectors = gl.list_detectors()
 detectors = gl.list_detectors(page=1, page_size=5)
 # highlight-end
 ```
-
-### [BETA] Create a Counting Detector
-So far, all of the detectors we've created have been binary classification detectors. But what if you want to count the number of objects in an image? You can create a counting detector to do just that. Counting detectors also return bounding boxes around the objects they count.
-
-:::note
-
-Counting Detectors are available on [Pro, Business, and Enterprise plans](https://www.groundlight.ai/pricing).
-
-:::
-
-```python notest
-from groundlight import ExperimentalApi
-
-gl_experimental = ExperimentalApi()
-
-# highlight-start
-detector = gl_experimental.create_counting_detector(name="your_detector_name", query="How many cars are in the parking lot?", max_count=20)
-# highlight-end
-```
-
-### [BETA] Create a Multi-Class Detector
-If you want to classify images into multiple categories, you can create a multi-class detector.
-
-```python notest
-from groundlight import ExperimentalApi
-
-gl_experimental = ExperimentalApi()
-
-# highlight-start
-class_names = ["Golden Retriever", "Labrador Retriever", "German Shepherd"]
-detector = gl_experimental.create_multiclass_detector(
-    name, query="What kind of dog is this?", class_names=class_names
-)
-# highlight-end
-```
