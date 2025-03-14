@@ -6,7 +6,7 @@ Groundlight supports a variety of answer modalities. Thus far, all of the exampl
 
 Counting detectors are used to count the number of objects in an image. Groundlight's counting detectors also return bounding boxes around the objects they count.
 
-```python notest
+```python
 from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
@@ -36,8 +36,10 @@ Now that you have created a counting detector, you can submit an image query to 
 from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
+detector = gl_exp.get_detector_by_name("car-counter")
+
 # highlight-start
-# Use the detector from the previous example to count the number of cars in an image
+# Count the number of cars in an image
 image_query = gl_exp.submit_image_query(detector, "path/to/image.jpg")
 # highlight-end
 
@@ -102,7 +104,7 @@ from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
 # highlight-start
-# Add a count label with corresponding ROIs to an image query
+# Add a count label with corresponding ROIs to the image query from the previous example
 roi1 = gl_exp.create_roi("car", (0.1, 0.2), (0.2, 0.3))
 roi2 = gl_exp.create_roi("car", (0.4, 0.4), (0.5, 0.6))
 roi3 = gl_exp.create_roi("car", (0.6, 0.5), (0.8, 0.9))
@@ -115,14 +117,15 @@ gl_exp.add_label(image_query, label=len(rois), rois=rois)
 
 If you want to classify images into multiple categories, you can create a multi-class detector.
 
-```python notest
+```python
 from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
 # highlight-start
 class_names = ["Golden Retriever", "Labrador Retriever", "German Shepherd", "Other"]
 detector = gl_exp.create_multiclass_detector(
-    name, query="What kind of dog is this?",
+    name="dog-breed-detector",
+    query="What kind of dog is this?",
     class_names=class_names,
 )
 # highlight-end
@@ -140,8 +143,10 @@ Now that you have created a multi-class detector, you can submit an image query 
 from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
+detector = gl_exp.get_detector_by_name("dog-breed-detector")
+
 # highlight-start
-# Use the detector from the previous example to classify the breed of a dog in an image
+# Classify the breed of a dog in an image
 image_query = gl_exp.submit_image_query(detector, "path/to/image.jpg")
 # highlight-end
 
@@ -160,7 +165,7 @@ from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
 # highlight-start
-# Add a multi-class label to an image query
+# Add a multi-class label to the image query from the previous example
 gl_exp.add_label(image_query, label="German Shepherd")
 # highlight-end
 ```
