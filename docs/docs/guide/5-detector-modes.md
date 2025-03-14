@@ -1,6 +1,5 @@
-# Detector Answer Modalities
-
-Groundlight supports a variety of answer modalities. Thus far, all of the examples we have provided are for binary classification detectors. However, Groundlight also supports counting, multi-class, and object detection, text detectors.
+# Detector Answer Modes
+Groundlight offers several detector modalities to suit different computer vision tasks. While previous examples have focused on binary classification, this guide will walk you through using counting and multi-class detectors. Let's explore how these different modes can be used via the Groundlight SDK.
 
 ## Counting Detectors
 

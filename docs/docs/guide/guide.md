@@ -6,7 +6,7 @@ On the following pages, we'll guide you through the process of building applicat
 - **[Grabbing images](2-grabbing-images.md)**: Understand the intricacies of how to submit images from various input sources to Groundlight.
 - **[Working with detectors](3-working-with-detectors.md)**: Learn how to create, configure, and use detectors in your Groundlight-powered applications.
 - **[Submitting image queries](4-submitting-image-queries.md)**: Submit images to Groundlight for analysis and retrieve the results.
-- **[Detector answer modalities](5-detector-modalities.md)**: Answer counting and multi-classification queries with Groundlight.
+- **[Detector answer modes](5-detector-modes.md)**: Answer counting and multi-classification queries with Groundlight.
 - **[Confidence levels](6-managing-confidence.md)**: Master how to control the trade-off of latency against accuracy by configuring the desired confidence level for your detectors.
 - **[Handling errors](7-handling-errors.md)**: Understand how to handle and troubleshoot HTTP errors (`ApiException`) that may occur while using Groundlight.
 - **[Asynchronous queries](8-async-queries.md)**: Groundlight makes it easy to submit asynchronous queries. Learn how to submit queries asynchronously and retrieve the results later.
