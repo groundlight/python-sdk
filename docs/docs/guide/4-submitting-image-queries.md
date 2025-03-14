@@ -73,7 +73,7 @@ image_query = gl.get_image_query(id=image_query.id)
 # highlight-end
 ```
 
-See this [guide](./7-async-queries.md) for more information on ImageQueries submitted asynchronously.
+See this [guide](./8-async-queries.md) for more information on ImageQueries submitted asynchronously.
 
 ### (Advanced) Get the first available answer, regardless of confidence
 `ask_ml` evaluates an image with Groundlight and returns the first answer Groundlight can provide, agnostic of confidence. There is no wait period when using this method. It is called `ask_ml` because our machine learning models are earliest on our escalation ladder and thus always the fastest to respond.
