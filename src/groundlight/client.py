@@ -223,7 +223,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
-    def whoami(self) -> str:
+    def _get_request_timeout(self, **kwargs):
+        """Extract request_timeout from kwargs or use default."""
+        return kwargs.get("request_timeout", DEFAULT_REQUEST_TIMEOUT)
+
+    def whoami(self, **kwargs) -> str:
         """
         Return the username (email address) associated with the current API token.
 
@@ -240,7 +244,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :raises ApiTokenError: If the API token is invalid
         :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
-        obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        obj = self.user_api.who_am_i(_request_timeout=self._get_request_timeout(**kwargs))
         return obj["email"]
 
     def _user_is_privileged(self) -> bool:
@@ -251,7 +255,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         obj = self.user_api.who_am_i()
         return obj["is_superuser"]
 
-    def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
+    def get_detector(self, id: Union[str, Detector], **kwargs) -> Detector:  # pylint: disable=redefined-builtin
         """
         Get a Detector by id.
 
@@ -270,7 +274,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             # Short-circuit
             return id
         try:
-            obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+            obj = self.detectors_api.get_detector(id=id, _request_timeout=self._get_request_timeout(**kwargs))
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
         return Detector.parse_obj(obj.to_dict())
@@ -291,7 +295,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         return self.api_client._get_detector_by_name(name)  # pylint: disable=protected-access
 
-    def list_detectors(self, page: int = 1, page_size: int = 10) -> PaginatedDetectorList:
+    def list_detectors(self, page: int = 1, page_size: int = 10, **kwargs) -> PaginatedDetectorList:
         """
         Retrieve a paginated list of detectors associated with your account.
 
@@ -312,7 +316,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: PaginatedDetectorList containing the requested page of detectors and pagination metadata
         """
         obj = self.detectors_api.list_detectors(
-            page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
+            page=page, page_size=page_size, _request_timeout=self._get_request_timeout(**kwargs)
         )
         return PaginatedDetectorList.parse_obj(obj.to_dict())
 
@@ -358,6 +362,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        **kwargs,
     ) -> Detector:
         """
         Create a new Detector with a given name and query.
@@ -423,7 +428,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        obj = self.detectors_api.create_detector(
+            detector_creation_input, _request_timeout=self._get_request_timeout(**kwargs)
+        )
         return Detector.parse_obj(obj.to_dict())
 
     def get_or_create_detector(  # noqa: PLR0913
@@ -435,6 +442,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        **kwargs,
     ) -> Detector:
         """
         Tries to look up the Detector by name. If a Detector with that name, query, and
@@ -491,6 +499,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                **kwargs,
             )
 
         # TODO: We may soon allow users to update the retrieved detector's fields.
@@ -512,7 +521,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             )
         return existing_detector
 
-    def get_image_query(self, id: str) -> ImageQuery:  # pylint: disable=redefined-builtin
+    def get_image_query(self, id: str, **kwargs) -> ImageQuery:  # pylint: disable=redefined-builtin
         """
         Get an ImageQuery by its ID. This is useful for retrieving the status and results of a
         previously submitted query.
@@ -534,7 +543,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :return: ImageQuery object containing the query details and results
         """
-        obj = self.image_queries_api.get_image_query(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        obj = self.image_queries_api.get_image_query(id=id, _request_timeout=self._get_request_timeout(**kwargs))
         if obj.result_type == "counting" and getattr(obj.result, "label", None):
             obj.result.pop("label")
             obj.result["count"] = None
@@ -542,7 +551,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         return self._fixup_image_query(iq)
 
     def list_image_queries(
-        self, page: int = 1, page_size: int = 10, detector_id: Union[str, None] = None
+        self, page: int = 1, page_size: int = 10, detector_id: Union[str, None] = None, **kwargs
     ) -> PaginatedImageQueryList:
         """
         List all image queries associated with your account, with pagination support.
@@ -565,7 +574,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: PaginatedImageQueryList containing the requested page of image queries and pagination metadata
                 like total count and links to next/previous pages.
         """
-        params: dict[str, Any] = {"page": page, "page_size": page_size, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params: dict[str, Any] = {
+            "page": page,
+            "page_size": page_size,
+            "_request_timeout": self._get_request_timeout(**kwargs),
+        }
         if detector_id:
             params["detector_id"] = detector_id
         obj = self.image_queries_api.list_image_queries(**params)
@@ -586,6 +599,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         image_query_id: Optional[str] = None,
+        **kwargs,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.
@@ -680,7 +694,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        params = {"detector_id": detector_id, "body": image_bytesio, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params = {
+            "detector_id": detector_id,
+            "body": image_bytesio,
+            "_request_timeout": self._get_request_timeout(**kwargs),
+        }
 
         if patience_time is not None:
             params["patience_time"] = patience_time
@@ -732,6 +750,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         wait: Optional[float] = None,
         metadata: Union[dict, str, None] = None,
         inspection_id: Optional[str] = None,
+        **kwargs,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight, waiting until an answer above the confidence threshold
@@ -788,6 +807,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             human_review=None,
             metadata=metadata,
             inspection_id=inspection_id,
+            **kwargs,
         )
 
     def ask_ml(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
@@ -797,6 +817,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         wait: Optional[float] = None,
         metadata: Union[dict, str, None] = None,
         inspection_id: Optional[str] = None,
+        **kwargs,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight, getting the first ML prediction without waiting
@@ -856,6 +877,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             wait=0,
             metadata=metadata,
             inspection_id=inspection_id,
+            **kwargs,
         )
         if iq_is_answered(iq):
             return iq
@@ -871,6 +893,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         human_review: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         inspection_id: Optional[str] = None,
+        **kwargs,
     ) -> ImageQuery:
         """
         Submit an image query asynchronously. This is equivalent to calling `submit_image_query`
@@ -952,6 +975,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             want_async=True,
             metadata=metadata,
             inspection_id=inspection_id,
+            **kwargs,
         )
 
     def wait_for_confident_result(
@@ -1092,6 +1116,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         image_query: Union[ImageQuery, str],
         label: Union[Label, int, str],
         rois: Union[List[ROI], str, None] = None,
+        **kwargs,
     ):
         """
         Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
@@ -1151,7 +1176,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             else None
         )
         request_params = LabelValueRequest(label=label, image_query_id=image_query_id, rois=roi_requests)
-        self.labels_api.create_label(request_params)
+        self.labels_api.create_label(request_params, _request_timeout=self._get_request_timeout(**kwargs))
 
     def start_inspection(self) -> str:
         """
@@ -1189,7 +1214,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         return self.api_client.stop_inspection(inspection_id)
 
-    def update_detector_confidence_threshold(self, detector: Union[str, Detector], confidence_threshold: float) -> None:
+    def update_detector_confidence_threshold(
+        self, detector: Union[str, Detector], confidence_threshold: float, **kwargs
+    ) -> None:
         """
         Updates the confidence threshold for the given detector
 
@@ -1203,5 +1230,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         if confidence_threshold < 0 or confidence_threshold > 1:
             raise ValueError("confidence must be between 0 and 1")
         self.detectors_api.update_detector(
-            detector, patched_detector_request=PatchedDetectorRequest(confidence_threshold=confidence_threshold)
+            detector,
+            patched_detector_request=PatchedDetectorRequest(confidence_threshold=confidence_threshold),
+            _request_timeout=self._get_request_timeout(**kwargs),
         )
