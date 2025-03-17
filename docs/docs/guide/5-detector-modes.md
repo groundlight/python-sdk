@@ -13,6 +13,7 @@ gl_exp = ExperimentalApi()
 detector = gl_exp.create_counting_detector(
     name="car-counter",
     query="How many cars are in the parking lot?",
+    class_name="car",
     max_count=20,
     confidence_threshold=0.2,
 )
@@ -22,6 +23,8 @@ detector = gl_exp.create_counting_detector(
 Counting detectors should be provided with a query that asks "how many" objects are in the image.
 
 A maximum count (of 50 or fewer) must be specified when creating a counting detector. This is the maximum number of objects that the detector will count in an image. Groundlight's ML models are optimized for counting up to 20 objects, but you can increase the maximum count to 50 if needed. If you have an application that requires counting more than 50 objects, please [contact us](mailto:support@groundlight.ai).
+
+The `confidence_threshold` parameter sets the minimum confidence level required for the ML model's predictions. If the model's confidence falls below this threshold, the query will be sent for human review. Count detectors can have a `confidence_threshold` set to any value between `1/(max_count + 2)` and 1.
 
 :::note
 Counting Detectors are available on [Business and Enterprise plans](https://www.groundlight.ai/pricing).
@@ -103,7 +106,9 @@ from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 
 # highlight-start
-# Add a count label with corresponding ROIs to the image query from the previous example
+# Add a count label with corresponding ROIs to the image query from the previous example.
+#   ROIs are specified as (left, top) and (right, bottom) coordinates, with values
+#   between 0 and 1 representing the percentage of the image width and height.
 roi1 = gl_exp.create_roi("car", (0.1, 0.2), (0.2, 0.3))
 roi2 = gl_exp.create_roi("car", (0.4, 0.4), (0.5, 0.6))
 roi3 = gl_exp.create_roi("car", (0.6, 0.5), (0.8, 0.9))
@@ -133,6 +138,10 @@ detector = gl_exp.create_multiclass_detector(
 :::tip
 We recommend adding an "Other" class to your multi-class detector to handle cases where the image does not belong to any of the pre-defined classes.
 :::
+
+<!-- :::note
+Multi-Class Detectors are available on [Business and Enterprise plans](https://www.groundlight.ai/pricing).
+::: -->
 
 ### Submit an Image Query to a Multi-Class Detector
 
