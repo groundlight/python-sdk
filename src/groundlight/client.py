@@ -280,6 +280,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         return Detector.parse_obj(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
+        # TODO should methods like this (which make direct requests instead of going through the API) allow
+        # kwargs to be passed through?
         """
         Get a Detector by name.
 
@@ -984,6 +986,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         confidence_threshold: Optional[float] = None,
         timeout_sec: float = 30.0,
     ) -> ImageQuery:
+        # TODO should this method allow request_timeout to be passed in kwargs?
+        # It's a weird case because it might make multiple requests - would the specified request_timeout be applied
+        # to each request?
         """
         Waits for an image query result's confidence level to reach the specified confidence_threshold.
         Uses polling with exponential back-off to check for results.
