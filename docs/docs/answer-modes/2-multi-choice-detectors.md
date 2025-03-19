@@ -2,7 +2,7 @@
 
 If you want to classify images into multiple categories, you can create a multi-class detector.
 
-```python
+```python notest
 from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 

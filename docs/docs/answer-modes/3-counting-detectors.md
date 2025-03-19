@@ -2,7 +2,7 @@
 
 Counting detectors are used to count the number of objects in an image. Groundlight's counting detectors also return bounding boxes around the objects they count.
 
-```python
+```python notest
 from groundlight import ExperimentalApi
 gl_exp = ExperimentalApi()
 

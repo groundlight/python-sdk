@@ -4,7 +4,7 @@ Binary classification detectors are used to answer yes/no questions about images
 
 In order to create a binary classification detector, you need to provide a query that asks a yes/no question. For example, "Is there an eagle visible?" or "Is the door fully closed?".
 
-```python
+```python notest
 from groundlight import Groundlight
 gl = Groundlight()
 
