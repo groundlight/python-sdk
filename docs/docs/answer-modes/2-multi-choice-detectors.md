@@ -1,4 +1,4 @@
-# [BETA] Multi-Class Detectors
+# Multiple Choice (Choose One) Detectors
 
 If you want to classify images into multiple categories, you can create a multi-class detector.
 
@@ -20,9 +20,9 @@ detector = gl_exp.create_multiclass_detector(
 We recommend adding an "Other" class to your multi-class detector to handle cases where the image does not belong to any of the pre-defined classes.
 :::
 
-<!-- :::note
+:::note
 Multi-Class Detectors are available on [Business and Enterprise plans](https://www.groundlight.ai/pricing).
-::: -->
+:::
 
 ## Submit an Image Query to a Multi-Class Detector
 
