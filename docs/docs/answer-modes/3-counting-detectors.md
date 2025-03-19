@@ -19,7 +19,7 @@ detector = gl_exp.create_counting_detector(
 
 Counting detectors should be provided with a query that asks "how many" objects are in the image.
 
-A maximum count (of 50 or fewer) must be specified when creating a counting detector. This is the maximum number of objects that the detector will count in an image. Groundlight's ML models are optimized for counting up to 20 objects, but you can increase the maximum count to 50 if needed. If you have an application that requires counting more than 50 objects, please [contact us](mailto:support@groundlight.ai).
+A maximum count (of 25 or fewer) must be specified when creating a counting detector. This is the maximum number of objects that the detector will count in an image. Groundlight's ML models are optimized for counting up to 20 objects, but you can increase the maximum count to 25 if needed. If you have an application that requires counting more than 25 objects, please [contact us](mailto:support@groundlight.ai).
 
 The `confidence_threshold` parameter sets the minimum confidence level required for the ML model's predictions. If the model's confidence falls below this threshold, the query will be sent for human review. Count detectors can have a `confidence_threshold` set to any value between `1/(max_count + 2)` and 1.
 
