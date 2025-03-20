@@ -87,11 +87,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_detector_metrics"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_detector_metrics()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_image"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_notes"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_notes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_raw_headers"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_raw_headers()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_rule()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_detector_groups"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_detector_groups()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_rules()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_action"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_condition"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_condition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_generic_api_request"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_generic_api_request()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_payload_template"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_payload_template()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_webhook_action"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_webhook_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.reset_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.reset_detector()</span></code></a></li>
@@ -1758,6 +1760,20 @@ where each source maps to a list of note strings</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.get_raw_headers">
+<span class="sig-name descname"><span class="pre">get_raw_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_raw_headers" title="Link to this definition"></a></dt>
+<dd><p>Get the raw headers for the current API client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a dictionary containing the raw headers</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.get_rule">
 <span class="sig-name descname"><span class="pre">get_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Rule" title="model.Rule"><span class="pre">Rule</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_rule" title="Link to this definition"></a></dt>
 <dd><p>Gets the rule with the given id.</p>
@@ -1899,6 +1915,30 @@ where each source maps to a list of note strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><em>Condition</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.make_generic_api_request">
+<span class="sig-name descname"><span class="pre">make_generic_api_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">HTTPResponse</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.make_generic_api_request" title="Link to this definition"></a></dt>
+<dd><p>Make a generic API request to the specified endpoint, utilizing many of the provided tools
+from the generated api client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>endpoint</strong> (<em>str</em>) – the endpoint to send the request to - the url path appended after the
+endpoint including a / at the beginging</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – the HTTP method to use</p></li>
+<li><p><strong>body</strong> (<em>dict</em><em> | </em><em>None</em>) – the request body</p></li>
+<li><p><strong>headers</strong> (<em>dict</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a dictionary containing the response</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>HTTPResponse</em></p>
 </dd>
 </dl>
 </dd></dl>
