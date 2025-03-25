@@ -34,7 +34,7 @@ You can either set up an alert using one of our default templates (currently ava
 
 #### Custom Templates
 
-We use Jinja2 to manage and render templates. See the ([Jinja template documentation](https://jinja.palletsprojects.com/en/stable/templates/)) for information on how to build your template.
+We use Jinja2 to manage and render templates. See the ([Jinja template documentation](https://jinja.palletsprojects.com/en/stable/templates/)) for information on how to construct your template.
 The template will need to be a valid Jinja template which renders to valid JSON to be used as a payload for your webhook alert. 
 
 We provide a set of variables which you can use to put information about your detector and alert into your template. 
@@ -53,5 +53,5 @@ The available variables are:
 
 #### Headers
 
-Optionally, you can also configure the headers for your webhook alert POST. This is particularly useful if your application requires a specific security token to accept incoming POST requests. 
+Optionally, you can also configure the headers for your webhook alert POST request. This is particularly useful if your application requires a specific security token to be present to accept incoming POST requests. 
 If your application requires headers, you can provide them as a JSON dictionary. If not, you can configure your template and leave the headers blank.
