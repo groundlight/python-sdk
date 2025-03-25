@@ -49,7 +49,7 @@ The available variables are:
 - `time_repr`: A human readable string of the time the alert was triggered in UTC. Does not include the date.
 - `activation_time`: The time and date the alert was triggered in UTC.
 - `condition_repr`: The condition the alert is configured with, put into a human-readable string (eg. " returned a YES answer at ").
-- `image_url`: An image URL to acccess the image which triggered the alert. Only available if the alert was configured with `include_image` set to True.
+- `image_url`: An image URL to access the image which triggered the alert. Only available if the alert was configured with `include_image` set to True.
 
 #### Headers
 
