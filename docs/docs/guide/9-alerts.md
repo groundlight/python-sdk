@@ -40,7 +40,7 @@ The template will need to be a valid Jinja template which renders to valid JSON 
 We provide a set of variables which you can use to put information about your detector and alert into your template. 
 The available variables are:
 
-- `detector_name`: The name of your detector that the alert was triggered on
+- `detector_name`: The name of the detector that the alert was triggered on
 - `detector_query`: The detector's query.
 - `detector_id`: The detector's unique ID
 - `confidence_threshold`: The current confidence threshold for the detector.
