@@ -51,6 +51,20 @@ The available variables are:
 - `condition_repr`: The condition the alert is configured with, put into a human-readable string (eg. " returned a YES answer at ").
 - `image_url`: An image URL to access the image which triggered the alert. Only available if the alert was configured with `include_image` set to True.
 
+For example, the template below could be used as a custom payload to configure a Slack alert which includes a basic message and the triggering image.
+```
+"""{
+    "text": "Alert activated on Groundlight detector {{ detector_name }} (Query: {{ detector_query }}). Detector {{ condition_repr }} {{ time_repr }}",
+    "attachments": [
+        {
+            "fallback": "Optional image attachment for the detector alert.",
+            "image_url": "{{ image_url }}",
+            "title": "Related Image"
+        }
+    ]
+}"""
+```
+
 #### Headers
 
 Optionally, you can also configure the headers for your webhook alert POST request. This is particularly useful if your application requires a specific security token to be present to accept incoming POST requests. 
