@@ -30,7 +30,7 @@ Groundlight supports alerts via Email, Text Message (SMS), and Webhooks.
 
 By setting up a webhook alert for your Groundlight detector, you can integrate Groundlight's computer vision technology with your existing messaging platform, other tech stack, or even a custom application.
 
-You can either set up an alert using one of our default templates (currently available for Slack, more platforms to come), or build your own.
+You can either set up an alert using one of our default templates (currently available for Slack, more platforms to come) or build your own.
 
 #### Custom Templates
 
@@ -40,7 +40,7 @@ The template will need to be a valid Jinja template which renders to valid JSON 
 We provide a set of variables which you can use to put information about your detector and alert into your template. 
 The available variables are:
 
-- `detector_name`: The name of your detector that the alert was triggered on
+- `detector_name`: The name of the detector that the alert was triggered on
 - `detector_query`: The detector's query.
 - `detector_id`: The detector's unique ID
 - `confidence_threshold`: The current confidence threshold for the detector.
