@@ -53,24 +53,7 @@ class BinaryClassificationResult(ModelNormal):
           as additional properties values.
     """
 
-    allowed_values = {
-        ("label",): {
-            "YES": "YES",
-            "NO": "NO",
-            "UNCLEAR": "UNCLEAR",
-        },
-        ("source",): {
-            "STILL_PROCESSING": "STILL_PROCESSING",
-            "CLOUD": "CLOUD",
-            "USER": "USER",
-            "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
-            "ALGORITHM": "ALGORITHM",
-            "EDGE": "EDGE",
-        },
-        ("result_type",): {
-            "BINARY_CLASSIFICATION": "binary_classification",
-        },
-    }
+    allowed_values = {}
 
     validations = {
         ("confidence",): {
@@ -117,6 +100,7 @@ class BinaryClassificationResult(ModelNormal):
             ),  # noqa: E501
             "source": (str,),  # noqa: E501
             "result_type": (str,),  # noqa: E501
+            "from_edge": (bool,),  # noqa: E501
         }
 
     @cached_property
@@ -128,6 +112,7 @@ class BinaryClassificationResult(ModelNormal):
         "confidence": "confidence",  # noqa: E501
         "source": "source",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
+        "from_edge": "from_edge",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -175,7 +160,8 @@ class BinaryClassificationResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional] if omitted the server will use the default value of "binary_classification"  # noqa: E501
+            result_type (str): [optional]  # noqa: E501
+            from_edge (bool): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -266,7 +252,8 @@ class BinaryClassificationResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional] if omitted the server will use the default value of "binary_classification"  # noqa: E501
+            result_type (str): [optional]  # noqa: E501
+            from_edge (bool): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

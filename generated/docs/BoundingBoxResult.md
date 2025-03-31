@@ -1,4 +1,4 @@
-# MultiClassificationResult
+# BoundingBoxResult
 
 
 ## Properties

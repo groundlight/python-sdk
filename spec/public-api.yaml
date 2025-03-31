@@ -443,6 +443,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/EdgeModelInfo'
           description: ''
+  /v1/edge/report-metrics:
+    post:
+      operationId: edge_report_metrics_create
+      description: |-
+        Edge server periodically calls this to report metrics.
+
+        POST body will have JSON data that we log.
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          description: No response body
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -742,14 +756,6 @@ components:
       required:
       - CUSTOMER
       - GL
-    AnnotationsRequestedEnum:
-      enum:
-      - BINARY_CLASSIFICATION
-      - BOUNDING_BOXES
-      type: string
-      description: |-
-        * `BINARY_CLASSIFICATION` - Binary Classification
-        * `BOUNDING_BOXES` - Bounding Boxes
     BBoxGeometry:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -809,7 +815,7 @@ components:
       type: object
       properties:
         verb:
-          $ref: '#/components/schemas/VerbEnum'
+          type: string
         parameters:
           type: object
           additionalProperties: {}
@@ -820,7 +826,7 @@ components:
       type: object
       properties:
         verb:
-          $ref: '#/components/schemas/VerbEnum'
+          type: string
         parameters:
           type: object
           additionalProperties: {}
@@ -884,8 +890,7 @@ components:
           readOnly: true
           description: Metadata about the detector.
         mode:
-          allOf:
-          - $ref: '#/components/schemas/ModeEnum'
+          type: string
           readOnly: true
         mode_configuration:
           type: object
@@ -897,13 +902,7 @@ components:
           - $ref: '#/components/schemas/StatusEnum'
           - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
-          allOf:
-          - $ref: '#/components/schemas/EscalationTypeEnum'
-          description: |-
-            Category that define internal proccess for labeling image queries
-
-            * `STANDARD` - STANDARD
-            * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
+          type: string
       required:
       - created_at
       - group_name
@@ -973,11 +972,13 @@ components:
             * `COUNT` - COUNT
             * `MULTI_CLASS` - MULTI_CLASS
             * `TEXT` - TEXT
+            * `BOUNDING_BOX` - BOUNDING_BOX
         mode_configuration:
           oneOf:
           - $ref: '#/components/schemas/CountModeConfiguration'
           - $ref: '#/components/schemas/MultiClassModeConfiguration'
           - $ref: '#/components/schemas/TextModeConfiguration'
+          - $ref: '#/components/schemas/BoundingBoxModeConfiguration'
           nullable: true
       required:
       - name
@@ -1024,14 +1025,6 @@ components:
         pipeline_config: {}
         oodd_pipeline_config: {}
         predictor_metadata: {}
-    EscalationTypeEnum:
-      enum:
-      - STANDARD
-      - NO_HUMAN_LABELING
-      type: string
-      description: |-
-        * `STANDARD` - STANDARD
-        * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
     ImageQuery:
       type: object
       description: ImageQuery objects are the answers to natural language questions
@@ -1076,6 +1069,7 @@ components:
           - $ref: '#/components/schemas/CountingResult'
           - $ref: '#/components/schemas/MultiClassificationResult'
           - $ref: '#/components/schemas/TextRecognitionResult'
+          - $ref: '#/components/schemas/BoundingBoxResult'
           nullable: true
         patience_time:
           type: number
@@ -1144,13 +1138,7 @@ components:
         annotations_requested:
           type: array
           items:
-            allOf:
-            - $ref: '#/components/schemas/AnnotationsRequestedEnum'
-            description: |-
-              The type of annotation requested
-
-              * `BINARY_CLASSIFICATION` - Binary Classification
-              * `BOUNDING_BOXES` - Bounding Boxes
+            type: string
           readOnly: true
         created_at:
           type: string
@@ -1161,8 +1149,7 @@ components:
           nullable: true
           readOnly: true
         source:
-          allOf:
-          - $ref: '#/components/schemas/SourceEnum'
+          type: string
           readOnly: true
         text:
           type: string
@@ -1197,12 +1184,13 @@ components:
       - image_query_id
       - label
     ModeEnum:
+      type: string
       enum:
       - BINARY
       - COUNT
       - MULTI_CLASS
       - TEXT
-      type: string
+      - BOUNDING_BOX
     Note:
       type: object
       properties:
@@ -1336,13 +1324,8 @@ components:
           - $ref: '#/components/schemas/StatusEnum'
           - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
-          allOf:
-          - $ref: '#/components/schemas/EscalationTypeEnum'
-          description: |-
-            Category that define internal proccess for labeling image queries
-
-            * `STANDARD` - STANDARD
-            * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
+          type: string
+          minLength: 1
       x-internal: true
     PayloadTemplate:
       type: object
@@ -1407,6 +1390,7 @@ components:
       - counting
       - multi_classification
       - text_recognition
+      - bounding_box
       type: string
     Rule:
       type: object
@@ -1505,26 +1489,6 @@ components:
         * `HOURS` - HOURS
         * `MINUTES` - MINUTES
         * `SECONDS` - SECONDS
-    SourceEnum:
-      enum:
-      - INITIAL_PLACEHOLDER
-      - CLOUD
-      - CUST
-      - HUMAN_CLOUD_ENSEMBLE
-      - ALG
-      - ALG_REC
-      - ALG_UNCLEAR
-      - EDGE
-      type: string
-      description: |-
-        * `INITIAL_PLACEHOLDER` - InitialPlaceholder
-        * `CLOUD` - HumanCloud
-        * `CUST` - HumanCustomer
-        * `HUMAN_CLOUD_ENSEMBLE` - HumanCloudEnsemble
-        * `ALG` - Algorithm
-        * `ALG_REC` - AlgorithmReconciled
-        * `ALG_UNCLEAR` - AlgorithmUnclear
-        * `EDGE` - EDGE
     StatusEnum:
       enum:
       - 'ON'
@@ -1533,20 +1497,6 @@ components:
       description: |-
         * `ON` - ON
         * `OFF` - OFF
-    VerbEnum:
-      enum:
-      - ANSWERED_CONSECUTIVELY
-      - ANSWERED_WITHIN_TIME
-      - CHANGED_TO
-      - NO_CHANGE
-      - NO_QUERIES
-      type: string
-      description: |-
-        * `ANSWERED_CONSECUTIVELY` - ANSWERED_CONSECUTIVELY
-        * `ANSWERED_WITHIN_TIME` - ANSWERED_WITHIN_TIME
-        * `CHANGED_TO` - CHANGED_TO
-        * `NO_CHANGE` - NO_CHANGE
-        * `NO_QUERIES` - NO_QUERIES
     WebhookAction:
       type: object
       properties:
@@ -1559,6 +1509,15 @@ components:
         payload_template:
           allOf:
           - $ref: '#/components/schemas/PayloadTemplate'
+          nullable: true
+        last_message_failed:
+          type: boolean
+        last_failure_error:
+          type: string
+          nullable: true
+        last_failed_at:
+          type: string
+          format: date-time
           nullable: true
       required:
       - url
@@ -1576,6 +1535,15 @@ components:
           allOf:
           - $ref: '#/components/schemas/PayloadTemplateRequest'
           nullable: true
+        last_message_failed:
+          type: boolean
+        last_failure_error:
+          type: string
+          nullable: true
+        last_failed_at:
+          type: string
+          format: date-time
+          nullable: true
       required:
       - url
     BinaryClassificationResult:
@@ -1589,23 +1557,12 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - binary_classification
+        from_edge:
+          type: boolean
         label:
           type: string
-          enum:
-          - 'YES'
-          - 'NO'
-          - UNCLEAR
       required:
       - label
     CountingResult:
@@ -1619,17 +1576,10 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - counting
+        from_edge:
+          type: boolean
         count:
           type: integer
           minimum: 0
@@ -1649,17 +1599,10 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - multi_classification
+        from_edge:
+          type: boolean
         label:
           type: string
           nullable: false
@@ -1676,17 +1619,10 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - text_recognition
+        from_edge:
+          type: boolean
         text:
           type: string
           nullable: true
@@ -1695,6 +1631,25 @@ components:
       required:
       - text
       - truncated
+    BoundingBoxResult:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          nullable: true
+        source:
+          type: string
+        result_type:
+          type: string
+        from_edge:
+          type: boolean
+        label:
+          type: string
+      required:
+      - label
     CountModeConfiguration:
       type: object
       properties:
@@ -1729,6 +1684,19 @@ components:
           minimum: 1
           maximum: 250
           nullable: false
+    BoundingBoxModeConfiguration:
+      type: object
+      properties:
+        class_name:
+          type: string
+          nullable: false
+        max_num_bboxes:
+          type: integer
+          minimum: 1
+          maximum: 50
+          nullable: false
+      required:
+      - class_name
     ChannelEnum:
       type: string
       enum:
@@ -1751,6 +1719,35 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Action'
+    AnnotationsRequestedEnum:
+      type: string
+      enum:
+      - BINARY_CLASSIFICATION
+      - BOUNDING_BOXES
+    EscalationTypeEnum:
+      type: string
+      enum:
+      - STANDARD
+      - NO_HUMAN_LABELING
+    SourceEnum:
+      type: string
+      enum:
+      - INITIAL_PLACEHOLDER
+      - CLOUD
+      - CUST
+      - HUMAN_CLOUD_ENSEMBLE
+      - ALG
+      - ALG_REC
+      - ALG_UNCLEAR
+      - EDGE
+    VerbEnum:
+      type: string
+      enum:
+      - ANSWERED_CONSECUTIVELY
+      - ANSWERED_WITHIN_TIME
+      - CHANGED_TO
+      - NO_CHANGE
+      - NO_QUERIES
   securitySchemes:
     ApiToken:
       name: x-api-token
