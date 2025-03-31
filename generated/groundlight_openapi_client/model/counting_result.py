@@ -53,7 +53,19 @@ class CountingResult(ModelNormal):
           as additional properties values.
     """
 
-    allowed_values = {}
+    allowed_values = {
+        ("source",): {
+            "STILL_PROCESSING": "STILL_PROCESSING",
+            "CLOUD": "CLOUD",
+            "USER": "USER",
+            "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
+            "ALGORITHM": "ALGORITHM",
+            "EDGE": "EDGE",
+        },
+        ("result_type",): {
+            "COUNTING": "counting",
+        },
+    }
 
     validations = {
         ("count",): {
@@ -168,7 +180,7 @@ class CountingResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "counting"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
@@ -261,7 +273,7 @@ class CountingResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "counting"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """

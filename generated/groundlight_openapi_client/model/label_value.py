@@ -30,9 +30,13 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
+    from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
     from groundlight_openapi_client.model.roi import ROI
+    from groundlight_openapi_client.model.source_enum import SourceEnum
 
+    globals()["AnnotationsRequestedEnum"] = AnnotationsRequestedEnum
     globals()["ROI"] = ROI
+    globals()["SourceEnum"] = SourceEnum
 
 
 class LabelValue(ModelNormal):
@@ -104,13 +108,23 @@ class LabelValue(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
-            "annotations_requested": ([str],),  # noqa: E501
+            "annotations_requested": ([bool, date, datetime, dict, float, int, list, str, none_type],),  # noqa: E501
             "created_at": (datetime,),  # noqa: E501
             "detector_id": (
                 int,
                 none_type,
             ),  # noqa: E501
-            "source": (str,),  # noqa: E501
+            "source": (
+                bool,
+                date,
+                datetime,
+                dict,
+                float,
+                int,
+                list,
+                str,
+                none_type,
+            ),  # noqa: E501
             "text": (
                 str,
                 none_type,
@@ -158,10 +172,10 @@ class LabelValue(ModelNormal):
         Args:
             confidence (float, none_type):
             class_name (str, none_type): Return a human-readable class name for this label (e.g. YES/NO)
-            annotations_requested ([str]):
+            annotations_requested ([bool, date, datetime, dict, float, int, list, str, none_type]):
             created_at (datetime):
             detector_id (int, none_type):
-            source (str):
+            source (bool, date, datetime, dict, float, int, list, str, none_type):
             text (str, none_type): Text annotations
 
         Keyword Args:

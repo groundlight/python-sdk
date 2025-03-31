@@ -84,7 +84,7 @@ rule_request = RuleRequest(
         snooze_time_unit=None,
         human_review_required=False,
         condition=ConditionRequest(
-            verb="verb_example",
+            verb=VerbEnum("ANSWERED_CONSECUTIVELY"),
             parameters={
                 "key": None,
             },

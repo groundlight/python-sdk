@@ -53,7 +53,24 @@ class BinaryClassificationResult(ModelNormal):
           as additional properties values.
     """
 
-    allowed_values = {}
+    allowed_values = {
+        ("label",): {
+            "YES": "YES",
+            "NO": "NO",
+            "UNCLEAR": "UNCLEAR",
+        },
+        ("source",): {
+            "STILL_PROCESSING": "STILL_PROCESSING",
+            "CLOUD": "CLOUD",
+            "USER": "USER",
+            "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
+            "ALGORITHM": "ALGORITHM",
+            "EDGE": "EDGE",
+        },
+        ("result_type",): {
+            "BINARY_CLASSIFICATION": "binary_classification",
+        },
+    }
 
     validations = {
         ("confidence",): {
@@ -160,7 +177,7 @@ class BinaryClassificationResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "binary_classification"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
         """
 
@@ -252,7 +269,7 @@ class BinaryClassificationResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "binary_classification"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
         """
 

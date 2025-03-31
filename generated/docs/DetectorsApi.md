@@ -532,7 +532,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
         confidence_threshold=0.9,
         patience_time=30.0,
         status=None,
-        escalation_type="escalation_type_example",
+        escalation_type=None,
     ) # PatchedDetectorRequest |  (optional)
 
     # example passing only required values which don't have defaults set
