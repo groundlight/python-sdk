@@ -70,6 +70,9 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
                 url="url_example",
                 include_image=True,
                 payload_template=None,
+                last_message_failed=True,
+                last_failure_error="last_failure_error_example",
+                last_failed_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
             ),
         ],
     ) # RuleRequest | 

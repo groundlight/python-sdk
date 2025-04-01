@@ -31,6 +31,7 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 def lazy_import():
     from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
+    from groundlight_openapi_client.model.bounding_box_result import BoundingBoxResult
     from groundlight_openapi_client.model.counting_result import CountingResult
     from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
     from groundlight_openapi_client.model.multi_classification_result import MultiClassificationResult
@@ -39,6 +40,7 @@ def lazy_import():
     from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
 
     globals()["BinaryClassificationResult"] = BinaryClassificationResult
+    globals()["BoundingBoxResult"] = BoundingBoxResult
     globals()["CountingResult"] = CountingResult
     globals()["ImageQueryTypeEnum"] = ImageQueryTypeEnum
     globals()["MultiClassificationResult"] = MultiClassificationResult

@@ -9,6 +9,8 @@ docs/BBoxGeometry.md
 docs/BBoxGeometryRequest.md
 docs/BinaryClassificationResult.md
 docs/BlankEnum.md
+docs/BoundingBoxModeConfiguration.md
+docs/BoundingBoxResult.md
 docs/ChannelEnum.md
 docs/Condition.md
 docs/ConditionRequest.md
@@ -88,6 +90,8 @@ groundlight_openapi_client/model/b_box_geometry.py
 groundlight_openapi_client/model/b_box_geometry_request.py
 groundlight_openapi_client/model/binary_classification_result.py
 groundlight_openapi_client/model/blank_enum.py
+groundlight_openapi_client/model/bounding_box_mode_configuration.py
+groundlight_openapi_client/model/bounding_box_result.py
 groundlight_openapi_client/model/channel_enum.py
 groundlight_openapi_client/model/condition.py
 groundlight_openapi_client/model/condition_request.py

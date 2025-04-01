@@ -443,6 +443,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/EdgeModelInfo'
           description: ''
+  /v1/edge/report-metrics:
+    post:
+      operationId: edge_report_metrics_create
+      description: |-
+        Edge server periodically calls this to report metrics.
+
+        POST body will have JSON data that we log.
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          description: No response body
   /v1/image-queries:
     get:
       operationId: List image queries
@@ -973,11 +987,13 @@ components:
             * `COUNT` - COUNT
             * `MULTI_CLASS` - MULTI_CLASS
             * `TEXT` - TEXT
+            * `BOUNDING_BOX` - BOUNDING_BOX
         mode_configuration:
           oneOf:
           - $ref: '#/components/schemas/CountModeConfiguration'
           - $ref: '#/components/schemas/MultiClassModeConfiguration'
           - $ref: '#/components/schemas/TextModeConfiguration'
+          - $ref: '#/components/schemas/BoundingBoxModeConfiguration'
           nullable: true
       required:
       - name
@@ -1076,6 +1092,7 @@ components:
           - $ref: '#/components/schemas/CountingResult'
           - $ref: '#/components/schemas/MultiClassificationResult'
           - $ref: '#/components/schemas/TextRecognitionResult'
+          - $ref: '#/components/schemas/BoundingBoxResult'
           nullable: true
         patience_time:
           type: number
@@ -1202,6 +1219,7 @@ components:
       - COUNT
       - MULTI_CLASS
       - TEXT
+      - BOUNDING_BOX
       type: string
     Note:
       type: object
@@ -1407,6 +1425,7 @@ components:
       - counting
       - multi_classification
       - text_recognition
+      - bounding_box
       type: string
     Rule:
       type: object
@@ -1560,6 +1579,15 @@ components:
           allOf:
           - $ref: '#/components/schemas/PayloadTemplate'
           nullable: true
+        last_message_failed:
+          type: boolean
+        last_failure_error:
+          type: string
+          nullable: true
+        last_failed_at:
+          type: string
+          format: date-time
+          nullable: true
       required:
       - url
     WebhookActionRequest:
@@ -1575,6 +1603,15 @@ components:
         payload_template:
           allOf:
           - $ref: '#/components/schemas/PayloadTemplateRequest'
+          nullable: true
+        last_message_failed:
+          type: boolean
+        last_failure_error:
+          type: string
+          nullable: true
+        last_failed_at:
+          type: string
+          format: date-time
           nullable: true
       required:
       - url
@@ -1600,6 +1637,8 @@ components:
           type: string
           enum:
           - binary_classification
+        from_edge:
+          type: boolean
         label:
           type: string
           enum:
@@ -1630,6 +1669,8 @@ components:
           type: string
           enum:
           - counting
+        from_edge:
+          type: boolean
         count:
           type: integer
           minimum: 0
@@ -1660,6 +1701,8 @@ components:
           type: string
           enum:
           - multi_classification
+        from_edge:
+          type: boolean
         label:
           type: string
           nullable: false
@@ -1687,6 +1730,8 @@ components:
           type: string
           enum:
           - text_recognition
+        from_edge:
+          type: boolean
         text:
           type: string
           nullable: true
@@ -1695,6 +1740,38 @@ components:
       required:
       - text
       - truncated
+    BoundingBoxResult:
+      type: object
+      properties:
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          nullable: true
+        source:
+          type: string
+          enum:
+          - STILL_PROCESSING
+          - CLOUD
+          - USER
+          - CLOUD_ENSEMBLE
+          - ALGORITHM
+          - EDGE
+        result_type:
+          type: string
+          enum:
+          - bounding_box
+        from_edge:
+          type: boolean
+        label:
+          type: string
+          enum:
+          - BOUNDING_BOX
+          - GREATER_THAN_MAX
+          - UNCLEAR
+      required:
+      - label
     CountModeConfiguration:
       type: object
       properties:
@@ -1729,6 +1806,19 @@ components:
           minimum: 1
           maximum: 250
           nullable: false
+    BoundingBoxModeConfiguration:
+      type: object
+      properties:
+        class_name:
+          type: string
+          nullable: false
+        max_num_bboxes:
+          type: integer
+          minimum: 1
+          maximum: 50
+          nullable: false
+      required:
+      - class_name
     ChannelEnum:
       type: string
       enum:
