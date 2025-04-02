@@ -59,7 +59,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
         snooze_time_unit=None,
         human_review_required=False,
         condition=ConditionRequest(
-            verb=VerbEnum("ANSWERED_CONSECUTIVELY"),
+            verb="verb_example",
             parameters={
                 "key": None,
             },

@@ -84,7 +84,7 @@ rule_request = RuleRequest(
         snooze_time_unit=None,
         human_review_required=False,
         condition=ConditionRequest(
-            verb=VerbEnum("ANSWERED_CONSECUTIVELY"),
+            verb="verb_example",
             parameters={
                 "key": None,
             },
@@ -174,6 +174,7 @@ Class | Method | HTTP request | Description
  - [InlineResponse2002](docs/InlineResponse2002.md)
  - [InlineResponse200Summary](docs/InlineResponse200Summary.md)
  - [InlineResponse200SummaryClassCounts](docs/InlineResponse200SummaryClassCounts.md)
+ - [LabelEnum](docs/LabelEnum.md)
  - [LabelValue](docs/LabelValue.md)
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)

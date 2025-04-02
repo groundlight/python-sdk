@@ -756,14 +756,6 @@ components:
       required:
       - CUSTOMER
       - GL
-    AnnotationsRequestedEnum:
-      enum:
-      - BINARY_CLASSIFICATION
-      - BOUNDING_BOXES
-      type: string
-      description: |-
-        * `BINARY_CLASSIFICATION` - Binary Classification
-        * `BOUNDING_BOXES` - Bounding Boxes
     BBoxGeometry:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -823,7 +815,7 @@ components:
       type: object
       properties:
         verb:
-          $ref: '#/components/schemas/VerbEnum'
+          type: string
         parameters:
           type: object
           additionalProperties: {}
@@ -834,7 +826,7 @@ components:
       type: object
       properties:
         verb:
-          $ref: '#/components/schemas/VerbEnum'
+          type: string
         parameters:
           type: object
           additionalProperties: {}
@@ -898,8 +890,7 @@ components:
           readOnly: true
           description: Metadata about the detector.
         mode:
-          allOf:
-          - $ref: '#/components/schemas/ModeEnum'
+          type: string
           readOnly: true
         mode_configuration:
           type: object
@@ -911,13 +902,7 @@ components:
           - $ref: '#/components/schemas/StatusEnum'
           - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
-          allOf:
-          - $ref: '#/components/schemas/EscalationTypeEnum'
-          description: |-
-            Category that define internal proccess for labeling image queries
-
-            * `STANDARD` - STANDARD
-            * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
+          type: string
       required:
       - created_at
       - group_name
@@ -1040,14 +1025,6 @@ components:
         pipeline_config: {}
         oodd_pipeline_config: {}
         predictor_metadata: {}
-    EscalationTypeEnum:
-      enum:
-      - STANDARD
-      - NO_HUMAN_LABELING
-      type: string
-      description: |-
-        * `STANDARD` - STANDARD
-        * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
     ImageQuery:
       type: object
       description: ImageQuery objects are the answers to natural language questions
@@ -1161,13 +1138,7 @@ components:
         annotations_requested:
           type: array
           items:
-            allOf:
-            - $ref: '#/components/schemas/AnnotationsRequestedEnum'
-            description: |-
-              The type of annotation requested
-
-              * `BINARY_CLASSIFICATION` - Binary Classification
-              * `BOUNDING_BOXES` - Bounding Boxes
+            type: string
           readOnly: true
         created_at:
           type: string
@@ -1178,8 +1149,7 @@ components:
           nullable: true
           readOnly: true
         source:
-          allOf:
-          - $ref: '#/components/schemas/SourceEnum'
+          type: string
           readOnly: true
         text:
           type: string
@@ -1214,13 +1184,13 @@ components:
       - image_query_id
       - label
     ModeEnum:
+      type: string
       enum:
       - BINARY
       - COUNT
       - MULTI_CLASS
       - TEXT
       - BOUNDING_BOX
-      type: string
     Note:
       type: object
       properties:
@@ -1354,13 +1324,8 @@ components:
           - $ref: '#/components/schemas/StatusEnum'
           - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
-          allOf:
-          - $ref: '#/components/schemas/EscalationTypeEnum'
-          description: |-
-            Category that define internal proccess for labeling image queries
-
-            * `STANDARD` - STANDARD
-            * `NO_HUMAN_LABELING` - NO_HUMAN_LABELING
+          type: string
+          minLength: 1
       x-internal: true
     PayloadTemplate:
       type: object
@@ -1524,26 +1489,6 @@ components:
         * `HOURS` - HOURS
         * `MINUTES` - MINUTES
         * `SECONDS` - SECONDS
-    SourceEnum:
-      enum:
-      - INITIAL_PLACEHOLDER
-      - CLOUD
-      - CUST
-      - HUMAN_CLOUD_ENSEMBLE
-      - ALG
-      - ALG_REC
-      - ALG_UNCLEAR
-      - EDGE
-      type: string
-      description: |-
-        * `INITIAL_PLACEHOLDER` - InitialPlaceholder
-        * `CLOUD` - HumanCloud
-        * `CUST` - HumanCustomer
-        * `HUMAN_CLOUD_ENSEMBLE` - HumanCloudEnsemble
-        * `ALG` - Algorithm
-        * `ALG_REC` - AlgorithmReconciled
-        * `ALG_UNCLEAR` - AlgorithmUnclear
-        * `EDGE` - EDGE
     StatusEnum:
       enum:
       - 'ON'
@@ -1552,20 +1497,6 @@ components:
       description: |-
         * `ON` - ON
         * `OFF` - OFF
-    VerbEnum:
-      enum:
-      - ANSWERED_CONSECUTIVELY
-      - ANSWERED_WITHIN_TIME
-      - CHANGED_TO
-      - NO_CHANGE
-      - NO_QUERIES
-      type: string
-      description: |-
-        * `ANSWERED_CONSECUTIVELY` - ANSWERED_CONSECUTIVELY
-        * `ANSWERED_WITHIN_TIME` - ANSWERED_WITHIN_TIME
-        * `CHANGED_TO` - CHANGED_TO
-        * `NO_CHANGE` - NO_CHANGE
-        * `NO_QUERIES` - NO_QUERIES
     WebhookAction:
       type: object
       properties:
@@ -1626,25 +1557,12 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - binary_classification
         from_edge:
           type: boolean
         label:
           type: string
-          enum:
-          - 'YES'
-          - 'NO'
-          - UNCLEAR
       required:
       - label
     CountingResult:
@@ -1658,17 +1576,8 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - counting
         from_edge:
           type: boolean
         count:
@@ -1690,17 +1599,8 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - multi_classification
         from_edge:
           type: boolean
         label:
@@ -1719,17 +1619,8 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - text_recognition
         from_edge:
           type: boolean
         text:
@@ -1751,25 +1642,12 @@ components:
           nullable: true
         source:
           type: string
-          enum:
-          - STILL_PROCESSING
-          - CLOUD
-          - USER
-          - CLOUD_ENSEMBLE
-          - ALGORITHM
-          - EDGE
         result_type:
           type: string
-          enum:
-          - bounding_box
         from_edge:
           type: boolean
         label:
           type: string
-          enum:
-          - BOUNDING_BOX
-          - GREATER_THAN_MAX
-          - UNCLEAR
       required:
       - label
     CountModeConfiguration:
@@ -1841,6 +1719,41 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Action'
+    AnnotationsRequestedEnum:
+      type: string
+      enum:
+      - BINARY_CLASSIFICATION
+      - BOUNDING_BOXES
+    EscalationTypeEnum:
+      type: string
+      enum:
+      - STANDARD
+      - NO_HUMAN_LABELING
+    SourceEnum:
+      type: string
+      enum:
+      - INITIAL_PLACEHOLDER
+      - CLOUD
+      - CUST
+      - HUMAN_CLOUD_ENSEMBLE
+      - ALG
+      - ALG_REC
+      - ALG_UNCLEAR
+      - EDGE
+    VerbEnum:
+      type: string
+      enum:
+      - ANSWERED_CONSECUTIVELY
+      - ANSWERED_WITHIN_TIME
+      - CHANGED_TO
+      - NO_CHANGE
+      - NO_QUERIES
+    LabelEnum:
+      type: string
+      enum:
+      - 'YES'
+      - 'NO'
+      - UNCLEAR
   securitySchemes:
     ApiToken:
       name: x-api-token
