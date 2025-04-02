@@ -9,8 +9,6 @@ Name | Type | Description | Notes
 **kfold_pooled__balanced_accuracy** | **float** |  | [optional] 
 **kfold_pooled__positive_accuracy** | **float, none_type** |  | [optional] 
 **kfold_pooled__negative_accuracy** | **float, none_type** |  | [optional] 
-**precision** | **float, none_type** |  | [optional] 
-**recall** | **float, none_type** |  | [optional] 
 **balanced_system_accuracies** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** |  | [optional] 
 **positive_system_accuracies** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** |  | [optional] 
 **negative_system_accuracies** | **{str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type** |  | [optional] 

@@ -102,14 +102,6 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                 float,
                 none_type,
             ),  # noqa: E501
-            "precision": (
-                float,
-                none_type,
-            ),  # noqa: E501
-            "recall": (
-                float,
-                none_type,
-            ),  # noqa: E501
             "balanced_system_accuracies": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
@@ -134,8 +126,6 @@ class InlineResponse2001EvaluationResults(ModelNormal):
         "kfold_pooled__balanced_accuracy": "kfold_pooled__balanced_accuracy",  # noqa: E501
         "kfold_pooled__positive_accuracy": "kfold_pooled__positive_accuracy",  # noqa: E501
         "kfold_pooled__negative_accuracy": "kfold_pooled__negative_accuracy",  # noqa: E501
-        "precision": "precision",  # noqa: E501
-        "recall": "recall",  # noqa: E501
         "balanced_system_accuracies": "balanced_system_accuracies",  # noqa: E501
         "positive_system_accuracies": "positive_system_accuracies",  # noqa: E501
         "negative_system_accuracies": "negative_system_accuracies",  # noqa: E501
@@ -186,8 +176,6 @@ class InlineResponse2001EvaluationResults(ModelNormal):
             kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
             kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
-            precision (float, none_type): [optional]  # noqa: E501
-            recall (float, none_type): [optional]  # noqa: E501
             balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
@@ -280,8 +268,6 @@ class InlineResponse2001EvaluationResults(ModelNormal):
             kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
             kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
-            precision (float, none_type): [optional]  # noqa: E501
-            recall (float, none_type): [optional]  # noqa: E501
             balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501

@@ -412,14 +412,6 @@ paths:
                         type: number
                         format: float
                         nullable: true
-                      precision:
-                        type: number
-                        format: float
-                        nullable: true
-                      recall:
-                        type: number
-                        format: float
-                        nullable: true
                       balanced_system_accuracies:
                         type: object
                         additionalProperties: true
