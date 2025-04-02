@@ -8,12 +8,12 @@ import logging
 from enum import Enum
 from typing import Union
 
-from model import Detector, ImageQuery, Label
+from model import Detector, ImageQuery, LabelEnum
 
 logger = logging.getLogger(__name__)
 
 
-VALID_DISPLAY_LABELS = {Label.YES, Label.NO, Label.UNCLEAR}
+VALID_DISPLAY_LABELS = {LabelEnum.YES, LabelEnum.NO, LabelEnum.UNCLEAR}
 
 
 class DeprecatedLabel(str, Enum):
@@ -34,22 +34,22 @@ DEPRECATED_LABEL_NAMES = {
 def convert_internal_label_to_display(
     context: Union[ImageQuery, Detector, str],  # pylint: disable=unused-argument
     label: str,
-) -> Union[Label, str]:
+) -> Union[LabelEnum, str]:
     """Convert a label that comes from our API into the label string enum that we show to the user.
 
     NOTE: We return UPPERCASE label strings to the user, unless there is a custom label (which
     shouldn't be happening at this time).
     """
     # NOTE: We should be able to do nothing here now, keeping for radiation proofing
-    if not isinstance(label, str) and not isinstance(label, Label):
+    if not isinstance(label, str) and not isinstance(label, LabelEnum):
         raise ValueError(f"Expected a string label, but got {label} of type {type(label)}")
     upper = label.upper()
-    if upper in {Label.YES, DeprecatedLabel.PASS}:
-        return Label.YES
-    if upper in {Label.NO, DeprecatedLabel.FAIL}:
-        return Label.NO
-    if upper in {Label.UNCLEAR, DeprecatedLabel.NEEDS_REVIEW, DeprecatedLabel.UNSURE}:
-        return Label.UNCLEAR
+    if upper in {LabelEnum.YES, DeprecatedLabel.PASS}:
+        return LabelEnum.YES
+    if upper in {LabelEnum.NO, DeprecatedLabel.FAIL}:
+        return LabelEnum.NO
+    if upper in {LabelEnum.UNCLEAR, DeprecatedLabel.NEEDS_REVIEW, DeprecatedLabel.UNSURE}:
+        return LabelEnum.UNCLEAR
 
     logger.warning(f"Unrecognized internal label {label} - leaving it alone as a string.")
     return label
