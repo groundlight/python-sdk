@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Groundlight API
-  version: 0.18.2
+  version: 0.18.3
   description: Groundlight makes it simple to understand images. You can easily create
     computer vision detectors just by describing what you want to know using natural
     language.
@@ -407,18 +407,31 @@ paths:
                       kfold_pooled__positive_accuracy:
                         type: number
                         format: float
+                        nullable: true
                       kfold_pooled__negative_accuracy:
                         type: number
                         format: float
+                        nullable: true
+                      precision:
+                        type: number
+                        format: float
+                        nullable: true
+                      recall:
+                        type: number
+                        format: float
+                        nullable: true
                       balanced_system_accuracies:
                         type: object
                         additionalProperties: true
+                        nullable: true
                       positive_system_accuracies:
                         type: object
                         additionalProperties: true
+                        nullable: true
                       negative_system_accuracies:
                         type: object
                         additionalProperties: true
+                        nullable: true
                     nullable: true
           description: ''
   /v1/edge/fetch-model-urls/{detector_id}/:
