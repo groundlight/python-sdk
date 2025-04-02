@@ -12,7 +12,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
-from model import Detector, ImageQuery, Source
+from model import Detector, ImageQuery # , Source # temporarily commented out
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
@@ -76,7 +76,7 @@ def iq_is_answered(iq: ImageQuery) -> bool:
     """
     if not iq.result or not iq.result.source:
         return False
-    if (iq.result.source == Source.STILL_PROCESSING) or (iq.result.source is None):  # Should never be None
+    if (iq.result.source == "STILL_PROCESSING") or (iq.result.source is None):  # Should never be None
         return False
     return True
 
