@@ -94,16 +94,25 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                 none_type,
             ),  # noqa: E501
             "kfold_pooled__balanced_accuracy": (float,),  # noqa: E501
-            "kfold_pooled__positive_accuracy": (float,),  # noqa: E501
-            "kfold_pooled__negative_accuracy": (float,),  # noqa: E501
+            "kfold_pooled__positive_accuracy": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "kfold_pooled__negative_accuracy": (
+                float,
+                none_type,
+            ),  # noqa: E501
             "balanced_system_accuracies": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
             ),  # noqa: E501
             "positive_system_accuracies": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
             ),  # noqa: E501
             "negative_system_accuracies": (
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
             ),  # noqa: E501
         }
 
@@ -165,11 +174,11 @@ class InlineResponse2001EvaluationResults(ModelNormal):
             eval_timestamp (datetime): [optional]  # noqa: E501
             total_ground_truth_examples (int, none_type): [optional]  # noqa: E501
             kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
-            kfold_pooled__positive_accuracy (float): [optional]  # noqa: E501
-            kfold_pooled__negative_accuracy (float): [optional]  # noqa: E501
-            balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): [optional]  # noqa: E501
-            positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): [optional]  # noqa: E501
-            negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): [optional]  # noqa: E501
+            kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
+            kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
+            balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -257,11 +266,11 @@ class InlineResponse2001EvaluationResults(ModelNormal):
             eval_timestamp (datetime): [optional]  # noqa: E501
             total_ground_truth_examples (int, none_type): [optional]  # noqa: E501
             kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
-            kfold_pooled__positive_accuracy (float): [optional]  # noqa: E501
-            kfold_pooled__negative_accuracy (float): [optional]  # noqa: E501
-            balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): [optional]  # noqa: E501
-            positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): [optional]  # noqa: E501
-            negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): [optional]  # noqa: E501
+            kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
+            kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
+            balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

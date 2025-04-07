@@ -24,13 +24,11 @@ from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
-from groundlight_openapi_client.model.verb_enum import VerbEnum
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
     ROI,
@@ -302,7 +300,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             name=name,
             enabled=enabled,
             action=actions,
-            condition=ConditionRequest(verb=VerbEnum(condition.verb), parameters=condition.parameters),
+            condition=ConditionRequest(verb=condition.verb, parameters=condition.parameters),
             snooze_time_enabled=snooze_time_enabled,
             snooze_time_value=snooze_time_value,
             snooze_time_unit=snooze_time_unit,
@@ -318,7 +316,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         channel: Union[str, ChannelEnum],
         recipient: str,
         *,
-        alert_on: Union[str, VerbEnum] = "CHANGED_TO",
+        alert_on: str = "CHANGED_TO",
         enabled: bool = True,
         include_image: bool = False,
         condition_parameters: Union[str, dict, None] = None,
@@ -393,8 +391,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         if condition_parameters is None:
             condition_parameters = {}
-        if isinstance(alert_on, str):
-            alert_on = VerbEnum(alert_on.upper())
         if isinstance(channel, str):
             channel = ChannelEnum(channel.upper())
         if isinstance(condition_parameters, str):
@@ -839,7 +835,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             raise ValueError("escalation_type must be either 'STANDARD' or 'NO_HUMAN_LABELING'")
         self.detectors_api.update_detector(
             detector,
-            patched_detector_request=PatchedDetectorRequest(escalation_type=EscalationTypeEnum(escalation_type)),
+            patched_detector_request=PatchedDetectorRequest(escalation_type=escalation_type),
         )
 
     def create_counting_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
