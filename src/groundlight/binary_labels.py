@@ -8,7 +8,6 @@ import logging
 from enum import Enum
 from typing import Union
 
-# from model import Detector, ImageQuery, Label # temporarily commented out
 from model import Detector, ImageQuery
 
 logger = logging.getLogger(__name__)

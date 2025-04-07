@@ -13,7 +13,6 @@ from urllib.parse import urlsplit, urlunsplit
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
 
-# from model import Detector, ImageQuery, Source # temporarily commented out
 from model import Detector, ImageQuery
 
 from groundlight.status_codes import is_ok
