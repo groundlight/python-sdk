@@ -8,18 +8,9 @@ import logging
 from enum import Enum
 from typing import Union
 
-# from model import Detector, ImageQuery, Label # temporarily commented out
-from model import Detector, ImageQuery
+from model import Detector, ImageQuery, Label
 
 logger = logging.getLogger(__name__)
-
-
-class Label(str, Enum):
-    """Temporarily added here while we chase the bug"""
-
-    YES = "YES"
-    NO = "NO"
-    UNCLEAR = "UNCLEAR"
 
 
 VALID_DISPLAY_LABELS = {Label.YES, Label.NO, Label.UNCLEAR}
