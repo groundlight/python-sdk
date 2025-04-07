@@ -60,10 +60,10 @@ def test_update_detector_escalation_type(gl_experimental: ExperimentalApi):
     detector = gl_experimental.get_or_create_detector(f"test {datetime.utcnow()}", "Is there a dog?")
     gl_experimental.update_detector_escalation_type(detector.id, "NO_HUMAN_LABELING")
     updated_detector = gl_experimental.get_detector(detector.id)
-    updated_detector.escalation_type.value == "NO_HUMAN_LABELING"
+    updated_detector.escalation_type == "NO_HUMAN_LABELING"
     gl_experimental.update_detector_escalation_type(detector.id, "STANDARD")
     updated_detector = gl_experimental.get_detector(detector.id)
-    updated_detector.escalation_type.value == "STANDARD"
+    updated_detector.escalation_type == "STANDARD"
 
 
 @pytest.mark.skip(
