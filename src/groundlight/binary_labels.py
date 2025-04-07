@@ -14,8 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class Label(str, Enum):
-    """Temporarily added here while we chase the bug"""
-
     YES = "YES"
     NO = "NO"
     UNCLEAR = "UNCLEAR"
