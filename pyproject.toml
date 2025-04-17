@@ -15,9 +15,9 @@ version = "0.22.4"
 # For certifi, use ">=" instead of "^" since it upgrades its "major version" every year, not really following semver
 certifi = ">=2023.7.22"
 frozendict = "^2.3.2"
-pillow = ">=11.0.0" # TODO: We may want to mark pillow (and numpy) as extra (https://python-poetry.org/docs/master/pyproject#extras)
+pillow = ">=9.0.0" # TODO: We may want to mark pillow (and numpy) as extra (https://python-poetry.org/docs/master/pyproject#extras)
 pydantic = "^2.0.0"
-python = ">=3.9,<4.0"
+python = ">=3.9,<3.13"
 python-dateutil = "^2.9.0"
 requests = "^2.28.2"
 typer = "^0.12.3"
