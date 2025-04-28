@@ -401,6 +401,9 @@ paths:
                       total_ground_truth_examples:
                         type: integer
                         nullable: true
+                      total_labeled_examples:
+                        type: integer
+                        nullable: true
                       kfold_pooled__balanced_accuracy:
                         type: number
                         format: float
@@ -409,6 +412,18 @@ paths:
                         format: float
                         nullable: true
                       kfold_pooled__negative_accuracy:
+                        type: number
+                        format: float
+                        nullable: true
+                      precision__mean:
+                        type: number
+                        format: float
+                        nullable: true
+                      recall__mean:
+                        type: number
+                        format: float
+                        nullable: true
+                      roc_auc__mean:
                         type: number
                         format: float
                         nullable: true
@@ -421,6 +436,34 @@ paths:
                         additionalProperties: true
                         nullable: true
                       negative_system_accuracies:
+                        type: object
+                        additionalProperties: true
+                        nullable: true
+                      mean_absolute_error__mean:
+                        type: number
+                        format: float
+                        nullable: true
+                      objdet_precision__mean:
+                        type: number
+                        format: float
+                        nullable: true
+                      objdet_recall__mean:
+                        type: number
+                        format: float
+                        nullable: true
+                      objdet_f1_score__mean:
+                        type: number
+                        format: float
+                        nullable: true
+                      class_accuracies:
+                        type: object
+                        additionalProperties: true
+                        nullable: true
+                      confusion_dict:
+                        type: object
+                        additionalProperties: true
+                        nullable: true
+                      num_examples_per_class:
                         type: object
                         additionalProperties: true
                         nullable: true

@@ -93,12 +93,28 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                 int,
                 none_type,
             ),  # noqa: E501
+            "total_labeled_examples": (
+                int,
+                none_type,
+            ),  # noqa: E501
             "kfold_pooled__balanced_accuracy": (float,),  # noqa: E501
             "kfold_pooled__positive_accuracy": (
                 float,
                 none_type,
             ),  # noqa: E501
             "kfold_pooled__negative_accuracy": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "precision__mean": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "recall__mean": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "roc_auc__mean": (
                 float,
                 none_type,
             ),  # noqa: E501
@@ -114,6 +130,34 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                 {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
                 none_type,
             ),  # noqa: E501
+            "mean_absolute_error__mean": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "objdet_precision__mean": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "objdet_recall__mean": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "objdet_f1_score__mean": (
+                float,
+                none_type,
+            ),  # noqa: E501
+            "class_accuracies": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
+            "confusion_dict": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
+            "num_examples_per_class": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -123,12 +167,23 @@ class InlineResponse2001EvaluationResults(ModelNormal):
     attribute_map = {
         "eval_timestamp": "eval_timestamp",  # noqa: E501
         "total_ground_truth_examples": "total_ground_truth_examples",  # noqa: E501
+        "total_labeled_examples": "total_labeled_examples",  # noqa: E501
         "kfold_pooled__balanced_accuracy": "kfold_pooled__balanced_accuracy",  # noqa: E501
         "kfold_pooled__positive_accuracy": "kfold_pooled__positive_accuracy",  # noqa: E501
         "kfold_pooled__negative_accuracy": "kfold_pooled__negative_accuracy",  # noqa: E501
+        "precision__mean": "precision__mean",  # noqa: E501
+        "recall__mean": "recall__mean",  # noqa: E501
+        "roc_auc__mean": "roc_auc__mean",  # noqa: E501
         "balanced_system_accuracies": "balanced_system_accuracies",  # noqa: E501
         "positive_system_accuracies": "positive_system_accuracies",  # noqa: E501
         "negative_system_accuracies": "negative_system_accuracies",  # noqa: E501
+        "mean_absolute_error__mean": "mean_absolute_error__mean",  # noqa: E501
+        "objdet_precision__mean": "objdet_precision__mean",  # noqa: E501
+        "objdet_recall__mean": "objdet_recall__mean",  # noqa: E501
+        "objdet_f1_score__mean": "objdet_f1_score__mean",  # noqa: E501
+        "class_accuracies": "class_accuracies",  # noqa: E501
+        "confusion_dict": "confusion_dict",  # noqa: E501
+        "num_examples_per_class": "num_examples_per_class",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -173,12 +228,23 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             eval_timestamp (datetime): [optional]  # noqa: E501
             total_ground_truth_examples (int, none_type): [optional]  # noqa: E501
+            total_labeled_examples (int, none_type): [optional]  # noqa: E501
             kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
             kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
+            precision__mean (float, none_type): [optional]  # noqa: E501
+            recall__mean (float, none_type): [optional]  # noqa: E501
+            roc_auc__mean (float, none_type): [optional]  # noqa: E501
             balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            mean_absolute_error__mean (float, none_type): [optional]  # noqa: E501
+            objdet_precision__mean (float, none_type): [optional]  # noqa: E501
+            objdet_recall__mean (float, none_type): [optional]  # noqa: E501
+            objdet_f1_score__mean (float, none_type): [optional]  # noqa: E501
+            class_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            confusion_dict ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            num_examples_per_class ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -265,12 +331,23 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             eval_timestamp (datetime): [optional]  # noqa: E501
             total_ground_truth_examples (int, none_type): [optional]  # noqa: E501
+            total_labeled_examples (int, none_type): [optional]  # noqa: E501
             kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
             kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
+            precision__mean (float, none_type): [optional]  # noqa: E501
+            recall__mean (float, none_type): [optional]  # noqa: E501
+            roc_auc__mean (float, none_type): [optional]  # noqa: E501
             balanced_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             positive_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
             negative_system_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            mean_absolute_error__mean (float, none_type): [optional]  # noqa: E501
+            objdet_precision__mean (float, none_type): [optional]  # noqa: E501
+            objdet_recall__mean (float, none_type): [optional]  # noqa: E501
+            objdet_f1_score__mean (float, none_type): [optional]  # noqa: E501
+            class_accuracies ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            confusion_dict ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
+            num_examples_per_class ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
