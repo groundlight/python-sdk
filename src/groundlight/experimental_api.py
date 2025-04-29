@@ -1094,3 +1094,30 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             auth_settings=["ApiToken"],
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
+
+    def update_detector(
+            self,
+            detector: Union[str, Detector],
+            confidence_threshold: Optional[float] = None,
+            cloud_labeling_active: Optional[bool] = None,
+    ) -> None:
+        """
+        Updates the detector with the given id.
+
+        :param detector: The detector to update
+        :param confidence_threshold: The new confidence threshold for the detector
+        :param cloud_labeling_active: Whether cloud labeling is active for the detector
+        """
+        if cloud_labeling_active:
+            escalation_type = "STANDARD"
+        else:
+            escalation_type = "NO_HUMAN_LABELING"
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detectors_api.update_detector(
+            detector,
+            patched_detector_request=PatchedDetectorRequest(
+                confidence_threshold=confidence_threshold,
+                escalation_type=escalation_type,
+            ),
+        )
