@@ -1096,10 +1096,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         )
 
     def update_detector(
-            self,
-            detector: Union[str, Detector],
-            confidence_threshold: Optional[float] = None,
-            cloud_labeling_active: Optional[bool] = None,
+        self,
+        detector: Union[str, Detector],
+        confidence_threshold: Optional[float] = None,
+        cloud_labeling_active: Optional[bool] = None,
     ) -> None:
         """
         Updates the detector with the given id.
