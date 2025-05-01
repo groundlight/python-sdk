@@ -157,7 +157,7 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi):
     """
     Verify that we can create and submit to a bounding box detector
     """
-    name = f"test_bounding_box_detector_{datetime.now(timezone.utc)}"
+    name = f"Test {datetime.now(timezone.utc)}"
     created_detector = gl_experimental.create_bounding_box_detector(
         name, "Draw a bounding box around each dog in the image", "dog"
     )
@@ -177,7 +177,7 @@ def test_bounding_box_detector_async(gl_experimental: ExperimentalApi):
     """
     Verify that we can create and submit to a bounding box detector with ask_async
     """
-    name = f"test_bounding_box_detector_async_{datetime.now(timezone.utc)}"
+    name = f"Test {datetime.now(timezone.utc)}"
     created_detector = gl_experimental.create_bounding_box_detector(
         name, "Draw a bounding box around each dog in the image", "dog"
     )
