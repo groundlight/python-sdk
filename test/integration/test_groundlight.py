@@ -17,6 +17,7 @@ from groundlight.status_codes import is_user_error
 from ksuid import KsuidMs
 from model import (
     BinaryClassificationResult,
+    BoundingBoxResult,
     CountingResult,
     Detector,
     ImageQuery,
@@ -35,6 +36,7 @@ def is_valid_display_result(result: Any) -> bool:
         not isinstance(result, BinaryClassificationResult)
         and not isinstance(result, CountingResult)
         and not isinstance(result, MultiClassificationResult)
+        and not isinstance(result, BoundingBoxResult)
     ):
         return False
 
