@@ -975,7 +975,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
-
     def create_bounding_box_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
@@ -1048,7 +1047,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
-
 
     def _download_mlbinary_url(self, detector: Union[str, Detector]) -> EdgeModelInfo:
         """

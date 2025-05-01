@@ -146,6 +146,7 @@ def test_multiclass_detector(gl_experimental: ExperimentalApi):
     assert mc_iq.result.label is not None
     assert mc_iq.result.label in class_names
 
+
 @pytest.mark.skip(
     reason=(
         "General users currently currently can't use bounding box detectors. If you have questions, reach out"
@@ -157,11 +158,14 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi):
     Verify that we can create and submit to a bounding box detector
     """
     name = f"test_bounding_box_detector_{datetime.now(timezone.utc)}"
-    created_detector = gl_experimental.create_bounding_box_detector(name, "Draw a bounding box around each dog in the image", "dog")
+    created_detector = gl_experimental.create_bounding_box_detector(
+        name, "Draw a bounding box around each dog in the image", "dog"
+    )
     assert created_detector is not None
     bbox_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert bbox_iq.result.label is not None
     assert bbox_iq.rois is not None
+
 
 @pytest.mark.skip(
     reason=(
@@ -174,7 +178,9 @@ def test_bounding_box_detector_async(gl_experimental: ExperimentalApi):
     Verify that we can create and submit to a bounding box detector with ask_async
     """
     name = f"test_bounding_box_detector_async_{datetime.now(timezone.utc)}"
-    created_detector = gl_experimental.create_bounding_box_detector(name, "Draw a bounding box around each dog in the image", "dog")
+    created_detector = gl_experimental.create_bounding_box_detector(
+        name, "Draw a bounding box around each dog in the image", "dog"
+    )
     assert created_detector is not None
     async_iq = gl_experimental.ask_async(created_detector, "test/assets/dog.jpeg")
 
