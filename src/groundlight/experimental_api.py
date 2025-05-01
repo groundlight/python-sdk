@@ -903,10 +903,12 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             metadata=metadata,
         )
         detector_creation_input.mode = ModeEnum.COUNT
-        # TODO: pull the BE defined default
+
         if max_count is None:
-            max_count = 10
-        mode_config = CountModeConfiguration(max_count=max_count, class_name=class_name)
+            mode_config = CountModeConfiguration(class_name=class_name)
+        else:
+            mode_config = CountModeConfiguration(max_count=max_count, class_name=class_name)
+
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
@@ -1040,10 +1042,12 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             metadata=metadata,
         )
         detector_creation_input.mode = ModeEnum.BOUNDING_BOX
-        # TODO: pull the BE defined default
+
         if max_num_bboxes is None:
-            max_num_bboxes = 10
-        mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
+            mode_config = BoundingBoxModeConfiguration(class_name=class_name)
+        else:
+            mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
+
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
