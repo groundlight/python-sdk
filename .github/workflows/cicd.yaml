@@ -28,6 +28,7 @@ jobs:
           poetry run python --version
       - name: show virtualenv version
         run: |
+          poetry lock
           poetry show virtualenv
       - name: install linter dependencies
         run: |
