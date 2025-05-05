@@ -11,7 +11,7 @@ install-extras: install  ## Install the package from source with extra dependenc
 	poetry run pip install numpy framegrab[youtube]
 
 install-lint:  ## Only install the linter dependencies
-	poetry install --only lint
+	poetry install -vvv --only lint
 
 install-dev: ## Only install the dev dependencies
 	poetry install --only dev

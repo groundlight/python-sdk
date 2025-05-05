@@ -26,9 +26,6 @@ jobs:
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
-      - name: show virtualenv version
-        run: |
-          poetry self show virtualenv
       - name: install linter dependencies
         run: |
           make install-lint
