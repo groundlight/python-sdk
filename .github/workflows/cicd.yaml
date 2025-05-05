@@ -23,7 +23,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install virtualenv==20.30.0
-     - name: Remove Poetry cache to avoid stale virtualenv
+      - name: Remove Poetry cache to avoid stale virtualenv
         run: |
           rm -rf ~/.cache/pypoetry
       - name: install poetry
