@@ -26,6 +26,9 @@ jobs:
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
+      - name: Downgrade virtualenv
+        run: |
+          pip install virtualenv==20.30.0
       - name: install linter dependencies
         run: |
           make install-lint
