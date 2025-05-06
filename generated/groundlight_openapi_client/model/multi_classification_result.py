@@ -53,7 +53,11 @@ class MultiClassificationResult(ModelNormal):
           as additional properties values.
     """
 
-    allowed_values = {}
+    allowed_values = {
+        ("result_type",): {
+            "MULTI_CLASSIFICATION": "multi_classification",
+        },
+    }
 
     validations = {
         ("confidence",): {
@@ -160,7 +164,7 @@ class MultiClassificationResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "multi_classification"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
         """
 
@@ -252,7 +256,7 @@ class MultiClassificationResult(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
-            result_type (str): [optional]  # noqa: E501
+            result_type (str): [optional] if omitted the server will use the default value of "multi_classification"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
         """
 

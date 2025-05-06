@@ -39,6 +39,7 @@ from groundlight_openapi_client.model.inline_response2001_evaluation_results imp
 from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
 from groundlight_openapi_client.model.inline_response200_summary import InlineResponse200Summary
 from groundlight_openapi_client.model.inline_response200_summary_class_counts import InlineResponse200SummaryClassCounts
+from groundlight_openapi_client.model.label import Label
 from groundlight_openapi_client.model.label_value import LabelValue
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.mode_enum import ModeEnum
@@ -58,6 +59,7 @@ from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
 from groundlight_openapi_client.model.rule import Rule
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
+from groundlight_openapi_client.model.source import Source
 from groundlight_openapi_client.model.source_enum import SourceEnum
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
