@@ -1606,7 +1606,8 @@ components:
         source:
           type: string
         result_type:
-          type: string
+          enum:
+          - binary_classification
         from_edge:
           type: boolean
         label:
@@ -1625,7 +1626,8 @@ components:
         source:
           type: string
         result_type:
-          type: string
+          enum:
+          - counting
         from_edge:
           type: boolean
         count:
@@ -1648,7 +1650,8 @@ components:
         source:
           type: string
         result_type:
-          type: string
+          enum:
+          - multi_classification
         from_edge:
           type: boolean
         label:
@@ -1668,7 +1671,8 @@ components:
         source:
           type: string
         result_type:
-          type: string
+          enum:
+          - text_recognition
         from_edge:
           type: boolean
         text:
@@ -1691,7 +1695,8 @@ components:
         source:
           type: string
         result_type:
-          type: string
+          enum:
+          - bounding_box
         from_edge:
           type: boolean
         label:
@@ -1796,6 +1801,21 @@ components:
       - CHANGED_TO
       - NO_CHANGE
       - NO_QUERIES
+    Source:
+      type: string
+      enum:
+      - STILL_PROCESSING
+      - CLOUD
+      - USER
+      - CLOUD_ENSEMBLE
+      - ALGORITHM
+      - EDGE
+    Label:
+      type: string
+      enum:
+      - 'YES'
+      - 'NO'
+      - UNCLEAR
   securitySchemes:
     ApiToken:
       name: x-api-token
