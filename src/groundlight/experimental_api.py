@@ -1011,7 +1011,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             # Use the detector to find people in an image
             image_query = gl.ask_ml(detector, "path/to/image.jpg")
             print(f"Confidence: {image_query.result.confidence}")
-            print(f"Bounding boxes: {image_query.result.rois}")
+            print(f"Label: {image_query.result.label}")
+            print(f"Bounding boxes: {image_query.rois}")
 
         :param name: A short, descriptive name for the detector.
         :param query: A question about the object to detect in the image.
