@@ -149,6 +149,23 @@ def test_multiclass_detector(gl_experimental: ExperimentalApi):
 
 @pytest.mark.skip(
     reason=(
+        "General users currently currently can't use text recognition detectors. If you have questions, reach out"
+        " to Groundlight support, or upgrade your plan."
+    )
+)
+def test_text_recognition_detector(gl_experimental: ExperimentalApi):
+    """
+    verify that we can create and submit to a text recognition detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    created_detector = gl_experimental.create_text_recognition_detector(name, "What is the date and time?")
+    assert created_detector is not None
+    mc_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert mc_iq.result.label is not None
+
+
+@pytest.mark.skip(
+    reason=(
         "General users currently currently can't use bounding box detectors. If you have questions, reach out"
         " to Groundlight support, or upgrade your plan."
     )
