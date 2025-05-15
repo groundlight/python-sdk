@@ -1,8 +1,9 @@
 from datetime import datetime
 
 import pytest
-from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
+
+from groundlight import ExperimentalApi, Groundlight
 
 
 def pytest_configure(config):
