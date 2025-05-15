@@ -55,15 +55,17 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
 
 
 @pytest.fixture(name="image_query_one")
-def fixture_image_query_one(gl_experimental: Groundlight, detector: Detector) -> ImageQuery:
-    iq = gl_experimental.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
+def fixture_image_query_one(gl_experimental: Groundlight, count_detector: Detector) -> ImageQuery:
+    iq = gl_experimental.submit_image_query(
+        detector=count_detector.id, image="test/assets/dog.jpeg", human_review="NEVER"
+    )
     return iq
 
 
 @pytest.fixture(name="image_query_zero")
-def fixture_image_query_zero(gl_experimental: Groundlight, detector: Detector) -> ImageQuery:
+def fixture_image_query_zero(gl_experimental: Groundlight, count_detector: Detector) -> ImageQuery:
     iq = gl_experimental.submit_image_query(
-        detector=detector.id, image="test/assets/no_dogs.jpeg", human_review="NEVER"
+        detector=count_detector.id, image="test/assets/no_dogs.jpeg", human_review="NEVER"
     )
     return iq
 
