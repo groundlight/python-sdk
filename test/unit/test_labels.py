@@ -72,13 +72,13 @@ def test_text_recognition_labels(gl_experimental: ExperimentalApi):
     iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     gl_experimental.add_label(iq1, "apple text")
     iq1 = gl_experimental.get_image_query(iq1.id)
-    assert iq1.result.label == "apple text"
+    assert iq1.result.text == "apple text"
     gl_experimental.add_label(iq1, "banana text")
     iq1 = gl_experimental.get_image_query(iq1.id)
-    assert iq1.result.label == "banana text"
+    assert iq1.result.text == "banana text"
     gl_experimental.add_label(iq1, "")
     iq1 = gl_experimental.get_image_query(iq1.id)
-    assert iq1.result.label == ""
+    assert iq1.result.text == ""
 
     with pytest.raises(ApiException) as _:
         gl_experimental.add_label(iq1, "MAYBE")
