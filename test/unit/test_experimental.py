@@ -72,7 +72,7 @@ def test_submit_roi(gl_experimental: ExperimentalApi, image_query_one: ImageQuer
     """
     label_name = "dog"
     roi = gl_experimental.create_roi(label_name, (0, 0), (0.5, 0.5))
-    gl_experimental.add_label(image_query_one.id, "YES", [roi])
+    gl_experimental.add_label(image_query_one.id, 1, [roi])
 
 
 @pytest.mark.skip(
