@@ -145,7 +145,7 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi):
     )
     assert created_detector is not None
     mc_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
-    assert mc_iq.result.label is not None
+    assert mc_iq.result.text is not None
 
 
 @pytest.mark.skip(
