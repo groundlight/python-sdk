@@ -1054,7 +1054,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
-    def create_text_recognition_detector(
+    def create_text_recognition_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
         query: str,
