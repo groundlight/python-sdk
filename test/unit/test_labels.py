@@ -80,5 +80,6 @@ def test_text_recognition_labels(gl_experimental: ExperimentalApi):
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.text == ""
 
-    with pytest.raises(ApiException) as _:
-        gl_experimental.add_label(iq1, "MAYBE")
+    gl_experimental.add_label(iq1, "UNCLEAR")
+    iq1 = gl_experimental.get_image_query(iq1.id)
+    assert iq1.result.text is None

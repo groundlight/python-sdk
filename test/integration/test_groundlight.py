@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 import pytest
-from groundlight import Groundlight
+from groundlight import Groundlight, ExperimentalApi
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
@@ -72,35 +72,6 @@ def is_valid_display_label(label: str) -> bool:
     return label in VALID_DISPLAY_LABELS
 
 
-@pytest.fixture(name="gl")
-def fixture_gl() -> Groundlight:
-    """Creates a Groundlight client object for testing."""
-    _gl = Groundlight()
-    _gl.DEFAULT_WAIT = 10
-    return _gl
-
-
-@pytest.fixture(name="detector")
-def fixture_detector(gl: Groundlight) -> Detector:
-    """Creates a new Test detector."""
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
-    query = "Is there a dog?"
-    pipeline_config = "never-review"
-    return gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
-
-
-@pytest.fixture(name="image_query_yes")
-def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
-    iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
-    return iq
-
-
-@pytest.fixture(name="image_query_no")
-def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
-    iq = gl.submit_image_query(detector=detector.id, image="test/assets/cat.jpeg", human_review="NEVER")
-    return iq
-
-
 @pytest.fixture(name="image")
 def fixture_image() -> str:
     return "test/assets/dog.jpeg"
@@ -112,9 +83,9 @@ def test_create_detector(gl: Groundlight):
     _detector = gl.create_detector(name=name, query=query)
     assert str(_detector)
     assert isinstance(_detector, Detector)
-    assert (
-        _detector.confidence_threshold == DEFAULT_CONFIDENCE_THRESHOLD
-    ), "We expected the default confidence threshold to be used."
+    assert _detector.confidence_threshold == DEFAULT_CONFIDENCE_THRESHOLD, (
+        "We expected the default confidence threshold to be used."
+    )
 
 
 def test_create_detector_with_pipeline_config(gl: Groundlight):
@@ -178,9 +149,9 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
 
     # If the confidence is not provided, we will use the existing detector's confidence.
     retrieved_detector = gl.get_or_create_detector(name=name, query=query)
-    assert (
-        retrieved_detector.confidence_threshold == confidence_threshold
-    ), "We expected to retrieve the existing detector's confidence, but got a different value."
+    assert retrieved_detector.confidence_threshold == confidence_threshold, (
+        "We expected to retrieve the existing detector's confidence, but got a different value."
+    )
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
