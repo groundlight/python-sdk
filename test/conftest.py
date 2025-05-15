@@ -5,11 +5,11 @@ from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
 
-def pytest_configure(config):
+def pytest_configure(config):  # pylint: disable=unused-argument
     # Run environment check before tests
     gl = Groundlight()
-    if gl._user_is_privileged():
-        raise Exception(
+    if gl._user_is_privileged():  # pylint: disable=protected-access
+        raise RuntimeError(
             "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
         )
 
@@ -31,6 +31,17 @@ def fixture_detector(gl: Groundlight) -> Detector:
     return gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
 
 
+@pytest.fixture(name="count_detector")
+def fixture_count_detector(gl_experimental: ExperimentalApi) -> Detector:
+    """Creates a new Test detector."""
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    query = "How many dogs?"
+    pipeline_config = "never-review-multi"  # always predicts 0
+    return gl_experimental.create_counting_detector(
+        name=name, query=query, class_name="dog", pipeline_config=pipeline_config
+    )
+
+
 @pytest.fixture(name="image_query_yes")
 def fixture_image_query_yes(gl: Groundlight, detector: Detector) -> ImageQuery:
     iq = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
@@ -43,9 +54,27 @@ def fixture_image_query_no(gl: Groundlight, detector: Detector) -> ImageQuery:
     return iq
 
 
+@pytest.fixture(name="image_query_one")
+def fixture_image_query_one(gl_experimental: Groundlight, count_detector: Detector) -> ImageQuery:
+    iq = gl_experimental.submit_image_query(
+        detector=count_detector.id, image="test/assets/dog.jpeg", human_review="NEVER"
+    )
+    return iq
+
+
+@pytest.fixture(name="image_query_zero")
+def fixture_image_query_zero(gl_experimental: Groundlight, count_detector: Detector) -> ImageQuery:
+    iq = gl_experimental.submit_image_query(
+        detector=count_detector.id, image="test/assets/no_dogs.jpeg", human_review="NEVER"
+    )
+    return iq
+
+
 @pytest.fixture(name="gl_experimental")
-def _gl() -> ExperimentalApi:
-    return ExperimentalApi()
+def fixture_gl_experimental() -> ExperimentalApi:
+    _gl = ExperimentalApi()
+    _gl.DEFAULT_WAIT = 10
+    return _gl
 
 
 @pytest.fixture(name="initial_iq")

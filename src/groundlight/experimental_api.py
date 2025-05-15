@@ -30,6 +30,7 @@ from groundlight_openapi_client.model.patched_detector_request import PatchedDet
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
+from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
     ROI,
@@ -1048,6 +1049,60 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             mode_config = BoundingBoxModeConfiguration(class_name=class_name)
         else:
             mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
+
+        detector_creation_input.mode_configuration = mode_config
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
+
+    def create_text_recognition_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a text recognition detector that can read specified spans of text from images.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create a text recognition detector
+            detector = gl.create_text_recognition_detector(
+                name="date_and_time_detector",
+                query="Read the date and time from the bottom left corner of the image.",
+            )
+
+        :param name: A short, descriptive name for the detector.
+        :param query: A question about the object to detect in the image.
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value that sets the minimum confidence level required for the ML model's
+                            predictions. If confidence is below this threshold, the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+
+        :return: The created Detector object
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        detector_creation_input.mode = ModeEnum.TEXT
+        mode_config = TextModeConfiguration()
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
