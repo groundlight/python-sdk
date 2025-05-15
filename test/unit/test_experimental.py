@@ -2,9 +2,8 @@ import time
 from datetime import datetime, timezone
 
 import pytest
-from model import Detector, ImageQuery
-
 from groundlight import ExperimentalApi
+from model import Detector, ImageQuery
 
 
 def test_detector_groups(gl_experimental: ExperimentalApi):
