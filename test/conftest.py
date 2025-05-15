@@ -5,11 +5,11 @@ from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
 
-def pytest_configure(config):
+def pytest_configure(config):  # pylint: disable=unused-argument
     # Run environment check before tests
     gl = Groundlight()
-    if gl._user_is_privileged():
-        raise Exception(
+    if gl._user_is_privileged():  # pylint: disable=protected-access
+        raise RuntimeError(
             "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
         )
 
