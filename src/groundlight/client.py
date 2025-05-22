@@ -8,6 +8,7 @@ from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Union
 
 from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
@@ -174,6 +175,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         self.api_client = GroundlightApiClient(self.configuration)
         self.detectors_api = DetectorsApi(self.api_client)
+        self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
@@ -1484,7 +1486,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
-
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
