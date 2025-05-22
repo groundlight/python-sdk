@@ -21,8 +21,8 @@ from groundlight_openapi_client.model.detector import Detector
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.detector_group import DetectorGroup
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
@@ -30,7 +30,7 @@ from groundlight_openapi_client.model.paginated_image_query_list import Paginate
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.roi import ROI
 from groundlight_openapi_client.model.roi_request import ROIRequest
-
+from groundlight_openapi_client.model.status_enum import StatusEnum
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
@@ -45,7 +45,6 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
-from groundlight_openapi_client.model.status_enum import StatusEnum
 
 logger = logging.getLogger("groundlight.sdk")
 
