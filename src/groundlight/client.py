@@ -14,6 +14,7 @@ from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
+from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
 from groundlight_openapi_client.model.detector import Detector
@@ -22,6 +23,8 @@ from groundlight_openapi_client.model.detector_group import DetectorGroup
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.mode_enum import ModeEnum
+from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
@@ -42,6 +45,7 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
+from groundlight_openapi_client.model.status_enum import StatusEnum
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -1485,7 +1489,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return obj
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1549,4 +1553,4 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return obj

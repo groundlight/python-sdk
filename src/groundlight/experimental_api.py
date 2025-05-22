@@ -14,31 +14,20 @@ from typing import Any, Dict, List, Optional, Union
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
-from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
+from groundlight_openapi_client.model.condition import Condition
 from groundlight_openapi_client.model.condition_request import ConditionRequest
+from groundlight_openapi_client.model.detector import Detector
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
-from model import (
-    Action,
-    ActionList,
-    Condition,
-    Detector,
-    EdgeModelInfo,
-    ModeEnum,
-    PaginatedRuleList,
-    PayloadTemplate,
-    Rule,
-    WebhookAction,
-)
 from urllib3.response import HTTPResponse
 
 from groundlight.images import parse_supported_image_types
@@ -100,7 +89,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         super().__init__(endpoint=endpoint, api_token=api_token, disable_tls_verification=disable_tls_verification)
         self.actions_api = ActionsApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
-        self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
         self.edge_api = EdgeApi(self.api_client)
