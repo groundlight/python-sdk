@@ -5,7 +5,7 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
