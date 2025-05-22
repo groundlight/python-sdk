@@ -360,14 +360,18 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         name: str,
         query: str,
         *,
+        mode: ModeEnum = ModeEnum.BINARY,
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        class_names: Optional[List[str] | str] = None,
     ) -> Detector:
         """
         Create a new Detector with a given name and query.
+
+        By default will create a binary detector but alternate modes can be created by passing in a mode argument.
 
         Text and Bounding box detectors are in Beta, and can be created through the
         ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` and
@@ -406,6 +410,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                      this should be a yes/no question (e.g. "Is there a person in the image?").
         :param group_name: Optional name of a group to organize related detectors together. If not specified,
                          the detector will be placed in the default group.
+        :param mode: The mode of the detector. Defaults to ModeEnum.BINARY.
         :param confidence_threshold: A value between 0.5 and 1 that sets the minimum confidence level required
                                   for the ML model's predictions. If confidence is below this threshold,
                                   the query may be sent for human review.
@@ -417,21 +422,56 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
+        :param class_names: The name or names of the class to use for the detector. Only used for multi-class
+                        and counting detectors.
 
         :return: The created Detector object
         """
 
-        detector_creation_input = self._prep_create_detector(
-            name=name,
-            query=query,
-            group_name=group_name,
-            confidence_threshold=confidence_threshold,
-            patience_time=patience_time,
-            pipeline_config=pipeline_config,
-            metadata=metadata,
-        )
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        if mode == ModeEnum.BINARY:
+            if class_names is not None:
+                raise ValueError("class_names is not supported for binary detectors")
+            return self.create_binary_detector(
+                name=name,
+                query=query,
+                group_name=group_name,
+                confidence_threshold=confidence_threshold,
+                patience_time=patience_time,
+                pipeline_config=pipeline_config,
+                metadata=metadata,
+            )
+        elif mode == ModeEnum.COUNT:
+            if class_names is None:
+                raise ValueError("class_names is required for counting detectors")
+            if isinstance(class_names, list):
+                raise ValueError("class_names must be a single string for counting detectors")
+            return self.create_counting_detector(
+                name=name,
+                query=query,
+                class_name=class_names,
+                group_name=group_name,
+                confidence_threshold=confidence_threshold,
+                patience_time=patience_time,
+                pipeline_config=pipeline_config,
+                metadata=metadata,
+            )
+        elif mode == ModeEnum.MULTI_CLASS:
+            if class_names is None:
+                raise ValueError("class_names is required for multi-class detectors")
+            if isinstance(class_names, str):
+                raise ValueError("class_names must be a list for multi-class detectors")
+            return self.create_multiclass_detector(
+                name=name,
+                query=query,
+                class_names=class_names,
+                group_name=group_name,
+                confidence_threshold=confidence_threshold,
+                patience_time=patience_time,
+                pipeline_config=pipeline_config,
+                metadata=metadata,
+            )
+        else:
+            raise ValueError(f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi")
 
     def get_or_create_detector(  # noqa: PLR0913
         self,
@@ -1489,6 +1529,48 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
+
+    def create_binary_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a binary detector with the given name and query.
+
+        **Example usage**::
+
+            gl = Groundlight()
+
+            # Create a binary detector for a door
+            detector = gl.create_binary_detector(
+                name="door_detector",
+                query="Is there a door in the image?",
+                confidence_threshold=0.9,
+                patience_time=30.0
+            )
+
+            # Use the detector to classify a door
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+        """
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
+
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
