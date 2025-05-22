@@ -473,10 +473,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        else:
-            raise ValueError(
-                f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi"
-            )
+        raise ValueError(
+            f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi"
+        )
 
     def get_or_create_detector(  # noqa: PLR0913
         self,
