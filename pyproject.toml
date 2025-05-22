@@ -16,7 +16,6 @@ version = "0.22.7"
 certifi = ">=2023.7.22"
 frozendict = "^2.3.2"
 pillow = ">=11.0.0" # TODO: We may want to mark pillow (and numpy) as extra (https://python-poetry.org/docs/master/pyproject#extras)
-pydantic = "^2.0.0"
 python = ">=3.9,<4.0"
 python-dateutil = "^2.9.0"
 requests = "^2.28.2"

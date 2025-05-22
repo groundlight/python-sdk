@@ -12,7 +12,8 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
-from model import Detector, ImageQuery
+from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.model.image_query import ImageQuery
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version

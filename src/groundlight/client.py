@@ -14,19 +14,19 @@ from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
+from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
+from groundlight_openapi_client.model.detector import Detector
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
+from groundlight_openapi_client.model.detector_group import DetectorGroup
+from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.roi import ROI
 from groundlight_openapi_client.model.roi_request import ROIRequest
-from model import (
-    ROI,
-    BinaryClassificationResult,
-    Detector,
-    DetectorGroup,
-    ImageQuery,
-    PaginatedDetectorList,
-    PaginatedImageQueryList,
-)
+
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
@@ -275,7 +275,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
-        return Detector.parse_obj(obj.to_dict())
+        return obj
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
@@ -316,7 +316,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         obj = self.detectors_api.list_detectors(
             page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
         )
-        return PaginatedDetectorList.parse_obj(obj.to_dict())
+        return obj
 
     def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -426,7 +426,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
             metadata=metadata,
         )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return obj
 
     def get_or_create_detector(  # noqa: PLR0913
         self,
@@ -540,7 +540,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         if obj.result_type == "counting" and getattr(obj.result, "label", None):
             obj.result.pop("label")
             obj.result["count"] = None
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq = obj
         return self._fixup_image_query(iq)
 
     def list_image_queries(
