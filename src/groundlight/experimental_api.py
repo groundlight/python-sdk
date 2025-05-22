@@ -10,36 +10,28 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from io import BufferedReader, BytesIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
-from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
-from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
-from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
-from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
-    ROI,
     Action,
     ActionList,
-    BBoxGeometry,
     Condition,
     Detector,
-    DetectorGroup,
     EdgeModelInfo,
     ModeEnum,
     PaginatedRuleList,
