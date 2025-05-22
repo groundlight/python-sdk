@@ -22,9 +22,12 @@ from groundlight_openapi_client.model.roi_request import ROIRequest
 from model import (
     ROI,
     BinaryClassificationResult,
+    CountModeConfiguration,
     Detector,
     DetectorGroup,
     ImageQuery,
+    ModeEnum,
+    MultiClassModeConfiguration,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
