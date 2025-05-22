@@ -15,19 +15,19 @@ from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
+from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from model import (
     ROI,
     BinaryClassificationResult,
-    CountModeConfiguration,
     Detector,
     DetectorGroup,
     ImageQuery,
     ModeEnum,
-    MultiClassModeConfiguration,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
@@ -1524,7 +1524,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         if max_count is None:
             mode_config = CountModeConfiguration(class_name=class_name)
         else:
-            mode_config = CountModeConfiguration(max_count=max_count, class_name=class_name)
+            mode_config = CountModeConfiguration(class_name=class_name, max_count=max_count)
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)

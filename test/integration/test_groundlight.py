@@ -89,8 +89,10 @@ def test_create_detector(gl: Groundlight):
     ), "We expected the default confidence threshold to be used."
 
     # Test creating dectors with other modes
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     count_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.COUNT, class_names="dog")
     assert str(count_detector)
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
     multiclass_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"])
     assert str(multiclass_detector)
 
@@ -790,13 +792,13 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
 
 def test_binary_detector(gl: Groundlight):
     """
-    verify that we can create and submit to a counting detector
+    verify that we can create and submit to a binary detector
     """
     name = f"Test {datetime.utcnow()}"
     created_detector = gl.create_binary_detector(name, "Is there a dog", "dog", confidence_threshold=0.0)
     assert created_detector is not None
-    count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
-    assert count_iq.result.label is not None
+    binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert binary_iq.result.label is not None
 
 def test_counting_detector(gl: Groundlight):
     """
