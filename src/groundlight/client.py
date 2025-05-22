@@ -364,9 +364,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         """
         Create a new Detector with a given name and query.
 
-        Counting and Multiclass detectors are in Beta, and can be created through the
-        ExperimentalApi via the :meth:`ExperimentalApi.create_counting_detector` and
-        :meth:`ExperimentalApi.create_multiclass_detector` methods.
+        Text and Bounding box detectors are in Beta, and can be created through the
+        ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` and
+        :meth:`ExperimentalApi.create_bounding_box_detector` methods.
 
         **Example usage**::
 
@@ -1214,7 +1214,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Get image from an image query
             iq = gl.get_image_query("iq_123")
@@ -1254,7 +1254,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Create a group for all door-related detectors
             door_group = gl.create_detector_group("door-detectors")
@@ -1279,7 +1279,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Get all detector groups
             groups = gl.list_detector_groups()
@@ -1305,7 +1305,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Create an ROI for a door in the image
             door_roi = gl.create_roi(
@@ -1347,7 +1347,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Using a detector object
             detector = gl.get_detector("det_abc123")
@@ -1381,7 +1381,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Using a detector object
             detector = gl.get_detector("det_abc123")
@@ -1429,7 +1429,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             # Create a detector that counts people up to 5
             detector = gl.create_counting_detector(
@@ -1503,7 +1503,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         **Example usage**::
 
-            gl = ExperimentalApi()
+            gl = Groundlight()
 
             detector = gl.create_multiclass_detector(
                 name="Traffic Light Detector",

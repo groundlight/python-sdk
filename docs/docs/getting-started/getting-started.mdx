@@ -1,0 +1,169 @@
+# Getting Started with Groundlight
+
+## Build Powerful Computer Vision Applications in Minutes
+
+Welcome to Groundlight AI! This guide will walk you through creating powerful computer vision applications in minutes using our Python SDK.
+No machine learning expertise required! Groundlight empowers businesses across industries -
+from [revolutionizing industrial quality control](https://www.groundlight.ai/blog/lkq-corporation-uses-groundlight-ai-to-revolutionize-quality-control-and-inspection)
+and [monitoring workplace safety compliance](https://www.groundlight.ai/use-cases/ppe-detection-in-the-workplace)
+to [optimizing inventory management](https://www.groundlight.ai/use-cases/inventory-monitoring-using-vision-ai).
+Our human-in-the-loop technology delivers accurate results while continuously improving over time, making
+sophisticated computer vision accessible to everyone.
+
+Don't code? No problem! [Contact our team](mailto:support@groundlight.ai) and we'll build a custom solution tailored to your needs.
+
+In this example, we'll build a simple eagle detector that can analyze live video streams and tell us if there are baby eagles being fed.
+![Eagle Detector](/img/eagle_detector.png)
+
+### Prerequisites
+Before diving in, you'll need:
+1. A [Groundlight account](https://dashboard.groundlight.ai/) (sign up is quick and easy!)
+2. An API token from your [Groundlight dashboard](https://dashboard.groundlight.ai/reef/my-account/api-tokens). Check out our [API Tokens guide](/docs/getting-started/api-tokens) for details.
+3. Python 3.9 or newer installed on your system.
+
+### Setting Up Your Environment
+
+Let's set up a clean Python environment for your Groundlight project! The Groundlight SDK is available on PyPI and can be installed with [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing).
+
+First, let's create a virtual environment to keep your Groundlight dependencies isolated from other Python projects:
+```bash
+python3 -m venv groundlight-env
+```
+Now, activate your virtual environment:
+```bash
+# MacOS / Linux
+source groundlight-env/bin/activate
+```
+```
+# Windows
+.\groundlight-env\Scripts\activate
+```
+
+With your environment ready, install the Groundlight SDK with a simple pip command:
+```bash
+pip install groundlight
+```
+
+Let's also install [framegrab](https://github.com/groundlight/framegrab) with YouTube support -
+this useful library will let us capture frames from YouTube livestreams, webcams, and other video
+sources, making it easy to get started!
+```bash
+pip install "framegrab[youtube]"
+```
+:::tip Camera Support
+Framegrab is versatile! It works with:
+- Webcams and USB cameras
+- RTSP streams (security cameras)
+- Professional cameras (Basler USB/GigE)
+- Depth cameras (Intel RealSense)
+- Video files and streams (mp4, mov, mjpeg, avi)
+- YouTube livestreams
+
+This makes it perfect for quickly prototyping your computer vision applications!
+:::
+
+Need more options? Check out our detailed [installation guide](/docs/installation/) for advanced setup instructions.
+
+### Authentication
+
+Now let's set up your credentials so you can start making API calls. Groundlight uses API tokens to securely authenticate your requests.
+
+If you don't have an API token yet, refer to our [API Tokens guide](/docs/getting-started/api-tokens) to create one.
+
+The SDK will automatically look for your token in the `GROUNDLIGHT_API_TOKEN` environment variable. Set it up with:
+```bash
+# MacOS / Linux
+export GROUNDLIGHT_API_TOKEN='your-api-token'
+```
+```powershell
+# Windows
+setx GROUNDLIGHT_API_TOKEN "your-api-token"
+```
+:::important API Tokens
+Keep your API token secure! Anyone who has access to it can impersonate you and can access to your Groundlight data.
+:::
+
+### Call the Groundlight API
+
+Call the Groundlight API by creating a `Detector` and submitting an `ImageQuery`. A `Detector` represents a specific
+visual question you want to answer, while an `ImageQuery` is a request to analyze an image with that question.
+
+The Groundlight system is designed to provide consistent, highly confident answers for similar images
+(such as frames from the same camera) when asked the same question repeatedly. This makes it ideal for
+scenarios where you need reliable visual detection.
+
+Let's see how to use Groundlight to analyze an image:
+```python title="ask.py" notest
+from framegrab import FrameGrabber
+from groundlight import Groundlight, Detector, ImageQuery
+
+gl = Groundlight()
+detector: Detector = gl.get_or_create_detector(
+    name="eagle-detector",
+    query="Are the baby eagles being fed??",
+)
+
+# Big Bear Bald Eagle Nest livestream
+youtube_live_url = 'https://www.youtube.com/watch?v=B4-L2nfGcuE'
+
+framegrab_config = {
+    'input_type': 'youtube_live',
+    'id': {'youtube_url': youtube_live_url},
+}
+
+with FrameGrabber.create_grabber(framegrab_config) as grabber:
+    frame = grabber.grab()
+    if frame is None:
+        raise RuntimeError("No frame captured")
+
+iq: ImageQuery = gl.submit_image_query(detector=detector, image=frame)
+
+print(f"{detector.query} -- Answer: {iq.result.label} with confidence={iq.result.confidence:.3f}\n")
+print(iq)
+```
+
+Run the code using `python ask.py`. The code will submit an image from the live-stream to the Groundlight API and print the result:
+```
+Is there an eagle visible? -- Answer: YES with confidence=0.988
+
+ImageQuery(
+    id='iq_2pL5wwlefaOnFNQx1X6awTOd119',
+    query="Is there an eagle visible?,
+    detector_id='det_2owcsT7XCsfFlu7diAKgPKR4BXY',
+    result=BinaryClassificationResult(
+        confidence=0.9884857543478209,
+        label=<Label.YES: 'YES'>
+    ),
+    created_at=datetime.datetime(2025, 2, 25, 11, 5, 57, 38627, tzinfo=tzutc()),
+    patience_time=30.0,
+    confidence_threshold=0.9,
+    type=<ImageQueryTypeEnum.image_query: 'image_query'>,
+    result_type=<ResultTypeEnum.binary_classification: 'binary_classification'>,
+    metadata=None
+)
+```
+## What's Next?
+
+**Amazing job!** You've just built your first computer vision application with Groundlight.
+In just a few lines of code, you've created an eagle detector that can analyze live video streams!
+
+### Supercharge Your Application
+
+Take your application to the next level:
+
+- **Monitor in real-time** through the [Groundlight Dashboard](https://dashboard.groundlight.ai/) - see your detections, review results, and track performance
+- **Get instant alerts** when important events happen - [set up text and email notifications](/docs/guide/alerts) for critical detections
+- **Improve continuously** with Groundlight's human-in-the-loop technology that learns from your feedback
+
+### Next Steps
+
+| What You Want To Do | Resource |
+|---|---|
+| 📝 Create better detectors | [Writing effective queries](/docs/getting-started/writing-queries) |
+| 📷 Connect to cameras, RTSP, or other sources | [Grabbing images from various sources](/docs/guide/grabbing-images) |
+| 🎯 Fine-tune detection accuracy | [Managing confidence thresholds](/docs/guide/managing-confidence) |
+| 📚 Explore the full API | [SDK Reference](/docs/api-reference/) |
+
+Ready to explore more possibilities? Visit our [Guides](https://www.groundlight.ai/guides) to discover sample
+applications built with Groundlight AI — from [industrial inspection workflows](https://www.groundlight.ai/blog/lkq-corporation-uses-groundlight-ai-to-revolutionize-quality-control-and-inspection)
+to [hummingbird detection systems](https://www.groundlight.ai/guides/detecting-hummingbirds-with-groundlight-ai).
