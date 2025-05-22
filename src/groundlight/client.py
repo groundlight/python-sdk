@@ -1273,7 +1273,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         :return: A DetectorGroup object corresponding to the newly created detector group
         :rtype: DetectorGroup
         """
-        return DetectorGroup(**self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
+        return self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name))
 
     def list_detector_groups(self) -> List[DetectorGroup]:
         """
@@ -1293,7 +1293,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         :return: A list of DetectorGroup objects representing all detector groups in your account
         """
-        return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
+        return [det for det in self.detector_group_api.get_detector_groups()]
 
     def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
         """
