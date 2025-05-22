@@ -89,6 +89,7 @@ def test_submit_multiple_rois(gl_experimental: ExperimentalApi, image_query_one:
     roi = gl_experimental.create_roi(label_name, (0, 0), (0.5, 0.5))
     gl_experimental.add_label(image_query_one, 3, [roi] * 3)
 
+
 def test_text_recognition_detector(gl_experimental: ExperimentalApi):
     """
     verify that we can create and submit to a text recognition detector
