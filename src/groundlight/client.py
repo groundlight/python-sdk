@@ -65,7 +65,7 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
-class Groundlight:  # pylint: disable=too-many-instance-attributes
+class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     """
     Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,
     submit images for analysis, and retrieve predictions.
@@ -443,7 +443,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        elif mode == ModeEnum.COUNT:
+        if mode == ModeEnum.COUNT:
             if class_names is None:
                 raise ValueError("class_names is required for counting detectors")
             if isinstance(class_names, list):
@@ -458,7 +458,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        elif mode == ModeEnum.MULTI_CLASS:
+        if mode == ModeEnum.MULTI_CLASS:
             if class_names is None:
                 raise ValueError("class_names is required for multi-class detectors")
             if isinstance(class_names, str):
