@@ -22,6 +22,7 @@ from model import (
     ROI,
     BinaryClassificationResult,
     Detector,
+    DetectorGroup,
     ImageQuery,
     PaginatedDetectorList,
     PaginatedImageQueryList,
@@ -173,6 +174,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
 
         self.api_client = GroundlightApiClient(self.configuration)
         self.detectors_api = DetectorsApi(self.api_client)
+        self.images_api = ImageQueriesApi(self.api_client)
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
         self.labels_api = LabelsApi(self.api_client)
@@ -1205,3 +1207,345 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         self.detectors_api.update_detector(
             detector, patched_detector_request=PatchedDetectorRequest(confidence_threshold=confidence_threshold)
         )
+
+    def get_image(self, iq_id: str) -> bytes:
+        """
+        Get the image associated with the given image query ID.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get image from an image query
+            iq = gl.get_image_query("iq_123")
+            image_bytes = gl.get_image(iq.id)
+
+            # Open with PIL - returns RGB order
+            from PIL import Image
+            image = Image.open(gl.get_image(iq.id))  # Returns RGB image
+
+            # Open with numpy via PIL - returns RGB order
+            import numpy as np
+            from io import BytesIO
+            image = np.array(Image.open(gl.get_image(iq.id)))  # Returns RGB array
+
+            # Open with OpenCV - returns BGR order
+            import cv2
+            import numpy as np
+            nparr = np.frombuffer(image_bytes, np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)  # Returns BGR array
+            # To convert to RGB if needed:
+            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        :param iq_id: The ID of the image query to get the image from
+        :return: The image as a byte array that can be used with PIL or other image libraries
+        """
+        # TODO: support taking an ImageQuery object
+        return self.images_api.get_image(iq_id)
+
+    def create_detector_group(self, name: str) -> DetectorGroup:
+        """
+        Creates a detector group with the given name. A detector group allows you to organize
+        related detectors together.
+
+        .. note::
+            You can specify a detector group when creating a detector without the need to create it ahead of time.
+            The group will be created automatically if it doesn't exist.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create a group for all door-related detectors
+            door_group = gl.create_detector_group("door-detectors")
+
+            # Later, create detectors in this group
+            door_open_detector = gl.create_detector(
+                name="front-door-open",
+                query="Is the front door open?",
+                detector_group=door_group
+            )
+
+        :param name: The name of the detector group. This should be descriptive and unique within your organization.
+        :type name: str
+        :return: A DetectorGroup object corresponding to the newly created detector group
+        :rtype: DetectorGroup
+        """
+        return DetectorGroup(**self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
+
+    def list_detector_groups(self) -> List[DetectorGroup]:
+        """
+        Gets a list of all detector groups in your account.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Get all detector groups
+            groups = gl.list_detector_groups()
+
+            # Print information about each group
+            for group in groups:
+                print(f"Group name: {group.name}")
+                print(f"Group ID: {group.id}")
+
+        :return: A list of DetectorGroup objects representing all detector groups in your account
+        """
+        return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
+
+    def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
+        """
+        Creates a Region of Interest (ROI) object that can be used to specify areas of interest in images. Certain
+        detectors (such as Count-mode detectors) may emit ROIs as part of their output. Providing an ROI can help
+        improve the accuracy of such detectors.
+
+        .. note::
+            ROI functionality is only available to Pro tier and higher.
+            If you would like to learn more, reach out to us at https://groundlight.ai
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create an ROI for a door in the image
+            door_roi = gl.create_roi(
+                label="door",
+                top_left=(0.2, 0.3),     # Coordinates are normalized (0-1)
+                bottom_right=(0.4, 0.8)  # Coordinates are normalized (0-1)
+            )
+
+            # Use the ROI when submitting an image query
+            query = gl.submit_image_query(
+                detector="door-detector",
+                image=image_bytes,
+                rois=[door_roi]
+            )
+
+        :param label: A descriptive label for the object or area contained in the ROI
+        :param top_left: Tuple of (x, y) coordinates for the top-left corner, normalized to [0,1]
+        :param bottom_right: Tuple of (x, y) coordinates for the bottom-right corner, normalized to [0,1]
+        :return: An ROI object that can be used in image queries
+        """
+
+        return ROI(
+            label=label,
+            score=1.0,
+            geometry=BBoxGeometry(
+                left=top_left[0],
+                top=top_left[1],
+                right=bottom_right[0],
+                bottom=bottom_right[1],
+                x=(top_left[0] + bottom_right[0]) / 2,
+                y=(top_left[1] + bottom_right[1]) / 2,
+            ),
+        )
+
+    def update_detector_status(self, detector: Union[str, Detector], enabled: bool) -> None:
+        """
+        Updates the status of the given detector. When a detector is disabled (enabled=False),
+        it will not accept or process any new image queries. Existing queries will not be affected.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+            gl.update_detector_status(detector, enabled=False)  # Disable the detector
+
+            # Using a detector ID string directly
+            gl.update_detector_status("det_abc123", enabled=True)  # Enable the detector
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector whose status should be updated.
+        :param enabled: Boolean indicating whether the detector should be enabled (True) or
+                       disabled (False). When disabled, the detector will not process new queries.
+
+        :return: None
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        self.detectors_api.update_detector(
+            detector,
+            patched_detector_request=PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF")),
+        )
+
+    def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
+        """
+        Updates the escalation type of the given detector, controlling whether queries can be
+        sent to human labelers when ML confidence is low.
+
+        This is particularly useful for controlling costs. When set to "NO_HUMAN_LABELING",
+        queries will only receive ML predictions, even if confidence is low.
+        When set to "STANDARD", low-confidence queries may be sent to human labelers for verification.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+
+            # Disable human labeling
+            gl.update_detector_escalation_type(detector, "NO_HUMAN_LABELING")
+
+            # Re-enable standard human labeling
+            gl.update_detector_escalation_type("det_abc123", "STANDARD")
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector whose escalation type should be updated.
+        :param escalation_type: The new escalation type setting. Must be one of:
+                              - "STANDARD": Allow human labeling for low-confidence queries
+                              - "NO_HUMAN_LABELING": Never send queries to human labelers
+
+        :return: None
+        :raises ValueError: If escalation_type is not one of the allowed values
+        """
+        if isinstance(detector, Detector):
+            detector = detector.id
+        escalation_type = escalation_type.upper()
+        if escalation_type not in ["STANDARD", "NO_HUMAN_LABELING"]:
+            raise ValueError("escalation_type must be either 'STANDARD' or 'NO_HUMAN_LABELING'")
+        self.detectors_api.update_detector(
+            detector,
+            patched_detector_request=PatchedDetectorRequest(escalation_type=escalation_type),
+        )
+
+    def create_counting_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        class_name: str,
+        *,
+        max_count: Optional[int] = None,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a counting detector that can count objects in images up to a specified maximum count.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Create a detector that counts people up to 5
+            detector = gl.create_counting_detector(
+                name="people_counter",
+                query="How many people are in the image?",
+                class_name="person",
+                max_count=5,
+                confidence_threshold=0.9,
+                patience_time=30.0
+            )
+
+            # Use the detector to count people in an image
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+            print(f"Counted {image_query.result.count} people")
+            print(f"Confidence: {image_query.result.confidence}")
+
+        :param name: A short, descriptive name for the detector.
+        :param query: A question about the count of an object in the image.
+        :param class_name: The class name of the object to count.
+        :param max_count: Maximum number of objects to count (default: 10)
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value that sets the minimum confidence level required for the ML model's
+                            predictions. If confidence is below this threshold, the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+
+        :return: The created Detector object
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        detector_creation_input.mode = ModeEnum.COUNT
+
+        if max_count is None:
+            mode_config = CountModeConfiguration(class_name=class_name)
+        else:
+            mode_config = CountModeConfiguration(max_count=max_count, class_name=class_name)
+
+        detector_creation_input.mode_configuration = mode_config
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
+
+
+    def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        class_names: List[str],
+        *,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+    ) -> Detector:
+        """
+        Creates a multiclass detector with the given name and query.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            detector = gl.create_multiclass_detector(
+                name="Traffic Light Detector",
+                query="What color is the traffic light?",
+                class_names=["Red", "Yellow", "Green"]
+            )
+
+            # Use the detector to classify a traffic light
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+            print(f"Traffic light is {image_query.result.label}")
+            print(f"Confidence: {image_query.result.confidence}")
+
+        :param name: A short, descriptive name for the detector.
+        :param query: A question about classifying objects in the image.
+        :param class_names: List of possible class labels for classification.
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value between 1/num_classes and 1 that sets the minimum confidence level required
+                                  for the ML model's predictions. If confidence is below this threshold,
+                                  the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+
+        :return: The created Detector object
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            metadata=metadata,
+        )
+        detector_creation_input.mode = ModeEnum.MULTI_CLASS
+        mode_config = MultiClassModeConfiguration(class_names=class_names)
+        detector_creation_input.mode_configuration = mode_config
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.parse_obj(obj.to_dict())
