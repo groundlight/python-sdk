@@ -17,12 +17,15 @@ from groundlight_openapi_client.exceptions import NotFoundException, Unauthorize
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
+from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
+from groundlight_openapi_client.model.status_enum import StatusEnum
 from model import (
     ROI,
+    BBoxGeometry,
     BinaryClassificationResult,
     Detector,
     DetectorGroup,
@@ -366,7 +369,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
-        class_names: Optional[List[str] | str] = None,
+        class_names: Optional[Union[List[str], str]] = None,
     ) -> Detector:
         """
         Create a new Detector with a given name and query.
