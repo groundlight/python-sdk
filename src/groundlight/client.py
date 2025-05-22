@@ -471,7 +471,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
                 metadata=metadata,
             )
         else:
-            raise ValueError(f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi")
+            raise ValueError(
+                f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi"
+            )
 
     def get_or_create_detector(  # noqa: PLR0913
         self,
@@ -1570,7 +1572,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes
         )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
-
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,

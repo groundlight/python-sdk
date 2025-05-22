@@ -93,8 +93,11 @@ def test_create_detector(gl: Groundlight):
     count_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.COUNT, class_names="dog")
     assert str(count_detector)
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    multiclass_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"])
+    multiclass_detector = gl.create_detector(
+        name=name, query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"]
+    )
     assert str(multiclass_detector)
+
 
 def test_create_detector_with_pipeline_config(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
@@ -790,6 +793,7 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
         inspection_id="",
     )
 
+
 def test_binary_detector(gl: Groundlight):
     """
     verify that we can create and submit to a binary detector
@@ -799,6 +803,7 @@ def test_binary_detector(gl: Groundlight):
     assert created_detector is not None
     binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert binary_iq.result.label is not None
+
 
 def test_counting_detector(gl: Groundlight):
     """
