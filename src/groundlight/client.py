@@ -1573,47 +1573,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return obj
 
-    def create_binary_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
-        self,
-        name: str,
-        query: str,
-        *,
-        group_name: Optional[str] = None,
-        confidence_threshold: Optional[float] = None,
-        patience_time: Optional[float] = None,
-        pipeline_config: Optional[str] = None,
-        metadata: Union[dict, str, None] = None,
-    ) -> Detector:
-        """
-        Creates a binary detector with the given name and query.
-
-        **Example usage**::
-
-            gl = Groundlight()
-
-            # Create a binary detector for a door
-            detector = gl.create_binary_detector(
-                name="door_detector",
-                query="Is there a door in the image?",
-                confidence_threshold=0.9,
-                patience_time=30.0
-            )
-
-            # Use the detector to classify a door
-            image_query = gl.ask_ml(detector, "path/to/image.jpg")
-        """
-        detector_creation_input = self._prep_create_detector(
-            name=name,
-            query=query,
-            group_name=group_name,
-            confidence_threshold=confidence_threshold,
-            patience_time=patience_time,
-            pipeline_config=pipeline_config,
-            metadata=metadata,
-        )
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
-
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
