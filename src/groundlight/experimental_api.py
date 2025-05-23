@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import requests
-from groundlight.splint import ModeEnumSplint
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
@@ -41,6 +40,7 @@ from urllib3.response import HTTPResponse
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
+from groundlight.splint import ModeEnumSplint
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 

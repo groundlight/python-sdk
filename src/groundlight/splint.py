@@ -4,6 +4,7 @@ splint.py contains some small bit to keep this slightly divergent fork straight 
 
 from enum import Enum
 
+
 class ModeEnumSplint(str, Enum):
     BINARY = "BINARY"
     COUNT = "COUNT"
