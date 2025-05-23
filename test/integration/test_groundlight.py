@@ -21,6 +21,7 @@ from model import (
     CountingResult,
     Detector,
     ImageQuery,
+    ModeEnum,
     MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
@@ -86,6 +87,16 @@ def test_create_detector(gl: Groundlight):
     assert (
         _detector.confidence_threshold == DEFAULT_CONFIDENCE_THRESHOLD
     ), "We expected the default confidence threshold to be used."
+
+    # Test creating dectors with other modes
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    count_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.COUNT, class_names="dog")
+    assert str(count_detector)
+    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    multiclass_detector = gl.create_detector(
+        name=name, query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"]
+    )
+    assert str(multiclass_detector)
 
 
 def test_create_detector_with_pipeline_config(gl: Groundlight):
@@ -781,3 +792,59 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
         human_review="NEVER",
         inspection_id="",
     )
+
+
+def test_binary_detector(gl: Groundlight):
+    """
+    verify that we can create and submit to a binary detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    created_detector = gl.create_binary_detector(name, "Is there a dog", confidence_threshold=0.0)
+    assert created_detector is not None
+    binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert binary_iq.result.label is not None
+
+
+def test_counting_detector(gl: Groundlight):
+    """
+    verify that we can create and submit to a counting detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    created_detector = gl.create_counting_detector(name, "How many dogs", "dog", confidence_threshold=0.0)
+    assert created_detector is not None
+    count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert count_iq.result.count is not None
+
+
+def test_counting_detector_async(gl: Groundlight):
+    """
+    verify that we can create and submit to a counting detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    created_detector = gl.create_counting_detector(name, "How many dogs", "dog", confidence_threshold=0.0)
+    assert created_detector is not None
+    async_iq = gl.ask_async(created_detector, "test/assets/dog.jpeg")
+    # attempting to access fields within the result should raise an exception
+    with pytest.raises(AttributeError):
+        _ = async_iq.result.label  # type: ignore
+    with pytest.raises(AttributeError):
+        _ = async_iq.result.confidence  # type: ignore
+    time.sleep(5)
+    # you should be able to get a "real" result by retrieving an updated image query object from the server
+    _image_query = gl.get_image_query(id=async_iq.id)
+    assert _image_query.result is not None
+
+
+def test_multiclass_detector(gl: Groundlight):
+    """
+    verify that we can create and submit to a multi-class detector
+    """
+    name = f"Test {datetime.utcnow()}"
+    class_names = ["Golden Retriever", "Labrador Retriever", "Poodle"]
+    created_detector = gl.create_multiclass_detector(
+        name, "What kind of dog is this?", class_names=class_names, confidence_threshold=0.0
+    )
+    assert created_detector is not None
+    mc_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert mc_iq.result.label is not None
+    assert mc_iq.result.label in class_names

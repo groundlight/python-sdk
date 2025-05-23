@@ -3,11 +3,11 @@
 Counting detectors are used to count the number of objects in an image. Groundlight's counting detectors also return bounding boxes around the objects they count.
 
 ```python notest
-from groundlight import ExperimentalApi
-gl_exp = ExperimentalApi()
+from groundlight import Groundlight
+gl = Groundlight()
 
 # highlight-start
-detector = gl_exp.create_counting_detector(
+detector = gl.create_counting_detector(
     name="car-counter",
     query="How many cars are in the parking lot?",
     class_name="car",
@@ -32,14 +32,14 @@ Counting Detectors are available on [Business and Enterprise plans](https://www.
 Now that you have created a counting detector, you can submit an image query to it.
 
 ```python notest
-from groundlight import ExperimentalApi
-gl_exp = ExperimentalApi()
+from groundlight import Groundlight
+gl = Groundlight()
 
-detector = gl_exp.get_detector_by_name("car-counter")
+detector = gl.get_detector_by_name("car-counter")
 
 # highlight-start
 # Count the number of cars in an image
-image_query = gl_exp.submit_image_query(detector, "path/to/image.jpg")
+image_query = gl.submit_image_query(detector, "path/to/image.jpg")
 # highlight-end
 
 print(f"Counted {image_query.result.count} cars")
@@ -99,17 +99,17 @@ When adding a label to a counting detector, if you include ROIs, the number of R
 the count you are labeling.
 
 ```python notest
-from groundlight import ExperimentalApi
-gl_exp = ExperimentalApi()
+from groundlight import Groundlight
+gl = Groundlight()
 
 # highlight-start
 # Add a count label with corresponding ROIs to the image query from the previous example.
 #   ROIs are specified as (left, top) and (right, bottom) coordinates, with values
 #   between 0 and 1 representing the percentage of the image width and height.
-roi1 = gl_exp.create_roi("car", (0.1, 0.2), (0.2, 0.3))
-roi2 = gl_exp.create_roi("car", (0.4, 0.4), (0.5, 0.6))
-roi3 = gl_exp.create_roi("car", (0.6, 0.5), (0.8, 0.9))
+roi1 = gl.create_roi("car", (0.1, 0.2), (0.2, 0.3))
+roi2 = gl.create_roi("car", (0.4, 0.4), (0.5, 0.6))
+roi3 = gl.create_roi("car", (0.6, 0.5), (0.8, 0.9))
 rois = [roi1, roi2, roi3]
-gl_exp.add_label(image_query, label=len(rois), rois=rois)
+gl.add_label(image_query, label=len(rois), rois=rois)
 # highlight-end
 ```
