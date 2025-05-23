@@ -66,7 +66,6 @@ class ApiTokenError(GroundlightClientError):
 
 
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
-class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     """
     Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,
     submit images for analysis, and retrieve predictions.
@@ -770,7 +769,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        image_query = raw_image_query
 
         if wait > 0:
             if confidence_threshold is None:

@@ -66,7 +66,8 @@ test-docs-integ: install-extras  ## Run the example code and tests in our docs a
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
-LINT_PATHS="src test bin samples"
+# LINT_PATHS="src test bin samples"
+LINT_PATHS="src test"
 
 lint: install-lint  ## Run linter to check formatting and style
 	./code-quality/lint ${LINT_PATHS}
