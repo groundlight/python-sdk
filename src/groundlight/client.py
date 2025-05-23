@@ -1343,7 +1343,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :return: A list of DetectorGroup objects representing all detector groups in your account
         """
-        return [det for det in self.detector_group_api.get_detector_groups()]
+        return list(self.detector_group_api.get_detector_groups())
 
     def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
         """
