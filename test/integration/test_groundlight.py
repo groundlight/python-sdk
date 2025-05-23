@@ -15,18 +15,15 @@ from groundlight.internalapi import ApiException, InternalApiError, NotFoundErro
 from groundlight.optional_imports import *
 from groundlight.splint import ModeEnumSplint
 from groundlight.status_codes import is_user_error
-from ksuid import KsuidMs
-
-from groundlight_openapi_client.model.detector import Detector
-from groundlight_openapi_client.model.image_query import ImageQuery
-from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
 from groundlight_openapi_client.model.bounding_box_result import BoundingBoxResult
 from groundlight_openapi_client.model.counting_result import CountingResult
+from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.model.image_query import ImageQuery
 from groundlight_openapi_client.model.multi_classification_result import MultiClassificationResult
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
-
+from ksuid import KsuidMs
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75

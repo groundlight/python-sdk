@@ -8,8 +8,6 @@ from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTyp
 from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
 
 
-
-
 def pytest_configure(config):  # pylint: disable=unused-argument
     # Run environment check before tests
     gl = Groundlight()

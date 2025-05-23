@@ -26,7 +26,6 @@ from groundlight_openapi_client.model.detector_group import DetectorGroup
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.image_query import ImageQuery
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
-from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
@@ -48,8 +47,8 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
-from groundlight_openapi_client.model.status_enum import StatusEnum
 from groundlight.splint import ModeEnumSplint
+
 logger = logging.getLogger("groundlight.sdk")
 
 # Set urllib3 request timeout to something modern and fast.
