@@ -1,69 +1,82 @@
+# coding: utf-8
+
 # flake8: noqa
+"""
+    Groundlight API
 
-# import all models into this package
-# if you have many models here with many references from one model to another this may
-# raise a RecursionError
-# to avoid this, import only the models that you directly need like:
-# from from groundlight_openapi_client.model.pet import Pet
-# or import this package, but before doing it, use:
-# import sys
-# sys.setrecursionlimit(n)
+    Groundlight makes it simple to understand images. You can easily create computer vision detectors just by describing what you want to know using natural language.
 
-from groundlight_openapi_client.model.action import Action
-from groundlight_openapi_client.model.action_list import ActionList
-from groundlight_openapi_client.model.all_notes import AllNotes
-from groundlight_openapi_client.model.annotations_requested_enum import AnnotationsRequestedEnum
-from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
-from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
-from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
-from groundlight_openapi_client.model.blank_enum import BlankEnum
-from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
-from groundlight_openapi_client.model.bounding_box_result import BoundingBoxResult
-from groundlight_openapi_client.model.channel_enum import ChannelEnum
-from groundlight_openapi_client.model.condition import Condition
-from groundlight_openapi_client.model.condition_request import ConditionRequest
-from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
-from groundlight_openapi_client.model.counting_result import CountingResult
-from groundlight_openapi_client.model.detector import Detector
-from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
-from groundlight_openapi_client.model.detector_group import DetectorGroup
-from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.detector_type_enum import DetectorTypeEnum
-from groundlight_openapi_client.model.edge_model_info import EdgeModelInfo
-from groundlight_openapi_client.model.escalation_type_enum import EscalationTypeEnum
-from groundlight_openapi_client.model.image_query import ImageQuery
-from groundlight_openapi_client.model.image_query_type_enum import ImageQueryTypeEnum
-from groundlight_openapi_client.model.inline_response200 import InlineResponse200
-from groundlight_openapi_client.model.inline_response2001 import InlineResponse2001
-from groundlight_openapi_client.model.inline_response2001_evaluation_results import InlineResponse2001EvaluationResults
-from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
-from groundlight_openapi_client.model.inline_response200_summary import InlineResponse200Summary
-from groundlight_openapi_client.model.inline_response200_summary_class_counts import InlineResponse200SummaryClassCounts
-from groundlight_openapi_client.model.label import Label
-from groundlight_openapi_client.model.label_value import LabelValue
-from groundlight_openapi_client.model.label_value_request import LabelValueRequest
-from groundlight_openapi_client.model.mode_enum import ModeEnum
-from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
-from groundlight_openapi_client.model.multi_classification_result import MultiClassificationResult
-from groundlight_openapi_client.model.note import Note
-from groundlight_openapi_client.model.note_request import NoteRequest
-from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
-from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
-from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
-from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
-from groundlight_openapi_client.model.payload_template import PayloadTemplate
-from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
-from groundlight_openapi_client.model.roi import ROI
-from groundlight_openapi_client.model.roi_request import ROIRequest
-from groundlight_openapi_client.model.result_type_enum import ResultTypeEnum
-from groundlight_openapi_client.model.rule import Rule
-from groundlight_openapi_client.model.rule_request import RuleRequest
-from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUnitEnum
-from groundlight_openapi_client.model.source import Source
-from groundlight_openapi_client.model.source_enum import SourceEnum
-from groundlight_openapi_client.model.status_enum import StatusEnum
-from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
-from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
-from groundlight_openapi_client.model.verb_enum import VerbEnum
-from groundlight_openapi_client.model.webhook_action import WebhookAction
-from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
+    The version of the OpenAPI document: 0.18.2
+    Contact: support@groundlight.ai
+    Generated by OpenAPI Generator (https://openapi-generator.tech)
+
+    Do not edit the class manually.
+"""  # noqa: E501
+
+
+# import models into model package
+from groundlight_openapi_client.models.action import Action
+from groundlight_openapi_client.models.all_notes import AllNotes
+from groundlight_openapi_client.models.annotations_requested_enum import AnnotationsRequestedEnum
+from groundlight_openapi_client.models.b_box_geometry import BBoxGeometry
+from groundlight_openapi_client.models.b_box_geometry_request import BBoxGeometryRequest
+from groundlight_openapi_client.models.binary_classification_result import BinaryClassificationResult
+from groundlight_openapi_client.models.blank_enum import BlankEnum
+from groundlight_openapi_client.models.bounding_box_mode_configuration import BoundingBoxModeConfiguration
+from groundlight_openapi_client.models.bounding_box_result import BoundingBoxResult
+from groundlight_openapi_client.models.channel_enum import ChannelEnum
+from groundlight_openapi_client.models.condition import Condition
+from groundlight_openapi_client.models.condition_request import ConditionRequest
+from groundlight_openapi_client.models.count_mode_configuration import CountModeConfiguration
+from groundlight_openapi_client.models.counting_result import CountingResult
+from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import (
+    DetectorCreationInputRequestModeConfiguration,
+)
+from groundlight_openapi_client.models.detector_group import DetectorGroup
+from groundlight_openapi_client.models.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.models.detector_status import DetectorStatus
+from groundlight_openapi_client.models.detector_type_enum import DetectorTypeEnum
+from groundlight_openapi_client.models.edge_model_info import EdgeModelInfo
+from groundlight_openapi_client.models.escalation_type_enum import EscalationTypeEnum
+from groundlight_openapi_client.models.get_detector_evaluation200_response import GetDetectorEvaluation200Response
+from groundlight_openapi_client.models.get_detector_evaluation200_response_evaluation_results import (
+    GetDetectorEvaluation200ResponseEvaluationResults,
+)
+from groundlight_openapi_client.models.get_detector_metrics200_response import GetDetectorMetrics200Response
+from groundlight_openapi_client.models.get_detector_metrics200_response_summary import (
+    GetDetectorMetrics200ResponseSummary,
+)
+from groundlight_openapi_client.models.get_detector_metrics200_response_summary_class_counts import (
+    GetDetectorMetrics200ResponseSummaryClassCounts,
+)
+from groundlight_openapi_client.models.image_query_result import ImageQueryResult
+from groundlight_openapi_client.models.image_query_type_enum import ImageQueryTypeEnum
+from groundlight_openapi_client.models.label import Label
+from groundlight_openapi_client.models.label_value import LabelValue
+from groundlight_openapi_client.models.label_value_request import LabelValueRequest
+from groundlight_openapi_client.models.mode_enum import ModeEnum
+from groundlight_openapi_client.models.multi_class_mode_configuration import MultiClassModeConfiguration
+from groundlight_openapi_client.models.multi_classification_result import MultiClassificationResult
+from groundlight_openapi_client.models.note import Note
+from groundlight_openapi_client.models.note_request import NoteRequest
+from groundlight_openapi_client.models.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.models.paginated_image_query_list import PaginatedImageQueryList
+from groundlight_openapi_client.models.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.models.payload_template import PayloadTemplate
+from groundlight_openapi_client.models.payload_template_request import PayloadTemplateRequest
+from groundlight_openapi_client.models.roi import ROI
+from groundlight_openapi_client.models.roi_request import ROIRequest
+from groundlight_openapi_client.models.result_type_enum import ResultTypeEnum
+from groundlight_openapi_client.models.rule import Rule
+from groundlight_openapi_client.models.rule_action import RuleAction
+from groundlight_openapi_client.models.rule_request import RuleRequest
+from groundlight_openapi_client.models.snooze_time_unit_enum import SnoozeTimeUnitEnum
+from groundlight_openapi_client.models.source import Source
+from groundlight_openapi_client.models.source_enum import SourceEnum
+from groundlight_openapi_client.models.status_enum import StatusEnum
+from groundlight_openapi_client.models.text_mode_configuration import TextModeConfiguration
+from groundlight_openapi_client.models.text_recognition_result import TextRecognitionResult
+from groundlight_openapi_client.models.verb_enum import VerbEnum
+from groundlight_openapi_client.models.webhook_action import WebhookAction
+from groundlight_openapi_client.models.webhook_action_request import WebhookActionRequest
+from groundlight_openapi_client.models.who_am_i200_response import WhoAmI200Response

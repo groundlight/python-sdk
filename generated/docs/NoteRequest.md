@@ -2,13 +2,30 @@
 
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**content** | **str, none_type** | Text content of the note. | [optional] 
-**is_pinned** | **bool, none_type** |  | [optional] 
-**image** | **file_type, none_type** |  | [optional] 
-**any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
+**content** | **str** | Text content of the note. | [optional] 
+**is_pinned** | **bool** |  | [optional] 
+**image** | **bytearray** |  | [optional] 
 
+## Example
+
+```python
+from groundlight_openapi_client.models.note_request import NoteRequest
+
+# TODO update the JSON string below
+json = "{}"
+# create an instance of NoteRequest from a JSON string
+note_request_instance = NoteRequest.from_json(json)
+# print the JSON string representation of the object
+print(NoteRequest.to_json())
+
+# convert the object into a dict
+note_request_dict = note_request_instance.to_dict()
+# create an instance of NoteRequest from a dict
+note_request_from_dict = NoteRequest.from_dict(note_request_dict)
+```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
 
