@@ -91,8 +91,11 @@ def test_create_detector(gl: Groundlight):
     count_detector = gl.create_detector(name=name, query=query, mode=ModeEnumSplint.COUNT, class_names="dog")
     assert str(count_detector)
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    multiclass_detector = gl.create_detector(name=name, query=query, mode=ModeEnumSplint.MULTI_CLASS, class_names=["dog", "cat"])
+    multiclass_detector = gl.create_detector(
+        name=name, query=query, mode=ModeEnumSplint.MULTI_CLASS, class_names=["dog", "cat"]
+    )
     assert str(multiclass_detector)
+
 
 def test_create_detector_with_pipeline_config(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
