@@ -6,8 +6,10 @@ import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -64,6 +66,7 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
+class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     """
     Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,
@@ -373,6 +376,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         """
         Create a new Detector with a given name and query.
 
+        By default will create a binary detector but alternate modes can be created by passing in a mode argument.
+
+        Text and Bounding box detectors are in Beta, and can be created through the
+        ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` and
+        :meth:`ExperimentalApi.create_bounding_box_detector` methods.
         By default will create a binary detector but alternate modes can be created by passing in a mode argument.
 
         Text and Bounding box detectors are in Beta, and can be created through the

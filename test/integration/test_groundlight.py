@@ -791,6 +791,7 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
         inspection_id="",
     )
 
+
 def test_binary_detector(gl: Groundlight):
     """
     verify that we can create and submit to a binary detector
@@ -800,6 +801,7 @@ def test_binary_detector(gl: Groundlight):
     assert created_detector is not None
     binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert binary_iq.result.label is not None
+
 
 def test_counting_detector(gl: Groundlight):
     """
