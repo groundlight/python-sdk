@@ -251,7 +251,7 @@ class GroundlightApiClient(ApiClient):
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
         parsed['results'][0]['created_at'] = datetime.fromisoformat(parsed['results'][0]['created_at'])
-        return Detector._from_openapi_data(**parsed["results"][0])
+        return Detector._from_openapi_data(**parsed["results"][0])  # pylint: disable=protected-access
 
     @RequestsRetryDecorator()
     def start_inspection(self) -> str:
