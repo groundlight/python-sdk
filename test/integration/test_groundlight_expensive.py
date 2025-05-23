@@ -13,9 +13,7 @@ import pytest
 from groundlight import Groundlight
 from groundlight.internalapi import iq_is_answered, iq_is_confident
 from groundlight.optional_imports import *
-from model import (
-    Detector,
-)
+from groundlight_openapi_client.model.detector import Detector
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75

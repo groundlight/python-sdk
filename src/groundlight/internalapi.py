@@ -5,6 +5,7 @@ import platform
 import random
 import time
 import uuid
+from datetime import datetime
 from enum import Enum
 from functools import wraps
 from typing import Callable, Optional
@@ -12,7 +13,8 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
-from model import Detector, ImageQuery
+from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.model.image_query import ImageQuery
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
@@ -248,7 +250,8 @@ class GroundlightApiClient(ApiClient):
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
-        return Detector.parse_obj(parsed["results"][0])
+        parsed["results"][0]["created_at"] = datetime.fromisoformat(parsed["results"][0]["created_at"])
+        return Detector._from_openapi_data(**parsed["results"][0])
 
     @RequestsRetryDecorator()
     def start_inspection(self) -> str:
