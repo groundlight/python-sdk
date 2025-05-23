@@ -65,6 +65,50 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
+  # Check that the docs build. (No broken links, etc.)
+  test-docs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Setup npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Build website
+        run: npm run build
+
+  # Checks that the API reference docs built with sphinx build
+  test-api-reference-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: Setup npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21
+          cache: npm
+      - name: Install dependencies
+        run: make install-sphinx-deps
+      - name: Build API documentation
+        run: |
+          make apidocs
+
   # Run integration tests against the API (only on the main branch, though). The comprehensive
   # version runs a matrix of python versions for better coverage.
   # This tests runs on
