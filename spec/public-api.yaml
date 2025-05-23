@@ -1118,6 +1118,14 @@ components:
           - $ref: '#/components/schemas/MultiClassificationResult'
           - $ref: '#/components/schemas/TextRecognitionResult'
           - $ref: '#/components/schemas/BoundingBoxResult'
+          discriminator:
+            propertyName: result_type
+            mapping:
+              binary_classification: '#/components/schemas/BinaryClassificationResult'
+              counting: '#/components/schemas/CountingResult'
+              multi_classification: '#/components/schemas/MultiClassificationResult'
+              text_recognition: '#/components/schemas/TextRecognitionResult'
+              bounding_box: '#/components/schemas/BoundingBoxResult'
           nullable: true
         patience_time:
           type: number
