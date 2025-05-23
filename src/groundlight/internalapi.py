@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 import os
@@ -249,7 +250,8 @@ class GroundlightApiClient(ApiClient):
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
-        return Detector.parse_obj(parsed["results"][0])
+        parsed['results'][0]['created_at'] = datetime.fromisoformat(parsed['results'][0]['created_at'])
+        return Detector._from_openapi_data(**parsed["results"][0])
 
     @RequestsRetryDecorator()
     def start_inspection(self) -> str:

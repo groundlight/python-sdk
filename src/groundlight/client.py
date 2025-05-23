@@ -17,13 +17,13 @@ from groundlight_openapi_client.exceptions import NotFoundException, Unauthorize
 from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
+from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector import Detector
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.detector_group import DetectorGroup
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.image_query import ImageQuery
-from groundlight_openapi_client.model.mode_enum import ModeEnum
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
@@ -46,7 +46,7 @@ from groundlight.internalapi import (
 )
 from groundlight.optional_imports import Image, np
 from groundlight_openapi_client.model.status_enum import StatusEnum
-
+from groundlight.splint import ModeEnumSplint
 logger = logging.getLogger("groundlight.sdk")
 
 # Set urllib3 request timeout to something modern and fast.
@@ -361,7 +361,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         name: str,
         query: str,
         *,
-        mode: ModeEnum = ModeEnum.BINARY,
+        mode: ModeEnumSplint = ModeEnumSplint.BINARY,
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
@@ -429,7 +429,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :return: The created Detector object
         """
 
-        if mode == ModeEnum.BINARY:
+        if mode == ModeEnumSplint.BINARY:
             if class_names is not None:
                 raise ValueError("class_names is not supported for binary detectors")
             return self.create_binary_detector(
@@ -441,7 +441,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        if mode == ModeEnum.COUNT:
+        if mode == ModeEnumSplint.COUNT:
             if class_names is None:
                 raise ValueError("class_names is required for counting detectors")
             if isinstance(class_names, list):
@@ -456,7 +456,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        if mode == ModeEnum.MULTI_CLASS:
+        if mode == ModeEnumSplint.MULTI_CLASS:
             if class_names is None:
                 raise ValueError("class_names is required for multi-class detectors")
             if isinstance(class_names, str):
@@ -1521,7 +1521,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.COUNT
+        detector_creation_input.mode = ModeEnumSplint.COUNT
 
         if max_count is None:
             mode_config = CountModeConfiguration(class_name=class_name)
@@ -1631,7 +1631,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.MULTI_CLASS
+        detector_creation_input.mode = ModeEnumSplint.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)

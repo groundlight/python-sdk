@@ -6,7 +6,7 @@ import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import Label
 from groundlight.internalapi import InternalApiError
-from model import Detector
+from groundlight_openapi_client.model.detector import Detector
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 DETECTOR_NAME = f"test detector_{datetime.utcnow().strftime('%Y=%m-%d %H:%M:%S')}"

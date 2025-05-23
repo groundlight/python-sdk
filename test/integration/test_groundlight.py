@@ -13,19 +13,20 @@ from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
+from groundlight.splint import ModeEnumSplint
 from groundlight.status_codes import is_user_error
 from ksuid import KsuidMs
-from model import (
-    BinaryClassificationResult,
-    BoundingBoxResult,
-    CountingResult,
-    Detector,
-    ImageQuery,
-    ModeEnum,
-    MultiClassificationResult,
-    PaginatedDetectorList,
-    PaginatedImageQueryList,
-)
+
+from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.model.image_query import ImageQuery
+from groundlight_openapi_client.model.mode_enum import ModeEnum
+from groundlight_openapi_client.model.binary_classification_result import BinaryClassificationResult
+from groundlight_openapi_client.model.bounding_box_result import BoundingBoxResult
+from groundlight_openapi_client.model.counting_result import CountingResult
+from groundlight_openapi_client.model.multi_classification_result import MultiClassificationResult
+from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.model.paginated_image_query_list import PaginatedImageQueryList
+
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -90,14 +91,11 @@ def test_create_detector(gl: Groundlight):
 
     # Test creating dectors with other modes
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    count_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.COUNT, class_names="dog")
+    count_detector = gl.create_detector(name=name, query=query, mode=ModeEnumSplint.COUNT, class_names="dog")
     assert str(count_detector)
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    multiclass_detector = gl.create_detector(
-        name=name, query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"]
-    )
+    multiclass_detector = gl.create_detector(name=name, query=query, mode=ModeEnumSplint.MULTI_CLASS, class_names=["dog", "cat"])
     assert str(multiclass_detector)
-
 
 def test_create_detector_with_pipeline_config(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
@@ -793,7 +791,6 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
         inspection_id="",
     )
 
-
 def test_binary_detector(gl: Groundlight):
     """
     verify that we can create and submit to a binary detector
@@ -803,7 +800,6 @@ def test_binary_detector(gl: Groundlight):
     assert created_detector is not None
     binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert binary_iq.result.label is not None
-
 
 def test_counting_detector(gl: Groundlight):
     """

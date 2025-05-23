@@ -13,20 +13,28 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import requests
+from groundlight.splint import ModeEnumSplint
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
+from groundlight_openapi_client.model.action import Action
+from groundlight_openapi_client.model.action_list import ActionList
 from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition import Condition
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.model.edge_model_info import EdgeModelInfo
+from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.model.payload_template import PayloadTemplate
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
+from groundlight_openapi_client.model.rule import Rule
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
+from groundlight_openapi_client.model.webhook_action import WebhookAction
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from urllib3.response import HTTPResponse
 
@@ -681,7 +689,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.BOUNDING_BOX
+        detector_creation_input.mode = ModeEnumSplint.BOUNDING_BOX
 
         if max_num_bboxes is None:
             mode_config = BoundingBoxModeConfiguration(class_name=class_name)
@@ -739,7 +747,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.TEXT
+        detector_creation_input.mode = ModeEnumSplint.TEXT
         mode_config = TextModeConfiguration()
 
         detector_creation_input.mode_configuration = mode_config
