@@ -6,10 +6,8 @@ import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
-from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
-from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
