@@ -71,7 +71,7 @@ def iq_is_confident(iq: ImageQuery, confidence_threshold: float) -> bool:
         if not iq.result or not iq.result.confidence:
             return False
         return iq.result.confidence >= confidence_threshold  # type: ignore
-    except Exception as e:
+    except Exception:
         if not iq.result or not iq.result["confidence"]:
             return False
         return iq.result["confidence"] >= confidence_threshold  # type: ignore
