@@ -961,7 +961,6 @@ components:
       - name
       - query
       - type
-      x-internal: true
     DetectorCreationInputRequest:
       type: object
       description: Helper serializer for validating POST /detectors input.
@@ -1031,7 +1030,6 @@ components:
       required:
       - name
       - query
-      x-internal: true
     DetectorGroup:
       type: object
       properties:
@@ -1168,7 +1166,6 @@ components:
       - rois
       - text
       - type
-      x-internal: true
     ImageQueryTypeEnum:
       enum:
       - image_query
@@ -1382,7 +1379,6 @@ components:
         escalation_type:
           type: string
           minLength: 1
-      x-internal: true
     PayloadTemplate:
       type: object
       properties:

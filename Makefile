@@ -25,7 +25,7 @@ install-generator: install ## Install dependencies for SDK code generator
 generate: install-generator  ## Generate the SDK from our public openapi spec
 	node_modules/.bin/openapi-generator-cli generate \
 		-i spec/public-api.yaml \
-		-g python \
+		-g python-pydantic-v1 \
 		-o ./generated \
 		--additional-properties=packageName=groundlight_openapi_client
 	poetry run black .
