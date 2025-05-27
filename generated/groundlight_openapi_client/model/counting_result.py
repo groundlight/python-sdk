@@ -54,14 +54,6 @@ class CountingResult(ModelNormal):
     """
 
     allowed_values = {
-        ("source",): {
-            "STILL_PROCESSING": "STILL_PROCESSING",
-            "CLOUD": "CLOUD",
-            "USER": "USER",
-            "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
-            "ALGORITHM": "ALGORITHM",
-            "EDGE": "EDGE",
-        },
         ("result_type",): {
             "COUNTING": "counting",
         },
@@ -118,6 +110,7 @@ class CountingResult(ModelNormal):
             ),  # noqa: E501
             "source": (str,),  # noqa: E501
             "result_type": (str,),  # noqa: E501
+            "from_edge": (bool,),  # noqa: E501
             "greater_than_max": (bool,),  # noqa: E501
         }
 
@@ -130,6 +123,7 @@ class CountingResult(ModelNormal):
         "confidence": "confidence",  # noqa: E501
         "source": "source",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
+        "from_edge": "from_edge",  # noqa: E501
         "greater_than_max": "greater_than_max",  # noqa: E501
     }
 
@@ -179,6 +173,7 @@ class CountingResult(ModelNormal):
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
             result_type (str): [optional] if omitted the server will use the default value of "counting"  # noqa: E501
+            from_edge (bool): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
 
@@ -271,6 +266,7 @@ class CountingResult(ModelNormal):
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
             result_type (str): [optional] if omitted the server will use the default value of "counting"  # noqa: E501
+            from_edge (bool): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
 

@@ -12,6 +12,9 @@ sophisticated computer vision accessible to everyone.
 
 Don't code? No problem! [Contact our team](mailto:support@groundlight.ai) and we'll build a custom solution tailored to your needs.
 
+In this example, we'll build a simple eagle detector that can analyze live video streams and tell us if there are baby eagles being fed.
+![Eagle Detector](/img/eagle_detector.png)
+
 ### Prerequisites
 Before diving in, you'll need:
 1. A [Groundlight account](https://dashboard.groundlight.ai/) (sign up is quick and easy!)
@@ -45,7 +48,7 @@ Let's also install [framegrab](https://github.com/groundlight/framegrab) with Yo
 this useful library will let us capture frames from YouTube livestreams, webcams, and other video
 sources, making it easy to get started!
 ```bash
-pip install framegrab[youtube]
+pip install "framegrab[youtube]"
 ```
 :::tip Camera Support
 Framegrab is versatile! It works with:
@@ -97,7 +100,7 @@ from groundlight import Groundlight, Detector, ImageQuery
 gl = Groundlight()
 detector: Detector = gl.get_or_create_detector(
     name="eagle-detector",
-    query="Is there an eagle visible?",
+    query="Are the baby eagles being fed??",
 )
 
 # Big Bear Bald Eagle Nest livestream

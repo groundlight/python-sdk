@@ -54,14 +54,6 @@ class MultiClassificationResult(ModelNormal):
     """
 
     allowed_values = {
-        ("source",): {
-            "STILL_PROCESSING": "STILL_PROCESSING",
-            "CLOUD": "CLOUD",
-            "USER": "USER",
-            "CLOUD_ENSEMBLE": "CLOUD_ENSEMBLE",
-            "ALGORITHM": "ALGORITHM",
-            "EDGE": "EDGE",
-        },
         ("result_type",): {
             "MULTI_CLASSIFICATION": "multi_classification",
         },
@@ -112,6 +104,7 @@ class MultiClassificationResult(ModelNormal):
             ),  # noqa: E501
             "source": (str,),  # noqa: E501
             "result_type": (str,),  # noqa: E501
+            "from_edge": (bool,),  # noqa: E501
         }
 
     @cached_property
@@ -123,6 +116,7 @@ class MultiClassificationResult(ModelNormal):
         "confidence": "confidence",  # noqa: E501
         "source": "source",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
+        "from_edge": "from_edge",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -171,6 +165,7 @@ class MultiClassificationResult(ModelNormal):
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
             result_type (str): [optional] if omitted the server will use the default value of "multi_classification"  # noqa: E501
+            from_edge (bool): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -262,6 +257,7 @@ class MultiClassificationResult(ModelNormal):
             confidence (float, none_type): [optional]  # noqa: E501
             source (str): [optional]  # noqa: E501
             result_type (str): [optional] if omitted the server will use the default value of "multi_classification"  # noqa: E501
+            from_edge (bool): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

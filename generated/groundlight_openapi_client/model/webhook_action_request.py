@@ -114,6 +114,15 @@ class WebhookActionRequest(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "last_message_failed": (bool,),  # noqa: E501
+            "last_failure_error": (
+                str,
+                none_type,
+            ),  # noqa: E501
+            "last_failed_at": (
+                datetime,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -124,6 +133,9 @@ class WebhookActionRequest(ModelNormal):
         "url": "url",  # noqa: E501
         "include_image": "include_image",  # noqa: E501
         "payload_template": "payload_template",  # noqa: E501
+        "last_message_failed": "last_message_failed",  # noqa: E501
+        "last_failure_error": "last_failure_error",  # noqa: E501
+        "last_failed_at": "last_failed_at",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -171,6 +183,9 @@ class WebhookActionRequest(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             include_image (bool): [optional]  # noqa: E501
             payload_template (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            last_message_failed (bool): [optional]  # noqa: E501
+            last_failure_error (str, none_type): [optional]  # noqa: E501
+            last_failed_at (datetime, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -261,6 +276,9 @@ class WebhookActionRequest(ModelNormal):
                                 _visited_composed_classes = (Animal,)
             include_image (bool): [optional]  # noqa: E501
             payload_template (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            last_message_failed (bool): [optional]  # noqa: E501
+            last_failure_error (str, none_type): [optional]  # noqa: E501
+            last_failed_at (datetime, none_type): [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

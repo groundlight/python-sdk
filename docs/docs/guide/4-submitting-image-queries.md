@@ -1,6 +1,15 @@
 # Submitting Image Queries
 Once you have [created a `Detector`](./3-working-with-detectors.md) and [captured an image](./2-grabbing-images.md), you can submit your image to Groundlight for analysis.
 
+The Groundlight SDK provides the `submit_image_query` method which gives you full control over how you'd like your image to be processed. For convenience while getting started, there are a few aliases that capture common use cases.
+
+| Method | Usage | Examples |
+| --- | --- | --- |
+| `ask_confident` | [For users who want correct answers, waiting for humans to review if necessary](#get-the-first-confident-answer) | Visual verification in safety applications |
+| `ask_ml` | [For users who need fast ML answers and cannot wait for human review](#get-the-first-available-answer-regardless-of-confidence) | Live facilities monitoring, machine tending |
+| `ask_async` | [For users who want to bulk process images with no time constraint](#submit-an-imagequery-asynchronously) | Warming up a detector with data from another ML platform, Collecting data in the field with the intent to analyze it tomorrow |
+| `submit_image_query` | [For advanced users who want more control than any of the aliased functions provide](#submit-an-image-query) | Submitting image queries with security requirements or using image query tags (available in our enterprise tier)|
+
 ## Submit an Image Query
 The primary method for submitting an image query is `submit_image_query(detector: Detector, image: Any)`. This method takes a `Detector` object and an image as input and returns an `ImageQuery` object.
 ```python notest
@@ -75,7 +84,7 @@ image_query = gl.get_image_query(id=image_query.id)
 
 See this [guide](./7-async-queries.md) for more information on ImageQueries submitted asynchronously.
 
-### (Advanced) Get the first available answer, regardless of confidence
+### Get the first available answer, regardless of confidence
 `ask_ml` evaluates an image with Groundlight and returns the first answer Groundlight can provide, agnostic of confidence. There is no wait period when using this method. It is called `ask_ml` because our machine learning models are earliest on our escalation ladder and thus always the fastest to respond.
 
 :::note

@@ -84,7 +84,7 @@ rule_request = RuleRequest(
         snooze_time_unit=None,
         human_review_required=False,
         condition=ConditionRequest(
-            verb=VerbEnum("ANSWERED_CONSECUTIVELY"),
+            verb="verb_example",
             parameters={
                 "key": None,
             },
@@ -95,6 +95,9 @@ rule_request = RuleRequest(
                 url="url_example",
                 include_image=True,
                 payload_template=None,
+                last_message_failed=True,
+                last_failure_error="last_failure_error_example",
+                last_failed_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
             ),
         ],
     ) # RuleRequest | 
@@ -127,6 +130,7 @@ Class | Method | HTTP request | Description
 *DetectorsApi* | [**get_detector_metrics**](docs/DetectorsApi.md#get_detector_metrics) | **GET** /v1/detectors/{detector_id}/metrics | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *DetectorsApi* | [**update_detector**](docs/DetectorsApi.md#update_detector) | **PATCH** /v1/detectors/{id} | 
+*EdgeApi* | [**edge_report_metrics_create**](docs/EdgeApi.md#edge_report_metrics_create) | **POST** /v1/edge/report-metrics | 
 *EdgeApi* | [**get_model_urls**](docs/EdgeApi.md#get_model_urls) | **GET** /v1/edge/fetch-model-urls/{detector_id}/ | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
@@ -148,6 +152,8 @@ Class | Method | HTTP request | Description
  - [BBoxGeometryRequest](docs/BBoxGeometryRequest.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
  - [BlankEnum](docs/BlankEnum.md)
+ - [BoundingBoxModeConfiguration](docs/BoundingBoxModeConfiguration.md)
+ - [BoundingBoxResult](docs/BoundingBoxResult.md)
  - [ChannelEnum](docs/ChannelEnum.md)
  - [Condition](docs/Condition.md)
  - [ConditionRequest](docs/ConditionRequest.md)
@@ -168,6 +174,7 @@ Class | Method | HTTP request | Description
  - [InlineResponse2002](docs/InlineResponse2002.md)
  - [InlineResponse200Summary](docs/InlineResponse200Summary.md)
  - [InlineResponse200SummaryClassCounts](docs/InlineResponse200SummaryClassCounts.md)
+ - [Label](docs/Label.md)
  - [LabelValue](docs/LabelValue.md)
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [ModeEnum](docs/ModeEnum.md)
@@ -187,6 +194,7 @@ Class | Method | HTTP request | Description
  - [Rule](docs/Rule.md)
  - [RuleRequest](docs/RuleRequest.md)
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
+ - [Source](docs/Source.md)
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
  - [TextModeConfiguration](docs/TextModeConfiguration.md)

@@ -30,11 +30,13 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
+    from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
     from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
     from groundlight_openapi_client.model.mode_enum import ModeEnum
     from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
     from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 
+    globals()["BoundingBoxModeConfiguration"] = BoundingBoxModeConfiguration
     globals()["CountModeConfiguration"] = CountModeConfiguration
     globals()["ModeEnum"] = ModeEnum
     globals()["MultiClassModeConfiguration"] = MultiClassModeConfiguration
@@ -229,7 +231,7 @@ class DetectorCreationInputRequest(ModelNormal):
             patience_time (float): How long Groundlight will attempt to generate a confident prediction. [optional] if omitted the server will use the default value of 30.0  # noqa: E501
             pipeline_config (str, none_type): (Advanced usage) Configuration needed to instantiate a prediction pipeline.. [optional]  # noqa: E501
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
-            mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT. [optional]  # noqa: E501
+            mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
         """
 
@@ -326,7 +328,7 @@ class DetectorCreationInputRequest(ModelNormal):
             patience_time (float): How long Groundlight will attempt to generate a confident prediction. [optional] if omitted the server will use the default value of 30.0  # noqa: E501
             pipeline_config (str, none_type): (Advanced usage) Configuration needed to instantiate a prediction pipeline.. [optional]  # noqa: E501
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
-            mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT. [optional]  # noqa: E501
+            mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
         """
 
