@@ -12,20 +12,24 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-import warnings
-from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
-from typing import Any, Dict, List, Optional, Tuple, Union
-from typing_extensions import Annotated
 
-from pydantic import Field, StrictBytes, StrictFloat, StrictInt, StrictStr
-from typing import Optional, Tuple, Union
+import re  # noqa: F401
+import io
+import warnings
+
+from pydantic import validate_arguments, ValidationError
+
 from typing_extensions import Annotated
+from pydantic import Field, StrictBytes, StrictFloat, StrictInt, StrictStr, confloat, conint
+
+from typing import Optional, Union
+
 from groundlight_openapi_client.models.image_query import ImageQuery
 from groundlight_openapi_client.models.paginated_image_query_list import PaginatedImageQueryList
 
-from groundlight_openapi_client.api_client import ApiClient, RequestSerialized
+from groundlight_openapi_client.api_client import ApiClient
 from groundlight_openapi_client.api_response import ApiResponse
-from groundlight_openapi_client.rest import RESTResponseType
+from groundlight_openapi_client.exceptions import ApiTypeError, ApiValueError  # noqa: F401
 
 
 class ImageQueriesApi:
@@ -40,435 +44,285 @@ class ImageQueriesApi:
             api_client = ApiClient.get_default()
         self.api_client = api_client
 
-    @validate_call
+    @validate_arguments
     def get_image(
         self,
-        id: Annotated[StrictStr, Field(description="Retrieve the image associated with the image query ID.")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> bytearray:
-        """get_image
+        id: Annotated[StrictStr, Field(..., description="Retrieve the image associated with the image query ID.")],
+        **kwargs,
+    ) -> bytearray:  # noqa: E501
+        """get_image  # noqa: E501
 
-        Retrieve an image by its ID.
+        Retrieve an image by its ID.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_image(id, async_req=True)
+        >>> result = thread.get()
 
         :param id: Retrieve the image associated with the image query ID. (required)
         :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: bytearray
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the get_image_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return self.get_image_with_http_info(id, **kwargs)  # noqa: E501
 
-        _param = self._get_image_serialize(
-            id=id, _request_auth=_request_auth, _content_type=_content_type, _headers=_headers, _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "bytearray",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     def get_image_with_http_info(
         self,
-        id: Annotated[StrictStr, Field(description="Retrieve the image associated with the image query ID.")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[bytearray]:
-        """get_image
+        id: Annotated[StrictStr, Field(..., description="Retrieve the image associated with the image query ID.")],
+        **kwargs,
+    ) -> ApiResponse:  # noqa: E501
+        """get_image  # noqa: E501
 
-        Retrieve an image by its ID.
+        Retrieve an image by its ID.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_image_with_http_info(id, async_req=True)
+        >>> result = thread.get()
 
         :param id: Retrieve the image associated with the image query ID. (required)
         :type id: str
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: tuple(bytearray, status_code(int), headers(HTTPHeaderDict))
+        """
 
-        _param = self._get_image_serialize(
-            id=id, _request_auth=_request_auth, _content_type=_content_type, _headers=_headers, _host_index=_host_index
-        )
+        _params = locals()
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "bytearray",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        _all_params = ["id"]
+        _all_params.extend([
+            "async_req",
+            "_return_http_data_only",
+            "_preload_content",
+            "_request_timeout",
+            "_request_auth",
+            "_content_type",
+            "_headers",
+        ])
 
-    @validate_call
-    def get_image_without_preload_content(
-        self,
-        id: Annotated[StrictStr, Field(description="Retrieve the image associated with the image query ID.")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """get_image
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError("Got an unexpected keyword argument '%s' to method get_image" % _key)
+            _params[_key] = _val
+        del _params["kwargs"]
 
-        Retrieve an image by its ID.
-
-        :param id: Retrieve the image associated with the image query ID. (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_image_serialize(
-            id=id, _request_auth=_request_auth, _content_type=_content_type, _headers=_headers, _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "bytearray",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        return response_data.response
-
-    def _get_image_serialize(
-        self,
-        id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
-        if id is not None:
-            _path_params["id"] = id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
+        _path_params = {}
+        if _params["id"] is not None:
+            _path_params["id"] = _params["id"]
 
+        # process the query parameters
+        _query_params = []
+        # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
+        # process the form parameters
+        _form_params = []
+        _files = {}
+        # process the body parameter
+        _body_params = None
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
-            _header_params["Accept"] = self.api_client.select_header_accept(["image/jpeg"])
+        _header_params["Accept"] = self.api_client.select_header_accept(["image/jpeg"])  # noqa: E501
 
         # authentication setting
-        _auth_settings: List[str] = ["ApiToken"]
+        _auth_settings = ["ApiToken"]  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/image-queries/{id}/image",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {
+            "200": "bytearray",
+        }
+
+        return self.api_client.call_api(
+            "/v1/image-queries/{id}/image",
+            "GET",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )
 
-    @validate_call
+    @validate_arguments
     def get_image_query(
-        self,
-        id: Annotated[StrictStr, Field(description="Choose an image query by its ID.")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ImageQuery:
-        """get_image_query
+        self, id: Annotated[StrictStr, Field(..., description="Choose an image query by its ID.")], **kwargs
+    ) -> ImageQuery:  # noqa: E501
+        """get_image_query  # noqa: E501
 
-        Retrieve an image-query by its ID.
+        Retrieve an image-query by its ID.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_image_query(id, async_req=True)
+        >>> result = thread.get()
 
         :param id: Choose an image query by its ID. (required)
         :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: ImageQuery
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the get_image_query_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return self.get_image_query_with_http_info(id, **kwargs)  # noqa: E501
 
-        _param = self._get_image_query_serialize(
-            id=id, _request_auth=_request_auth, _content_type=_content_type, _headers=_headers, _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ImageQuery",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     def get_image_query_with_http_info(
-        self,
-        id: Annotated[StrictStr, Field(description="Choose an image query by its ID.")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ImageQuery]:
-        """get_image_query
+        self, id: Annotated[StrictStr, Field(..., description="Choose an image query by its ID.")], **kwargs
+    ) -> ApiResponse:  # noqa: E501
+        """get_image_query  # noqa: E501
 
-        Retrieve an image-query by its ID.
+        Retrieve an image-query by its ID.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_image_query_with_http_info(id, async_req=True)
+        >>> result = thread.get()
 
         :param id: Choose an image query by its ID. (required)
         :type id: str
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: tuple(ImageQuery, status_code(int), headers(HTTPHeaderDict))
+        """
 
-        _param = self._get_image_query_serialize(
-            id=id, _request_auth=_request_auth, _content_type=_content_type, _headers=_headers, _host_index=_host_index
-        )
+        _params = locals()
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ImageQuery",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        _all_params = ["id"]
+        _all_params.extend([
+            "async_req",
+            "_return_http_data_only",
+            "_preload_content",
+            "_request_timeout",
+            "_request_auth",
+            "_content_type",
+            "_headers",
+        ])
 
-    @validate_call
-    def get_image_query_without_preload_content(
-        self,
-        id: Annotated[StrictStr, Field(description="Choose an image query by its ID.")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """get_image_query
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError("Got an unexpected keyword argument '%s' to method get_image_query" % _key)
+            _params[_key] = _val
+        del _params["kwargs"]
 
-        Retrieve an image-query by its ID.
-
-        :param id: Choose an image query by its ID. (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_image_query_serialize(
-            id=id, _request_auth=_request_auth, _content_type=_content_type, _headers=_headers, _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ImageQuery",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        return response_data.response
-
-    def _get_image_query_serialize(
-        self,
-        id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
-        if id is not None:
-            _path_params["id"] = id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
+        _path_params = {}
+        if _params["id"] is not None:
+            _path_params["id"] = _params["id"]
 
+        # process the query parameters
+        _query_params = []
+        # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
+        # process the form parameters
+        _form_params = []
+        _files = {}
+        # process the body parameter
+        _body_params = None
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
-            _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])
+        _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # authentication setting
-        _auth_settings: List[str] = ["ApiToken"]
+        _auth_settings = ["ApiToken"]  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/image-queries/{id}",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {
+            "200": "ImageQuery",
+        }
+
+        return self.api_client.call_api(
+            "/v1/image-queries/{id}",
+            "GET",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )
 
-    @validate_call
+    @validate_arguments
     def list_image_queries(
         self,
         detector_id: Annotated[
@@ -478,19 +332,16 @@ class ImageQueriesApi:
             Optional[StrictInt], Field(description="A page number within the paginated result set.")
         ] = None,
         page_size: Annotated[Optional[StrictInt], Field(description="Number of items to return per page.")] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> PaginatedImageQueryList:
-        """list_image_queries
+        **kwargs,
+    ) -> PaginatedImageQueryList:  # noqa: E501
+        """list_image_queries  # noqa: E501
 
-        Retrieve a list of image-queries.
+        Retrieve a list of image-queries.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.list_image_queries(detector_id, page, page_size, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: Optionally filter image queries by detector ID.
         :type detector_id: str
@@ -498,49 +349,24 @@ class ImageQueriesApi:
         :type page: int
         :param page_size: Number of items to return per page.
         :type page_size: int
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: PaginatedImageQueryList
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the list_image_queries_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return self.list_image_queries_with_http_info(detector_id, page, page_size, **kwargs)  # noqa: E501
 
-        _param = self._list_image_queries_serialize(
-            detector_id=detector_id,
-            page=page,
-            page_size=page_size,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "PaginatedImageQueryList",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     def list_image_queries_with_http_info(
         self,
         detector_id: Annotated[
@@ -550,19 +376,16 @@ class ImageQueriesApi:
             Optional[StrictInt], Field(description="A page number within the paginated result set.")
         ] = None,
         page_size: Annotated[Optional[StrictInt], Field(description="Number of items to return per page.")] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[PaginatedImageQueryList]:
-        """list_image_queries
+        **kwargs,
+    ) -> ApiResponse:  # noqa: E501
+        """list_image_queries  # noqa: E501
 
-        Retrieve a list of image-queries.
+        Retrieve a list of image-queries.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.list_image_queries_with_http_info(detector_id, page, page_size, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: Optionally filter image queries by detector ID.
         :type detector_id: str
@@ -570,186 +393,109 @@ class ImageQueriesApi:
         :type page: int
         :param page_size: Number of items to return per page.
         :type page_size: int
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: tuple(PaginatedImageQueryList, status_code(int), headers(HTTPHeaderDict))
+        """
 
-        _param = self._list_image_queries_serialize(
-            detector_id=detector_id,
-            page=page,
-            page_size=page_size,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
+        _params = locals()
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "PaginatedImageQueryList",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        _all_params = ["detector_id", "page", "page_size"]
+        _all_params.extend([
+            "async_req",
+            "_return_http_data_only",
+            "_preload_content",
+            "_request_timeout",
+            "_request_auth",
+            "_content_type",
+            "_headers",
+        ])
 
-    @validate_call
-    def list_image_queries_without_preload_content(
-        self,
-        detector_id: Annotated[
-            Optional[StrictStr], Field(description="Optionally filter image queries by detector ID.")
-        ] = None,
-        page: Annotated[
-            Optional[StrictInt], Field(description="A page number within the paginated result set.")
-        ] = None,
-        page_size: Annotated[Optional[StrictInt], Field(description="Number of items to return per page.")] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """list_image_queries
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError("Got an unexpected keyword argument '%s' to method list_image_queries" % _key)
+            _params[_key] = _val
+        del _params["kwargs"]
 
-        Retrieve a list of image-queries.
-
-        :param detector_id: Optionally filter image queries by detector ID.
-        :type detector_id: str
-        :param page: A page number within the paginated result set.
-        :type page: int
-        :param page_size: Number of items to return per page.
-        :type page_size: int
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._list_image_queries_serialize(
-            detector_id=detector_id,
-            page=page,
-            page_size=page_size,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "PaginatedImageQueryList",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        return response_data.response
-
-    def _list_image_queries_serialize(
-        self,
-        detector_id,
-        page,
-        page_size,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
+        _path_params = {}
+
         # process the query parameters
-        if detector_id is not None:
+        _query_params = []
+        if _params.get("detector_id") is not None:  # noqa: E501
+            _query_params.append(("detector_id", _params["detector_id"]))
 
-            _query_params.append(("detector_id", detector_id))
+        if _params.get("page") is not None:  # noqa: E501
+            _query_params.append(("page", _params["page"]))
 
-        if page is not None:
-
-            _query_params.append(("page", page))
-
-        if page_size is not None:
-
-            _query_params.append(("page_size", page_size))
+        if _params.get("page_size") is not None:  # noqa: E501
+            _query_params.append(("page_size", _params["page_size"]))
 
         # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
+        _form_params = []
+        _files = {}
         # process the body parameter
-
+        _body_params = None
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
-            _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])
+        _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # authentication setting
-        _auth_settings: List[str] = ["ApiToken"]
+        _auth_settings = ["ApiToken"]  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/image-queries",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {
+            "200": "PaginatedImageQueryList",
+        }
+
+        return self.api_client.call_api(
+            "/v1/image-queries",
+            "GET",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )
 
-    @validate_call
+    @validate_arguments
     def submit_image_query(
         self,
-        detector_id: Annotated[StrictStr, Field(description="Choose a detector by its ID.")],
+        detector_id: Annotated[StrictStr, Field(..., description="Choose a detector by its ID.")],
         confidence_threshold: Annotated[
-            Optional[
-                Union[Annotated[float, Field(le=1, strict=True, ge=0)], Annotated[int, Field(le=1, strict=True, ge=0)]]
-            ],
+            Optional[Union[confloat(le=1, ge=0, strict=True), conint(le=1.0, ge=0.0, strict=True)]],
             Field(description="The confidence threshold for the image query."),
         ] = None,
         human_review: Annotated[
@@ -789,20 +535,17 @@ class ImageQueriesApi:
                 )
             ),
         ] = None,
-        body: Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ImageQuery:
-        """submit_image_query
+        body: Optional[Union[StrictBytes, StrictStr]] = None,
+        **kwargs,
+    ) -> ImageQuery:  # noqa: E501
+        """submit_image_query  # noqa: E501
 
-         Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```
+         Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.submit_image_query(detector_id, confidence_threshold, human_review, image_query_id, inspection_id, metadata, patience_time, want_async, body, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: Choose a detector by its ID. (required)
         :type detector_id: str
@@ -822,62 +565,40 @@ class ImageQueriesApi:
         :type want_async: str
         :param body:
         :type body: bytearray
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: ImageQuery
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the submit_image_query_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return self.submit_image_query_with_http_info(
+            detector_id,
+            confidence_threshold,
+            human_review,
+            image_query_id,
+            inspection_id,
+            metadata,
+            patience_time,
+            want_async,
+            body,
+            **kwargs,
+        )  # noqa: E501
 
-        _param = self._submit_image_query_serialize(
-            detector_id=detector_id,
-            confidence_threshold=confidence_threshold,
-            human_review=human_review,
-            image_query_id=image_query_id,
-            inspection_id=inspection_id,
-            metadata=metadata,
-            patience_time=patience_time,
-            want_async=want_async,
-            body=body,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "201": "ImageQuery",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     def submit_image_query_with_http_info(
         self,
-        detector_id: Annotated[StrictStr, Field(description="Choose a detector by its ID.")],
+        detector_id: Annotated[StrictStr, Field(..., description="Choose a detector by its ID.")],
         confidence_threshold: Annotated[
-            Optional[
-                Union[Annotated[float, Field(le=1, strict=True, ge=0)], Annotated[int, Field(le=1, strict=True, ge=0)]]
-            ],
+            Optional[Union[confloat(le=1, ge=0, strict=True), conint(le=1.0, ge=0.0, strict=True)]],
             Field(description="The confidence threshold for the image query."),
         ] = None,
         human_review: Annotated[
@@ -917,20 +638,17 @@ class ImageQueriesApi:
                 )
             ),
         ] = None,
-        body: Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ImageQuery]:
-        """submit_image_query
+        body: Optional[Union[StrictBytes, StrictStr]] = None,
+        **kwargs,
+    ) -> ApiResponse:  # noqa: E501
+        """submit_image_query  # noqa: E501
 
-         Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```
+         Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```   # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.submit_image_query_with_http_info(detector_id, confidence_threshold, human_review, image_query_id, inspection_id, metadata, patience_time, want_async, body, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: Choose a detector by its ID. (required)
         :type detector_id: str
@@ -950,282 +668,142 @@ class ImageQueriesApi:
         :type want_async: str
         :param body:
         :type body: bytearray
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: tuple(ImageQuery, status_code(int), headers(HTTPHeaderDict))
+        """
 
-        _param = self._submit_image_query_serialize(
-            detector_id=detector_id,
-            confidence_threshold=confidence_threshold,
-            human_review=human_review,
-            image_query_id=image_query_id,
-            inspection_id=inspection_id,
-            metadata=metadata,
-            patience_time=patience_time,
-            want_async=want_async,
-            body=body,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
+        _params = locals()
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "201": "ImageQuery",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        _all_params = [
+            "detector_id",
+            "confidence_threshold",
+            "human_review",
+            "image_query_id",
+            "inspection_id",
+            "metadata",
+            "patience_time",
+            "want_async",
+            "body",
+        ]
+        _all_params.extend([
+            "async_req",
+            "_return_http_data_only",
+            "_preload_content",
+            "_request_timeout",
+            "_request_auth",
+            "_content_type",
+            "_headers",
+        ])
 
-    @validate_call
-    def submit_image_query_without_preload_content(
-        self,
-        detector_id: Annotated[StrictStr, Field(description="Choose a detector by its ID.")],
-        confidence_threshold: Annotated[
-            Optional[
-                Union[Annotated[float, Field(le=1, strict=True, ge=0)], Annotated[int, Field(le=1, strict=True, ge=0)]]
-            ],
-            Field(description="The confidence threshold for the image query."),
-        ] = None,
-        human_review: Annotated[
-            Optional[StrictStr],
-            Field(
-                description=(
-                    "If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review"
-                    " if the ML model is not confident). If set to `ALWAYS`, always send the image query for human"
-                    " review even if the ML model is confident. If set to `NEVER`, never send the image query for human"
-                    " review even if the ML model is not confident."
-                )
-            ),
-        ] = None,
-        image_query_id: Annotated[
-            Optional[StrictStr], Field(description="The ID to assign to the created image query.")
-        ] = None,
-        inspection_id: Annotated[
-            Optional[StrictStr], Field(description="Associate the image query with an inspection.")
-        ] = None,
-        metadata: Annotated[
-            Optional[StrictStr],
-            Field(
-                description=(
-                    "A dictionary of custom key/value metadata to associate with the image query (limited to 1KB)."
-                )
-            ),
-        ] = None,
-        patience_time: Annotated[
-            Optional[Union[StrictFloat, StrictInt]], Field(description="How long to wait for a confident response.")
-        ] = None,
-        want_async: Annotated[
-            Optional[StrictStr],
-            Field(
-                description=(
-                    'If "true" then submitting an image query returns immediately without a result. The result will be'
-                    " computed asynchronously and can be retrieved later."
-                )
-            ),
-        ] = None,
-        body: Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """submit_image_query
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError("Got an unexpected keyword argument '%s' to method submit_image_query" % _key)
+            _params[_key] = _val
+        del _params["kwargs"]
 
-         Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```
-
-        :param detector_id: Choose a detector by its ID. (required)
-        :type detector_id: str
-        :param confidence_threshold: The confidence threshold for the image query.
-        :type confidence_threshold: float
-        :param human_review: If set to `DEFAULT`, use the regular escalation logic (i.e., send the image query for human review if the ML model is not confident). If set to `ALWAYS`, always send the image query for human review even if the ML model is confident. If set to `NEVER`, never send the image query for human review even if the ML model is not confident.
-        :type human_review: str
-        :param image_query_id: The ID to assign to the created image query.
-        :type image_query_id: str
-        :param inspection_id: Associate the image query with an inspection.
-        :type inspection_id: str
-        :param metadata: A dictionary of custom key/value metadata to associate with the image query (limited to 1KB).
-        :type metadata: str
-        :param patience_time: How long to wait for a confident response.
-        :type patience_time: float
-        :param want_async: If \"true\" then submitting an image query returns immediately without a result. The result will be computed asynchronously and can be retrieved later.
-        :type want_async: str
-        :param body:
-        :type body: bytearray
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._submit_image_query_serialize(
-            detector_id=detector_id,
-            confidence_threshold=confidence_threshold,
-            human_review=human_review,
-            image_query_id=image_query_id,
-            inspection_id=inspection_id,
-            metadata=metadata,
-            patience_time=patience_time,
-            want_async=want_async,
-            body=body,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "201": "ImageQuery",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        return response_data.response
-
-    def _submit_image_query_serialize(
-        self,
-        detector_id,
-        confidence_threshold,
-        human_review,
-        image_query_id,
-        inspection_id,
-        metadata,
-        patience_time,
-        want_async,
-        body,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
+        _path_params = {}
+
         # process the query parameters
-        if confidence_threshold is not None:
+        _query_params = []
+        if _params.get("confidence_threshold") is not None:  # noqa: E501
+            _query_params.append(("confidence_threshold", _params["confidence_threshold"]))
 
-            _query_params.append(("confidence_threshold", confidence_threshold))
+        if _params.get("detector_id") is not None:  # noqa: E501
+            _query_params.append(("detector_id", _params["detector_id"]))
 
-        if detector_id is not None:
+        if _params.get("human_review") is not None:  # noqa: E501
+            _query_params.append(("human_review", _params["human_review"]))
 
-            _query_params.append(("detector_id", detector_id))
+        if _params.get("image_query_id") is not None:  # noqa: E501
+            _query_params.append(("image_query_id", _params["image_query_id"]))
 
-        if human_review is not None:
+        if _params.get("inspection_id") is not None:  # noqa: E501
+            _query_params.append(("inspection_id", _params["inspection_id"]))
 
-            _query_params.append(("human_review", human_review))
+        if _params.get("metadata") is not None:  # noqa: E501
+            _query_params.append(("metadata", _params["metadata"]))
 
-        if image_query_id is not None:
+        if _params.get("patience_time") is not None:  # noqa: E501
+            _query_params.append(("patience_time", _params["patience_time"]))
 
-            _query_params.append(("image_query_id", image_query_id))
-
-        if inspection_id is not None:
-
-            _query_params.append(("inspection_id", inspection_id))
-
-        if metadata is not None:
-
-            _query_params.append(("metadata", metadata))
-
-        if patience_time is not None:
-
-            _query_params.append(("patience_time", patience_time))
-
-        if want_async is not None:
-
-            _query_params.append(("want_async", want_async))
+        if _params.get("want_async") is not None:  # noqa: E501
+            _query_params.append(("want_async", _params["want_async"]))
 
         # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
+        _form_params = []
+        _files = {}
         # process the body parameter
-        if body is not None:
+        _body_params = None
+        if _params["body"] is not None:
+            _body_params = _params["body"]
             # convert to byte array if the input is a file name (str)
-            if isinstance(body, str):
-                with open(body, "rb") as _fp:
-                    _body_params = _fp.read()
-            elif isinstance(body, tuple):
-                # drop the filename from the tuple
-                _body_params = body[1]
-            else:
-                _body_params = body
+            if isinstance(_body_params, str):
+                with io.open(_body_params, "rb") as _fp:
+                    _body_params_from_file = _fp.read()
+                _body_params = _body_params_from_file
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
-            _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])
+        _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params["Content-Type"] = _content_type
-        else:
-            _default_content_type = self.api_client.select_header_content_type(
+        _content_types_list = _params.get(
+            "_content_type",
+            self.api_client.select_header_content_type(
                 ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "image/bmp", "image/x-icon"]
-            )
-            if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+            ),
+        )
+        if _content_types_list:
+            _header_params["Content-Type"] = _content_types_list
 
         # authentication setting
-        _auth_settings: List[str] = ["ApiToken"]
+        _auth_settings = ["ApiToken"]  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="POST",
-            resource_path="/v1/image-queries",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {
+            "201": "ImageQuery",
+        }
+
+        return self.api_client.call_api(
+            "/v1/image-queries",
+            "POST",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )

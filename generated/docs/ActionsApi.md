@@ -14,13 +14,16 @@ Method | HTTP request | Description
 # **create_rule**
 > Rule create_rule(detector_id, rule_request)
 
+
+
 Create a new rule for a detector
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.rule import Rule
 from groundlight_openapi_client.models.rule_request import RuleRequest
@@ -63,7 +66,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**|  | 
@@ -83,7 +85,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |
@@ -93,13 +94,16 @@ Name | Type | Description  | Notes
 # **delete_rule**
 > delete_rule(id)
 
+
+
 Delete a rule
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
@@ -137,7 +141,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **int**|  | 
@@ -156,7 +159,6 @@ void (empty response body)
  - **Accept**: Not defined
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **204** | No response body |  -  |
@@ -166,13 +168,16 @@ void (empty response body)
 # **get_rule**
 > Rule get_rule(id)
 
+
+
 Retrieve a rule
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.rule import Rule
 from groundlight_openapi_client.rest import ApiException
@@ -213,7 +218,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **int**|  | 
@@ -232,7 +236,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -242,13 +245,16 @@ Name | Type | Description  | Notes
 # **list_detector_rules**
 > PaginatedRuleList list_detector_rules(detector_id, page=page, page_size=page_size)
 
+
+
 List all rules for a detector
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.paginated_rule_list import PaginatedRuleList
 from groundlight_openapi_client.rest import ApiException
@@ -291,7 +297,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**|  | 
@@ -312,7 +317,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -322,13 +326,16 @@ Name | Type | Description  | Notes
 # **list_rules**
 > PaginatedRuleList list_rules(page=page, page_size=page_size)
 
+
+
 Lists all rules over all detectors owned by the requester.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.paginated_rule_list import PaginatedRuleList
 from groundlight_openapi_client.rest import ApiException
@@ -370,7 +377,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **page** | **int**| A page number within the paginated result set. | [optional] 
@@ -390,7 +396,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

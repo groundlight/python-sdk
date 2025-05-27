@@ -18,92 +18,75 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
+
+from typing import List, Optional
+from pydantic import BaseModel, Field, StrictStr, conlist, constr
 from groundlight_openapi_client.models.roi_request import ROIRequest
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class LabelValueRequest(BaseModel):
     """
     LabelValueRequest
-    """  # noqa: E501
+    """
 
-    label: Optional[StrictStr]
-    image_query_id: Annotated[str, Field(min_length=1, strict=True)]
-    rois: Optional[List[ROIRequest]] = None
-    __properties: ClassVar[List[str]] = ["label", "image_query_id", "rois"]
+    label: Optional[StrictStr] = Field(...)
+    image_query_id: constr(strict=True, min_length=1) = Field(...)
+    rois: Optional[conlist(ROIRequest)] = None
+    __properties = ["label", "image_query_id", "rois"]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> LabelValueRequest:
         """Create an instance of LabelValueRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of each item in rois (list)
         _items = []
         if self.rois:
-            for _item_rois in self.rois:
-                if _item_rois:
-                    _items.append(_item_rois.to_dict())
+            for _item in self.rois:
+                if _item:
+                    _items.append(_item.to_dict())
             _dict["rois"] = _items
         # set to None if label (nullable) is None
-        # and model_fields_set contains the field
-        if self.label is None and "label" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.label is None and "label" in self.__fields_set__:
             _dict["label"] = None
 
         # set to None if rois (nullable) is None
-        # and model_fields_set contains the field
-        if self.rois is None and "rois" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.rois is None and "rois" in self.__fields_set__:
             _dict["rois"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> LabelValueRequest:
         """Create an instance of LabelValueRequest from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return LabelValueRequest.parse_obj(obj)
 
-        _obj = cls.model_validate({
+        _obj = LabelValueRequest.parse_obj({
             "label": obj.get("label"),
             "image_query_id": obj.get("image_query_id"),
-            "rois": [ROIRequest.from_dict(_item) for _item in obj["rois"]] if obj.get("rois") is not None else None,
+            "rois": [ROIRequest.from_dict(_item) for _item in obj.get("rois")] if obj.get("rois") is not None else None,
         })
         return _obj

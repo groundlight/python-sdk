@@ -3,7 +3,6 @@
 Information for the model running on edge, including temporary presigned urls to the model binaries
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **model_binary_id** | **str** |  | [optional] 
@@ -24,7 +23,7 @@ json = "{}"
 # create an instance of EdgeModelInfo from a JSON string
 edge_model_info_instance = EdgeModelInfo.from_json(json)
 # print the JSON string representation of the object
-print(EdgeModelInfo.to_json())
+print EdgeModelInfo.to_json()
 
 # convert the object into a dict
 edge_model_info_dict = edge_model_info_instance.to_dict()

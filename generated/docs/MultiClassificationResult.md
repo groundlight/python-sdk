@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [optional] 
@@ -21,7 +20,7 @@ json = "{}"
 # create an instance of MultiClassificationResult from a JSON string
 multi_classification_result_instance = MultiClassificationResult.from_json(json)
 # print the JSON string representation of the object
-print(MultiClassificationResult.to_json())
+print MultiClassificationResult.to_json()
 
 # convert the object into a dict
 multi_classification_result_dict = multi_classification_result_instance.to_dict()

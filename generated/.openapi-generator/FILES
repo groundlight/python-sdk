@@ -16,6 +16,8 @@ docs/Condition.md
 docs/ConditionRequest.md
 docs/CountModeConfiguration.md
 docs/CountingResult.md
+docs/Detector.md
+docs/DetectorCreationInputRequest.md
 docs/DetectorCreationInputRequestModeConfiguration.md
 docs/DetectorGroup.md
 docs/DetectorGroupRequest.md
@@ -33,6 +35,7 @@ docs/GetDetectorMetrics200Response.md
 docs/GetDetectorMetrics200ResponseSummary.md
 docs/GetDetectorMetrics200ResponseSummaryClassCounts.md
 docs/ImageQueriesApi.md
+docs/ImageQuery.md
 docs/ImageQueryResult.md
 docs/ImageQueryTypeEnum.md
 docs/Label.md
@@ -48,6 +51,7 @@ docs/NotesApi.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/PaginatedRuleList.md
+docs/PatchedDetectorRequest.md
 docs/PayloadTemplate.md
 docs/PayloadTemplateRequest.md
 docs/ROI.md
@@ -98,6 +102,8 @@ groundlight_openapi_client/models/condition.py
 groundlight_openapi_client/models/condition_request.py
 groundlight_openapi_client/models/count_mode_configuration.py
 groundlight_openapi_client/models/counting_result.py
+groundlight_openapi_client/models/detector.py
+groundlight_openapi_client/models/detector_creation_input_request.py
 groundlight_openapi_client/models/detector_creation_input_request_mode_configuration.py
 groundlight_openapi_client/models/detector_group.py
 groundlight_openapi_client/models/detector_group_request.py
@@ -110,6 +116,7 @@ groundlight_openapi_client/models/get_detector_evaluation200_response_evaluation
 groundlight_openapi_client/models/get_detector_metrics200_response.py
 groundlight_openapi_client/models/get_detector_metrics200_response_summary.py
 groundlight_openapi_client/models/get_detector_metrics200_response_summary_class_counts.py
+groundlight_openapi_client/models/image_query.py
 groundlight_openapi_client/models/image_query_result.py
 groundlight_openapi_client/models/image_query_type_enum.py
 groundlight_openapi_client/models/label.py
@@ -123,6 +130,7 @@ groundlight_openapi_client/models/note_request.py
 groundlight_openapi_client/models/paginated_detector_list.py
 groundlight_openapi_client/models/paginated_image_query_list.py
 groundlight_openapi_client/models/paginated_rule_list.py
+groundlight_openapi_client/models/patched_detector_request.py
 groundlight_openapi_client/models/payload_template.py
 groundlight_openapi_client/models/payload_template_request.py
 groundlight_openapi_client/models/result_type_enum.py

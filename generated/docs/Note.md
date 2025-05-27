@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **detector_id** | **str** |  | [readonly] 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of Note from a JSON string
 note_instance = Note.from_json(json)
 # print the JSON string representation of the object
-print(Note.to_json())
+print Note.to_json()
 
 # convert the object into a dict
 note_dict = note_instance.to_dict()

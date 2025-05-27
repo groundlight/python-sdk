@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **verb** | **str** |  | 
@@ -18,7 +17,7 @@ json = "{}"
 # create an instance of ConditionRequest from a JSON string
 condition_request_instance = ConditionRequest.from_json(json)
 # print the JSON string representation of the object
-print(ConditionRequest.to_json())
+print ConditionRequest.to_json()
 
 # convert the object into a dict
 condition_request_dict = condition_request_instance.to_dict()

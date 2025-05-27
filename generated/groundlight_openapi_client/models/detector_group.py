@@ -18,72 +18,57 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
-from typing_extensions import Annotated
-from typing import Optional, Set
-from typing_extensions import Self
+
+from pydantic import BaseModel, Field, StrictStr, constr
 
 
 class DetectorGroup(BaseModel):
     """
     DetectorGroup
-    """  # noqa: E501
+    """
 
-    id: StrictStr
-    name: Annotated[str, Field(strict=True, max_length=100)]
-    __properties: ClassVar[List[str]] = ["id", "name"]
+    id: StrictStr = Field(...)
+    name: constr(strict=True, max_length=100) = Field(...)
+    __properties = ["id", "name"]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> DetectorGroup:
         """Create an instance of DetectorGroup from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        * OpenAPI `readOnly` fields are excluded.
-        """
-        excluded_fields: Set[str] = set([
-            "id",
-        ])
-
-        _dict = self.model_dump(
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(
             by_alias=True,
-            exclude=excluded_fields,
+            exclude={
+                "id",
+            },
             exclude_none=True,
         )
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> DetectorGroup:
         """Create an instance of DetectorGroup from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return DetectorGroup.parse_obj(obj)
 
-        _obj = cls.model_validate({"id": obj.get("id"), "name": obj.get("name")})
+        _obj = DetectorGroup.parse_obj({"id": obj.get("id"), "name": obj.get("name")})
         return _obj

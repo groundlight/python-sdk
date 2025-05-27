@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **channel** | [**ChannelEnum**](ChannelEnum.md) |  | 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of Action from a JSON string
 action_instance = Action.from_json(json)
 # print the JSON string representation of the object
-print(Action.to_json())
+print Action.to_json()
 
 # convert the object into a dict
 action_dict = action_instance.to_dict()

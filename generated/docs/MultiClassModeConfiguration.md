@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **class_names** | **List[str]** |  | 
@@ -18,7 +17,7 @@ json = "{}"
 # create an instance of MultiClassModeConfiguration from a JSON string
 multi_class_mode_configuration_instance = MultiClassModeConfiguration.from_json(json)
 # print the JSON string representation of the object
-print(MultiClassModeConfiguration.to_json())
+print MultiClassModeConfiguration.to_json()
 
 # convert the object into a dict
 multi_class_mode_configuration_dict = multi_class_mode_configuration_instance.to_dict()

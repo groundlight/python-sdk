@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **count** | **int** |  | 
@@ -20,7 +19,7 @@ json = "{}"
 # create an instance of PaginatedImageQueryList from a JSON string
 paginated_image_query_list_instance = PaginatedImageQueryList.from_json(json)
 # print the JSON string representation of the object
-print(PaginatedImageQueryList.to_json())
+print PaginatedImageQueryList.to_json()
 
 # convert the object into a dict
 paginated_image_query_list_dict = paginated_image_query_list_instance.to_dict()

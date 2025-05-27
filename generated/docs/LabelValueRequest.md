@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **label** | **str** |  | 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of LabelValueRequest from a JSON string
 label_value_request_instance = LabelValueRequest.from_json(json)
 # print the JSON string representation of the object
-print(LabelValueRequest.to_json())
+print LabelValueRequest.to_json()
 
 # convert the object into a dict
 label_value_request_dict = label_value_request_instance.to_dict()

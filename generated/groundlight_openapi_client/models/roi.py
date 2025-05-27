@@ -18,61 +18,48 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Union
+
+from typing import Union
+from pydantic import BaseModel, Field, StrictFloat, StrictInt, StrictStr
 from groundlight_openapi_client.models.b_box_geometry import BBoxGeometry
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class ROI(BaseModel):
     """
-    Mixin for serializers to handle data in the StrictBaseModel format
-    """  # noqa: E501
+    Mixin for serializers to handle data in the StrictBaseModel format  # noqa: E501
+    """
 
-    label: StrictStr = Field(description="The label of the bounding box.")
-    score: Union[StrictFloat, StrictInt] = Field(description="The confidence of the bounding box.")
-    geometry: BBoxGeometry
-    __properties: ClassVar[List[str]] = ["label", "score", "geometry"]
+    label: StrictStr = Field(default=..., description="The label of the bounding box.")
+    score: Union[StrictFloat, StrictInt] = Field(default=..., description="The confidence of the bounding box.")
+    geometry: BBoxGeometry = Field(...)
+    __properties = ["label", "score", "geometry"]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> ROI:
         """Create an instance of ROI from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        * OpenAPI `readOnly` fields are excluded.
-        """
-        excluded_fields: Set[str] = set([
-            "score",
-        ])
-
-        _dict = self.model_dump(
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(
             by_alias=True,
-            exclude=excluded_fields,
+            exclude={
+                "score",
+            },
             exclude_none=True,
         )
         # override the default output from pydantic by calling `to_dict()` of geometry
@@ -81,17 +68,17 @@ class ROI(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> ROI:
         """Create an instance of ROI from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return ROI.parse_obj(obj)
 
-        _obj = cls.model_validate({
+        _obj = ROI.parse_obj({
             "label": obj.get("label"),
             "score": obj.get("score"),
-            "geometry": BBoxGeometry.from_dict(obj["geometry"]) if obj.get("geometry") is not None else None,
+            "geometry": BBoxGeometry.from_dict(obj.get("geometry")) if obj.get("geometry") is not None else None,
         })
         return _obj

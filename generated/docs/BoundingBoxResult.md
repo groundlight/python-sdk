@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [optional] 
@@ -21,7 +20,7 @@ json = "{}"
 # create an instance of BoundingBoxResult from a JSON string
 bounding_box_result_instance = BoundingBoxResult.from_json(json)
 # print the JSON string representation of the object
-print(BoundingBoxResult.to_json())
+print BoundingBoxResult.to_json()
 
 # convert the object into a dict
 bounding_box_result_dict = bounding_box_result_instance.to_dict()

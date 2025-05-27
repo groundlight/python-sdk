@@ -18,35 +18,33 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
+
+from typing import List, Optional
+from pydantic import BaseModel, Field, StrictBool, StrictInt, StrictStr, conint, conlist, constr
 from groundlight_openapi_client.models.condition import Condition
 from groundlight_openapi_client.models.rule_action import RuleAction
 from groundlight_openapi_client.models.snooze_time_unit_enum import SnoozeTimeUnitEnum
 from groundlight_openapi_client.models.webhook_action import WebhookAction
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class Rule(BaseModel):
     """
     Rule
-    """  # noqa: E501
+    """
 
-    id: StrictInt
-    detector_id: StrictStr
-    detector_name: StrictStr
-    name: Annotated[str, Field(strict=True, max_length=44)]
+    id: StrictInt = Field(...)
+    detector_id: StrictStr = Field(...)
+    detector_name: StrictStr = Field(...)
+    name: constr(strict=True, max_length=44) = Field(...)
     enabled: Optional[StrictBool] = True
     snooze_time_enabled: Optional[StrictBool] = False
-    snooze_time_value: Optional[Annotated[int, Field(strict=True, ge=0)]] = 0
+    snooze_time_value: Optional[conint(strict=True, ge=0)] = 0
     snooze_time_unit: Optional[SnoozeTimeUnitEnum] = None
     human_review_required: Optional[StrictBool] = False
-    condition: Condition
+    condition: Condition = Field(...)
     action: Optional[RuleAction] = None
-    webhook_action: Optional[List[WebhookAction]] = None
-    __properties: ClassVar[List[str]] = [
+    webhook_action: Optional[conlist(WebhookAction)] = None
+    __properties = [
         "id",
         "detector_id",
         "detector_name",
@@ -61,48 +59,34 @@ class Rule(BaseModel):
         "webhook_action",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> Rule:
         """Create an instance of Rule from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        """
-        excluded_fields: Set[str] = set([
-            "id",
-            "detector_id",
-            "detector_name",
-        ])
-
-        _dict = self.model_dump(
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(
             by_alias=True,
-            exclude=excluded_fields,
+            exclude={
+                "id",
+                "detector_id",
+                "detector_name",
+            },
             exclude_none=True,
         )
         # override the default output from pydantic by calling `to_dict()` of condition
@@ -114,22 +98,22 @@ class Rule(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of each item in webhook_action (list)
         _items = []
         if self.webhook_action:
-            for _item_webhook_action in self.webhook_action:
-                if _item_webhook_action:
-                    _items.append(_item_webhook_action.to_dict())
+            for _item in self.webhook_action:
+                if _item:
+                    _items.append(_item.to_dict())
             _dict["webhook_action"] = _items
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> Rule:
         """Create an instance of Rule from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return Rule.parse_obj(obj)
 
-        _obj = cls.model_validate({
+        _obj = Rule.parse_obj({
             "id": obj.get("id"),
             "detector_id": obj.get("detector_id"),
             "detector_name": obj.get("detector_name"),
@@ -143,10 +127,10 @@ class Rule(BaseModel):
             "human_review_required": (
                 obj.get("human_review_required") if obj.get("human_review_required") is not None else False
             ),
-            "condition": Condition.from_dict(obj["condition"]) if obj.get("condition") is not None else None,
-            "action": RuleAction.from_dict(obj["action"]) if obj.get("action") is not None else None,
+            "condition": Condition.from_dict(obj.get("condition")) if obj.get("condition") is not None else None,
+            "action": RuleAction.from_dict(obj.get("action")) if obj.get("action") is not None else None,
             "webhook_action": (
-                [WebhookAction.from_dict(_item) for _item in obj["webhook_action"]]
+                [WebhookAction.from_dict(_item) for _item in obj.get("webhook_action")]
                 if obj.get("webhook_action") is not None
                 else None
             ),

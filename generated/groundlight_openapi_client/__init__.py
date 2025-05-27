@@ -54,6 +54,8 @@ from groundlight_openapi_client.models.condition import Condition
 from groundlight_openapi_client.models.condition_request import ConditionRequest
 from groundlight_openapi_client.models.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.models.counting_result import CountingResult
+from groundlight_openapi_client.models.detector import Detector
+from groundlight_openapi_client.models.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import (
     DetectorCreationInputRequestModeConfiguration,
 )
@@ -74,6 +76,7 @@ from groundlight_openapi_client.models.get_detector_metrics200_response_summary 
 from groundlight_openapi_client.models.get_detector_metrics200_response_summary_class_counts import (
     GetDetectorMetrics200ResponseSummaryClassCounts,
 )
+from groundlight_openapi_client.models.image_query import ImageQuery
 from groundlight_openapi_client.models.image_query_result import ImageQueryResult
 from groundlight_openapi_client.models.image_query_type_enum import ImageQueryTypeEnum
 from groundlight_openapi_client.models.label import Label
@@ -87,6 +90,7 @@ from groundlight_openapi_client.models.note_request import NoteRequest
 from groundlight_openapi_client.models.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.models.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.models.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.models.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.models.payload_template import PayloadTemplate
 from groundlight_openapi_client.models.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.models.roi import ROI

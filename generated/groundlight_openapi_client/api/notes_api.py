@@ -12,20 +12,24 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-import warnings
-from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
-from typing import Any, Dict, List, Optional, Tuple, Union
-from typing_extensions import Annotated
 
-from pydantic import Field, StrictStr
-from typing import Optional
+import re  # noqa: F401
+import io
+import warnings
+
+from pydantic import validate_arguments, ValidationError
+
 from typing_extensions import Annotated
+from pydantic import Field, StrictStr
+
+from typing import Optional
+
 from groundlight_openapi_client.models.all_notes import AllNotes
 from groundlight_openapi_client.models.note_request import NoteRequest
 
-from groundlight_openapi_client.api_client import ApiClient, RequestSerialized
+from groundlight_openapi_client.api_client import ApiClient
 from groundlight_openapi_client.api_response import ApiResponse
-from groundlight_openapi_client.rest import RESTResponseType
+from groundlight_openapi_client.exceptions import ApiTypeError, ApiValueError  # noqa: F401
 
 
 class NotesApi:
@@ -40,479 +44,300 @@ class NotesApi:
             api_client = ApiClient.get_default()
         self.api_client = api_client
 
-    @validate_call
+    @validate_arguments
     def create_note(
         self,
-        detector_id: Annotated[StrictStr, Field(description="the detector to associate the new note with")],
+        detector_id: Annotated[StrictStr, Field(..., description="the detector to associate the new note with")],
         note_request: Optional[NoteRequest] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> None:
-        """create_note
+        **kwargs,
+    ) -> None:  # noqa: E501
+        """create_note  # noqa: E501
 
-        Creates a new note.
+        Creates a new note.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.create_note(detector_id, note_request, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: the detector to associate the new note with (required)
         :type detector_id: str
         :param note_request:
         :type note_request: NoteRequest
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: None
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the create_note_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return self.create_note_with_http_info(detector_id, note_request, **kwargs)  # noqa: E501
 
-        _param = self._create_note_serialize(
-            detector_id=detector_id,
-            note_request=note_request,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "204": None,
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     def create_note_with_http_info(
         self,
-        detector_id: Annotated[StrictStr, Field(description="the detector to associate the new note with")],
+        detector_id: Annotated[StrictStr, Field(..., description="the detector to associate the new note with")],
         note_request: Optional[NoteRequest] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[None]:
-        """create_note
+        **kwargs,
+    ) -> ApiResponse:  # noqa: E501
+        """create_note  # noqa: E501
 
-        Creates a new note.
+        Creates a new note.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.create_note_with_http_info(detector_id, note_request, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: the detector to associate the new note with (required)
         :type detector_id: str
         :param note_request:
         :type note_request: NoteRequest
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: None
+        """
 
-        _param = self._create_note_serialize(
-            detector_id=detector_id,
-            note_request=note_request,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
+        _params = locals()
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "204": None,
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        _all_params = ["detector_id", "note_request"]
+        _all_params.extend([
+            "async_req",
+            "_return_http_data_only",
+            "_preload_content",
+            "_request_timeout",
+            "_request_auth",
+            "_content_type",
+            "_headers",
+        ])
 
-    @validate_call
-    def create_note_without_preload_content(
-        self,
-        detector_id: Annotated[StrictStr, Field(description="the detector to associate the new note with")],
-        note_request: Optional[NoteRequest] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """create_note
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError("Got an unexpected keyword argument '%s' to method create_note" % _key)
+            _params[_key] = _val
+        del _params["kwargs"]
 
-        Creates a new note.
-
-        :param detector_id: the detector to associate the new note with (required)
-        :type detector_id: str
-        :param note_request:
-        :type note_request: NoteRequest
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._create_note_serialize(
-            detector_id=detector_id,
-            note_request=note_request,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "204": None,
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        return response_data.response
-
-    def _create_note_serialize(
-        self,
-        detector_id,
-        note_request,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
-        # process the query parameters
-        if detector_id is not None:
+        _path_params = {}
 
-            _query_params.append(("detector_id", detector_id))
+        # process the query parameters
+        _query_params = []
+        if _params.get("detector_id") is not None:  # noqa: E501
+            _query_params.append(("detector_id", _params["detector_id"]))
 
         # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
+        _form_params = []
+        _files = {}
         # process the body parameter
-        if note_request is not None:
-            _body_params = note_request
+        _body_params = None
+        if _params["note_request"] is not None:
+            _body_params = _params["note_request"]
 
         # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params["Content-Type"] = _content_type
-        else:
-            _default_content_type = self.api_client.select_header_content_type(
+        _content_types_list = _params.get(
+            "_content_type",
+            self.api_client.select_header_content_type(
                 ["application/json", "application/x-www-form-urlencoded", "multipart/form-data"]
-            )
-            if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+            ),
+        )
+        if _content_types_list:
+            _header_params["Content-Type"] = _content_types_list
 
         # authentication setting
-        _auth_settings: List[str] = ["ApiToken"]
+        _auth_settings = ["ApiToken"]  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="POST",
-            resource_path="/v1/notes",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {}
+
+        return self.api_client.call_api(
+            "/v1/notes",
+            "POST",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )
 
-    @validate_call
+    @validate_arguments
     def get_notes(
         self,
-        detector_id: Annotated[StrictStr, Field(description="the detector whose notes to retrieve")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> AllNotes:
-        """get_notes
+        detector_id: Annotated[StrictStr, Field(..., description="the detector whose notes to retrieve")],
+        **kwargs,
+    ) -> AllNotes:  # noqa: E501
+        """get_notes  # noqa: E501
 
-        Retrieves all notes from a given detector and returns them in lists, one for each note_category.
+        Retrieves all notes from a given detector and returns them in lists, one for each note_category.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_notes(detector_id, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: the detector whose notes to retrieve (required)
         :type detector_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: AllNotes
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the get_notes_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return self.get_notes_with_http_info(detector_id, **kwargs)  # noqa: E501
 
-        _param = self._get_notes_serialize(
-            detector_id=detector_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "AllNotes",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     def get_notes_with_http_info(
         self,
-        detector_id: Annotated[StrictStr, Field(description="the detector whose notes to retrieve")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[AllNotes]:
-        """get_notes
+        detector_id: Annotated[StrictStr, Field(..., description="the detector whose notes to retrieve")],
+        **kwargs,
+    ) -> ApiResponse:  # noqa: E501
+        """get_notes  # noqa: E501
 
-        Retrieves all notes from a given detector and returns them in lists, one for each note_category.
+        Retrieves all notes from a given detector and returns them in lists, one for each note_category.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_notes_with_http_info(detector_id, async_req=True)
+        >>> result = thread.get()
 
         :param detector_id: the detector whose notes to retrieve (required)
         :type detector_id: str
+        :param async_req: Whether to execute the request asynchronously.
+        :type async_req: bool, optional
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: tuple(AllNotes, status_code(int), headers(HTTPHeaderDict))
+        """
 
-        _param = self._get_notes_serialize(
-            detector_id=detector_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
+        _params = locals()
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "AllNotes",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        _all_params = ["detector_id"]
+        _all_params.extend([
+            "async_req",
+            "_return_http_data_only",
+            "_preload_content",
+            "_request_timeout",
+            "_request_auth",
+            "_content_type",
+            "_headers",
+        ])
 
-    @validate_call
-    def get_notes_without_preload_content(
-        self,
-        detector_id: Annotated[StrictStr, Field(description="the detector whose notes to retrieve")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """get_notes
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError("Got an unexpected keyword argument '%s' to method get_notes" % _key)
+            _params[_key] = _val
+        del _params["kwargs"]
 
-        Retrieves all notes from a given detector and returns them in lists, one for each note_category.
-
-        :param detector_id: the detector whose notes to retrieve (required)
-        :type detector_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_notes_serialize(
-            detector_id=detector_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "200": "AllNotes",
-        }
-        response_data = self.api_client.call_api(*_param, _request_timeout=_request_timeout)
-        return response_data.response
-
-    def _get_notes_serialize(
-        self,
-        detector_id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
-        # process the query parameters
-        if detector_id is not None:
+        _path_params = {}
 
-            _query_params.append(("detector_id", detector_id))
+        # process the query parameters
+        _query_params = []
+        if _params.get("detector_id") is not None:  # noqa: E501
+            _query_params.append(("detector_id", _params["detector_id"]))
 
         # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
+        _form_params = []
+        _files = {}
         # process the body parameter
-
+        _body_params = None
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
-            _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])
+        _header_params["Accept"] = self.api_client.select_header_accept(["application/json"])  # noqa: E501
 
         # authentication setting
-        _auth_settings: List[str] = ["ApiToken"]
+        _auth_settings = ["ApiToken"]  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/notes",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {
+            "200": "AllNotes",
+        }
+
+        return self.api_client.call_api(
+            "/v1/notes",
+            "GET",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )

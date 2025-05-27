@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **num_ground_truth** | **int** |  | [optional] 
@@ -21,7 +20,7 @@ json = "{}"
 # create an instance of GetDetectorMetrics200ResponseSummary from a JSON string
 get_detector_metrics200_response_summary_instance = GetDetectorMetrics200ResponseSummary.from_json(json)
 # print the JSON string representation of the object
-print(GetDetectorMetrics200ResponseSummary.to_json())
+print GetDetectorMetrics200ResponseSummary.to_json()
 
 # convert the object into a dict
 get_detector_metrics200_response_summary_dict = get_detector_metrics200_response_summary_instance.to_dict()

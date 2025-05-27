@@ -10,13 +10,16 @@ Method | HTTP request | Description
 # **who_am_i**
 > WhoAmI200Response who_am_i()
 
+
+
 Retrieve the current user.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.who_am_i200_response import WhoAmI200Response
 from groundlight_openapi_client.rest import ApiException
@@ -55,7 +58,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 
 ### Parameters
-
 This endpoint does not need any parameter.
 
 ### Return type
@@ -72,7 +74,6 @@ This endpoint does not need any parameter.
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

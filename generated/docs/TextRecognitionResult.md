@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [optional] 
@@ -22,7 +21,7 @@ json = "{}"
 # create an instance of TextRecognitionResult from a JSON string
 text_recognition_result_instance = TextRecognitionResult.from_json(json)
 # print the JSON string representation of the object
-print(TextRecognitionResult.to_json())
+print TextRecognitionResult.to_json()
 
 # convert the object into a dict
 text_recognition_result_dict = text_recognition_result_instance.to_dict()

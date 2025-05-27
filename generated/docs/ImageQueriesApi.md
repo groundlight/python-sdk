@@ -13,13 +13,16 @@ Method | HTTP request | Description
 # **get_image**
 > bytearray get_image(id)
 
+
+
 Retrieve an image by its ID.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
@@ -59,7 +62,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**| Retrieve the image associated with the image query ID. | 
@@ -78,7 +80,6 @@ Name | Type | Description  | Notes
  - **Accept**: image/jpeg
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -88,13 +89,16 @@ Name | Type | Description  | Notes
 # **get_image_query**
 > ImageQuery get_image_query(id)
 
+
+
 Retrieve an image-query by its ID.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.image_query import ImageQuery
 from groundlight_openapi_client.rest import ApiException
@@ -135,7 +139,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**| Choose an image query by its ID. | 
@@ -154,7 +157,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -164,13 +166,16 @@ Name | Type | Description  | Notes
 # **list_image_queries**
 > PaginatedImageQueryList list_image_queries(detector_id=detector_id, page=page, page_size=page_size)
 
+
+
 Retrieve a list of image-queries.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.paginated_image_query_list import PaginatedImageQueryList
 from groundlight_openapi_client.rest import ApiException
@@ -213,7 +218,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Optionally filter image queries by detector ID. | [optional] 
@@ -234,7 +238,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -243,6 +246,8 @@ Name | Type | Description  | Notes
 
 # **submit_image_query**
 > ImageQuery submit_image_query(detector_id, confidence_threshold=confidence_threshold, human_review=human_review, image_query_id=image_query_id, inspection_id=inspection_id, metadata=metadata, patience_time=patience_time, want_async=want_async, body=body)
+
+
 
 
 Submit an image query against a detector.
@@ -258,8 +263,9 @@ $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_ab
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.image_query import ImageQuery
 from groundlight_openapi_client.rest import ApiException
@@ -308,7 +314,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| Choose a detector by its ID. | 
@@ -335,7 +340,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |

@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **int** |  | [readonly] 
@@ -28,7 +27,7 @@ json = "{}"
 # create an instance of Rule from a JSON string
 rule_instance = Rule.from_json(json)
 # print the JSON string representation of the object
-print(Rule.to_json())
+print Rule.to_json()
 
 # convert the object into a dict
 rule_dict = rule_instance.to_dict()

@@ -11,6 +11,8 @@ Method | HTTP request | Description
 # **create_detector_group**
 > DetectorGroup create_detector_group(detector_group_request)
 
+
+
 Create a new detector group
 
 POST data:
@@ -20,8 +22,9 @@ POST data:
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.detector_group import DetectorGroup
 from groundlight_openapi_client.models.detector_group_request import DetectorGroupRequest
@@ -63,7 +66,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_group_request** | [**DetectorGroupRequest**](DetectorGroupRequest.md)|  | 
@@ -82,7 +84,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |
@@ -92,13 +93,16 @@ Name | Type | Description  | Notes
 # **get_detector_groups**
 > List[DetectorGroup] get_detector_groups()
 
+
+
 List all detector groups
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.detector_group import DetectorGroup
 from groundlight_openapi_client.rest import ApiException
@@ -137,7 +141,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 
 ### Parameters
-
 This endpoint does not need any parameter.
 
 ### Return type
@@ -154,7 +157,6 @@ This endpoint does not need any parameter.
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

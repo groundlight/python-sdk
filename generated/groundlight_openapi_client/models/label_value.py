@@ -19,29 +19,27 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import List, Optional, Union
+from pydantic import BaseModel, Field, StrictFloat, StrictInt, StrictStr, conlist
 from groundlight_openapi_client.models.roi import ROI
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class LabelValue(BaseModel):
     """
     LabelValue
-    """  # noqa: E501
+    """
 
-    confidence: Optional[Union[StrictFloat, StrictInt]]
+    confidence: Optional[Union[StrictFloat, StrictInt]] = Field(...)
     class_name: Optional[StrictStr] = Field(
-        description="Return a human-readable class name for this label (e.g. YES/NO)"
+        default=..., description="Return a human-readable class name for this label (e.g. YES/NO)"
     )
-    rois: Optional[List[ROI]] = None
-    annotations_requested: List[StrictStr]
-    created_at: datetime
-    detector_id: Optional[StrictInt]
-    source: StrictStr
-    text: Optional[StrictStr] = Field(description="Text annotations")
-    __properties: ClassVar[List[str]] = [
+    rois: Optional[conlist(ROI)] = None
+    annotations_requested: conlist(StrictStr) = Field(...)
+    created_at: datetime = Field(...)
+    detector_id: Optional[StrictInt] = Field(...)
+    source: StrictStr = Field(...)
+    text: Optional[StrictStr] = Field(default=..., description="Text annotations")
+    __properties = [
         "confidence",
         "class_name",
         "rois",
@@ -52,105 +50,87 @@ class LabelValue(BaseModel):
         "text",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> LabelValue:
         """Create an instance of LabelValue from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        * OpenAPI `readOnly` fields are excluded.
-        """
-        excluded_fields: Set[str] = set([
-            "confidence",
-            "class_name",
-            "annotations_requested",
-            "created_at",
-            "detector_id",
-            "source",
-            "text",
-        ])
-
-        _dict = self.model_dump(
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(
             by_alias=True,
-            exclude=excluded_fields,
+            exclude={
+                "confidence",
+                "class_name",
+                "annotations_requested",
+                "created_at",
+                "detector_id",
+                "source",
+                "text",
+            },
             exclude_none=True,
         )
         # override the default output from pydantic by calling `to_dict()` of each item in rois (list)
         _items = []
         if self.rois:
-            for _item_rois in self.rois:
-                if _item_rois:
-                    _items.append(_item_rois.to_dict())
+            for _item in self.rois:
+                if _item:
+                    _items.append(_item.to_dict())
             _dict["rois"] = _items
         # set to None if confidence (nullable) is None
-        # and model_fields_set contains the field
-        if self.confidence is None and "confidence" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.confidence is None and "confidence" in self.__fields_set__:
             _dict["confidence"] = None
 
         # set to None if class_name (nullable) is None
-        # and model_fields_set contains the field
-        if self.class_name is None and "class_name" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.class_name is None and "class_name" in self.__fields_set__:
             _dict["class_name"] = None
 
         # set to None if rois (nullable) is None
-        # and model_fields_set contains the field
-        if self.rois is None and "rois" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.rois is None and "rois" in self.__fields_set__:
             _dict["rois"] = None
 
         # set to None if detector_id (nullable) is None
-        # and model_fields_set contains the field
-        if self.detector_id is None and "detector_id" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.detector_id is None and "detector_id" in self.__fields_set__:
             _dict["detector_id"] = None
 
         # set to None if text (nullable) is None
-        # and model_fields_set contains the field
-        if self.text is None and "text" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.text is None and "text" in self.__fields_set__:
             _dict["text"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> LabelValue:
         """Create an instance of LabelValue from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return LabelValue.parse_obj(obj)
 
-        _obj = cls.model_validate({
+        _obj = LabelValue.parse_obj({
             "confidence": obj.get("confidence"),
             "class_name": obj.get("class_name"),
-            "rois": [ROI.from_dict(_item) for _item in obj["rois"]] if obj.get("rois") is not None else None,
+            "rois": [ROI.from_dict(_item) for _item in obj.get("rois")] if obj.get("rois") is not None else None,
             "annotations_requested": obj.get("annotations_requested"),
             "created_at": obj.get("created_at"),
             "detector_id": obj.get("detector_id"),

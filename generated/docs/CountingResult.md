@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [optional] 
@@ -22,7 +21,7 @@ json = "{}"
 # create an instance of CountingResult from a JSON string
 counting_result_instance = CountingResult.from_json(json)
 # print the JSON string representation of the object
-print(CountingResult.to_json())
+print CountingResult.to_json()
 
 # convert the object into a dict
 counting_result_dict = counting_result_instance.to_dict()

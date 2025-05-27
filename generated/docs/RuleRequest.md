@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **str** |  | 
@@ -25,7 +24,7 @@ json = "{}"
 # create an instance of RuleRequest from a JSON string
 rule_request_instance = RuleRequest.from_json(json)
 # print the JSON string representation of the object
-print(RuleRequest.to_json())
+print RuleRequest.to_json()
 
 # convert the object into a dict
 rule_request_dict = rule_request_instance.to_dict()

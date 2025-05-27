@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **channel** | [**ChannelEnum**](ChannelEnum.md) |  | 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of RuleAction from a JSON string
 rule_action_instance = RuleAction.from_json(json)
 # print the JSON string representation of the object
-print(RuleAction.to_json())
+print RuleAction.to_json()
 
 # convert the object into a dict
 rule_action_dict = rule_action_instance.to_dict()

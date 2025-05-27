@@ -14,18 +14,20 @@
 
 
 from __future__ import annotations
+from inspect import getfullargspec
 import json
 import pprint
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
+import re  # noqa: F401
+
 from typing import Any, List, Optional
+from pydantic import BaseModel, Field, StrictStr, ValidationError, validator
 from groundlight_openapi_client.models.binary_classification_result import BinaryClassificationResult
 from groundlight_openapi_client.models.bounding_box_result import BoundingBoxResult
 from groundlight_openapi_client.models.counting_result import CountingResult
 from groundlight_openapi_client.models.multi_classification_result import MultiClassificationResult
 from groundlight_openapi_client.models.text_recognition_result import TextRecognitionResult
+from typing import Union, Any, List, TYPE_CHECKING
 from pydantic import StrictStr, Field
-from typing import Union, List, Set, Optional, Dict
-from typing_extensions import Literal, Self
 
 IMAGEQUERYRESULT_ONE_OF_SCHEMAS = [
     "BinaryClassificationResult",
@@ -51,29 +53,22 @@ class ImageQueryResult(BaseModel):
     oneof_schema_4_validator: Optional[TextRecognitionResult] = None
     # data type: BoundingBoxResult
     oneof_schema_5_validator: Optional[BoundingBoxResult] = None
-    actual_instance: Optional[
-        Union[
+    if TYPE_CHECKING:
+        actual_instance: Union[
             BinaryClassificationResult,
             BoundingBoxResult,
             CountingResult,
             MultiClassificationResult,
             TextRecognitionResult,
         ]
-    ] = None
-    one_of_schemas: Set[str] = {
-        "BinaryClassificationResult",
-        "BoundingBoxResult",
-        "CountingResult",
-        "MultiClassificationResult",
-        "TextRecognitionResult",
-    }
+    else:
+        actual_instance: Any
+    one_of_schemas: List[str] = Field(IMAGEQUERYRESULT_ONE_OF_SCHEMAS, const=True)
 
-    model_config = ConfigDict(
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        validate_assignment = True
 
-    discriminator_value_class_map: Dict[str, str] = {}
+    discriminator_value_class_map = {}
 
     def __init__(self, *args, **kwargs) -> None:
         if args:
@@ -85,12 +80,12 @@ class ImageQueryResult(BaseModel):
         else:
             super().__init__(**kwargs)
 
-    @field_validator("actual_instance")
+    @validator("actual_instance")
     def actual_instance_must_validate_oneof(cls, v):
         if v is None:
             return v
 
-        instance = ImageQueryResult.model_construct()
+        instance = ImageQueryResult.construct()
         error_messages = []
         match = 0
         # validate data type: BinaryClassificationResult
@@ -138,13 +133,13 @@ class ImageQueryResult(BaseModel):
             return v
 
     @classmethod
-    def from_dict(cls, obj: Union[str, Dict[str, Any]]) -> Self:
+    def from_dict(cls, obj: dict) -> ImageQueryResult:
         return cls.from_json(json.dumps(obj))
 
     @classmethod
-    def from_json(cls, json_str: Optional[str]) -> Self:
+    def from_json(cls, json_str: str) -> ImageQueryResult:
         """Returns the object represented by the json string"""
-        instance = cls.model_construct()
+        instance = ImageQueryResult.construct()
         if json_str is None:
             return instance
 
@@ -206,28 +201,19 @@ class ImageQueryResult(BaseModel):
         if self.actual_instance is None:
             return "null"
 
-        if hasattr(self.actual_instance, "to_json") and callable(self.actual_instance.to_json):
+        to_json = getattr(self.actual_instance, "to_json", None)
+        if callable(to_json):
             return self.actual_instance.to_json()
         else:
             return json.dumps(self.actual_instance)
 
-    def to_dict(
-        self,
-    ) -> Optional[
-        Union[
-            Dict[str, Any],
-            BinaryClassificationResult,
-            BoundingBoxResult,
-            CountingResult,
-            MultiClassificationResult,
-            TextRecognitionResult,
-        ]
-    ]:
+    def to_dict(self) -> dict:
         """Returns the dict representation of the actual instance"""
         if self.actual_instance is None:
             return None
 
-        if hasattr(self.actual_instance, "to_dict") and callable(self.actual_instance.to_dict):
+        to_dict = getattr(self.actual_instance, "to_dict", None)
+        if callable(to_dict):
             return self.actual_instance.to_dict()
         else:
             # primitive type
@@ -235,4 +221,4 @@ class ImageQueryResult(BaseModel):
 
     def to_str(self) -> str:
         """Returns the string representation of the actual instance"""
-        return pprint.pformat(self.model_dump())
+        return pprint.pformat(self.dict())

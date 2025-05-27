@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **count** | **int** |  | 
@@ -20,7 +19,7 @@ json = "{}"
 # create an instance of PaginatedRuleList from a JSON string
 paginated_rule_list_instance = PaginatedRuleList.from_json(json)
 # print the JSON string representation of the object
-print(PaginatedRuleList.to_json())
+print PaginatedRuleList.to_json()
 
 # convert the object into a dict
 paginated_rule_list_dict = paginated_rule_list_instance.to_dict()

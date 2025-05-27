@@ -18,72 +18,56 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt
-from typing import Any, ClassVar, Dict, List, Union
-from typing import Optional, Set
-from typing_extensions import Self
+
+from typing import Union
+from pydantic import BaseModel, Field, StrictFloat, StrictInt
 
 
 class BBoxGeometryRequest(BaseModel):
     """
-    Mixin for serializers to handle data in the StrictBaseModel format
-    """  # noqa: E501
+    Mixin for serializers to handle data in the StrictBaseModel format  # noqa: E501
+    """
 
-    left: Union[StrictFloat, StrictInt]
-    top: Union[StrictFloat, StrictInt]
-    right: Union[StrictFloat, StrictInt]
-    bottom: Union[StrictFloat, StrictInt]
-    __properties: ClassVar[List[str]] = ["left", "top", "right", "bottom"]
+    left: Union[StrictFloat, StrictInt] = Field(...)
+    top: Union[StrictFloat, StrictInt] = Field(...)
+    right: Union[StrictFloat, StrictInt] = Field(...)
+    bottom: Union[StrictFloat, StrictInt] = Field(...)
+    __properties = ["left", "top", "right", "bottom"]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> BBoxGeometryRequest:
         """Create an instance of BBoxGeometryRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> BBoxGeometryRequest:
         """Create an instance of BBoxGeometryRequest from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return BBoxGeometryRequest.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = BBoxGeometryRequest.parse_obj(
             {"left": obj.get("left"), "top": obj.get("top"), "right": obj.get("right"), "bottom": obj.get("bottom")}
         )
         return _obj

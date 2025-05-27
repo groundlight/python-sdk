@@ -18,16 +18,15 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from typing import Optional, Set
-from typing_extensions import Self
+
+from typing import Any, Optional
+from pydantic import BaseModel, StrictStr
 
 
 class EdgeModelInfo(BaseModel):
     """
-    Information for the model running on edge, including temporary presigned urls to the model binaries
-    """  # noqa: E501
+    Information for the model running on edge, including temporary presigned urls to the model binaries  # noqa: E501
+    """
 
     model_binary_id: Optional[StrictStr] = None
     model_binary_url: Optional[StrictStr] = None
@@ -36,7 +35,7 @@ class EdgeModelInfo(BaseModel):
     pipeline_config: Optional[Any] = None
     oodd_pipeline_config: Optional[Any] = None
     predictor_metadata: Optional[Any] = None
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "model_binary_id",
         "model_binary_url",
         "oodd_model_binary_id",
@@ -46,70 +45,55 @@ class EdgeModelInfo(BaseModel):
         "predictor_metadata",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> EdgeModelInfo:
         """Create an instance of EdgeModelInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # set to None if pipeline_config (nullable) is None
-        # and model_fields_set contains the field
-        if self.pipeline_config is None and "pipeline_config" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.pipeline_config is None and "pipeline_config" in self.__fields_set__:
             _dict["pipeline_config"] = None
 
         # set to None if oodd_pipeline_config (nullable) is None
-        # and model_fields_set contains the field
-        if self.oodd_pipeline_config is None and "oodd_pipeline_config" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.oodd_pipeline_config is None and "oodd_pipeline_config" in self.__fields_set__:
             _dict["oodd_pipeline_config"] = None
 
         # set to None if predictor_metadata (nullable) is None
-        # and model_fields_set contains the field
-        if self.predictor_metadata is None and "predictor_metadata" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.predictor_metadata is None and "predictor_metadata" in self.__fields_set__:
             _dict["predictor_metadata"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> EdgeModelInfo:
         """Create an instance of EdgeModelInfo from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return EdgeModelInfo.parse_obj(obj)
 
-        _obj = cls.model_validate({
+        _obj = EdgeModelInfo.parse_obj({
             "model_binary_id": obj.get("model_binary_id"),
             "model_binary_url": obj.get("model_binary_url"),
             "oodd_model_binary_id": obj.get("oodd_model_binary_id"),

@@ -10,14 +10,17 @@ Method | HTTP request | Description
 # **create_label**
 > LabelValue create_label(label_value_request)
 
+
+
 Create a new LabelValue and attach it to an image query. This will trigger
 asynchronous fine-tuner model training.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.label_value import LabelValue
 from groundlight_openapi_client.models.label_value_request import LabelValueRequest
@@ -59,7 +62,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **label_value_request** | [**LabelValueRequest**](LabelValueRequest.md)|  | 
@@ -78,7 +80,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |

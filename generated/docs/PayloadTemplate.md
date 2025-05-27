@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **template** | **str** |  | 
@@ -18,7 +17,7 @@ json = "{}"
 # create an instance of PayloadTemplate from a JSON string
 payload_template_instance = PayloadTemplate.from_json(json)
 # print the JSON string representation of the object
-print(PayloadTemplate.to_json())
+print PayloadTemplate.to_json()
 
 # convert the object into a dict
 payload_template_dict = payload_template_instance.to_dict()

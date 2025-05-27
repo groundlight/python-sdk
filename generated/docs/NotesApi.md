@@ -11,13 +11,16 @@ Method | HTTP request | Description
 # **create_note**
 > create_note(detector_id, note_request=note_request)
 
+
+
 Creates a new note.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.note_request import NoteRequest
 from groundlight_openapi_client.rest import ApiException
@@ -57,7 +60,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| the detector to associate the new note with | 
@@ -77,7 +79,6 @@ void (empty response body)
  - **Accept**: Not defined
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **204** | No response body |  -  |
@@ -87,13 +88,16 @@ void (empty response body)
 # **get_notes**
 > AllNotes get_notes(detector_id)
 
+
+
 Retrieves all notes from a given detector and returns them in lists, one for each note_category.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.all_notes import AllNotes
 from groundlight_openapi_client.rest import ApiException
@@ -134,7 +138,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**| the detector whose notes to retrieve | 
@@ -153,7 +156,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

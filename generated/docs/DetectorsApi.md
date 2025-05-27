@@ -16,13 +16,16 @@ Method | HTTP request | Description
 # **create_detector**
 > Detector create_detector(detector_creation_input_request)
 
+
+
 Create a new detector.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.detector import Detector
 from groundlight_openapi_client.models.detector_creation_input_request import DetectorCreationInputRequest
@@ -64,7 +67,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_creation_input_request** | [**DetectorCreationInputRequest**](DetectorCreationInputRequest.md)|  | 
@@ -83,7 +85,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |
@@ -93,13 +94,16 @@ Name | Type | Description  | Notes
 # **delete_detector**
 > delete_detector(id)
 
+
+
 Delete a detector by its ID.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
@@ -137,7 +141,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**| Choose a detector by its ID. | 
@@ -156,7 +159,6 @@ void (empty response body)
  - **Accept**: Not defined
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **204** | No response body |  -  |
@@ -166,13 +168,16 @@ void (empty response body)
 # **get_detector**
 > Detector get_detector(id)
 
+
+
 Retrieve a detector by its ID.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.detector import Detector
 from groundlight_openapi_client.rest import ApiException
@@ -213,7 +218,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**| Choose a detector by its ID. | 
@@ -232,7 +236,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -242,13 +245,16 @@ Name | Type | Description  | Notes
 # **get_detector_evaluation**
 > GetDetectorEvaluation200Response get_detector_evaluation(id)
 
+
+
 Get Detector evaluation results. The result is null if there isn't enough ground truth data to evaluate the detector. Returns the time of the evaulation, total ground truth labels, the ml based kfold accuracies, and the system accuracies at different confidence thresholds
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.get_detector_evaluation200_response import GetDetectorEvaluation200Response
 from groundlight_openapi_client.rest import ApiException
@@ -289,7 +295,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**|  | 
@@ -308,7 +313,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -318,13 +322,16 @@ Name | Type | Description  | Notes
 # **get_detector_metrics**
 > GetDetectorMetrics200Response get_detector_metrics(detector_id)
 
+
+
 Get Detector metrics, primarily the counts of different types of labels
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.get_detector_metrics200_response import GetDetectorMetrics200Response
 from groundlight_openapi_client.rest import ApiException
@@ -365,7 +372,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**|  | 
@@ -384,7 +390,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -394,13 +399,16 @@ Name | Type | Description  | Notes
 # **list_detectors**
 > PaginatedDetectorList list_detectors(page=page, page_size=page_size)
 
+
+
 Retrieve a list of detectors.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.paginated_detector_list import PaginatedDetectorList
 from groundlight_openapi_client.rest import ApiException
@@ -442,7 +450,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **page** | **int**| A page number within the paginated result set. | [optional] 
@@ -462,7 +469,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -472,13 +478,16 @@ Name | Type | Description  | Notes
 # **update_detector**
 > Detector update_detector(id, patched_detector_request=patched_detector_request)
 
+
+
 Update a detector
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.detector import Detector
 from groundlight_openapi_client.models.patched_detector_request import PatchedDetectorRequest
@@ -521,7 +530,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**|  | 
@@ -541,7 +549,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

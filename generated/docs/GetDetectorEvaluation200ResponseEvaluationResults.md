@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **eval_timestamp** | **datetime** |  | [optional] 
@@ -35,7 +34,7 @@ json = "{}"
 # create an instance of GetDetectorEvaluation200ResponseEvaluationResults from a JSON string
 get_detector_evaluation200_response_evaluation_results_instance = GetDetectorEvaluation200ResponseEvaluationResults.from_json(json)
 # print the JSON string representation of the object
-print(GetDetectorEvaluation200ResponseEvaluationResults.to_json())
+print GetDetectorEvaluation200ResponseEvaluationResults.to_json()
 
 # convert the object into a dict
 get_detector_evaluation200_response_evaluation_results_dict = get_detector_evaluation200_response_evaluation_results_instance.to_dict()

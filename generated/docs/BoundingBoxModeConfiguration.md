@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **class_name** | **str** |  | 
@@ -18,7 +17,7 @@ json = "{}"
 # create an instance of BoundingBoxModeConfiguration from a JSON string
 bounding_box_mode_configuration_instance = BoundingBoxModeConfiguration.from_json(json)
 # print the JSON string representation of the object
-print(BoundingBoxModeConfiguration.to_json())
+print BoundingBoxModeConfiguration.to_json()
 
 # convert the object into a dict
 bounding_box_mode_configuration_dict = bounding_box_mode_configuration_instance.to_dict()

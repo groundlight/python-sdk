@@ -19,16 +19,14 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt
-from typing import Any, ClassVar, Dict, List, Optional, Union
-from typing import Optional, Set
-from typing_extensions import Self
+from typing import Any, Dict, Optional, Union
+from pydantic import BaseModel, StrictFloat, StrictInt
 
 
 class GetDetectorEvaluation200ResponseEvaluationResults(BaseModel):
     """
     GetDetectorEvaluation200ResponseEvaluationResults
-    """  # noqa: E501
+    """
 
     eval_timestamp: Optional[datetime] = None
     total_ground_truth_examples: Optional[StrictInt] = None
@@ -49,7 +47,7 @@ class GetDetectorEvaluation200ResponseEvaluationResults(BaseModel):
     class_accuracies: Optional[Dict[str, Any]] = None
     confusion_dict: Optional[Dict[str, Any]] = None
     num_examples_per_class: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "eval_timestamp",
         "total_ground_truth_examples",
         "total_labeled_examples",
@@ -71,140 +69,125 @@ class GetDetectorEvaluation200ResponseEvaluationResults(BaseModel):
         "num_examples_per_class",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> GetDetectorEvaluation200ResponseEvaluationResults:
         """Create an instance of GetDetectorEvaluation200ResponseEvaluationResults from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # set to None if total_ground_truth_examples (nullable) is None
-        # and model_fields_set contains the field
-        if self.total_ground_truth_examples is None and "total_ground_truth_examples" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.total_ground_truth_examples is None and "total_ground_truth_examples" in self.__fields_set__:
             _dict["total_ground_truth_examples"] = None
 
         # set to None if total_labeled_examples (nullable) is None
-        # and model_fields_set contains the field
-        if self.total_labeled_examples is None and "total_labeled_examples" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.total_labeled_examples is None and "total_labeled_examples" in self.__fields_set__:
             _dict["total_labeled_examples"] = None
 
         # set to None if kfold_pooled__positive_accuracy (nullable) is None
-        # and model_fields_set contains the field
-        if self.kfold_pooled__positive_accuracy is None and "kfold_pooled__positive_accuracy" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.kfold_pooled__positive_accuracy is None and "kfold_pooled__positive_accuracy" in self.__fields_set__:
             _dict["kfold_pooled__positive_accuracy"] = None
 
         # set to None if kfold_pooled__negative_accuracy (nullable) is None
-        # and model_fields_set contains the field
-        if self.kfold_pooled__negative_accuracy is None and "kfold_pooled__negative_accuracy" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.kfold_pooled__negative_accuracy is None and "kfold_pooled__negative_accuracy" in self.__fields_set__:
             _dict["kfold_pooled__negative_accuracy"] = None
 
         # set to None if precision__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.precision__mean is None and "precision__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.precision__mean is None and "precision__mean" in self.__fields_set__:
             _dict["precision__mean"] = None
 
         # set to None if recall__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.recall__mean is None and "recall__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.recall__mean is None and "recall__mean" in self.__fields_set__:
             _dict["recall__mean"] = None
 
         # set to None if roc_auc__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.roc_auc__mean is None and "roc_auc__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.roc_auc__mean is None and "roc_auc__mean" in self.__fields_set__:
             _dict["roc_auc__mean"] = None
 
         # set to None if balanced_system_accuracies (nullable) is None
-        # and model_fields_set contains the field
-        if self.balanced_system_accuracies is None and "balanced_system_accuracies" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.balanced_system_accuracies is None and "balanced_system_accuracies" in self.__fields_set__:
             _dict["balanced_system_accuracies"] = None
 
         # set to None if positive_system_accuracies (nullable) is None
-        # and model_fields_set contains the field
-        if self.positive_system_accuracies is None and "positive_system_accuracies" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.positive_system_accuracies is None and "positive_system_accuracies" in self.__fields_set__:
             _dict["positive_system_accuracies"] = None
 
         # set to None if negative_system_accuracies (nullable) is None
-        # and model_fields_set contains the field
-        if self.negative_system_accuracies is None and "negative_system_accuracies" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.negative_system_accuracies is None and "negative_system_accuracies" in self.__fields_set__:
             _dict["negative_system_accuracies"] = None
 
         # set to None if mean_absolute_error__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.mean_absolute_error__mean is None and "mean_absolute_error__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.mean_absolute_error__mean is None and "mean_absolute_error__mean" in self.__fields_set__:
             _dict["mean_absolute_error__mean"] = None
 
         # set to None if objdet_precision__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.objdet_precision__mean is None and "objdet_precision__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.objdet_precision__mean is None and "objdet_precision__mean" in self.__fields_set__:
             _dict["objdet_precision__mean"] = None
 
         # set to None if objdet_recall__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.objdet_recall__mean is None and "objdet_recall__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.objdet_recall__mean is None and "objdet_recall__mean" in self.__fields_set__:
             _dict["objdet_recall__mean"] = None
 
         # set to None if objdet_f1_score__mean (nullable) is None
-        # and model_fields_set contains the field
-        if self.objdet_f1_score__mean is None and "objdet_f1_score__mean" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.objdet_f1_score__mean is None and "objdet_f1_score__mean" in self.__fields_set__:
             _dict["objdet_f1_score__mean"] = None
 
         # set to None if class_accuracies (nullable) is None
-        # and model_fields_set contains the field
-        if self.class_accuracies is None and "class_accuracies" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.class_accuracies is None and "class_accuracies" in self.__fields_set__:
             _dict["class_accuracies"] = None
 
         # set to None if confusion_dict (nullable) is None
-        # and model_fields_set contains the field
-        if self.confusion_dict is None and "confusion_dict" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.confusion_dict is None and "confusion_dict" in self.__fields_set__:
             _dict["confusion_dict"] = None
 
         # set to None if num_examples_per_class (nullable) is None
-        # and model_fields_set contains the field
-        if self.num_examples_per_class is None and "num_examples_per_class" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.num_examples_per_class is None and "num_examples_per_class" in self.__fields_set__:
             _dict["num_examples_per_class"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> GetDetectorEvaluation200ResponseEvaluationResults:
         """Create an instance of GetDetectorEvaluation200ResponseEvaluationResults from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return GetDetectorEvaluation200ResponseEvaluationResults.parse_obj(obj)
 
-        _obj = cls.model_validate({
+        _obj = GetDetectorEvaluation200ResponseEvaluationResults.parse_obj({
             "eval_timestamp": obj.get("eval_timestamp"),
             "total_ground_truth_examples": obj.get("total_ground_truth_examples"),
             "total_labeled_examples": obj.get("total_labeled_examples"),

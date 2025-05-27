@@ -3,7 +3,6 @@
 Mixin for serializers to handle data in the StrictBaseModel format
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **label** | **str** | The label of the bounding box. | 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of ROIRequest from a JSON string
 roi_request_instance = ROIRequest.from_json(json)
 # print the JSON string representation of the object
-print(ROIRequest.to_json())
+print ROIRequest.to_json()
 
 # convert the object into a dict
 roi_request_dict = roi_request_instance.to_dict()

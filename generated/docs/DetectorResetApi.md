@@ -10,13 +10,16 @@ Method | HTTP request | Description
 # **reset_detector**
 > reset_detector(id)
 
+
+
 Deletes all image queries on the detector
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
@@ -54,7 +57,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**|  | 
@@ -73,7 +75,6 @@ void (empty response body)
  - **Accept**: Not defined
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **204** | No response body |  -  |

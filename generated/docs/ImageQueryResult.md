@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [optional] 
@@ -25,7 +24,7 @@ json = "{}"
 # create an instance of ImageQueryResult from a JSON string
 image_query_result_instance = ImageQueryResult.from_json(json)
 # print the JSON string representation of the object
-print(ImageQueryResult.to_json())
+print ImageQueryResult.to_json()
 
 # convert the object into a dict
 image_query_result_dict = image_query_result_instance.to_dict()

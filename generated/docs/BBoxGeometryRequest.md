@@ -3,7 +3,6 @@
 Mixin for serializers to handle data in the StrictBaseModel format
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **left** | **float** |  | 
@@ -21,7 +20,7 @@ json = "{}"
 # create an instance of BBoxGeometryRequest from a JSON string
 b_box_geometry_request_instance = BBoxGeometryRequest.from_json(json)
 # print the JSON string representation of the object
-print(BBoxGeometryRequest.to_json())
+print BBoxGeometryRequest.to_json()
 
 # convert the object into a dict
 b_box_geometry_request_dict = b_box_geometry_request_instance.to_dict()

@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [optional] 
@@ -21,7 +20,7 @@ json = "{}"
 # create an instance of BinaryClassificationResult from a JSON string
 binary_classification_result_instance = BinaryClassificationResult.from_json(json)
 # print the JSON string representation of the object
-print(BinaryClassificationResult.to_json())
+print BinaryClassificationResult.to_json()
 
 # convert the object into a dict
 binary_classification_result_dict = binary_classification_result_instance.to_dict()

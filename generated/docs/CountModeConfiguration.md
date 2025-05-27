@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **max_count** | **int** |  | [optional] 
@@ -18,7 +17,7 @@ json = "{}"
 # create an instance of CountModeConfiguration from a JSON string
 count_mode_configuration_instance = CountModeConfiguration.from_json(json)
 # print the JSON string representation of the object
-print(CountModeConfiguration.to_json())
+print CountModeConfiguration.to_json()
 
 # convert the object into a dict
 count_mode_configuration_dict = count_mode_configuration_instance.to_dict()

@@ -11,6 +11,8 @@ Method | HTTP request | Description
 # **edge_report_metrics_create**
 > edge_report_metrics_create()
 
+
+
 Edge server periodically calls this to report metrics.
 
 POST body will have JSON data that we log.
@@ -18,8 +20,9 @@ POST body will have JSON data that we log.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
@@ -55,7 +58,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 
 ### Parameters
-
 This endpoint does not need any parameter.
 
 ### Return type
@@ -72,7 +74,6 @@ void (empty response body)
  - **Accept**: Not defined
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | No response body |  -  |
@@ -82,13 +83,16 @@ void (empty response body)
 # **get_model_urls**
 > EdgeModelInfo get_model_urls(detector_id)
 
+
+
 Gets time limited pre-authenticated URLs to download a detector's edge model and oodd model.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
+import time
+import os
 import groundlight_openapi_client
 from groundlight_openapi_client.models.edge_model_info import EdgeModelInfo
 from groundlight_openapi_client.rest import ApiException
@@ -129,7 +133,6 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **detector_id** | **str**|  | 
@@ -148,7 +151,6 @@ Name | Type | Description  | Notes
  - **Accept**: application/json
 
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

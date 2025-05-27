@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **count** | **int** |  | 
@@ -20,7 +19,7 @@ json = "{}"
 # create an instance of PaginatedDetectorList from a JSON string
 paginated_detector_list_instance = PaginatedDetectorList.from_json(json)
 # print the JSON string representation of the object
-print(PaginatedDetectorList.to_json())
+print PaginatedDetectorList.to_json()
 
 # convert the object into a dict
 paginated_detector_list_dict = paginated_detector_list_instance.to_dict()

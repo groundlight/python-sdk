@@ -3,7 +3,6 @@
 Serializes all notes for a given detector, grouped by type as listed in UserProfile.NoteCategoryChoices The fields must match whats in USERPROFILE.NoteCategoryChoices
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **customer** | [**List[Note]**](Note.md) |  | 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of AllNotes from a JSON string
 all_notes_instance = AllNotes.from_json(json)
 # print the JSON string representation of the object
-print(AllNotes.to_json())
+print AllNotes.to_json()
 
 # convert the object into a dict
 all_notes_dict = all_notes_instance.to_dict()

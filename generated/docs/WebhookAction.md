@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **url** | **str** |  | 
@@ -22,7 +21,7 @@ json = "{}"
 # create an instance of WebhookAction from a JSON string
 webhook_action_instance = WebhookAction.from_json(json)
 # print the JSON string representation of the object
-print(WebhookAction.to_json())
+print WebhookAction.to_json()
 
 # convert the object into a dict
 webhook_action_dict = webhook_action_instance.to_dict()

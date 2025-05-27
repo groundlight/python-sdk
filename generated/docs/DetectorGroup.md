@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **str** |  | [readonly] 
@@ -18,7 +17,7 @@ json = "{}"
 # create an instance of DetectorGroup from a JSON string
 detector_group_instance = DetectorGroup.from_json(json)
 # print the JSON string representation of the object
-print(DetectorGroup.to_json())
+print DetectorGroup.to_json()
 
 # convert the object into a dict
 detector_group_dict = detector_group_instance.to_dict()

@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **confidence** | **float** |  | [readonly] 
@@ -24,7 +23,7 @@ json = "{}"
 # create an instance of LabelValue from a JSON string
 label_value_instance = LabelValue.from_json(json)
 # print the JSON string representation of the object
-print(LabelValue.to_json())
+print LabelValue.to_json()
 
 # convert the object into a dict
 label_value_dict = label_value_instance.to_dict()

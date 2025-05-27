@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **source_ml** | **object** |  | [optional] 
@@ -21,7 +20,7 @@ json = "{}"
 # create an instance of GetDetectorMetrics200ResponseSummaryClassCounts from a JSON string
 get_detector_metrics200_response_summary_class_counts_instance = GetDetectorMetrics200ResponseSummaryClassCounts.from_json(json)
 # print the JSON string representation of the object
-print(GetDetectorMetrics200ResponseSummaryClassCounts.to_json())
+print GetDetectorMetrics200ResponseSummaryClassCounts.to_json()
 
 # convert the object into a dict
 get_detector_metrics200_response_summary_class_counts_dict = get_detector_metrics200_response_summary_class_counts_instance.to_dict()

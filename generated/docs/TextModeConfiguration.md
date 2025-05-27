@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **value_max_length** | **int** |  | [optional] 
@@ -17,7 +16,7 @@ json = "{}"
 # create an instance of TextModeConfiguration from a JSON string
 text_mode_configuration_instance = TextModeConfiguration.from_json(json)
 # print the JSON string representation of the object
-print(TextModeConfiguration.to_json())
+print TextModeConfiguration.to_json()
 
 # convert the object into a dict
 text_mode_configuration_dict = text_mode_configuration_instance.to_dict()

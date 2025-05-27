@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **content** | **str** | Text content of the note. | [optional] 
@@ -19,7 +18,7 @@ json = "{}"
 # create an instance of NoteRequest from a JSON string
 note_request_instance = NoteRequest.from_json(json)
 # print the JSON string representation of the object
-print(NoteRequest.to_json())
+print NoteRequest.to_json()
 
 # convert the object into a dict
 note_request_dict = note_request_instance.to_dict()

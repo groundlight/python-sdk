@@ -2,7 +2,6 @@
 
 
 ## Properties
-
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 
@@ -16,7 +15,7 @@ json = "{}"
 # create an instance of DetectorStatus from a JSON string
 detector_status_instance = DetectorStatus.from_json(json)
 # print the JSON string representation of the object
-print(DetectorStatus.to_json())
+print DetectorStatus.to_json()
 
 # convert the object into a dict
 detector_status_dict = detector_status_instance.to_dict()
