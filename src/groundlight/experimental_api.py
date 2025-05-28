@@ -13,33 +13,37 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import requests
+from groundlight_openapi_client import (
+    Action,
+    BoundingBoxModeConfiguration,
+    ChannelEnum,
+    Condition,
+    ConditionRequest,
+    Detector,
+    EdgeModelInfo,
+    PaginatedRuleList,
+    PatchedDetectorRequest,
+    PayloadTemplate,
+    PayloadTemplateRequest,
+    Rule,
+    RuleRequest,
+    TextModeConfiguration,
+    WebhookAction,
+    WebhookActionRequest,
+)
 from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
-from groundlight_openapi_client import Action
-from groundlight_openapi_client import BoundingBoxModeConfiguration
-from groundlight_openapi_client import ChannelEnum
-from groundlight_openapi_client import Condition
-from groundlight_openapi_client import ConditionRequest
-from groundlight_openapi_client import Detector
-from groundlight_openapi_client import EdgeModelInfo
-from groundlight_openapi_client import PaginatedRuleList
-from groundlight_openapi_client import PatchedDetectorRequest
-from groundlight_openapi_client import PayloadTemplate
-from groundlight_openapi_client import PayloadTemplateRequest
-from groundlight_openapi_client import Rule
-from groundlight_openapi_client import RuleRequest
-from groundlight_openapi_client import TextModeConfiguration
-from groundlight_openapi_client import WebhookAction
-from groundlight_openapi_client import WebhookActionRequest
+from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import (
+    DetectorCreationInputRequestModeConfiguration,
+)
 from urllib3.response import HTTPResponse
 
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
 from groundlight.splint import ModeEnumSplint
-from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import DetectorCreationInputRequestModeConfiguration
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 

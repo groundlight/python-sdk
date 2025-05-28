@@ -7,30 +7,35 @@ from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-from groundlight_openapi_client import Configuration
+from groundlight_openapi_client import (
+    ROI,
+    BBoxGeometry,
+    BBoxGeometryRequest,
+    BinaryClassificationResult,
+    Configuration,
+    CountModeConfiguration,
+    Detector,
+    DetectorCreationInputRequest,
+    DetectorGroup,
+    DetectorGroupRequest,
+    ImageQuery,
+    LabelValueRequest,
+    MultiClassModeConfiguration,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+    PatchedDetectorRequest,
+    ROIRequest,
+    StatusEnum,
+)
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
-from groundlight_openapi_client import BBoxGeometry
-from groundlight_openapi_client import BBoxGeometryRequest
-from groundlight_openapi_client import BinaryClassificationResult
-from groundlight_openapi_client import CountModeConfiguration
-from groundlight_openapi_client import Detector
-from groundlight_openapi_client import DetectorCreationInputRequest
-from groundlight_openapi_client import DetectorGroup
-from groundlight_openapi_client import DetectorGroupRequest
-from groundlight_openapi_client import ImageQuery
-from groundlight_openapi_client import LabelValueRequest
-from groundlight_openapi_client import MultiClassModeConfiguration
-from groundlight_openapi_client import PaginatedDetectorList
-from groundlight_openapi_client import PaginatedImageQueryList
-from groundlight_openapi_client import PatchedDetectorRequest
-from groundlight_openapi_client import ROI
-from groundlight_openapi_client import ROIRequest
-from groundlight_openapi_client import StatusEnum
+from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import (
+    DetectorCreationInputRequestModeConfiguration,
+)
 from urllib3.exceptions import InsecureRequestWarning
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
@@ -46,7 +51,6 @@ from groundlight.internalapi import (
 )
 from groundlight.optional_imports import Image, np
 from groundlight.splint import ModeEnumSplint
-from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import DetectorCreationInputRequestModeConfiguration
 
 logger = logging.getLogger("groundlight.sdk")
 

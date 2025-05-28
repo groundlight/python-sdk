@@ -12,9 +12,8 @@ from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
+from groundlight_openapi_client import Detector, ImageQuery
 from groundlight_openapi_client.api_client import ApiClient, ApiException
-from groundlight_openapi_client import Detector
-from groundlight_openapi_client import ImageQuery
 
 from groundlight.status_codes import is_ok
 from groundlight.version import get_version
