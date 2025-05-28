@@ -5,6 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **username** | **str** | The user&#39;s username | [optional] 
+**email** | **str** | The user&#39;s email | [optional] 
+**is_superuser** | **bool** | Whether the user is a superuser | [optional] 
 
 ## Example
 

@@ -733,6 +733,12 @@ paths:
                   username:
                     type: string
                     description: The user's username
+                  email:
+                    type: string
+                    description: The user's email
+                  is_superuser:
+                    type: boolean
+                    description: Whether the user is a superuser
           description: ''
   /v1/notes:
     get:

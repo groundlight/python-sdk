@@ -20,7 +20,7 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field, StrictStr
+from pydantic import BaseModel, Field, StrictBool, StrictStr
 
 
 class WhoAmI200Response(BaseModel):
@@ -29,7 +29,9 @@ class WhoAmI200Response(BaseModel):
     """
 
     username: Optional[StrictStr] = Field(default=None, description="The user's username")
-    __properties = ["username"]
+    email: Optional[StrictStr] = Field(default=None, description="The user's email")
+    is_superuser: Optional[StrictBool] = Field(default=None, description="Whether the user is a superuser")
+    __properties = ["username", "email", "is_superuser"]
 
     class Config:
         """Pydantic configuration"""
@@ -64,5 +66,7 @@ class WhoAmI200Response(BaseModel):
         if not isinstance(obj, dict):
             return WhoAmI200Response.parse_obj(obj)
 
-        _obj = WhoAmI200Response.parse_obj({"username": obj.get("username")})
+        _obj = WhoAmI200Response.parse_obj(
+            {"username": obj.get("username"), "email": obj.get("email"), "is_superuser": obj.get("is_superuser")}
+        )
         return _obj
