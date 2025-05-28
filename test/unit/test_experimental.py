@@ -47,7 +47,9 @@ def test_update_detector_status(gl_experimental: ExperimentalApi):
     detector = gl_experimental.get_or_create_detector(f"test {datetime.utcnow()}", "Is there a dog?")
     gl_experimental.update_detector_status(detector.id, False)
     updated_detector = gl_experimental.get_detector(detector.id)
-    import IPython; IPython.embed()
+    import IPython
+
+    IPython.embed()
     assert updated_detector.status == "OFF"
     gl_experimental.update_detector_status(detector.id, True)
     updated_detector = gl_experimental.get_detector(detector.id)
