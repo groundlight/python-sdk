@@ -21,14 +21,15 @@ Create a new rule for a detector
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import actions_api
-from groundlight_openapi_client.model.rule import Rule
-from groundlight_openapi_client.model.rule_request import RuleRequest
+from groundlight_openapi_client.models.rule import Rule
+from groundlight_openapi_client.models.rule_request import RuleRequest
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -41,7 +42,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -49,49 +50,26 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = actions_api.ActionsApi(api_client)
-    detector_id = "detector_id_example" # str | 
-    rule_request = RuleRequest(
-        name="name_example",
-        enabled=True,
-        snooze_time_enabled=False,
-        snooze_time_value=0,
-        snooze_time_unit=None,
-        human_review_required=False,
-        condition=ConditionRequest(
-            verb="verb_example",
-            parameters={
-                "key": None,
-            },
-        ),
-        action=None,
-        webhook_action=[
-            WebhookActionRequest(
-                url="url_example",
-                include_image=True,
-                payload_template=None,
-                last_message_failed=True,
-                last_failure_error="last_failure_error_example",
-                last_failed_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
-            ),
-        ],
-    ) # RuleRequest | 
+    api_instance = groundlight_openapi_client.ActionsApi(api_client)
+    detector_id = 'detector_id_example' # str | 
+    rule_request = groundlight_openapi_client.RuleRequest() # RuleRequest | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.create_rule(detector_id, rule_request)
+        print("The response of ActionsApi->create_rule:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling ActionsApi->create_rule: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_id** | **str**|  |
- **rule_request** | [**RuleRequest**](RuleRequest.md)|  |
+ **detector_id** | **str**|  | 
+ **rule_request** | [**RuleRequest**](RuleRequest.md)|  | 
 
 ### Return type
 
@@ -106,9 +84,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |
@@ -125,12 +101,13 @@ Delete a rule
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import actions_api
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -143,7 +120,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -151,22 +128,22 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = actions_api.ActionsApi(api_client)
-    id = 1 # int | 
+    api_instance = groundlight_openapi_client.ActionsApi(api_client)
+    id = 56 # int | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_instance.delete_rule(id)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling ActionsApi->delete_rule: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **int**|  |
+ **id** | **int**|  | 
 
 ### Return type
 
@@ -181,9 +158,7 @@ void (empty response body)
  - **Content-Type**: Not defined
  - **Accept**: Not defined
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **204** | No response body |  -  |
@@ -200,13 +175,14 @@ Retrieve a rule
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import actions_api
-from groundlight_openapi_client.model.rule import Rule
+from groundlight_openapi_client.models.rule import Rule
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -219,7 +195,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -227,23 +203,24 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = actions_api.ActionsApi(api_client)
-    id = 1 # int | 
+    api_instance = groundlight_openapi_client.ActionsApi(api_client)
+    id = 56 # int | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.get_rule(id)
+        print("The response of ActionsApi->get_rule:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling ActionsApi->get_rule: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **int**|  |
+ **id** | **int**|  | 
 
 ### Return type
 
@@ -258,9 +235,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -268,7 +243,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **list_detector_rules**
-> PaginatedRuleList list_detector_rules(detector_id)
+> PaginatedRuleList list_detector_rules(detector_id, page=page, page_size=page_size)
 
 
 
@@ -277,13 +252,14 @@ List all rules for a detector
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import actions_api
-from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.models.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -296,7 +272,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -304,35 +280,28 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = actions_api.ActionsApi(api_client)
-    detector_id = "detector_id_example" # str | 
-    page = 1 # int | A page number within the paginated result set. (optional)
-    page_size = 1 # int | Number of results to return per page. (optional)
+    api_instance = groundlight_openapi_client.ActionsApi(api_client)
+    detector_id = 'detector_id_example' # str | 
+    page = 56 # int | A page number within the paginated result set. (optional)
+    page_size = 56 # int | Number of results to return per page. (optional)
 
-    # example passing only required values which don't have defaults set
-    try:
-        api_response = api_instance.list_detector_rules(detector_id)
-        pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling ActionsApi->list_detector_rules: %s\n" % e)
-
-    # example passing only required values which don't have defaults set
-    # and optional values
     try:
         api_response = api_instance.list_detector_rules(detector_id, page=page, page_size=page_size)
+        print("The response of ActionsApi->list_detector_rules:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling ActionsApi->list_detector_rules: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_id** | **str**|  |
- **page** | **int**| A page number within the paginated result set. | [optional]
- **page_size** | **int**| Number of results to return per page. | [optional]
+ **detector_id** | **str**|  | 
+ **page** | **int**| A page number within the paginated result set. | [optional] 
+ **page_size** | **int**| Number of results to return per page. | [optional] 
 
 ### Return type
 
@@ -347,9 +316,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -357,7 +324,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **list_rules**
-> PaginatedRuleList list_rules()
+> PaginatedRuleList list_rules(page=page, page_size=page_size)
 
 
 
@@ -366,13 +333,14 @@ Lists all rules over all detectors owned by the requester.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import actions_api
-from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.models.paginated_rule_list import PaginatedRuleList
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -385,7 +353,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -393,26 +361,26 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = actions_api.ActionsApi(api_client)
-    page = 1 # int | A page number within the paginated result set. (optional)
-    page_size = 1 # int | Number of results to return per page. (optional)
+    api_instance = groundlight_openapi_client.ActionsApi(api_client)
+    page = 56 # int | A page number within the paginated result set. (optional)
+    page_size = 56 # int | Number of results to return per page. (optional)
 
-    # example passing only required values which don't have defaults set
-    # and optional values
     try:
         api_response = api_instance.list_rules(page=page, page_size=page_size)
+        print("The response of ActionsApi->list_rules:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling ActionsApi->list_rules: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **page** | **int**| A page number within the paginated result set. | [optional]
- **page_size** | **int**| Number of results to return per page. | [optional]
+ **page** | **int**| A page number within the paginated result set. | [optional] 
+ **page_size** | **int**| Number of results to return per page. | [optional] 
 
 ### Return type
 
@@ -427,9 +395,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

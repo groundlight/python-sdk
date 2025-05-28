@@ -2,7 +2,10 @@ from datetime import datetime
 
 import pytest
 from groundlight import ExperimentalApi, Groundlight
-from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
+from groundlight_openapi_client import Detector
+from groundlight_openapi_client import ImageQuery
+from groundlight_openapi_client import ImageQueryTypeEnum
+from groundlight_openapi_client import ResultTypeEnum
 
 
 def pytest_configure(config):  # pylint: disable=unused-argument

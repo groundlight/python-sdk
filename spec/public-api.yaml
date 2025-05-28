@@ -733,6 +733,12 @@ paths:
                   username:
                     type: string
                     description: The user's username
+                  email:
+                    type: string
+                    description: The user's email
+                  is_superuser:
+                    type: boolean
+                    description: Whether the user is a superuser
           description: ''
   /v1/notes:
     get:
@@ -961,7 +967,6 @@ components:
       - name
       - query
       - type
-      x-internal: true
     DetectorCreationInputRequest:
       type: object
       description: Helper serializer for validating POST /detectors input.
@@ -1031,7 +1036,6 @@ components:
       required:
       - name
       - query
-      x-internal: true
     DetectorGroup:
       type: object
       properties:
@@ -1118,6 +1122,14 @@ components:
           - $ref: '#/components/schemas/MultiClassificationResult'
           - $ref: '#/components/schemas/TextRecognitionResult'
           - $ref: '#/components/schemas/BoundingBoxResult'
+          discriminator:
+            propertyName: result_type
+            mapping:
+              binary_classification: '#/components/schemas/BinaryClassificationResult'
+              counting: '#/components/schemas/CountingResult'
+              multi_classification: '#/components/schemas/MultiClassificationResult'
+              text_recognition: '#/components/schemas/TextRecognitionResult'
+              bounding_box: '#/components/schemas/BoundingBoxResult'
           nullable: true
         patience_time:
           type: number
@@ -1160,7 +1172,6 @@ components:
       - rois
       - text
       - type
-      x-internal: true
     ImageQueryTypeEnum:
       enum:
       - image_query
@@ -1374,7 +1385,6 @@ components:
         escalation_type:
           type: string
           minLength: 1
-      x-internal: true
     PayloadTemplate:
       type: object
       properties:

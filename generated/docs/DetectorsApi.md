@@ -23,14 +23,15 @@ Create a new detector.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
-from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
-from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.models.detector import Detector
+from groundlight_openapi_client.models.detector_creation_input_request import DetectorCreationInputRequest
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -43,7 +44,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -51,33 +52,24 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    detector_creation_input_request = DetectorCreationInputRequest(
-        name="name_example",
-        query="query_example",
-        group_name="group_name_example",
-        confidence_threshold=0.9,
-        patience_time=30.0,
-        pipeline_config="pipeline_config_example",
-        metadata="metadata_example",
-        mode=None,
-        mode_configuration=None,
-    ) # DetectorCreationInputRequest | 
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    detector_creation_input_request = groundlight_openapi_client.DetectorCreationInputRequest() # DetectorCreationInputRequest | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.create_detector(detector_creation_input_request)
+        print("The response of DetectorsApi->create_detector:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->create_detector: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_creation_input_request** | [**DetectorCreationInputRequest**](DetectorCreationInputRequest.md)|  |
+ **detector_creation_input_request** | [**DetectorCreationInputRequest**](DetectorCreationInputRequest.md)|  | 
 
 ### Return type
 
@@ -92,9 +84,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: application/json
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |
@@ -111,12 +101,13 @@ Delete a detector by its ID.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -129,7 +120,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -137,22 +128,22 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    id = "id_example" # str | Choose a detector by its ID.
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    id = 'id_example' # str | Choose a detector by its ID.
 
-    # example passing only required values which don't have defaults set
     try:
         api_instance.delete_detector(id)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->delete_detector: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**| Choose a detector by its ID. |
+ **id** | **str**| Choose a detector by its ID. | 
 
 ### Return type
 
@@ -167,9 +158,7 @@ void (empty response body)
  - **Content-Type**: Not defined
  - **Accept**: Not defined
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **204** | No response body |  -  |
@@ -186,13 +175,14 @@ Retrieve a detector by its ID.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
-from groundlight_openapi_client.model.detector import Detector
+from groundlight_openapi_client.models.detector import Detector
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -205,7 +195,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -213,23 +203,24 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    id = "id_example" # str | Choose a detector by its ID.
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    id = 'id_example' # str | Choose a detector by its ID.
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.get_detector(id)
+        print("The response of DetectorsApi->get_detector:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->get_detector: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**| Choose a detector by its ID. |
+ **id** | **str**| Choose a detector by its ID. | 
 
 ### Return type
 
@@ -244,9 +235,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -254,7 +243,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_detector_evaluation**
-> InlineResponse2001 get_detector_evaluation(id)
+> GetDetectorEvaluation200Response get_detector_evaluation(id)
 
 
 
@@ -263,13 +252,14 @@ Get Detector evaluation results. The result is null if there isn't enough ground
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
-from groundlight_openapi_client.model.inline_response2001 import InlineResponse2001
+from groundlight_openapi_client.models.get_detector_evaluation200_response import GetDetectorEvaluation200Response
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -282,7 +272,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -290,27 +280,28 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    id = "id_example" # str | 
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    id = 'id_example' # str | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.get_detector_evaluation(id)
+        print("The response of DetectorsApi->get_detector_evaluation:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->get_detector_evaluation: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**|  |
+ **id** | **str**|  | 
 
 ### Return type
 
-[**InlineResponse2001**](InlineResponse2001.md)
+[**GetDetectorEvaluation200Response**](GetDetectorEvaluation200Response.md)
 
 ### Authorization
 
@@ -321,9 +312,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -331,7 +320,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_detector_metrics**
-> InlineResponse200 get_detector_metrics(detector_id)
+> GetDetectorMetrics200Response get_detector_metrics(detector_id)
 
 
 
@@ -340,13 +329,14 @@ Get Detector metrics, primarily the counts of different types of labels
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
-from groundlight_openapi_client.model.inline_response200 import InlineResponse200
+from groundlight_openapi_client.models.get_detector_metrics200_response import GetDetectorMetrics200Response
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -359,7 +349,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -367,27 +357,28 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    detector_id = "detector_id_example" # str | 
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    detector_id = 'detector_id_example' # str | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.get_detector_metrics(detector_id)
+        print("The response of DetectorsApi->get_detector_metrics:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->get_detector_metrics: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_id** | **str**|  |
+ **detector_id** | **str**|  | 
 
 ### Return type
 
-[**InlineResponse200**](InlineResponse200.md)
+[**GetDetectorMetrics200Response**](GetDetectorMetrics200Response.md)
 
 ### Authorization
 
@@ -398,9 +389,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -408,7 +397,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **list_detectors**
-> PaginatedDetectorList list_detectors()
+> PaginatedDetectorList list_detectors(page=page, page_size=page_size)
 
 
 
@@ -417,13 +406,14 @@ Retrieve a list of detectors.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
-from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.models.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -436,7 +426,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -444,26 +434,26 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    page = 1 # int | A page number within the paginated result set. (optional)
-    page_size = 1 # int | Number of items to return per page. (optional)
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    page = 56 # int | A page number within the paginated result set. (optional)
+    page_size = 56 # int | Number of items to return per page. (optional)
 
-    # example passing only required values which don't have defaults set
-    # and optional values
     try:
         api_response = api_instance.list_detectors(page=page, page_size=page_size)
+        print("The response of DetectorsApi->list_detectors:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->list_detectors: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **page** | **int**| A page number within the paginated result set. | [optional]
- **page_size** | **int**| Number of items to return per page. | [optional]
+ **page** | **int**| A page number within the paginated result set. | [optional] 
+ **page_size** | **int**| Number of items to return per page. | [optional] 
 
 ### Return type
 
@@ -478,9 +468,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |
@@ -488,7 +476,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **update_detector**
-> Detector update_detector(id)
+> Detector update_detector(id, patched_detector_request=patched_detector_request)
 
 
 
@@ -497,14 +485,15 @@ Update a detector
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detectors_api
-from groundlight_openapi_client.model.detector import Detector
-from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.models.detector import Detector
+from groundlight_openapi_client.models.patched_detector_request import PatchedDetectorRequest
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -517,7 +506,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -525,39 +514,26 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detectors_api.DetectorsApi(api_client)
-    id = "id_example" # str | 
-    patched_detector_request = PatchedDetectorRequest(
-        name="name_example",
-        confidence_threshold=0.9,
-        patience_time=30.0,
-        status=None,
-        escalation_type="escalation_type_example",
-    ) # PatchedDetectorRequest |  (optional)
+    api_instance = groundlight_openapi_client.DetectorsApi(api_client)
+    id = 'id_example' # str | 
+    patched_detector_request = groundlight_openapi_client.PatchedDetectorRequest() # PatchedDetectorRequest |  (optional)
 
-    # example passing only required values which don't have defaults set
-    try:
-        api_response = api_instance.update_detector(id)
-        pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling DetectorsApi->update_detector: %s\n" % e)
-
-    # example passing only required values which don't have defaults set
-    # and optional values
     try:
         api_response = api_instance.update_detector(id, patched_detector_request=patched_detector_request)
+        print("The response of DetectorsApi->update_detector:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorsApi->update_detector: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **str**|  |
- **patched_detector_request** | [**PatchedDetectorRequest**](PatchedDetectorRequest.md)|  | [optional]
+ **id** | **str**|  | 
+ **patched_detector_request** | [**PatchedDetectorRequest**](PatchedDetectorRequest.md)|  | [optional] 
 
 ### Return type
 
@@ -572,9 +548,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

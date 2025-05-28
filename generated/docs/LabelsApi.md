@@ -12,19 +12,21 @@ Method | HTTP request | Description
 
 
 
-Create a new LabelValue and attach it to an image query. This will trigger asynchronous fine-tuner model training.
+Create a new LabelValue and attach it to an image query. This will trigger
+asynchronous fine-tuner model training.
 
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import labels_api
-from groundlight_openapi_client.model.label_value import LabelValue
-from groundlight_openapi_client.model.label_value_request import LabelValueRequest
+from groundlight_openapi_client.models.label_value import LabelValue
+from groundlight_openapi_client.models.label_value_request import LabelValueRequest
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -37,7 +39,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -45,37 +47,24 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = labels_api.LabelsApi(api_client)
-    label_value_request = LabelValueRequest(
-        label="label_example",
-        image_query_id="image_query_id_example",
-        rois=[
-            ROIRequest(
-                label="label_example",
-                geometry=BBoxGeometryRequest(
-                    left=3.14,
-                    top=3.14,
-                    right=3.14,
-                    bottom=3.14,
-                ),
-            ),
-        ],
-    ) # LabelValueRequest | 
+    api_instance = groundlight_openapi_client.LabelsApi(api_client)
+    label_value_request = groundlight_openapi_client.LabelValueRequest() # LabelValueRequest | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.create_label(label_value_request)
+        print("The response of LabelsApi->create_label:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling LabelsApi->create_label: %s\n" % e)
 ```
+
 
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **label_value_request** | [**LabelValueRequest**](LabelValueRequest.md)|  |
+ **label_value_request** | [**LabelValueRequest**](LabelValueRequest.md)|  | 
 
 ### Return type
 
@@ -90,9 +79,7 @@ Name | Type | Description  | Notes
  - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** |  |  -  |

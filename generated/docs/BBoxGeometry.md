@@ -11,8 +11,24 @@ Name | Type | Description | Notes
 **bottom** | **float** |  | 
 **x** | **float** |  | [readonly] 
 **y** | **float** |  | [readonly] 
-**any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
+## Example
+
+```python
+from groundlight_openapi_client.models.b_box_geometry import BBoxGeometry
+
+# TODO update the JSON string below
+json = "{}"
+# create an instance of BBoxGeometry from a JSON string
+b_box_geometry_instance = BBoxGeometry.from_json(json)
+# print the JSON string representation of the object
+print BBoxGeometry.to_json()
+
+# convert the object into a dict
+b_box_geometry_dict = b_box_geometry_instance.to_dict()
+# create an instance of BBoxGeometry from a dict
+b_box_geometry_from_dict = BBoxGeometry.from_dict(b_box_geometry_dict)
+```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
 

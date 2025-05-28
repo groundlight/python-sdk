@@ -8,7 +8,7 @@ Method | HTTP request | Description
 
 
 # **who_am_i**
-> InlineResponse2002 who_am_i()
+> WhoAmI200Response who_am_i()
 
 
 
@@ -17,13 +17,14 @@ Retrieve the current user.
 ### Example
 
 * Api Key Authentication (ApiToken):
-
 ```python
 import time
+import os
 import groundlight_openapi_client
-from groundlight_openapi_client.api import user_api
-from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
+from groundlight_openapi_client.models.who_am_i200_response import WhoAmI200Response
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -36,7 +37,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -44,15 +45,16 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = user_api.UserApi(api_client)
+    api_instance = groundlight_openapi_client.UserApi(api_client)
 
-    # example, this endpoint has no required or optional parameters
     try:
         api_response = api_instance.who_am_i()
+        print("The response of UserApi->who_am_i:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling UserApi->who_am_i: %s\n" % e)
 ```
+
 
 
 ### Parameters
@@ -60,7 +62,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**InlineResponse2002**](InlineResponse2002.md)
+[**WhoAmI200Response**](WhoAmI200Response.md)
 
 ### Authorization
 
@@ -71,9 +73,7 @@ This endpoint does not need any parameter.
  - **Content-Type**: Not defined
  - **Accept**: application/json
 
-
 ### HTTP response details
-
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** |  |  -  |

@@ -1,6 +1,6 @@
 from groundlight import ExperimentalApi
 from groundlight.internalapi import iq_is_answered, iq_is_confident
-from model import ImageQuery
+from groundlight_openapi_client import ImageQuery
 
 
 def test_iq_is_confident(gl_experimental: ExperimentalApi, initial_iq: ImageQuery):
