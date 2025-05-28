@@ -4,14 +4,38 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, fields
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import AnyUrl, BaseModel, Field, RootModel, confloat, conint, constr
+
+class AttrDict(dict):
+    def __getattr__(self, name: str) -> Any:
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
 
-class BBoxGeometry(BaseModel):
+@dataclass
+class DataclassBaseModel():
+    @classmethod
+    def parse_obj(cls, obj: Any) -> None:
+        # Get all field names from the dataclass
+        field_names = {field.name for field in fields(cls)}
+        # Filter the input data to only include fields that exist in the dataclass
+        filtered_data = {}
+        for k, v in obj.items():
+            if k in field_names:
+                if isinstance(v, dict):
+                    filtered_data[k] = AttrDict(v)
+                else:
+                    filtered_data[k] = v
+        return cls(**filtered_data)
+
+@dataclass
+class BBoxGeometry(DataclassBaseModel):
     """
     Mixin for serializers to handle data in the StrictBaseModel format
     """
@@ -24,7 +48,8 @@ class BBoxGeometry(BaseModel):
     y: float
 
 
-class BBoxGeometryRequest(BaseModel):
+@dataclass
+class BBoxGeometryRequest(DataclassBaseModel):
     """
     Mixin for serializers to handle data in the StrictBaseModel format
     """
@@ -39,30 +64,35 @@ class BlankEnum(Enum):
     field_ = ""
 
 
-class Condition(BaseModel):
+@dataclass
+class Condition(DataclassBaseModel):
     verb: str
-    parameters: Dict[str, Any]
+    parameters: Any
 
 
-class ConditionRequest(BaseModel):
+@dataclass
+class ConditionRequest(DataclassBaseModel):
     verb: str
-    parameters: Dict[str, Any]
+    parameters: Any
 
 
-class DetectorGroup(BaseModel):
+@dataclass
+class DetectorGroup(DataclassBaseModel):
     id: str
-    name: constr(max_length=100)
+    name: str
 
 
-class DetectorGroupRequest(BaseModel):
-    name: constr(min_length=1, max_length=100)
+@dataclass
+class DetectorGroupRequest(DataclassBaseModel):
+    name: str
 
 
 class DetectorTypeEnum(str, Enum):
     detector = "detector"
 
 
-class EdgeModelInfo(BaseModel):
+@dataclass
+class EdgeModelInfo(DataclassBaseModel):
     """
     Information for the model running on edge, including temporary presigned urls to the model binaries
     """
@@ -88,44 +118,50 @@ class ModeEnum(str, Enum):
     BOUNDING_BOX = "BOUNDING_BOX"
 
 
-class Note(BaseModel):
+@dataclass
+class Note(DataclassBaseModel):
     detector_id: str
-    content: Optional[str] = Field(None, description="Text content of the note.")
+    content: Optional[str] = None
     is_pinned: Optional[bool] = None
 
 
-class NoteRequest(BaseModel):
-    content: Optional[str] = Field(None, description="Text content of the note.")
+@dataclass
+class NoteRequest(DataclassBaseModel):
+    content: Optional[str] = None
     is_pinned: Optional[bool] = None
     image: Optional[bytes] = None
 
 
-class PayloadTemplate(BaseModel):
+@dataclass
+class PayloadTemplate(DataclassBaseModel):
     template: str
-    headers: Optional[Dict[str, str]] = None
+    headers: Optional[Any] = None
 
 
-class PayloadTemplateRequest(BaseModel):
-    template: constr(min_length=1)
-    headers: Optional[Dict[str, constr(min_length=1)]] = None
+@dataclass
+class PayloadTemplateRequest(DataclassBaseModel):
+    template: str
+    headers: Optional[Any] = None
 
 
-class ROI(BaseModel):
+@dataclass
+class ROI(DataclassBaseModel):
     """
     Mixin for serializers to handle data in the StrictBaseModel format
     """
 
-    label: str = Field(..., description="The label of the bounding box.")
-    score: float = Field(..., description="The confidence of the bounding box.")
-    geometry: BBoxGeometry
+    label: Any
+    score: float
+    geometry: Any
 
 
-class ROIRequest(BaseModel):
+@dataclass
+class ROIRequest(DataclassBaseModel):
     """
     Mixin for serializers to handle data in the StrictBaseModel format
     """
 
-    label: constr(min_length=1) = Field(..., description="The label of the bounding box.")
+    label: str
     geometry: BBoxGeometryRequest
 
 
@@ -161,8 +197,9 @@ class StatusEnum(str, Enum):
     OFF = "OFF"
 
 
-class WebhookAction(BaseModel):
-    url: AnyUrl
+@dataclass
+class WebhookAction(DataclassBaseModel):
+    url: Any
     include_image: Optional[bool] = None
     payload_template: Optional[PayloadTemplate] = None
     last_message_failed: Optional[bool] = None
@@ -170,8 +207,9 @@ class WebhookAction(BaseModel):
     last_failed_at: Optional[datetime] = None
 
 
-class WebhookActionRequest(BaseModel):
-    url: AnyUrl
+@dataclass
+class WebhookActionRequest(DataclassBaseModel):
+    url: Any
     include_image: Optional[bool] = None
     payload_template: Optional[PayloadTemplateRequest] = None
     last_message_failed: Optional[bool] = None
@@ -183,24 +221,26 @@ class ResultType(Enum):
     binary_classification = "binary_classification"
 
 
-class BinaryClassificationResult(BaseModel):
-    confidence: Optional[confloat(ge=0.0, le=1.0)] = None
+@dataclass
+class BinaryClassificationResult(DataclassBaseModel):
+    label: str
+    confidence: Optional[float] = None
     source: Optional[str] = None
     result_type: Optional[ResultType] = None
     from_edge: Optional[bool] = None
-    label: str
 
 
 class ResultType2(Enum):
     counting = "counting"
 
 
-class CountingResult(BaseModel):
-    confidence: Optional[confloat(ge=0.0, le=1.0)] = None
+@dataclass
+class CountingResult(DataclassBaseModel):
+    confidence: Optional[float] = None
     source: Optional[str] = None
     result_type: Optional[ResultType2] = None
     from_edge: Optional[bool] = None
-    count: Optional[conint(ge=0)] = Field(...)
+    count: Optional[float] = None
     greater_than_max: Optional[bool] = None
 
 
@@ -208,56 +248,63 @@ class ResultType3(Enum):
     multi_classification = "multi_classification"
 
 
-class MultiClassificationResult(BaseModel):
-    confidence: Optional[confloat(ge=0.0, le=1.0)] = None
+@dataclass
+class MultiClassificationResult(DataclassBaseModel):
+    label: str
+    confidence: Optional[float] = None
     source: Optional[str] = None
     result_type: Optional[ResultType3] = None
     from_edge: Optional[bool] = None
-    label: str
 
 
 class ResultType4(Enum):
     text_recognition = "text_recognition"
 
 
-class TextRecognitionResult(BaseModel):
-    confidence: Optional[confloat(ge=0.0, le=1.0)] = None
+@dataclass
+class TextRecognitionResult(DataclassBaseModel):
+    truncated: bool
+    confidence: Optional[float] = None
     source: Optional[str] = None
     result_type: Optional[ResultType4] = None
     from_edge: Optional[bool] = None
-    text: Optional[str] = Field(...)
-    truncated: bool
+    text: Optional[str] = None
 
 
 class ResultType5(Enum):
     bounding_box = "bounding_box"
 
 
-class BoundingBoxResult(BaseModel):
-    confidence: Optional[confloat(ge=0.0, le=1.0)] = None
-    source: Optional[str] = None
-    result_type: Optional[ResultType5] = None
-    from_edge: Optional[bool] = None
+@dataclass
+class BoundingBoxResult(DataclassBaseModel):
     label: str
+    confidence: Optional[float] = None
+    source: Optional[str] = None
+    result_type: Optional[Any] = None
+    from_edge: Optional[bool] = None
 
 
-class CountModeConfiguration(BaseModel):
-    max_count: Optional[conint(ge=1, le=50)] = None
+@dataclass
+class CountModeConfiguration(DataclassBaseModel):
     class_name: str
+    max_count: Optional[int] = None
 
 
-class MultiClassModeConfiguration(BaseModel):
+@dataclass
+class MultiClassModeConfiguration(DataclassBaseModel):
     class_names: List[str]
     num_classes: Optional[int] = None
 
 
-class TextModeConfiguration(BaseModel):
-    value_max_length: Optional[conint(ge=1, le=250)] = None
+@dataclass
+class TextModeConfiguration(DataclassBaseModel):
+    value_max_length: Optional[int] = None
 
 
-class BoundingBoxModeConfiguration(BaseModel):
+@dataclass
+class BoundingBoxModeConfiguration(DataclassBaseModel):
     class_name: str
-    max_num_bboxes: Optional[conint(ge=1, le=50)] = None
+    max_num_bboxes: Optional[int] = None
 
 
 class ChannelEnum(str, Enum):
@@ -265,13 +312,15 @@ class ChannelEnum(str, Enum):
     EMAIL = "EMAIL"
 
 
-class Action(BaseModel):
-    channel: ChannelEnum
+@dataclass
+class Action(DataclassBaseModel):
+    channel: Any
     recipient: str
     include_image: bool
 
 
-class ActionList(RootModel[List[Action]]):
+@dataclass
+class ActionList(DataclassBaseModel):
     root: List[Action]
 
 
@@ -319,7 +368,8 @@ class Label(str, Enum):
     UNCLEAR = "UNCLEAR"
 
 
-class AllNotes(BaseModel):
+@dataclass
+class AllNotes(DataclassBaseModel):
     """
     Serializes all notes for a given detector, grouped by type as listed in UserProfile.NoteCategoryChoices
     The fields must match whats in USERPROFILE.NoteCategoryChoices
@@ -328,8 +378,8 @@ class AllNotes(BaseModel):
     CUSTOMER: List[Note]
     GL: List[Note]
 
-
-class Detector(BaseModel):
+@dataclass
+class Detector(DataclassBaseModel):
     """
     Groundlight Detectors provide answers to natural language questions about images.
 
@@ -338,138 +388,96 @@ class Detector(BaseModel):
     create_[MODE]_detector methods for pro tier users
     """
 
-    id: str = Field(..., description="A unique ID for this object.")
-    type: DetectorTypeEnum = Field(..., description="The type of this object.")
-    created_at: datetime = Field(..., description="When this detector was created.")
-    name: constr(max_length=200) = Field(..., description="A short, descriptive name for the detector.")
-    query: str = Field(..., description="A question about the image.")
-    group_name: str = Field(..., description="Which group should this detector be part of?")
-    confidence_threshold: confloat(ge=0.0, le=1.0) = Field(
-        0.9,
-        description=(
-            "If the detector's prediction is below this confidence threshold, send the image query for human review."
-        ),
-    )
-    patience_time: confloat(ge=0.0, le=3600.0) = Field(
-        30.0, description="How long Groundlight will attempt to generate a confident prediction"
-    )
-    metadata: Optional[Dict[str, Any]] = Field(..., description="Metadata about the detector.")
+    id: str
+    type: DetectorTypeEnum
+    created_at: datetime
+    name: str
+    query: str
+    group_name: str
+    confidence_threshold: float
+    patience_time: float
     mode: str
-    mode_configuration: Optional[Dict[str, Any]] = Field(...)
-    status: Optional[Union[StatusEnum, BlankEnum]] = None
+    metadata: Optional[Any] = None
+    mode_configuration: Optional[Any] = None
+    status: Optional[Any] = None
     escalation_type: Optional[str] = None
 
 
-class DetectorCreationInputRequest(BaseModel):
+@dataclass
+class DetectorCreationInputRequest(DataclassBaseModel):
     """
     Helper serializer for validating POST /detectors input.
     """
 
-    name: constr(min_length=1, max_length=200) = Field(..., description="A short, descriptive name for the detector.")
-    query: constr(min_length=1, max_length=300) = Field(..., description="A question about the image.")
-    group_name: Optional[constr(min_length=1, max_length=100)] = Field(
-        None, description="Which group should this detector be part of?"
-    )
-    confidence_threshold: confloat(ge=0.0, le=1.0) = Field(
-        0.9,
-        description=(
-            "If the detector's prediction is below this confidence threshold, send the image query for human review."
-        ),
-    )
-    patience_time: confloat(ge=0.0, le=3600.0) = Field(
-        30.0, description="How long Groundlight will attempt to generate a confident prediction"
-    )
-    pipeline_config: Optional[constr(max_length=100)] = Field(
-        None, description="(Advanced usage) Configuration needed to instantiate a prediction pipeline."
-    )
-    metadata: Optional[constr(min_length=1, max_length=1362)] = Field(
-        None,
-        description=(
-            "Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after"
-            " encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding."
-        ),
-    )
-    mode: ModeEnum = Field(
-        "BINARY",
-        description=(
-            "Mode in which this detector will work.\n\n* `BINARY` - BINARY\n* `COUNT` - COUNT\n* `MULTI_CLASS` -"
-            " MULTI_CLASS\n* `TEXT` - TEXT\n* `BOUNDING_BOX` - BOUNDING_BOX"
-        ),
-    )
-    mode_configuration: Optional[
-        Union[CountModeConfiguration, MultiClassModeConfiguration, TextModeConfiguration, BoundingBoxModeConfiguration]
-    ] = None
+    name: str
+    query: str
+    confidence_threshold: float
+    patience_time: float
+    mode: Any
+    group_name: Optional[str] = None
+    pipeline_config: Optional[str] = None
+    metadata: Optional[str] = None
+    mode_configuration: Optional[Any] = None
 
 
-class ImageQuery(BaseModel):
+@dataclass
+class ImageQuery(DataclassBaseModel):
     """
     ImageQuery objects are the answers to natural language questions about images created by detectors.
     """
 
-    metadata: Optional[Dict[str, Any]] = Field(..., description="Metadata about the image query.")
-    id: str = Field(..., description="A unique ID for this object.")
-    type: ImageQueryTypeEnum = Field(..., description="The type of this object.")
-    created_at: datetime = Field(..., description="When was this detector created?")
-    query: str = Field(..., description="A question about the image.")
-    detector_id: str = Field(..., description="Which detector was used on this image query?")
-    result_type: ResultTypeEnum = Field(..., description="What type of result are we returning?")
-    result: Optional[
-        Union[
-            BinaryClassificationResult,
-            CountingResult,
-            MultiClassificationResult,
-            TextRecognitionResult,
-            BoundingBoxResult,
-        ]
-    ] = Field(...)
-    patience_time: float = Field(..., description="How long to wait for a confident response.")
-    confidence_threshold: float = Field(
-        ..., description="Min confidence needed to accept the response of the image query."
-    )
-    rois: Optional[List[ROI]] = Field(
-        ..., description="An array of regions of interest (bounding boxes) collected on image"
-    )
-    text: Optional[str] = Field(..., description="A text field on image query.")
-    done_processing: bool = Field(
-        False,
-        description="EDGE ONLY - Whether the image query has completed escalating and will receive no new results.",
-    )
-
-
-class LabelValue(BaseModel):
-    confidence: Optional[float] = Field(...)
-    class_name: Optional[str] = Field(
-        ..., description="Return a human-readable class name for this label (e.g. YES/NO)"
-    )
-    rois: Optional[List[ROI]] = None
-    annotations_requested: List[str]
+    id: str
+    type: ImageQueryTypeEnum
     created_at: datetime
-    detector_id: Optional[int] = Field(...)
+    query: str
+    detector_id: str
+    result_type: ResultTypeEnum
+    patience_time: float
+    confidence_threshold: float
+    metadata: Optional[Any] = None
+    result: Optional[Any] = None
+    rois: Optional[List[ROI]] = None
+    text: Optional[str] = None
+    done_processing: bool = False
+
+
+@dataclass
+class LabelValue(DataclassBaseModel):
+    created_at: datetime
     source: str
-    text: Optional[str] = Field(..., description="Text annotations")
+    confidence: Optional[float]
+    class_name: Optional[str]
+    annotations_requested: List[str]
+    rois: Optional[List[ROI]] = None
+    detector_id: Optional[int] = None
+    text: Optional[str] = None
 
 
-class LabelValueRequest(BaseModel):
-    label: Optional[str] = Field(...)
-    image_query_id: constr(min_length=1)
+@dataclass
+class LabelValueRequest(DataclassBaseModel):
+    image_query_id: str
+    label: Optional[str] = None
     rois: Optional[List[ROIRequest]] = None
 
 
-class PaginatedDetectorList(BaseModel):
-    count: int = Field(..., example=123)
-    next: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=4")
-    previous: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=2")
+@dataclass
+class PaginatedDetectorList(DataclassBaseModel):
+    count: int
     results: List[Detector]
+    next: Optional[Any] = None
+    previous: Optional[Any] = None
 
 
-class PaginatedImageQueryList(BaseModel):
-    count: int = Field(..., example=123)
-    next: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=4")
-    previous: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=2")
+@dataclass
+class PaginatedImageQueryList(DataclassBaseModel):
+    count: int
     results: List[ImageQuery]
+    next: Optional[Any] = None
+    previous: Optional[Any] = None
 
 
-class PatchedDetectorRequest(BaseModel):
+@dataclass
+class PatchedDetectorRequest(DataclassBaseModel):
     """
     Groundlight Detectors provide answers to natural language questions about images.
 
@@ -478,51 +486,45 @@ class PatchedDetectorRequest(BaseModel):
     create_[MODE]_detector methods for pro tier users
     """
 
-    name: Optional[constr(min_length=1, max_length=200)] = Field(
-        None, description="A short, descriptive name for the detector."
-    )
-    confidence_threshold: confloat(ge=0.0, le=1.0) = Field(
-        0.9,
-        description=(
-            "If the detector's prediction is below this confidence threshold, send the image query for human review."
-        ),
-    )
-    patience_time: confloat(ge=0.0, le=3600.0) = Field(
-        30.0, description="How long Groundlight will attempt to generate a confident prediction"
-    )
+    name: Optional[str] = None
+    confidence_threshold: float = 0.9
+    patience_time: float = 30.0
     status: Optional[Union[StatusEnum, BlankEnum]] = None
-    escalation_type: Optional[constr(min_length=1)] = None
+    escalation_type: Optional[str] = None
 
 
-class Rule(BaseModel):
+@dataclass
+class Rule(DataclassBaseModel):
     id: int
     detector_id: str
     detector_name: str
-    name: constr(max_length=44)
+    name: str
+    condition: Condition
     enabled: bool = True
     snooze_time_enabled: bool = False
-    snooze_time_value: conint(ge=0) = 0
+    snooze_time_value: int = 0
     snooze_time_unit: SnoozeTimeUnitEnum = "DAYS"
     human_review_required: bool = False
-    condition: Condition
     action: Optional[Union[Action, ActionList]] = None
     webhook_action: Optional[List[WebhookAction]] = None
 
 
-class RuleRequest(BaseModel):
-    name: constr(min_length=1, max_length=44)
+@dataclass
+class RuleRequest(DataclassBaseModel):
+    name: str
+    condition: ConditionRequest
     enabled: bool = True
     snooze_time_enabled: bool = False
-    snooze_time_value: conint(ge=0) = 0
+    snooze_time_value: int = 0
     snooze_time_unit: SnoozeTimeUnitEnum = "DAYS"
     human_review_required: bool = False
-    condition: ConditionRequest
     action: Optional[Union[Action, ActionList]] = None
     webhook_action: Optional[List[WebhookActionRequest]] = None
 
 
-class PaginatedRuleList(BaseModel):
-    count: int = Field(..., example=123)
-    next: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=4")
-    previous: Optional[AnyUrl] = Field(None, example="http://api.example.org/accounts/?page=2")
+@dataclass
+class PaginatedRuleList(DataclassBaseModel):
+    count: int
     results: List[Rule]
+    next: Optional[Any] = None
+    previous: Optional[Any] = None

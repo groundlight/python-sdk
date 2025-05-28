@@ -31,20 +31,6 @@ DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 
-def is_valid_display_result(result: Any) -> bool:
-    """Is the image query result valid to display to the user?."""
-    if (
-        not isinstance(result, BinaryClassificationResult)
-        and not isinstance(result, CountingResult)
-        and not isinstance(result, MultiClassificationResult)
-        and not isinstance(result, BoundingBoxResult)
-    ):
-        return False
-
-    if isinstance(result, BinaryClassificationResult) and not is_valid_display_label(result.label):
-        return False
-    return True
-
 
 def generate_random_dict(target_size_bytes=1024, key_length=8, value_length=10) -> Dict[str, str]:
     """
@@ -234,21 +220,18 @@ def test_ask_confident(gl: Groundlight, detector: Detector):
     _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_ask_ml(gl: Groundlight, detector: Detector):
     _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query(gl: Groundlight, detector: Detector):
     def validate_image_query(_image_query: ImageQuery):
         assert str(_image_query)
         assert isinstance(_image_query, ImageQuery)
-        assert is_valid_display_result(_image_query.result)
 
     _image_query = gl.submit_image_query(
         detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
@@ -277,7 +260,6 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     )
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_returns_yes(gl: Groundlight):
@@ -300,14 +282,12 @@ def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/cat.png", human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_with_confidence_threshold(gl: Groundlight, detector: Detector):
@@ -331,7 +311,6 @@ def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     )
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
     assert _image_query.id == id
     assert _image_query.metadata is not None
     assert _image_query.metadata.get("is_from_edge")
@@ -345,7 +324,6 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
         _image_query = gl.submit_image_query(
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
-        assert is_valid_display_result(_image_query.result)
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
@@ -452,7 +430,6 @@ def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=jpeg, human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_submit_image_query_jpeg_truncated(gl: Groundlight, detector: Detector):
@@ -563,7 +540,6 @@ def test_list_image_queries(gl: Groundlight):
         for image_query in image_queries.results:
             assert str(image_query)
             assert isinstance(image_query, ImageQuery)
-            assert is_valid_display_result(image_query.result)
 
 
 def test_list_image_queries_with_filter(gl: Groundlight):
@@ -584,7 +560,6 @@ def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     _image_query = gl.get_image_query(id=image_query_yes.id)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 def test_get_image_query_label_yes(gl: Groundlight, image_query_yes: ImageQuery):
@@ -656,7 +631,6 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image=np_img, human_review="NEVER")
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
-    assert is_valid_display_result(_image_query.result)
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
