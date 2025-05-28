@@ -16,20 +16,15 @@ from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from ksuid import KsuidMs
 from model import (
-    BinaryClassificationResult,
-    BoundingBoxResult,
-    CountingResult,
     Detector,
     ImageQuery,
     ModeEnum,
-    MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
-
 
 
 def generate_random_dict(target_size_bytes=1024, key_length=8, value_length=10) -> Dict[str, str]:
