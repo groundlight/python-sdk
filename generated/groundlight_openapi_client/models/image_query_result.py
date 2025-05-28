@@ -222,3 +222,9 @@ class ImageQueryResult(BaseModel):
     def to_str(self) -> str:
         """Returns the string representation of the actual instance"""
         return pprint.pformat(self.dict())
+
+    def __getattr__(self, name):
+        try:
+            return super().__getattribute__(name)
+        except AttributeError:
+            return self.actual_instance.__getattribute__(name)

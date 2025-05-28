@@ -46,6 +46,7 @@ from groundlight.internalapi import (
 )
 from groundlight.optional_imports import Image, np
 from groundlight.splint import ModeEnumSplint
+from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import DetectorCreationInputRequestModeConfiguration
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -249,7 +250,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
         obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return obj["email"]
+        return obj.email
 
     def _user_is_privileged(self) -> bool:
         """
@@ -257,7 +258,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         Privleged users have elevated permissions, so care should be taken when using a privileged account.
         """
         obj = self.user_api.who_am_i()
-        return obj["is_superuser"]
+        return obj.is_superuser
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
@@ -734,7 +735,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        params = {"detector_id": detector_id, "body": image_bytesio, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params = {"detector_id": detector_id, "body": image_bytesio.read(), "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
 
         if patience_time is not None:
             params["patience_time"] = patience_time
@@ -765,7 +766,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         if image_query_id is not None:
             params["image_query_id"] = image_query_id
-
         raw_image_query = self.image_queries_api.submit_image_query(**params)
         image_query = raw_image_query
 
@@ -1529,11 +1529,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         detector_creation_input.mode = ModeEnumSplint.COUNT
 
         if max_count is None:
-            mode_config = CountModeConfiguration(class_name=class_name)
+            count_config = CountModeConfiguration(class_name=class_name)
         else:
-            mode_config = CountModeConfiguration(class_name=class_name, max_count=max_count)
+            count_config = CountModeConfiguration(class_name=class_name, max_count=max_count)
 
-        detector_creation_input.mode_configuration = mode_config
+        detector_creation_input.mode_configuration = DetectorCreationInputRequestModeConfiguration(count_config)
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return obj
 
@@ -1638,6 +1638,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         )
         detector_creation_input.mode = ModeEnumSplint.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)
-        detector_creation_input.mode_configuration = mode_config
+        detector_creation_input.mode_configuration = DetectorCreationInputRequestModeConfiguration(mode_config)
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return obj
