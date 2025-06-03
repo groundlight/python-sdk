@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDK Client &mdash; Groundlight Python SDK 0.22.7 documentation</title>
+  <title>SDK Client &mdash; Groundlight Python SDK 0.23.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=9d0f6512"></script>
+        <script src="_static/documentation_options.js?v=2753bf86"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.22.7
+                0.23.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,17 +54,26 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.ask_async"><code class="docutils literal notranslate"><span class="pre">Groundlight.ask_async()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.ask_confident"><code class="docutils literal notranslate"><span class="pre">Groundlight.ask_confident()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.ask_ml"><code class="docutils literal notranslate"><span class="pre">Groundlight.ask_ml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_binary_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_binary_detector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_counting_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_counting_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_detector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_detector_group"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_detector_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_multiclass_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_multiclass_detector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_roi"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_roi()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_detector_by_name"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_detector_by_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_image"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_image_query"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_image_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_or_create_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_or_create_detector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.list_detector_groups"><code class="docutils literal notranslate"><span class="pre">Groundlight.list_detector_groups()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.list_detectors"><code class="docutils literal notranslate"><span class="pre">Groundlight.list_detectors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.list_image_queries"><code class="docutils literal notranslate"><span class="pre">Groundlight.list_image_queries()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.start_inspection"><code class="docutils literal notranslate"><span class="pre">Groundlight.start_inspection()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.stop_inspection"><code class="docutils literal notranslate"><span class="pre">Groundlight.stop_inspection()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.submit_image_query"><code class="docutils literal notranslate"><span class="pre">Groundlight.submit_image_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.update_detector_confidence_threshold"><code class="docutils literal notranslate"><span class="pre">Groundlight.update_detector_confidence_threshold()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.update_detector_escalation_type"><code class="docutils literal notranslate"><span class="pre">Groundlight.update_detector_escalation_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.update_detector_status"><code class="docutils literal notranslate"><span class="pre">Groundlight.update_detector_status()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.update_inspection_metadata"><code class="docutils literal notranslate"><span class="pre">Groundlight.update_inspection_metadata()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.wait_for_confident_result"><code class="docutils literal notranslate"><span class="pre">Groundlight.wait_for_confident_result()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.wait_for_ml_result"><code class="docutils literal notranslate"><span class="pre">Groundlight.wait_for_ml_result()</span></code></a></li>
@@ -75,11 +84,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_alert"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_alert()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_bounding_box_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_bounding_box_detector()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_counting_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_counting_detector()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_detector_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_detector_group()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_multiclass_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_multiclass_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_note"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_note()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_roi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_roi()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_rule()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_text_recognition_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_text_recognition_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.delete_all_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.delete_all_rules()</span></code></a></li>
@@ -87,11 +92,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.download_mlbinary"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.download_mlbinary()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_detector_evaluation"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_detector_evaluation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_detector_metrics"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_detector_metrics()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_image"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_notes"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_notes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_raw_headers"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_raw_headers()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_rule"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_rule()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_detector_groups"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_detector_groups()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.list_rules"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.list_rules()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_action"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_condition"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_condition()</span></code></a></li>
@@ -99,9 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_payload_template"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_payload_template()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.make_webhook_action"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.make_webhook_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.reset_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.reset_detector()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.update_detector_escalation_type"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.update_detector_escalation_type()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.update_detector_name"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.update_detector_name()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.update_detector_status"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.update_detector_status()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -564,12 +565,102 @@ For answers above a configured confidence_threshold, use <a class="reference int
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.create_binary_detector">
+<span class="sig-name descname"><span class="pre">create_binary_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_binary_detector" title="Link to this definition"></a></dt>
+<dd><p>Creates a binary detector with the given name and query.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Create a binary detector for a door</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_binary_detector</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;door_detector&quot;</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Is there a door in the image?&quot;</span><span class="p">,</span>
+    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">patience_time</span><span class="o">=</span><span class="mf">30.0</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the detector to classify a door</span>
+<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;path/to/image.jpg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+<li><p><strong>query</strong> (<em>str</em>)</p></li>
+<li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>confidence_threshold</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>patience_time</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>pipeline_config</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em> | </em><em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.create_counting_detector">
+<span class="sig-name descname"><span class="pre">create_counting_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_counting_detector" title="Link to this definition"></a></dt>
+<dd><p>Creates a counting detector that can count objects in images up to a specified maximum count.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Create a detector that counts people up to 5</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_counting_detector</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;people_counter&quot;</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;How many people are in the image?&quot;</span><span class="p">,</span>
+    <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;person&quot;</span><span class="p">,</span>
+    <span class="n">max_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">patience_time</span><span class="o">=</span><span class="mf">30.0</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the detector to count people in an image</span>
+<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;path/to/image.jpg&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Counted </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> people&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Confidence: </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – A short, descriptive name for the detector.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – A question about the count of an object in the image.</p></li>
+<li><p><strong>class_name</strong> (<em>str</em>) – The class name of the object to count.</p></li>
+<li><p><strong>max_count</strong> (<em>int</em><em> | </em><em>None</em>) – Maximum number of objects to count (default: 10)</p></li>
+<li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional name of a group to organize related detectors together.</p></li>
+<li><p><strong>confidence_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – A value that sets the minimum confidence level required for the ML model’s
+predictions. If confidence is below this threshold, the query may be sent for human review.</p></li>
+<li><p><strong>patience_time</strong> (<em>float</em><em> | </em><em>None</em>) – The maximum time in seconds that Groundlight will attempt to generate a
+confident prediction before falling back to human review. Defaults to 30 seconds.</p></li>
+<li><p><strong>pipeline_config</strong> (<em>str</em><em> | </em><em>None</em>) – Advanced usage only. Configuration string needed to instantiate a specific
+prediction pipeline for this detector.</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em> | </em><em>str</em><em> | </em><em>None</em>) – A dictionary or JSON string containing custom key/value pairs to associate with
+the detector (limited to 1KB). This metadata can be used to store additional
+information like location, purpose, or related system IDs. You can retrieve this
+metadata later by calling <cite>get_detector()</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created Detector object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.Groundlight.create_detector">
-<span class="sig-name descname"><span class="pre">create_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_detector" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModeEnum</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModeEnum.BINARY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_detector" title="Link to this definition"></a></dt>
 <dd><p>Create a new Detector with a given name and query.</p>
-<p>Counting and Multiclass detectors are in Beta, and can be created through the
-ExperimentalApi via the <a class="reference internal" href="#groundlight.ExperimentalApi.create_counting_detector" title="groundlight.ExperimentalApi.create_counting_detector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExperimentalApi.create_counting_detector()</span></code></a> and
-<a class="reference internal" href="#groundlight.ExperimentalApi.create_multiclass_detector" title="groundlight.ExperimentalApi.create_multiclass_detector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExperimentalApi.create_multiclass_detector()</span></code></a> methods.</p>
+<p>By default will create a binary detector but alternate modes can be created by passing in a mode argument.</p>
+<p>Text and Bounding box detectors are in Beta, and can be created through the
+ExperimentalApi via the <a class="reference internal" href="#groundlight.ExperimentalApi.create_text_recognition_detector" title="groundlight.ExperimentalApi.create_text_recognition_detector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExperimentalApi.create_text_recognition_detector()</span></code></a> and
+<a class="reference internal" href="#groundlight.ExperimentalApi.create_bounding_box_detector" title="groundlight.ExperimentalApi.create_bounding_box_detector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ExperimentalApi.create_bounding_box_detector()</span></code></a> methods.</p>
 <p><strong>Example usage</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
 
@@ -607,7 +698,95 @@ and help identify the detector’s purpose.</p></li>
 this should be a yes/no question (e.g. “Is there a person in the image?”).</p></li>
 <li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional name of a group to organize related detectors together. If not specified,
 the detector will be placed in the default group.</p></li>
+<li><p><strong>mode</strong> (<em>ModeEnum</em>) – The mode of the detector. Defaults to ModeEnum.BINARY.</p></li>
 <li><p><strong>confidence_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – A value between 0.5 and 1 that sets the minimum confidence level required
+for the ML model’s predictions. If confidence is below this threshold,
+the query may be sent for human review.</p></li>
+<li><p><strong>patience_time</strong> (<em>float</em><em> | </em><em>None</em>) – The maximum time in seconds that Groundlight will attempt to generate a
+confident prediction before falling back to human review. Defaults to 30 seconds.</p></li>
+<li><p><strong>pipeline_config</strong> (<em>str</em><em> | </em><em>None</em>) – Advanced usage only. Configuration string needed to instantiate a specific
+prediction pipeline for this detector.</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em> | </em><em>str</em><em> | </em><em>None</em>) – A dictionary or JSON string containing custom key/value pairs to associate with
+the detector (limited to 1KB). This metadata can be used to store additional
+information like location, purpose, or related system IDs. You can retrieve this
+metadata later by calling <cite>get_detector()</cite>.</p></li>
+<li><p><strong>class_names</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – The name or names of the class to use for the detector. Only used for multi-class
+and counting detectors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created Detector object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.create_detector_group">
+<span class="sig-name descname"><span class="pre">create_detector_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DetectorGroup</span></span></span><a class="headerlink" href="#groundlight.Groundlight.create_detector_group" title="Link to this definition"></a></dt>
+<dd><p>Creates a detector group with the given name. A detector group allows you to organize
+related detectors together.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can specify a detector group when creating a detector without the need to create it ahead of time.
+The group will be created automatically if it doesn’t exist.</p>
+</div>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Create a group for all door-related detectors</span>
+<span class="n">door_group</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_detector_group</span><span class="p">(</span><span class="s2">&quot;door-detectors&quot;</span><span class="p">)</span>
+
+<span class="c1"># Later, create detectors in this group</span>
+<span class="n">door_open_detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_detector</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;front-door-open&quot;</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Is the front door open?&quot;</span><span class="p">,</span>
+    <span class="n">detector_group</span><span class="o">=</span><span class="n">door_group</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the detector group. This should be descriptive and unique within your organization.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DetectorGroup object corresponding to the newly created detector group</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DetectorGroup</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.create_multiclass_detector">
+<span class="sig-name descname"><span class="pre">create_multiclass_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.create_multiclass_detector" title="Link to this definition"></a></dt>
+<dd><p>Creates a multiclass detector with the given name and query.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_multiclass_detector</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Traffic Light Detector&quot;</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;What color is the traffic light?&quot;</span><span class="p">,</span>
+    <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Red&quot;</span><span class="p">,</span> <span class="s2">&quot;Yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;Green&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the detector to classify a traffic light</span>
+<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;path/to/image.jpg&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Traffic light is </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Confidence: </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – A short, descriptive name for the detector.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – A question about classifying objects in the image.</p></li>
+<li><p><strong>class_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of possible class labels for classification.</p></li>
+<li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional name of a group to organize related detectors together.</p></li>
+<li><p><strong>confidence_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – A value between 1/num_classes and 1 that sets the minimum confidence level required
 for the ML model’s predictions. If confidence is below this threshold,
 the query may be sent for human review.</p></li>
 <li><p><strong>patience_time</strong> (<em>float</em><em> | </em><em>None</em>) – The maximum time in seconds that Groundlight will attempt to generate a
@@ -625,6 +804,52 @@ metadata later by calling <cite>get_detector()</cite>.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.create_roi">
+<span class="sig-name descname"><span class="pre">create_roi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ROI</span></span></span><a class="headerlink" href="#groundlight.Groundlight.create_roi" title="Link to this definition"></a></dt>
+<dd><p>Creates a Region of Interest (ROI) object that can be used to specify areas of interest in images. Certain
+detectors (such as Count-mode detectors) may emit ROIs as part of their output. Providing an ROI can help
+improve the accuracy of such detectors.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ROI functionality is only available to Pro tier and higher.
+If you would like to learn more, reach out to us at <a class="reference external" href="https://groundlight.ai">https://groundlight.ai</a></p>
+</div>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Create an ROI for a door in the image</span>
+<span class="n">door_roi</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_roi</span><span class="p">(</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;door&quot;</span><span class="p">,</span>
+    <span class="n">top_left</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>     <span class="c1"># Coordinates are normalized (0-1)</span>
+    <span class="n">bottom_right</span><span class="o">=</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>  <span class="c1"># Coordinates are normalized (0-1)</span>
+<span class="p">)</span>
+
+<span class="c1"># Use the ROI when submitting an image query</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">submit_image_query</span><span class="p">(</span>
+    <span class="n">detector</span><span class="o">=</span><span class="s2">&quot;door-detector&quot;</span><span class="p">,</span>
+    <span class="n">image</span><span class="o">=</span><span class="n">image_bytes</span><span class="p">,</span>
+    <span class="n">rois</span><span class="o">=</span><span class="p">[</span><span class="n">door_roi</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>str</em>) – A descriptive label for the object or area contained in the ROI</p></li>
+<li><p><strong>top_left</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Tuple of (x, y) coordinates for the top-left corner, normalized to [0,1]</p></li>
+<li><p><strong>bottom_right</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Tuple of (x, y) coordinates for the bottom-right corner, normalized to [0,1]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An ROI object that can be used in image queries</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ROI</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -671,6 +896,48 @@ metadata later by calling <cite>get_detector()</cite>.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.get_image">
+<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iq_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#groundlight.Groundlight.get_image" title="Link to this definition"></a></dt>
+<dd><p>Get the image associated with the given image query ID.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Get image from an image query</span>
+<span class="n">iq</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_image_query</span><span class="p">(</span><span class="s2">&quot;iq_123&quot;</span><span class="p">)</span>
+<span class="n">image_bytes</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="n">iq</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># Open with PIL - returns RGB order</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gl</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="n">iq</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>  <span class="c1"># Returns RGB image</span>
+
+<span class="c1"># Open with numpy via PIL - returns RGB order</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gl</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="n">iq</span><span class="o">.</span><span class="n">id</span><span class="p">)))</span>  <span class="c1"># Returns RGB array</span>
+
+<span class="c1"># Open with OpenCV - returns BGR order</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">nparr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imdecode</span><span class="p">(</span><span class="n">nparr</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>  <span class="c1"># Returns BGR array</span>
+<span class="c1"># To convert to RGB if needed:</span>
+<span class="c1"># image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>iq_id</strong> (<em>str</em>) – The ID of the image query to get the image from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The image as a byte array that can be used with PIL or other image libraries</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bytes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -765,6 +1032,32 @@ configuration (query, group_name, etc.) matches what was requested. If
 there are any mismatches, it raises ValueError rather than modifying the
 existing detector.</p>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.list_detector_groups">
+<span class="sig-name descname"><span class="pre">list_detector_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DetectorGroup</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#groundlight.Groundlight.list_detector_groups" title="Link to this definition"></a></dt>
+<dd><p>Gets a list of all detector groups in your account.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Get all detector groups</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">list_detector_groups</span><span class="p">()</span>
+
+<span class="c1"># Print information about each group</span>
+<span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group name: </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group ID: </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of DetectorGroup objects representing all detector groups in your account</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>List</em>[<em>DetectorGroup</em>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -986,6 +1279,83 @@ will be generated.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – the detector to update</p></li>
 <li><p><strong>confidence_threshold</strong> (<em>float</em>) – the new confidence threshold</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.update_detector_escalation_type">
+<span class="sig-name descname"><span class="pre">update_detector_escalation_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">escalation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.Groundlight.update_detector_escalation_type" title="Link to this definition"></a></dt>
+<dd><p>Updates the escalation type of the given detector, controlling whether queries can be
+sent to human labelers when ML confidence is low.</p>
+<p>This is particularly useful for controlling costs. When set to “NO_HUMAN_LABELING”,
+queries will only receive ML predictions, even if confidence is low.
+When set to “STANDARD”, low-confidence queries may be sent to human labelers for verification.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Using a detector object</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
+
+<span class="c1"># Disable human labeling</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_escalation_type</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;NO_HUMAN_LABELING&quot;</span><span class="p">)</span>
+
+<span class="c1"># Re-enable standard human labeling</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_escalation_type</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">,</span> <span class="s2">&quot;STANDARD&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id3"><span class="problematic" id="id4">det_</span></a>”.
+The detector whose escalation type should be updated.</p></li>
+<li><p><strong>escalation_type</strong> (<em>str</em>) – The new escalation type setting. Must be one of:
+- “STANDARD”: Allow human labeling for low-confidence queries
+- “NO_HUMAN_LABELING”: Never send queries to human labelers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If escalation_type is not one of the allowed values</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.update_detector_status">
+<span class="sig-name descname"><span class="pre">update_detector_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.Groundlight.update_detector_status" title="Link to this definition"></a></dt>
+<dd><p>Updates the status of the given detector. When a detector is disabled (enabled=False),
+it will not accept or process any new image queries. Existing queries will not be affected.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Using a detector object</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_status</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable the detector</span>
+
+<span class="c1"># Using a detector ID string directly</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_status</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable the detector</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id5"><span class="problematic" id="id6">det_</span></a>”.
+The detector whose status should be updated.</p></li>
+<li><p><strong>enabled</strong> (<em>bool</em>) – Boolean indicating whether the detector should be enabled (True) or
+disabled (False). When disabled, the detector will not process new queries.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1341,143 +1711,6 @@ metadata later by calling <cite>get_detector()</cite>.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_counting_detector">
-<span class="sig-name descname"><span class="pre">create_counting_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_counting_detector" title="Link to this definition"></a></dt>
-<dd><p>Creates a counting detector that can count objects in images up to a specified maximum count.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Create a detector that counts people up to 5</span>
-<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_counting_detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;people_counter&quot;</span><span class="p">,</span>
-    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;How many people are in the image?&quot;</span><span class="p">,</span>
-    <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;person&quot;</span><span class="p">,</span>
-    <span class="n">max_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-    <span class="n">patience_time</span><span class="o">=</span><span class="mf">30.0</span>
-<span class="p">)</span>
-
-<span class="c1"># Use the detector to count people in an image</span>
-<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;path/to/image.jpg&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Counted </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> people&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Confidence: </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – A short, descriptive name for the detector.</p></li>
-<li><p><strong>query</strong> (<em>str</em>) – A question about the count of an object in the image.</p></li>
-<li><p><strong>class_name</strong> (<em>str</em>) – The class name of the object to count.</p></li>
-<li><p><strong>max_count</strong> (<em>int</em><em> | </em><em>None</em>) – Maximum number of objects to count (default: 10)</p></li>
-<li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional name of a group to organize related detectors together.</p></li>
-<li><p><strong>confidence_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – A value that sets the minimum confidence level required for the ML model’s
-predictions. If confidence is below this threshold, the query may be sent for human review.</p></li>
-<li><p><strong>patience_time</strong> (<em>float</em><em> | </em><em>None</em>) – The maximum time in seconds that Groundlight will attempt to generate a
-confident prediction before falling back to human review. Defaults to 30 seconds.</p></li>
-<li><p><strong>pipeline_config</strong> (<em>str</em><em> | </em><em>None</em>) – Advanced usage only. Configuration string needed to instantiate a specific
-prediction pipeline for this detector.</p></li>
-<li><p><strong>metadata</strong> (<em>dict</em><em> | </em><em>str</em><em> | </em><em>None</em>) – A dictionary or JSON string containing custom key/value pairs to associate with
-the detector (limited to 1KB). This metadata can be used to store additional
-information like location, purpose, or related system IDs. You can retrieve this
-metadata later by calling <cite>get_detector()</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The created Detector object</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_detector_group">
-<span class="sig-name descname"><span class="pre">create_detector_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DetectorGroup</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_detector_group" title="Link to this definition"></a></dt>
-<dd><p>Creates a detector group with the given name. A detector group allows you to organize
-related detectors together.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can specify a detector group when creating a detector without the need to create it ahead of time.
-The group will be created automatically if it doesn’t exist.</p>
-</div>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Create a group for all door-related detectors</span>
-<span class="n">door_group</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_detector_group</span><span class="p">(</span><span class="s2">&quot;door-detectors&quot;</span><span class="p">)</span>
-
-<span class="c1"># Later, create detectors in this group</span>
-<span class="n">door_open_detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;front-door-open&quot;</span><span class="p">,</span>
-    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Is the front door open?&quot;</span><span class="p">,</span>
-    <span class="n">detector_group</span><span class="o">=</span><span class="n">door_group</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the detector group. This should be descriptive and unique within your organization.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DetectorGroup object corresponding to the newly created detector group</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DetectorGroup</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_multiclass_detector">
-<span class="sig-name descname"><span class="pre">create_multiclass_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_multiclass_detector" title="Link to this definition"></a></dt>
-<dd><p>Creates a multiclass detector with the given name and query.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_multiclass_detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Traffic Light Detector&quot;</span><span class="p">,</span>
-    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;What color is the traffic light?&quot;</span><span class="p">,</span>
-    <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Red&quot;</span><span class="p">,</span> <span class="s2">&quot;Yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;Green&quot;</span><span class="p">]</span>
-<span class="p">)</span>
-
-<span class="c1"># Use the detector to classify a traffic light</span>
-<span class="n">image_query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;path/to/image.jpg&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Traffic light is </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Confidence: </span><span class="si">{</span><span class="n">image_query</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – A short, descriptive name for the detector.</p></li>
-<li><p><strong>query</strong> (<em>str</em>) – A question about classifying objects in the image.</p></li>
-<li><p><strong>class_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of possible class labels for classification.</p></li>
-<li><p><strong>group_name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional name of a group to organize related detectors together.</p></li>
-<li><p><strong>confidence_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – A value between 1/num_classes and 1 that sets the minimum confidence level required
-for the ML model’s predictions. If confidence is below this threshold,
-the query may be sent for human review.</p></li>
-<li><p><strong>patience_time</strong> (<em>float</em><em> | </em><em>None</em>) – The maximum time in seconds that Groundlight will attempt to generate a
-confident prediction before falling back to human review. Defaults to 30 seconds.</p></li>
-<li><p><strong>pipeline_config</strong> (<em>str</em><em> | </em><em>None</em>) – Advanced usage only. Configuration string needed to instantiate a specific
-prediction pipeline for this detector.</p></li>
-<li><p><strong>metadata</strong> (<em>dict</em><em> | </em><em>str</em><em> | </em><em>None</em>) – A dictionary or JSON string containing custom key/value pairs to associate with
-the detector (limited to 1KB). This metadata can be used to store additional
-information like location, purpose, or related system IDs. You can retrieve this
-metadata later by calling <cite>get_detector()</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The created Detector object</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_note">
 <span class="sig-name descname"><span class="pre">create_note</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnavailableModule</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_note" title="Link to this definition"></a></dt>
 <dd><p>Adds a note to a given detector.</p>
@@ -1505,52 +1738,6 @@ metadata later by calling <cite>get_detector()</cite>.</p></li>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_roi">
-<span class="sig-name descname"><span class="pre">create_roi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ROI</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_roi" title="Link to this definition"></a></dt>
-<dd><p>Creates a Region of Interest (ROI) object that can be used to specify areas of interest in images. Certain
-detectors (such as Count-mode detectors) may emit ROIs as part of their output. Providing an ROI can help
-improve the accuracy of such detectors.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>ROI functionality is only available to Pro tier and higher.
-If you would like to learn more, reach out to us at <a class="reference external" href="https://groundlight.ai">https://groundlight.ai</a></p>
-</div>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Create an ROI for a door in the image</span>
-<span class="n">door_roi</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_roi</span><span class="p">(</span>
-    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;door&quot;</span><span class="p">,</span>
-    <span class="n">top_left</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>     <span class="c1"># Coordinates are normalized (0-1)</span>
-    <span class="n">bottom_right</span><span class="o">=</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>  <span class="c1"># Coordinates are normalized (0-1)</span>
-<span class="p">)</span>
-
-<span class="c1"># Use the ROI when submitting an image query</span>
-<span class="n">query</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">submit_image_query</span><span class="p">(</span>
-    <span class="n">detector</span><span class="o">=</span><span class="s2">&quot;door-detector&quot;</span><span class="p">,</span>
-    <span class="n">image</span><span class="o">=</span><span class="n">image_bytes</span><span class="p">,</span>
-    <span class="n">rois</span><span class="o">=</span><span class="p">[</span><span class="n">door_roi</span><span class="p">]</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<em>str</em>) – A descriptive label for the object or area contained in the ROI</p></li>
-<li><p><strong>top_left</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Tuple of (x, y) coordinates for the top-left corner, normalized to [0,1]</p></li>
-<li><p><strong>bottom_right</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Tuple of (x, y) coordinates for the bottom-right corner, normalized to [0,1]</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An ROI object that can be used in image queries</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>ROI</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1783,48 +1970,6 @@ This action cannot be undone. Use with caution.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.get_image">
-<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iq_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_image" title="Link to this definition"></a></dt>
-<dd><p>Get the image associated with the given image query ID.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Get image from an image query</span>
-<span class="n">iq</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_image_query</span><span class="p">(</span><span class="s2">&quot;iq_123&quot;</span><span class="p">)</span>
-<span class="n">image_bytes</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="n">iq</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
-<span class="c1"># Open with PIL - returns RGB order</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
-<span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gl</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="n">iq</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>  <span class="c1"># Returns RGB image</span>
-
-<span class="c1"># Open with numpy via PIL - returns RGB order</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
-<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gl</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="n">iq</span><span class="o">.</span><span class="n">id</span><span class="p">)))</span>  <span class="c1"># Returns RGB array</span>
-
-<span class="c1"># Open with OpenCV - returns BGR order</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="n">nparr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-<span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imdecode</span><span class="p">(</span><span class="n">nparr</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>  <span class="c1"># Returns BGR array</span>
-<span class="c1"># To convert to RGB if needed:</span>
-<span class="c1"># image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>iq_id</strong> (<em>str</em>) – The ID of the image query to get the image from</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The image as a byte array that can be used with PIL or other image libraries</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.get_notes">
 <span class="sig-name descname"><span class="pre">get_notes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.get_notes" title="Link to this definition"></a></dt>
 <dd><p>Retrieves all notes associated with a detector.</p>
@@ -1889,32 +2034,6 @@ where each source maps to a list of note strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#model.Rule" title="model.Rule"><em>Rule</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.list_detector_groups">
-<span class="sig-name descname"><span class="pre">list_detector_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DetectorGroup</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.list_detector_groups" title="Link to this definition"></a></dt>
-<dd><p>Gets a list of all detector groups in your account.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Get all detector groups</span>
-<span class="n">groups</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">list_detector_groups</span><span class="p">()</span>
-
-<span class="c1"># Print information about each group</span>
-<span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group name: </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group ID: </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of DetectorGroup objects representing all detector groups in your account</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>List</em>[<em>DetectorGroup</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2103,7 +2222,7 @@ the detector to its initial state, allowing you to start fresh with new training
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id3"><span class="problematic" id="id4">det_</span></a>”.
+<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id7"><span class="problematic" id="id8">det_</span></a>”.
 The detector whose data should be reset.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2111,49 +2230,6 @@ The detector whose data should be reset.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.update_detector_escalation_type">
-<span class="sig-name descname"><span class="pre">update_detector_escalation_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">escalation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.update_detector_escalation_type" title="Link to this definition"></a></dt>
-<dd><p>Updates the escalation type of the given detector, controlling whether queries can be
-sent to human labelers when ML confidence is low.</p>
-<p>This is particularly useful for controlling costs. When set to “NO_HUMAN_LABELING”,
-queries will only receive ML predictions, even if confidence is low.
-When set to “STANDARD”, low-confidence queries may be sent to human labelers for verification.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Using a detector object</span>
-<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
-
-<span class="c1"># Disable human labeling</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_escalation_type</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="s2">&quot;NO_HUMAN_LABELING&quot;</span><span class="p">)</span>
-
-<span class="c1"># Re-enable standard human labeling</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_escalation_type</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">,</span> <span class="s2">&quot;STANDARD&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id5"><span class="problematic" id="id6">det_</span></a>”.
-The detector whose escalation type should be updated.</p></li>
-<li><p><strong>escalation_type</strong> (<em>str</em>) – The new escalation type setting. Must be one of:
-- “STANDARD”: Allow human labeling for low-confidence queries
-- “NO_HUMAN_LABELING”: Never send queries to human labelers</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If escalation_type is not one of the allowed values</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2176,43 +2252,9 @@ The detector whose escalation type should be updated.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id7"><span class="problematic" id="id8">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id9"><span class="problematic" id="id10">det_</span></a>”.
 The detector whose name should be updated.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – The new name to assign to the detector</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="groundlight.ExperimentalApi.update_detector_status">
-<span class="sig-name descname"><span class="pre">update_detector_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.update_detector_status" title="Link to this definition"></a></dt>
-<dd><p>Updates the status of the given detector. When a detector is disabled (enabled=False),
-it will not accept or process any new image queries. Existing queries will not be affected.</p>
-<p><strong>Example usage</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
-
-<span class="c1"># Using a detector object</span>
-<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_status</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable the detector</span>
-
-<span class="c1"># Using a detector ID string directly</span>
-<span class="n">gl</span><span class="o">.</span><span class="n">update_detector_status</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable the detector</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id9"><span class="problematic" id="id10">det_</span></a>”.
-The detector whose status should be updated.</p></li>
-<li><p><strong>enabled</strong> (<em>bool</em>) – Boolean indicating whether the detector should be enabled (True) or
-disabled (False). When disabled, the detector will not process new queries.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
