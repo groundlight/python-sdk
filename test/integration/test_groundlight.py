@@ -84,9 +84,9 @@ def test_create_detector(gl: Groundlight):
     _detector = gl.create_detector(name=name, query=query)
     assert str(_detector)
     assert isinstance(_detector, Detector)
-    assert _detector.confidence_threshold == DEFAULT_CONFIDENCE_THRESHOLD, (
-        "We expected the default confidence threshold to be used."
-    )
+    assert (
+        _detector.confidence_threshold == DEFAULT_CONFIDENCE_THRESHOLD
+    ), "We expected the default confidence threshold to be used."
 
     # Test creating dectors with other modes
     name = f"Test {datetime.utcnow()}"  # Need a unique name
@@ -160,9 +160,9 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
 
     # If the confidence is not provided, we will use the existing detector's confidence.
     retrieved_detector = gl.get_or_create_detector(name=name, query=query)
-    assert retrieved_detector.confidence_threshold == confidence_threshold, (
-        "We expected to retrieve the existing detector's confidence, but got a different value."
-    )
+    assert (
+        retrieved_detector.confidence_threshold == confidence_threshold
+    ), "We expected to retrieve the existing detector's confidence, but got a different value."
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
