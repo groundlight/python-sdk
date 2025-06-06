@@ -449,6 +449,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                **kwargs,
             )
         if mode == ModeEnum.COUNT:
             if class_names is None:
@@ -464,6 +465,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                **kwargs,
             )
         if mode == ModeEnum.MULTI_CLASS:
             if class_names is None:
@@ -479,6 +481,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                **kwargs,
             )
         raise ValueError(
             f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi"
@@ -786,7 +789,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         if wait > 0:
             if confidence_threshold is None:
-                threshold = self.get_detector(detector).confidence_threshold
+                threshold = self.get_detector(detector).confidence_threshold  # TODO pass kwargs through here?
             else:
                 threshold = confidence_threshold
             image_query = self.wait_for_confident_result(image_query, confidence_threshold=threshold, timeout_sec=wait)
@@ -1421,7 +1424,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             ),
         )
 
-    def update_detector_status(self, detector: Union[str, Detector], enabled: bool) -> None:
+    def update_detector_status(self, detector: Union[str, Detector], enabled: bool, **kwargs) -> None:
         """
         Updates the status of the given detector. When a detector is disabled (enabled=False),
         it will not accept or process any new image queries. Existing queries will not be affected.
@@ -1449,9 +1452,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.detectors_api.update_detector(
             detector,
             patched_detector_request=PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF")),
+            _request_timeout=self._get_request_timeout(**kwargs),
         )
 
-    def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
+    def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str, **kwargs) -> None:
         """
         Updates the escalation type of the given detector, controlling whether queries can be
         sent to human labelers when ML confidence is low.
@@ -1490,6 +1494,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.detectors_api.update_detector(
             detector,
             patched_detector_request=PatchedDetectorRequest(escalation_type=escalation_type),
+            _request_timeout=self._get_request_timeout(**kwargs),
         )
 
     def create_counting_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
@@ -1504,6 +1509,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        **kwargs,
     ) -> Detector:
         """
         Creates a counting detector that can count objects in images up to a specified maximum count.
@@ -1563,7 +1569,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             mode_config = CountModeConfiguration(class_name=class_name, max_count=max_count)
 
         detector_creation_input.mode_configuration = mode_config
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        obj = self.detectors_api.create_detector(
+            detector_creation_input, _request_timeout=self._get_request_timeout(**kwargs)
+        )
         return Detector.parse_obj(obj.to_dict())
 
     def create_binary_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
@@ -1576,6 +1584,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        **kwargs,
     ) -> Detector:
         """
         Creates a binary detector with the given name and query.
@@ -1604,7 +1613,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        obj = self.detectors_api.create_detector(
+            detector_creation_input, _request_timeout=self._get_request_timeout(**kwargs)
+        )
         return Detector.parse_obj(obj.to_dict())
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
@@ -1618,6 +1629,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        **kwargs,
     ) -> Detector:
         """
         Creates a multiclass detector with the given name and query.
@@ -1668,5 +1680,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         detector_creation_input.mode = ModeEnum.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        obj = self.detectors_api.create_detector(
+            detector_creation_input, _request_timeout=self._get_request_timeout(**kwargs)
+        )
         return Detector.parse_obj(obj.to_dict())
