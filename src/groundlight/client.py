@@ -233,6 +233,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
+    def _get_request_timeout(self, **kwargs):
+        """Extract request_timeout from kwargs or use default."""
+        return kwargs.get("request_timeout", DEFAULT_REQUEST_TIMEOUT)
+
     def whoami(self) -> str:
         """
         Return the username (email address) associated with the current API token.
@@ -637,6 +641,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         image_query_id: Optional[str] = None,
+        **kwargs,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.
@@ -731,7 +736,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        params = {"detector_id": detector_id, "body": image_bytesio, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params = {
+            "detector_id": detector_id,
+            "body": image_bytesio,
+            "_request_timeout": self._get_request_timeout(**kwargs),
+        }
 
         if patience_time is not None:
             params["patience_time"] = patience_time
