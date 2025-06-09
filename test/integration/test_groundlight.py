@@ -859,29 +859,29 @@ def test_delete_detector(gl: Groundlight):
     query = "Is there a dog to delete?"
     pipeline_config = "never-review"
     detector = gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
-    
+
     # Verify the detector exists
     retrieved_detector = gl.get_detector(detector.id)
     assert retrieved_detector.id == detector.id
-    
+
     # Delete using detector object
     gl.delete_detector(detector)
-    
+
     # Verify the detector is actually deleted
     with pytest.raises(NotFoundError):
         gl.get_detector(detector.id)
-    
+
     # Create another detector to test deletion by ID string
     name2 = f"Test delete detector 2 {datetime.utcnow()}"
     detector2 = gl.create_detector(name=name2, query=query, pipeline_config=pipeline_config)
-    
+
     # Delete using detector ID string
     gl.delete_detector(detector2.id)
-    
+
     # Verify the second detector is also deleted
     with pytest.raises(NotFoundError):
         gl.get_detector(detector2.id)
-    
+
     # Test deleting a non-existent detector raises NotFoundError
     fake_detector_id = "det_fake123456789"
     with pytest.raises(NotFoundError):
