@@ -35,7 +35,7 @@ try:
 except ImportError as e:
     np = UnavailableModule(e)
     # Expose np.ndarray so type-hinting looks normal
-    np.ndarray = np  # pylint: disable=attribute-defined-outside-init  # type: ignore[attr-defined]
+    np.ndarray = np  # pylint: disable=attribute-defined-outside-init  # type: ignore
     MISSING_NUMPY = True
 
 try:
@@ -46,7 +46,7 @@ try:
 except ImportError as e:
     PIL = UnavailableModule(e)
     Image = PIL
-    Image.Image = PIL  # for type-hinting; pylint: disable=attribute-defined-outside-init  # type: ignore[attr-defined]
+    Image.Image = PIL  # for type-hinting; pylint: disable=attribute-defined-outside-init  # type: ignore
     MISSING_PIL = True
 
 
