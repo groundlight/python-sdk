@@ -233,10 +233,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
-    def _get_request_timeout(self, **kwargs):
-        """Extract request_timeout from kwargs or use default."""
-        return kwargs.get("request_timeout", DEFAULT_REQUEST_TIMEOUT)
-
     def whoami(self) -> str:
         """
         Return the username (email address) associated with the current API token.
@@ -641,7 +637,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         image_query_id: Optional[str] = None,
-        **kwargs,
+        request_timeout: Optional[float] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.
@@ -723,6 +719,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param image_query_id: The ID for the image query. This is to enable specific functionality
                             and is not intended for general external use. If not set, a random ID
                             will be generated.
+        :param request_timeout: The total request timeout for the image query submission API request. Most users will
+            not need to modify this. If not set, the default value will be used.
 
         :return: ImageQuery with query details and result (if wait > 0)
         :raises ValueError: If wait > 0 when want_async=True
@@ -739,7 +737,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         params = {
             "detector_id": detector_id,
             "body": image_bytesio,
-            "_request_timeout": self._get_request_timeout(**kwargs),
+            "_request_timeout": request_timeout if request_timeout is not None else DEFAULT_REQUEST_TIMEOUT,
         }
 
         if patience_time is not None:
