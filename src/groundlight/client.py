@@ -1460,6 +1460,43 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             patched_detector_request=PatchedDetectorRequest(escalation_type=escalation_type),
         )
 
+    def delete_detector(self, detector: Union[str, Detector]) -> None:
+        """
+        Delete a detector. This permanently removes the detector and all its associated data.
+
+        .. warning::
+            This operation is irreversible. Once a detector is deleted, it cannot be recovered.
+            All associated image queries and training data will also be permanently deleted.
+
+        **Example usage**::
+
+            gl = Groundlight()
+
+            # Using a detector object
+            detector = gl.get_detector("det_abc123")
+            gl.delete_detector(detector)
+
+            # Using a detector ID string directly
+            gl.delete_detector("det_abc123")
+
+        :param detector: Either a Detector object or a detector ID string starting with "det_".
+                       The detector to delete.
+
+        :return: None
+        :raises NotFoundError: If the detector with the given ID does not exist
+        :raises ApiTokenError: If API token is invalid
+        :raises GroundlightClientError: For other API errors
+        """
+        if isinstance(detector, Detector):
+            detector_id = detector.id
+        else:
+            detector_id = str(detector)
+
+        try:
+            self.detectors_api.delete_detector(id=detector_id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        except NotFoundException as e:
+            raise NotFoundError(f"Detector with id '{detector_id}' not found") from e
+
     def create_counting_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
