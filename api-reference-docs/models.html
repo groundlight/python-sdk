@@ -60,6 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_detector_group"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_detector_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_multiclass_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_multiclass_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_roi"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_roi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.delete_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.delete_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_detector_by_name"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_detector_by_name()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.get_image"><code class="docutils literal notranslate"><span class="pre">Groundlight.get_image()</span></code></a></li>
@@ -855,6 +856,47 @@ If you would like to learn more, reach out to us at <a class="reference external
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.delete_detector">
+<span class="sig-name descname"><span class="pre">delete_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.Groundlight.delete_detector" title="Link to this definition"></a></dt>
+<dd><p>Delete a detector. This permanently removes the detector and all its associated data.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This operation is irreversible. Once a detector is deleted, it cannot be recovered.
+All associated image queries and training data will also be permanently deleted.</p>
+</div>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+
+<span class="c1"># Using a detector object</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">get_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">delete_detector</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span>
+
+<span class="c1"># Using a detector ID string directly</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">delete_detector</span><span class="p">(</span><span class="s2">&quot;det_abc123&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id3"><span class="problematic" id="id4">det_</span></a>”.
+The detector to delete.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>NotFoundError</strong> – If the detector with the given ID does not exist</p></li>
+<li><p><strong>ApiTokenError</strong> – If API token is invalid</p></li>
+<li><p><strong>GroundlightClientError</strong> – For other API errors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.Groundlight.get_detector">
 <span class="sig-name descname"><span class="pre">get_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#model.Detector" title="model.Detector"><span class="pre">Detector</span></a></span></span><a class="headerlink" href="#groundlight.Groundlight.get_detector" title="Link to this definition"></a></dt>
 <dd><p>Get a Detector by id.</p>
@@ -1314,7 +1356,7 @@ When set to “STANDARD”, low-confidence queries may be sent to human labelers
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id3"><span class="problematic" id="id4">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id5"><span class="problematic" id="id6">det_</span></a>”.
 The detector whose escalation type should be updated.</p></li>
 <li><p><strong>escalation_type</strong> (<em>str</em>) – The new escalation type setting. Must be one of:
 - “STANDARD”: Allow human labeling for low-confidence queries
@@ -1352,7 +1394,7 @@ it will not accept or process any new image queries. Existing queries will not b
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id5"><span class="problematic" id="id6">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id7"><span class="problematic" id="id8">det_</span></a>”.
 The detector whose status should be updated.</p></li>
 <li><p><strong>enabled</strong> (<em>bool</em>) – Boolean indicating whether the detector should be enabled (True) or
 disabled (False). When disabled, the detector will not process new queries.</p></li>
@@ -2222,7 +2264,7 @@ the detector to its initial state, allowing you to start fresh with new training
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id7"><span class="problematic" id="id8">det_</span></a>”.
+<dd class="field-odd"><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id9"><span class="problematic" id="id10">det_</span></a>”.
 The detector whose data should be reset.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2252,7 +2294,7 @@ The detector whose data should be reset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id9"><span class="problematic" id="id10">det_</span></a>”.
+<li><p><strong>detector</strong> (<em>str</em><em> | </em><a class="reference internal" href="#model.Detector" title="model.Detector"><em>Detector</em></a>) – Either a Detector object or a detector ID string starting with “<a href="#id11"><span class="problematic" id="id12">det_</span></a>”.
 The detector whose name should be updated.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – The new name to assign to the detector</p></li>
 </ul>
