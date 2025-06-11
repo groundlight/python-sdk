@@ -14,8 +14,8 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_inter
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
-from ksuid import KsuidMs
 from groundlight_openapi_client.exceptions import NotFoundException
+from ksuid import KsuidMs
 from model import (
     BinaryClassificationResult,
     BoundingBoxResult,
