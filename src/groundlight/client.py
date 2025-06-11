@@ -637,6 +637,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         image_query_id: Optional[str] = None,
+        request_timeout: Optional[float] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.
@@ -718,6 +719,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param image_query_id: The ID for the image query. This is to enable specific functionality
                             and is not intended for general external use. If not set, a random ID
                             will be generated.
+        :param request_timeout: The total request timeout for the image query submission API request. Most users will
+            not need to modify this. If not set, the default value will be used.
 
         :return: ImageQuery with query details and result (if wait > 0)
         :raises ValueError: If wait > 0 when want_async=True
@@ -731,7 +734,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        params = {"detector_id": detector_id, "body": image_bytesio, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params = {
+            "detector_id": detector_id,
+            "body": image_bytesio,
+            "_request_timeout": request_timeout if request_timeout is not None else DEFAULT_REQUEST_TIMEOUT,
+        }
 
         if patience_time is not None:
             params["patience_time"] = patience_time

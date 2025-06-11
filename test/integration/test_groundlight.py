@@ -27,6 +27,7 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
+from urllib3.exceptions import ReadTimeoutError
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -347,6 +348,17 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
             detector=detector.id, image="test/assets/dog.jpeg", human_review=human_review_value
         )
         assert is_valid_display_result(_image_query.result)
+
+
+def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: Detector, image: str):
+    """
+    Test that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
+    exceeded.
+    """
+    with pytest.raises(ReadTimeoutError):
+        # Setting a very low request_timeout value should result in a timeout.
+        # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
+        gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=1e-8)
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
