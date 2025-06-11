@@ -1,8 +1,10 @@
-# Sample Applications
+# Sample Computer Vision Projects & Applications
 
-Explore these example applications to see Groundlight's computer vision capabilities in action:
+Explore these example computer vision projects and real-world applications built with Groundlight’s computer vision tools. Ideal for developers, researchers, and AI enthusiasts.
 
-## Industrial and Manufacturing Applications
+_If you’re interested in building something but don’t see the sample computer vision project here, don’t hesitate to reach out to Groundlight’s application engineers at support@Groundlight.ai who can assist you._
+
+## Industrial and Manufacturing Computer Vision Projects & Applications
 
 Groundlight's natural language-based computer vision technology transforms industrial processes in several key areas:
 
@@ -11,35 +13,23 @@ Groundlight's natural language-based computer vision technology transforms indus
 - **Quality Control**: Identify defects and maintain strict quality standards
 - **Cobot Integration**: Enhance capabilities of collaborative robots and CNC machines
 
-[Learn more about industrial applications →](/docs/sample-applications/industrial)
+[Check out this blog post](https://www.groundlight.ai/blog/computer-vision-in-manufacturing) to learn more about how Groundlight can be used for a variety of industrial applications.
 
-## Retail Analytics Solution
+## Security & Facility Management Computer Vision Projects & Applications
+- **Automated leak and spill detection**: [View Github Repo →](https://github.com/groundlight/leak-detection-sample)
+- **Automated monitoring of parking spots**: [View Github Repo →](https://github.com/groundlight/video_tutorials/tree/main/parking_spot_detector)
 
-Monitor customer service counter utilization with this practical retail application. Features include:
+## Retail Analytics Computer Vision Projects & Applications
+- **Counting people & employees walking in and out of a door**: [View Github Repo →](https://github.com/groundlight/employee-counting)
+- **Monitoring service counter utilization**: [View the retail analytics implementation →](/docs/sample-applications/retail-analytics)
+- **Automated inventory monitoring and management**: [View Github Repo →](https://github.com/groundlight/inventory-management)
 
-- Real-time tracking of service counter usage
-- Hourly utilization summaries
-- Automated daily reports via email
-- Data-driven insights for staff scheduling and store layout optimization
+## Fun Hobbyist Computer Vision Projects for AI Tinkerers
 
-[View the retail analytics implementation →](/docs/sample-applications/retail-analytics)
+Looking for an easy way to tinker with computer vision AI at home? From observing nature to playing Halloween pranks, here are some fun ways to try out Groundlight’s computer vision capabilities and tools:
 
-## Fun Project: Dog-on-Couch Detector
-
-Create a playful home automation system that detects when your dog is on the couch and plays a pre-recorded message. This example demonstrates:
-
-- Real-time image capture and analysis
-- Audio playback integration
-- Continuous monitoring capabilities
-
-[Build your own dog detector →](/docs/sample-applications/dog-on-couch)
-
-## Live Stream Monitor: Bird Feeder Edition
-
-Monitor live streams with automated alerts using Groundlight's vision API. Features include:
-
-- Frame capture from live streams
-- Alert system integration
-- Simple command-line interface
-
-[Create a monitor for birds at your feeder →](/docs/sample-applications/streaming-with-alerts)
+- **Automated “garden monitor” that detects wild animals in your garden and plays a sound to scare them off**: [View Github Repo →](https://github.com/robotrapta/garden-watcher)
+- **Monitor if the kitchen is clean**: [View Github Repo →](https://github.com/robotrapta/domestic-tranquility)
+- **Halloween prank to scare trick-or-treaters walking by**: [View Github Repo →](https://github.com/robotrapta/aihalloween)
+- **Keep your dog off the couch**: [Build your own dog detector →](/docs/sample-applications/dog-on-couch)
+- **Monitor and alert if a bird as at the bird feeder**: [Create a monitor for birds at your feeder →](/docs/sample-applications/streaming-with-alerts)
