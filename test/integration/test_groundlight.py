@@ -351,7 +351,7 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
 
 def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: Detector, image: str):
     """
-    Test that submit_image_query respects the request_timeout parameter and raises ReadTimeoutError when timeout is
+    Test that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
     exceeded.
     """
     with pytest.raises(ReadTimeoutError):
