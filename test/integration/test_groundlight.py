@@ -7,7 +7,6 @@ import string
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
-from urllib3.exceptions import ReadTimeoutError
 
 import pytest
 from groundlight import Groundlight
@@ -27,6 +26,7 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
+from urllib3.exceptions import ReadTimeoutError
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
