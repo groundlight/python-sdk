@@ -2,7 +2,7 @@
 
 Explore these example computer vision projects and real-world applications built with Groundlight’s computer vision tools. Ideal for developers, researchers, and AI enthusiasts.
 
-_If you’re interested in building else or have questions, reach out to Groundlight’s application engineers at support@Groundlight.ai._
+_If you’re interested in building something else or have questions, reach out to Groundlight’s application engineers at support@Groundlight.ai._
 
 ## Security & Facility Management Computer Vision Projects & Applications
 - **Detect leak and spills**: [View Github Repo →](https://github.com/groundlight/leak-detection-sample)
