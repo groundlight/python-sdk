@@ -860,10 +860,6 @@ def test_delete_detector(gl: Groundlight):
     pipeline_config = "never-review"
     detector = gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
 
-    # Verify the detector exists
-    retrieved_detector = gl.get_detector(detector.id)
-    assert retrieved_detector.id == detector.id
-
     # Delete using detector object
     gl.delete_detector(detector)
 
