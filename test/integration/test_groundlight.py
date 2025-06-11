@@ -15,6 +15,7 @@ from groundlight.internalapi import ApiException, InternalApiError, NotFoundErro
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from ksuid import KsuidMs
+from groundlight_openapi_client.exceptions import NotFoundException
 from model import (
     BinaryClassificationResult,
     BoundingBoxResult,
@@ -867,9 +868,10 @@ def test_delete_detector(gl: Groundlight):
     with pytest.raises(NotFoundError):
         gl.get_detector(detector.id)
 
-    # Create another detector to test deletion by ID string
+    # Create another detector to test deletion by ID string and that an attached image query is deleted
     name2 = f"Test delete detector 2 {datetime.utcnow()}"
     detector2 = gl.create_detector(name=name2, query=query, pipeline_config=pipeline_config)
+    gl.submit_image_query(detector2, "test/assets/dog.jpeg")
 
     # Delete using detector ID string
     gl.delete_detector(detector2.id)
@@ -878,7 +880,11 @@ def test_delete_detector(gl: Groundlight):
     with pytest.raises(NotFoundError):
         gl.get_detector(detector2.id)
 
+    # Verify the image query is also deleted
+    with pytest.raises(NotFoundException):
+        gl.get_image_query(detector2.id)
+
     # Test deleting a non-existent detector raises NotFoundError
     fake_detector_id = "det_fake123456789"
     with pytest.raises(NotFoundError):
-        gl.delete_detector(fake_detector_id)
+        gl.delete_detector(fake_detector_id)  # type: ignore
