@@ -14,6 +14,7 @@ from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_inter
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
+from groundlight_openapi_client.exceptions import NotFoundException
 from ksuid import KsuidMs
 from model import (
     BinaryClassificationResult,
@@ -848,3 +849,42 @@ def test_multiclass_detector(gl: Groundlight):
     mc_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
     assert mc_iq.result.label is not None
     assert mc_iq.result.label in class_names
+
+
+def test_delete_detector(gl: Groundlight):
+    """
+    Test deleting a detector by both ID and object, and verify proper error handling.
+    """
+    # Create a detector to delete
+    name = f"Test delete detector {datetime.utcnow()}"
+    query = "Is there a dog to delete?"
+    pipeline_config = "never-review"
+    detector = gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
+
+    # Delete using detector object
+    gl.delete_detector(detector)
+
+    # Verify the detector is actually deleted
+    with pytest.raises(NotFoundError):
+        gl.get_detector(detector.id)
+
+    # Create another detector to test deletion by ID string and that an attached image query is deleted
+    name2 = f"Test delete detector 2 {datetime.utcnow()}"
+    detector2 = gl.create_detector(name=name2, query=query, pipeline_config=pipeline_config)
+    gl.submit_image_query(detector2, "test/assets/dog.jpeg")
+
+    # Delete using detector ID string
+    gl.delete_detector(detector2.id)
+
+    # Verify the second detector is also deleted
+    with pytest.raises(NotFoundError):
+        gl.get_detector(detector2.id)
+
+    # Verify the image query is also deleted
+    with pytest.raises(NotFoundException):
+        gl.get_image_query(detector2.id)
+
+    # Test deleting a non-existent detector raises NotFoundError
+    fake_detector_id = "det_fake123456789"
+    with pytest.raises(NotFoundError):
+        gl.delete_detector(fake_detector_id)  # type: ignore
