@@ -7,6 +7,7 @@ import string
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
+from urllib3.exceptions import ReadTimeoutError
 
 import pytest
 from groundlight import Groundlight
@@ -348,9 +349,15 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
         assert is_valid_display_result(_image_query.result)
 
 
-def test_submit_image_query_with_request_timeout(gl: Groundlight, detector: Detector, image: str):
-    """Verifies that request_timeout can be passed to submit_image_query."""
-    gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=5)
+def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: Detector, image: str):
+    """
+    Test that submit_image_query respects the request_timeout parameter and raises ReadTimeoutError when timeout is
+    exceeded.
+    """
+    with pytest.raises(ReadTimeoutError):
+        # Setting a very low request_timeout value should result in a timeout.
+        # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
+        gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=1e-8)
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
