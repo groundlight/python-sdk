@@ -885,6 +885,8 @@ def test_delete_detector(gl: Groundlight):
     detector2 = gl.create_detector(name=name2, query=query, pipeline_config=pipeline_config)
     gl.submit_image_query(detector2, "test/assets/dog.jpeg")
 
+    time.sleep(10)
+
     # Delete using detector ID string
     gl.delete_detector(detector2.id)
 
