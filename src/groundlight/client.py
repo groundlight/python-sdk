@@ -1,5 +1,6 @@
 # pylint: disable=too-many-lines
 import logging
+import math
 import os
 import time
 import warnings
@@ -55,6 +56,10 @@ logger = logging.getLogger("groundlight.sdk")
 # The system defaults can be stupidly long
 # It used to take >8 min to timeout to a bad IP address
 DEFAULT_REQUEST_TIMEOUT = 10  # seconds
+# There may be numerical noise if the confidence is ever saved in two different systems.
+# The confidence threshold is not that precise anyways, so we apply a tollerance within which
+# confidences are considered the same.
+DETECTOR_CONFIDENCE_TOLERANCE = 0.0001
 
 
 class GroundlightClientError(Exception):
@@ -555,7 +560,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 f"Found existing detector with name={name} (id={existing_detector.id}) but the group names don't"
                 f" match. The existing group name is '{existing_detector.group_name}'.",
             )
-        if confidence_threshold is not None and existing_detector.confidence_threshold != confidence_threshold:
+        if confidence_threshold is not None and not math.isclose(
+            existing_detector.confidence_threshold, confidence_threshold, abs_tol=DETECTOR_CONFIDENCE_TOLERANCE
+        ):
             raise ValueError(
                 f"Found existing detector with name={name} (id={existing_detector.id}) but the confidence"
                 " thresholds don't match. The existing confidence threshold is"
