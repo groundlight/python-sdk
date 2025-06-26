@@ -7,32 +7,34 @@ from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-from groundlight_openapi_client import Configuration
+from groundlight_openapi_client import (
+    ROI,
+    BBoxGeometry,
+    BBoxGeometryRequest,
+    BinaryClassificationResult,
+    Configuration,
+    CountModeConfiguration,
+    Detector,
+    DetectorCreationInputRequest,
+    DetectorGroup,
+    DetectorGroupRequest,
+    ImageQuery,
+    LabelValueRequest,
+    MultiClassModeConfiguration,
+    PaginatedDetectorList,
+    PaginatedImageQueryList,
+    PatchedDetectorRequest,
+    ROIRequest,
+    StatusEnum,
+)
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
-from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
-from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
-from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
-from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.label_value_request import LabelValueRequest
-from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
-from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
-from groundlight_openapi_client.model.roi_request import ROIRequest
-from groundlight_openapi_client.model.status_enum import StatusEnum
-from model import (
-    ROI,
-    BBoxGeometry,
-    BinaryClassificationResult,
-    Detector,
-    DetectorGroup,
-    ImageQuery,
-    ModeEnum,
-    PaginatedDetectorList,
-    PaginatedImageQueryList,
+from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import (
+    DetectorCreationInputRequestModeConfiguration,
 )
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -48,6 +50,7 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
+from groundlight.splint import ModeEnumSplint
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -251,7 +254,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
         obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return obj["email"]
+        return obj.email
 
     def _user_is_privileged(self) -> bool:
         """
@@ -259,7 +262,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         Privleged users have elevated permissions, so care should be taken when using a privileged account.
         """
         obj = self.user_api.who_am_i()
-        return obj["is_superuser"]
+        return obj.is_superuser
 
     def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
         """
@@ -283,7 +286,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
-        return Detector.parse_obj(obj.to_dict())
+        return obj
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
@@ -324,7 +327,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.detectors_api.list_detectors(
             page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
         )
-        return PaginatedDetectorList.parse_obj(obj.to_dict())
+        return obj
 
     def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -363,7 +366,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         name: str,
         query: str,
         *,
-        mode: ModeEnum = ModeEnum.BINARY,
+        mode: ModeEnumSplint = ModeEnumSplint.BINARY,
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
@@ -374,6 +377,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         """
         Create a new Detector with a given name and query.
 
+        By default will create a binary detector but alternate modes can be created by passing in a mode argument.
+
+        Text and Bounding box detectors are in Beta, and can be created through the
+        ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` and
+        :meth:`ExperimentalApi.create_bounding_box_detector` methods.
         By default will create a binary detector but alternate modes can be created by passing in a mode argument.
 
         Text and Bounding box detectors are in Beta, and can be created through the
@@ -431,7 +439,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :return: The created Detector object
         """
 
-        if mode == ModeEnum.BINARY:
+        if mode == ModeEnumSplint.BINARY:
             if class_names is not None:
                 raise ValueError("class_names is not supported for binary detectors")
             return self.create_binary_detector(
@@ -443,7 +451,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        if mode == ModeEnum.COUNT:
+        if mode == ModeEnumSplint.COUNT:
             if class_names is None:
                 raise ValueError("class_names is required for counting detectors")
             if isinstance(class_names, list):
@@ -458,7 +466,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 pipeline_config=pipeline_config,
                 metadata=metadata,
             )
-        if mode == ModeEnum.MULTI_CLASS:
+        if mode == ModeEnumSplint.MULTI_CLASS:
             if class_names is None:
                 raise ValueError("class_names is required for multi-class detectors")
             if isinstance(class_names, str):
@@ -589,7 +597,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if obj.result_type == "counting" and getattr(obj.result, "label", None):
             obj.result.pop("label")
             obj.result["count"] = None
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq = obj
         return self._fixup_image_query(iq)
 
     def list_image_queries(
@@ -731,7 +739,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        params = {"detector_id": detector_id, "body": image_bytesio, "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
+        params = {"detector_id": detector_id, "body": image_bytesio.read(), "_request_timeout": DEFAULT_REQUEST_TIMEOUT}
 
         if patience_time is not None:
             params["patience_time"] = patience_time
@@ -762,9 +770,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         if image_query_id is not None:
             params["image_query_id"] = image_query_id
-
         raw_image_query = self.image_queries_api.submit_image_query(**params)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        image_query = raw_image_query
 
         if wait > 0:
             if confidence_threshold is None:
@@ -1320,7 +1327,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :return: A DetectorGroup object corresponding to the newly created detector group
         :rtype: DetectorGroup
         """
-        return DetectorGroup(**self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name)).to_dict())
+        return self.detector_group_api.create_detector_group(DetectorGroupRequest(name=name))
 
     def list_detector_groups(self) -> List[DetectorGroup]:
         """
@@ -1340,7 +1347,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :return: A list of DetectorGroup objects representing all detector groups in your account
         """
-        return [DetectorGroup(**det.to_dict()) for det in self.detector_group_api.get_detector_groups()]
+        return list(self.detector_group_api.get_detector_groups())
 
     def create_roi(self, label: str, top_left: Tuple[float, float], bottom_right: Tuple[float, float]) -> ROI:
         """
@@ -1523,16 +1530,16 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.COUNT
+        detector_creation_input.mode = ModeEnumSplint.COUNT
 
         if max_count is None:
-            mode_config = CountModeConfiguration(class_name=class_name)
+            count_config = CountModeConfiguration(class_name=class_name)
         else:
-            mode_config = CountModeConfiguration(class_name=class_name, max_count=max_count)
+            count_config = CountModeConfiguration(class_name=class_name, max_count=max_count)
 
-        detector_creation_input.mode_configuration = mode_config
+        detector_creation_input.mode_configuration = DetectorCreationInputRequestModeConfiguration(count_config)
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return obj
 
     def create_binary_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1573,7 +1580,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             metadata=metadata,
         )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return obj
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1633,8 +1640,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.MULTI_CLASS
+        detector_creation_input.mode = ModeEnumSplint.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)
-        detector_creation_input.mode_configuration = mode_config
+        detector_creation_input.mode_configuration = DetectorCreationInputRequestModeConfiguration(mode_config)
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return obj

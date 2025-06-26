@@ -1,10 +1,17 @@
 # ResultTypeEnum
 
 
-## Properties
-Name | Type | Description | Notes
------------- | ------------- | ------------- | -------------
-**value** | **str** |  |  must be one of ["binary_classification", "counting", "multi_classification", "text_recognition", "bounding_box", ]
+## Enum
+
+* `BINARY_CLASSIFICATION` (value: `'binary_classification'`)
+
+* `COUNTING` (value: `'counting'`)
+
+* `MULTI_CLASSIFICATION` (value: `'multi_classification'`)
+
+* `TEXT_RECOGNITION` (value: `'text_recognition'`)
+
+* `BOUNDING_BOX` (value: `'bounding_box'`)
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

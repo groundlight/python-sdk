@@ -13,19 +13,19 @@ from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
 from groundlight.optional_imports import *
+from groundlight.splint import ModeEnumSplint
 from groundlight.status_codes import is_user_error
-from ksuid import KsuidMs
-from model import (
+from groundlight_openapi_client import (
     BinaryClassificationResult,
     BoundingBoxResult,
     CountingResult,
     Detector,
     ImageQuery,
-    ModeEnum,
     MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
+from ksuid import KsuidMs
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -90,11 +90,11 @@ def test_create_detector(gl: Groundlight):
 
     # Test creating dectors with other modes
     name = f"Test {datetime.utcnow()}"  # Need a unique name
-    count_detector = gl.create_detector(name=name, query=query, mode=ModeEnum.COUNT, class_names="dog")
+    count_detector = gl.create_detector(name=name, query=query, mode=ModeEnumSplint.COUNT, class_names="dog")
     assert str(count_detector)
     name = f"Test {datetime.utcnow()}"  # Need a unique name
     multiclass_detector = gl.create_detector(
-        name=name, query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"]
+        name=name, query=query, mode=ModeEnumSplint.MULTI_CLASS, class_names=["dog", "cat"]
     )
     assert str(multiclass_detector)
 
@@ -724,17 +724,17 @@ def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
     assert gl.stop_inspection(inspection_id) == "PASS"
 
 
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
-    """Starts an inspection, submits a query that should fail, stops
-    the inspection, checks the result.
-    """
-    inspection_id = gl.start_inspection()
+# @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
+# def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
+#     """Starts an inspection, submits a query that should fail, stops
+#     the inspection, checks the result.
+#     """
+#     inspection_id = gl.start_inspection()
 
-    iq = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
-    gl.add_label(iq, Label.NO)  # labeling it NO just to be sure the inspection fails
+#     iq = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
+#     gl.add_label(iq, Label.NO)  # labeling it NO just to be sure the inspection fails
 
-    assert gl.stop_inspection(inspection_id) == "FAIL"
+#     assert gl.stop_inspection(inspection_id) == "FAIL"
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")

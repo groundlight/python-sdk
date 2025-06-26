@@ -8,7 +8,7 @@ import logging
 from enum import Enum
 from typing import Union
 
-from model import Detector, ImageQuery
+from groundlight_openapi_client import Detector, ImageQuery
 
 logger = logging.getLogger(__name__)
 

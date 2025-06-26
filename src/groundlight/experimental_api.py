@@ -13,37 +13,37 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import requests
+from groundlight_openapi_client import (
+    Action,
+    BoundingBoxModeConfiguration,
+    ChannelEnum,
+    Condition,
+    ConditionRequest,
+    Detector,
+    EdgeModelInfo,
+    PaginatedRuleList,
+    PatchedDetectorRequest,
+    PayloadTemplate,
+    PayloadTemplateRequest,
+    Rule,
+    RuleRequest,
+    TextModeConfiguration,
+    WebhookAction,
+    WebhookActionRequest,
+)
 from groundlight_openapi_client.api.actions_api import ActionsApi
-from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
-from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
-from groundlight_openapi_client.model.channel_enum import ChannelEnum
-from groundlight_openapi_client.model.condition_request import ConditionRequest
-from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
-from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
-from groundlight_openapi_client.model.rule_request import RuleRequest
-from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
-from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
-from model import (
-    Action,
-    ActionList,
-    Condition,
-    Detector,
-    EdgeModelInfo,
-    ModeEnum,
-    PaginatedRuleList,
-    PayloadTemplate,
-    Rule,
-    WebhookAction,
+from groundlight_openapi_client.models.detector_creation_input_request_mode_configuration import (
+    DetectorCreationInputRequestModeConfiguration,
 )
 from urllib3.response import HTTPResponse
 
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
+from groundlight.splint import ModeEnumSplint
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 
@@ -100,7 +100,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         super().__init__(endpoint=endpoint, api_token=api_token, disable_tls_verification=disable_tls_verification)
         self.actions_api = ActionsApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
-        self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
         self.edge_api = EdgeApi(self.api_client)
@@ -192,7 +191,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector: Union[str, Detector],
         name,
         condition: Condition,
-        actions: Optional[Union[Action, List[Action], ActionList]] = None,
+        actions: Optional[Union[Action, List[Action]]] = None,
         webhook_actions: Optional[Union[WebhookAction, List[WebhookAction]]] = None,
         *,
         enabled: bool = True,
@@ -252,8 +251,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         """
         if isinstance(actions, Action):
             actions = [actions]
-        elif isinstance(actions, ActionList):
-            actions = actions.root
         if isinstance(detector, Detector):
             detector = detector.id
         if isinstance(webhook_actions, WebhookAction):
@@ -261,7 +258,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         # translate pydantic type to the openapi type
         actions = (
             [
-                ActionRequest(
+                Action(
                     channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
                 )
                 for action in actions
@@ -300,7 +297,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             human_review_required=human_review_required,
             webhook_action=webhook_actions,
         )
-        return Rule.model_validate(self.actions_api.create_rule(detector, rule_input).to_dict())
+        return self.actions_api.create_rule(detector, rule_input)
 
     def create_rule(  # pylint: disable=too-many-locals  # noqa: PLR0913
         self,
@@ -388,7 +385,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             channel = ChannelEnum(channel.upper())
         if isinstance(condition_parameters, str):
             condition_parameters = json.loads(condition_parameters)  # type: ignore
-        action = ActionRequest(
+        action = Action(
             channel=channel,  # type: ignore
             recipient=recipient,
             include_image=include_image,
@@ -406,7 +403,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             snooze_time_unit=snooze_time_unit,
             human_review_required=human_review_required,
         )
-        return Rule.model_validate(self.actions_api.create_rule(det_id, rule_input).to_dict())
+        return self.actions_api.create_rule(det_id, rule_input)
 
     def get_rule(self, action_id: int) -> Rule:
         """
@@ -693,14 +690,14 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.BOUNDING_BOX
+        detector_creation_input.mode = ModeEnumSplint.BOUNDING_BOX
 
         if max_num_bboxes is None:
             mode_config = BoundingBoxModeConfiguration(class_name=class_name)
         else:
             mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
 
-        detector_creation_input.mode_configuration = mode_config
+        detector_creation_input.mode_configuration = DetectorCreationInputRequestModeConfiguration(mode_config)
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
@@ -751,10 +748,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             pipeline_config=pipeline_config,
             metadata=metadata,
         )
-        detector_creation_input.mode = ModeEnum.TEXT
+        detector_creation_input.mode = ModeEnumSplint.TEXT
         mode_config = TextModeConfiguration()
 
-        detector_creation_input.mode_configuration = mode_config
+        detector_creation_input.mode_configuration = DetectorCreationInputRequestModeConfiguration(mode_config)
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
 
