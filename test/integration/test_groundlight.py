@@ -6,8 +6,8 @@ import random
 import string
 import time
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
 from http import HTTPStatus
+from typing import Any, Dict, Optional, Union
 
 import pytest
 from groundlight import Groundlight
