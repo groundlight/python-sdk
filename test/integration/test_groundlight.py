@@ -7,6 +7,7 @@ import string
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional, Union
+from http import HTTPStatus
 
 import pytest
 from groundlight import Groundlight
