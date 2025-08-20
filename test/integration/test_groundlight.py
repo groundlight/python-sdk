@@ -877,8 +877,12 @@ def test_delete_detector(gl: Groundlight):
     gl.delete_detector(detector)
 
     # Verify the detector is actually deleted
-    with pytest.raises(NotFoundError):
+    with pytest.raises(ApiException) as exc_info:
         gl.get_detector(detector.id)
+        err = exc_info.value
+        assert err.status == HTTPStatus.GONE
+        payload = json.loads(err.body)  
+        assert det_id in payload.get("message", "")
 
     # Create another detector to test deletion by ID string and that an attached image query is deleted
     name2 = f"Test delete detector 2 {datetime.utcnow()}"
@@ -891,8 +895,12 @@ def test_delete_detector(gl: Groundlight):
     gl.delete_detector(detector2.id)
 
     # Verify the second detector is also deleted
-    with pytest.raises(NotFoundError):
+    with pytest.raises(ApiException) as exc_info:
         gl.get_detector(detector2.id)
+        err = exc_info.value
+        assert err.status == HTTPStatus.GONE
+        payload = json.loads(err.body)  
+        assert det_id in payload.get("message", "")
 
     # Verify the image query is also deleted
     with pytest.raises(NotFoundException):
