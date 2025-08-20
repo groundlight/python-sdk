@@ -881,7 +881,7 @@ def test_delete_detector(gl: Groundlight):
         gl.get_detector(detector.id)
         err = exc_info.value
         assert err.status == HTTPStatus.GONE
-        payload = json.loads(err.body)  
+        payload = json.loads(err.body)
         assert det_id in payload.get("message", "")
 
     # Create another detector to test deletion by ID string and that an attached image query is deleted
@@ -899,7 +899,7 @@ def test_delete_detector(gl: Groundlight):
         gl.get_detector(detector2.id)
         err = exc_info.value
         assert err.status == HTTPStatus.GONE
-        payload = json.loads(err.body)  
+        payload = json.loads(err.body)
         assert det_id in payload.get("message", "")
 
     # Verify the image query is also deleted
