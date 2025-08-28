@@ -396,11 +396,12 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     api_instance = actions_api.ActionsApi(api_client)
     page = 1 # int | A page number within the paginated result set. (optional)
     page_size = 1 # int | Number of results to return per page. (optional)
+    predictor_id = "predictor_id_example" # str | Filter rules by predictor ID (optional)
 
     # example passing only required values which don't have defaults set
     # and optional values
     try:
-        api_response = api_instance.list_rules(page=page, page_size=page_size)
+        api_response = api_instance.list_rules(page=page, page_size=page_size, predictor_id=predictor_id)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ActionsApi->list_rules: %s\n" % e)
@@ -413,6 +414,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **page** | **int**| A page number within the paginated result set. | [optional]
  **page_size** | **int**| Number of results to return per page. | [optional]
+ **predictor_id** | **str**| Filter rules by predictor ID | [optional]
 
 ### Return type
 
