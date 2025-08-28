@@ -823,18 +823,24 @@ components:
           description: The number of active detectors in the current month.
         iqs_limit:
           type: integer
+          nullable: true
           description: The limit on the number of image queries in the current month.
         escalations_limit:
           type: integer
+          nullable: true
           description: The limit on the number of escalations in the current month.
         active_detectors_limit:
           type: integer
+          nullable: true
           description: The limit on the number of active detectors in the current
             month.
       required:
       - active_detectors
+      - active_detectors_limit
       - escalations
+      - escalations_limit
       - iqs
+      - iqs_limit
       x-internal: true
     AllNotes:
       type: object

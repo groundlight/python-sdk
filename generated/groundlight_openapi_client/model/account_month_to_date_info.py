@@ -91,9 +91,18 @@ class AccountMonthToDateInfo(ModelNormal):
             "iqs": (int,),  # noqa: E501
             "escalations": (int,),  # noqa: E501
             "active_detectors": (int,),  # noqa: E501
-            "iqs_limit": (int,),  # noqa: E501
-            "escalations_limit": (int,),  # noqa: E501
-            "active_detectors_limit": (int,),  # noqa: E501
+            "iqs_limit": (
+                int,
+                none_type,
+            ),  # noqa: E501
+            "escalations_limit": (
+                int,
+                none_type,
+            ),  # noqa: E501
+            "active_detectors_limit": (
+                int,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -115,13 +124,18 @@ class AccountMonthToDateInfo(ModelNormal):
 
     @classmethod
     @convert_js_args_to_python_args
-    def _from_openapi_data(cls, iqs, escalations, active_detectors, *args, **kwargs):  # noqa: E501
+    def _from_openapi_data(
+        cls, iqs, escalations, active_detectors, iqs_limit, escalations_limit, active_detectors_limit, *args, **kwargs
+    ):  # noqa: E501
         """AccountMonthToDateInfo - a model defined in OpenAPI
 
         Args:
             iqs (int): The number of image queries in the current month.
             escalations (int): The number of escalations in the current month.
             active_detectors (int): The number of active detectors in the current month.
+            iqs_limit (int, none_type): The limit on the number of image queries in the current month.
+            escalations_limit (int, none_type): The limit on the number of escalations in the current month.
+            active_detectors_limit (int, none_type): The limit on the number of active detectors in the current month.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -154,9 +168,6 @@ class AccountMonthToDateInfo(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            iqs_limit (int): The limit on the number of image queries in the current month.. [optional]  # noqa: E501
-            escalations_limit (int): The limit on the number of escalations in the current month.. [optional]  # noqa: E501
-            active_detectors_limit (int): The limit on the number of active detectors in the current month.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -188,6 +199,9 @@ class AccountMonthToDateInfo(ModelNormal):
         self.iqs = iqs
         self.escalations = escalations
         self.active_detectors = active_detectors
+        self.iqs_limit = iqs_limit
+        self.escalations_limit = escalations_limit
+        self.active_detectors_limit = active_detectors_limit
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -210,13 +224,18 @@ class AccountMonthToDateInfo(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, iqs, escalations, active_detectors, *args, **kwargs):  # noqa: E501
+    def __init__(
+        self, iqs, escalations, active_detectors, iqs_limit, escalations_limit, active_detectors_limit, *args, **kwargs
+    ):  # noqa: E501
         """AccountMonthToDateInfo - a model defined in OpenAPI
 
         Args:
             iqs (int): The number of image queries in the current month.
             escalations (int): The number of escalations in the current month.
             active_detectors (int): The number of active detectors in the current month.
+            iqs_limit (int, none_type): The limit on the number of image queries in the current month.
+            escalations_limit (int, none_type): The limit on the number of escalations in the current month.
+            active_detectors_limit (int, none_type): The limit on the number of active detectors in the current month.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -249,9 +268,6 @@ class AccountMonthToDateInfo(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            iqs_limit (int): The limit on the number of image queries in the current month.. [optional]  # noqa: E501
-            escalations_limit (int): The limit on the number of escalations in the current month.. [optional]  # noqa: E501
-            active_detectors_limit (int): The limit on the number of active detectors in the current month.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -281,6 +297,9 @@ class AccountMonthToDateInfo(ModelNormal):
         self.iqs = iqs
         self.escalations = escalations
         self.active_detectors = active_detectors
+        self.iqs_limit = iqs_limit
+        self.escalations_limit = escalations_limit
+        self.active_detectors_limit = active_detectors_limit
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
