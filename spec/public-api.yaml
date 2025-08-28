@@ -833,11 +833,8 @@ components:
             month.
       required:
       - active_detectors
-      - active_detectors_limit
       - escalations
-      - escalations_limit
       - iqs
-      - iqs_limit
       x-internal: true
     AllNotes:
       type: object

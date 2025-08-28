@@ -154,6 +154,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_account_month_to_date_info.py
-test/test_month_to_date_account_info_api.py
 tox.ini
