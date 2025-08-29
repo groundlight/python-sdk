@@ -534,6 +534,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector: Union[str, Detector],
         note: str,
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray, None] = None,
+        is_pinned: bool = False,
     ) -> None:
         """
         Adds a note to a given detector.
@@ -568,7 +569,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         # self.notes_api.create_note(det_id, note, **kwargs)
         url = f"{self.endpoint}/v1/notes"
         files = {"image": ("image.jpg", img_bytes, "image/jpeg")} if img_bytes is not None else None
-        data = {"content": note}
+        data = {
+            "content": note,
+            "is_pinned": is_pinned,
+        }
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
 
