@@ -12,6 +12,7 @@ from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
 from groundlight_openapi_client.api.labels_api import LabelsApi
+from groundlight_openapi_client.api.month_to_date_account_info_api import MonthToDateAccountInfoApi
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
@@ -25,6 +26,7 @@ from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.status_enum import StatusEnum
 from model import (
     ROI,
+    AccountMonthToDateInfo,
     BBoxGeometry,
     BinaryClassificationResult,
     Detector,
@@ -186,6 +188,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.image_queries_api = ImageQueriesApi(self.api_client)
         self.user_api = UserApi(self.api_client)
         self.labels_api = LabelsApi(self.api_client)
+        self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
 
@@ -624,6 +627,28 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
+
+    def get_month_to_date_usage(self) -> AccountMonthToDateInfo:
+        """
+        Get the account's month-to-date usage information including image queries (IQs),
+        escalations, and active detectors with their respective limits.
+
+        **Example Usage:**
+
+            gl = Groundlight()
+
+            # Get month-to-date usage information
+            usage = gl.get_month_to_date_usage()
+
+            # Access usage metrics
+            print(f"Image queries used: {usage.iqs} / {usage.iqs_limit}")
+            print(f"Escalations used: {usage.escalations} / {usage.escalations_limit}")
+            print(f"Active detectors: {usage.active_detectors} / {usage.active_detectors_limit}")
+
+        :return: AccountMonthToDateInfo object containing usage metrics and limits
+        """
+        obj = self.month_to_date_api.month_to_date_account_info(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return AccountMonthToDateInfo.model_validate(obj.to_dict())
 
     def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,

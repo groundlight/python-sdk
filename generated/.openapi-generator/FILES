@@ -1,5 +1,6 @@
 .gitignore
 README.md
+docs/AccountMonthToDateInfo.md
 docs/Action.md
 docs/ActionList.md
 docs/ActionsApi.md
@@ -41,6 +42,7 @@ docs/LabelValue.md
 docs/LabelValueRequest.md
 docs/LabelsApi.md
 docs/ModeEnum.md
+docs/MonthToDateAccountInfoApi.md
 docs/MultiClassModeConfiguration.md
 docs/MultiClassificationResult.md
 docs/Note.md
@@ -77,6 +79,7 @@ groundlight_openapi_client/api/detectors_api.py
 groundlight_openapi_client/api/edge_api.py
 groundlight_openapi_client/api/image_queries_api.py
 groundlight_openapi_client/api/labels_api.py
+groundlight_openapi_client/api/month_to_date_account_info_api.py
 groundlight_openapi_client/api/notes_api.py
 groundlight_openapi_client/api/user_api.py
 groundlight_openapi_client/api_client.py
@@ -84,6 +87,7 @@ groundlight_openapi_client/apis/__init__.py
 groundlight_openapi_client/configuration.py
 groundlight_openapi_client/exceptions.py
 groundlight_openapi_client/model/__init__.py
+groundlight_openapi_client/model/account_month_to_date_info.py
 groundlight_openapi_client/model/action.py
 groundlight_openapi_client/model/action_list.py
 groundlight_openapi_client/model/all_notes.py
@@ -150,6 +154,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_label.py
-test/test_source.py
 tox.ini

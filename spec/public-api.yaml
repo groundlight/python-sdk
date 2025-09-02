@@ -91,6 +91,11 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: predictor_id
+        schema:
+          type: string
+        description: Filter rules by predictor ID
       tags:
       - actions
       security:
@@ -734,6 +739,22 @@ paths:
                     type: string
                     description: The user's username
           description: ''
+  /v1/month-to-date-account-info:
+    get:
+      operationId: Month-to-date account info
+      description: Fetches and returns the account-specific metrics based on the current
+        user's group.
+      tags:
+      - month-to-date-account-info
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountMonthToDateInfo'
+          description: ''
   /v1/notes:
     get:
       operationId: get notes
@@ -787,6 +808,40 @@ paths:
           description: No response body
 components:
   schemas:
+    AccountMonthToDateInfo:
+      type: object
+      description: Account usage information for the current month
+      properties:
+        iqs:
+          type: integer
+          description: The number of image queries in the current month.
+        escalations:
+          type: integer
+          description: The number of escalations in the current month.
+        active_detectors:
+          type: integer
+          description: The number of active detectors in the current month.
+        iqs_limit:
+          type: integer
+          nullable: true
+          description: The limit on the number of image queries in the current month.
+        escalations_limit:
+          type: integer
+          nullable: true
+          description: The limit on the number of escalations in the current month.
+        active_detectors_limit:
+          type: integer
+          nullable: true
+          description: The limit on the number of active detectors in the current
+            month.
+      required:
+      - active_detectors
+      - active_detectors_limit
+      - escalations
+      - escalations_limit
+      - iqs
+      - iqs_limit
+      x-internal: true
     AllNotes:
       type: object
       description: |-
@@ -1789,6 +1844,9 @@ components:
       - CLOUD
       - CUST
       - HUMAN_CLOUD_ENSEMBLE
+      - AI_CLOUD
+      - AI_CLOUD_ENSEMBLE
+      - HUMAN_AI_CLOUD_ENSEMBLE
       - ALG
       - ALG_REC
       - ALG_UNCLEAR
@@ -1809,6 +1867,9 @@ components:
       - USER
       - CLOUD_ENSEMBLE
       - ALGORITHM
+      - AI_CLOUD
+      - AI_CLOUD_ENSEMBLE
+      - HUMAN_AI_CLOUD_ENSEMBLE
       - EDGE
     Label:
       type: string
