@@ -241,7 +241,7 @@ def test_get_detector(gl: Groundlight, detector: Detector):
 def test_get_detector_with_low_request_timeout(gl: Groundlight, detector: Detector):
     """
     Verifies that get_detector respects the request_timeout parameter and raises a MaxRetryError when timeout is
-    exceeded. Verifies that request_timeout parameter can be a float or a tuple.
+    low. Verifies that request_timeout parameter can be a float or a tuple.
     """
     with pytest.raises(MaxRetryError):
         # Setting a very low request_timeout value should result in a timeout.
@@ -383,8 +383,8 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
 
 def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: Detector, image: str):
     """
-    Verifies that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout
-    is exceeded. Verifies that request_timeout parameter can be a float or a tuple.
+    Verifies that submit_image_query respects the request_timeout parameter and raises a ConnectTimeoutError or
+    ReadTimeoutError when timeout is low. Verifies that request_timeout parameter can be a float or a tuple.
     """
     with pytest.raises((ConnectTimeoutError, ReadTimeoutError)):
         # Setting a very low request_timeout value should result in a timeout.
