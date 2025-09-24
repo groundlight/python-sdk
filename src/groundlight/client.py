@@ -273,7 +273,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     def get_detector(
         self,
         id: Union[str, Detector],
-        request_timeout: Optional[float] = None,
+        request_timeout: Optional[Union[float, Tuple[float, float]]] = None,
     ) -> Detector:  # pylint: disable=redefined-builtin
         """
         Get a Detector by id.
@@ -675,7 +675,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         image_query_id: Optional[str] = None,
-        request_timeout: Optional[float] = None,
+        request_timeout: Optional[Union[float, Tuple[float, float]]] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.

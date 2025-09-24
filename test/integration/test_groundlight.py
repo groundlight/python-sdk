@@ -27,7 +27,8 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-from urllib3.exceptions import ReadTimeoutError
+from urllib3.exceptions import MaxRetryError
+from urllib3.util.retry import Retry
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75
@@ -78,6 +79,21 @@ def is_valid_display_label(label: str) -> bool:
 @pytest.fixture(name="image")
 def fixture_image() -> str:
     return "test/assets/dog.jpeg"
+
+
+def test_create_groundlight_with_retries():
+    """Verify that the `retries` parameter can be successfully passed to the `Groundlight` constructor."""
+    # Set retries using int value
+    num_retries = 25
+    gl = Groundlight(retries=num_retries)
+    assert gl.configuration.retries == num_retries
+    assert gl.api_client.configuration.retries == num_retries
+
+    # Set retries using Retry object
+    retries = Retry(total=num_retries)
+    gl = Groundlight(retries=retries)
+    assert gl.configuration.retries.total == retries.total
+    assert gl.api_client.configuration.retries.total == retries.total
 
 
 def test_create_detector(gl: Groundlight):
@@ -227,12 +243,12 @@ def test_get_detector_with_low_request_timeout(gl: Groundlight, detector: Detect
     Verifies that get_detector respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
     exceeded. Verifies that request_timeout parameter can be a float or a tuple.
     """
-    with pytest.raises(ReadTimeoutError):
+    with pytest.raises(MaxRetryError):
         # Setting a very low request_timeout value should result in a timeout.
         # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
         gl.get_detector(id=detector.id, request_timeout=1e-8)
 
-    with pytest.raises(ReadTimeoutError):
+    with pytest.raises(MaxRetryError):
         # Ensure a tuple can be passed.
         gl.get_detector(id=detector.id, request_timeout=(1e-8, 1e-8))
 
@@ -370,12 +386,12 @@ def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: 
     Verifies that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
     exceeded. Verifies that request_timeout parameter can be a float or a tuple.
     """
-    with pytest.raises(ReadTimeoutError):
+    with pytest.raises(MaxRetryError):
         # Setting a very low request_timeout value should result in a timeout.
         # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
         gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=1e-8)
 
-    with pytest.raises(ReadTimeoutError):
+    with pytest.raises(MaxRetryError):
         # Ensure a tuple can be passed.
         gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=(1e-8, 1e-8))
 
