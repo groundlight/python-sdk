@@ -270,7 +270,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.user_api.who_am_i()
         return obj["is_superuser"]
 
-    def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
+    def get_detector(
+        self,
+        id: Union[str, Detector],
+        request_timeout: Optional[float] = None,
+    ) -> Detector:  # pylint: disable=redefined-builtin
         """
         Get a Detector by id.
 
@@ -281,6 +285,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             print(detector)
 
         :param id: the detector id
+        :param request_timeout: The request timeout for the image query submission API request. Most users will not need
+            to modify this. If not set, the default value will be used.
 
         :return: Detector
         """
@@ -289,7 +295,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             # Short-circuit
             return id
         try:
-            obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+            request_timeout = request_timeout if request_timeout is not None else DEFAULT_REQUEST_TIMEOUT
+            obj = self.detectors_api.get_detector(id=id, _request_timeout=request_timeout)
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
         return Detector.parse_obj(obj.to_dict())
@@ -750,8 +757,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param image_query_id: The ID for the image query. This is to enable specific functionality
                             and is not intended for general external use. If not set, a random ID
                             will be generated.
-        :param request_timeout: The total request timeout for the image query submission API request. Most users will
-            not need to modify this. If not set, the default value will be used.
+        :param request_timeout: The request timeout for the image query submission API request. Most users will not need
+            to modify this. If not set, the default value will be used.
 
         :return: ImageQuery with query details and result (if wait > 0)
         :raises ValueError: If wait > 0 when want_async=True

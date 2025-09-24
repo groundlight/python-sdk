@@ -222,6 +222,21 @@ def test_get_detector(gl: Groundlight, detector: Detector):
     assert isinstance(_detector, Detector)
 
 
+def test_get_detector_with_low_request_timeout(gl: Groundlight, detector: Detector):
+    """
+    Verifies that get_detector respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
+    exceeded. Verifies that request_timeout parameter can be a float or a tuple.
+    """
+    with pytest.raises(ReadTimeoutError):
+        # Setting a very low request_timeout value should result in a timeout.
+        # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
+        gl.get_detector(id=detector.id, request_timeout=1e-8)
+
+    with pytest.raises(ReadTimeoutError):
+        # Ensure a tuple can be passed.
+        gl.get_detector(id=detector.id, request_timeout=(1e-8, 1e-8))
+
+
 def test_get_detector_by_name(gl: Groundlight, detector: Detector):
     _detector = gl.get_detector_by_name(name=detector.name)
     assert str(_detector)
@@ -352,13 +367,17 @@ def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: D
 
 def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: Detector, image: str):
     """
-    Test that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
-    exceeded.
+    Verifies that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout is
+    exceeded. Verifies that request_timeout parameter can be a float or a tuple.
     """
     with pytest.raises(ReadTimeoutError):
         # Setting a very low request_timeout value should result in a timeout.
         # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
         gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=1e-8)
+
+    with pytest.raises(ReadTimeoutError):
+        # Ensure a tuple can be passed.
+        gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=(1e-8, 1e-8))
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
