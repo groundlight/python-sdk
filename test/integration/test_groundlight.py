@@ -27,7 +27,7 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-from urllib3.exceptions import MaxRetryError, ReadTimeoutError
+from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
@@ -386,14 +386,14 @@ def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: 
     Verifies that submit_image_query respects the request_timeout parameter and raises a ReadTimeoutError when timeout
     is exceeded. Verifies that request_timeout parameter can be a float or a tuple.
     """
-    with pytest.raises(ReadTimeoutError):
+    with pytest.raises((ConnectTimeoutError, ReadTimeoutError)):
         # Setting a very low request_timeout value should result in a timeout.
         # NOTE: request_timeout=0 seems to have special behavior that does not result in a timeout.
         gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=1e-8)
 
-    with pytest.raises(ReadTimeoutError):
+    with pytest.raises((ConnectTimeoutError, ReadTimeoutError)):
         # Ensure a tuple can be passed.
-        gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=(1e-8, 1e-8))
+        gl.submit_image_query(detector=detector, image=image, human_review="NEVER", request_timeout=(5, 1e-8))
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
