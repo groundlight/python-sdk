@@ -272,9 +272,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
     def get_detector(
         self,
-        id: Union[str, Detector],
+        id: Union[str, Detector],  # pylint: disable=redefined-builtin
         request_timeout: Optional[Union[float, Tuple[float, float]]] = None,
-    ) -> Detector:  # pylint: disable=redefined-builtin
+    ) -> Detector:
         """
         Get a Detector by id.
 
