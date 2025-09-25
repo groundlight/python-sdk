@@ -37,6 +37,7 @@ from model import (
     PaginatedImageQueryList,
 )
 from urllib3.exceptions import InsecureRequestWarning
+from urllib3.util.retry import Retry
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
@@ -133,26 +134,31 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,
         disable_tls_verification: Optional[bool] = None,
+        http_transport_retries: Optional[Union[int, Retry]] = None,
     ):
         """
         Initialize a new Groundlight client instance.
 
         :param endpoint: Optional custom API endpoint URL. If not specified, uses the default Groundlight endpoint.
         :param api_token: Authentication token for API access.
-                        If not provided, will attempt to read from the "GROUNDLIGHT_API_TOKEN" environment variable.
+            If not provided, will attempt to read from the "GROUNDLIGHT_API_TOKEN" environment variable.
         :param disable_tls_verification: If True, disables SSL/TLS certificate verification for API calls.
-                                       When not specified, checks the "DISABLE_TLS_VERIFY" environment variable
-                                       (1=disable, 0=enable). Certificate verification is enabled by default.
+            When not specified, checks the "DISABLE_TLS_VERIFY" environment variable (1=disable, 0=enable).
+            Certificate verification is enabled by default.
 
-                                       Warning: Only disable verification when connecting to a Groundlight Edge
-                                       Endpoint using self-signed certificates. For security, always keep
-                                       verification enabled when using the Groundlight cloud service.
+            Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using self-signed
+            certificates. For security, always keep verification enabled when using the Groundlight cloud service.
+        :param http_transport_retries: Overrides urllib3 `PoolManager` retry policy for HTTP/HTTPS (forwarded to
+            `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
 
         :return: Groundlight client
         """
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
         self.configuration = Configuration(host=self.endpoint)
+        if http_transport_retries is not None:
+            # Once we upgrade openapitools to ^7.7.0, retries can be passed into the constructor of Configuration above.
+            self.configuration.retries = http_transport_retries
 
         if not api_token:
             try:
@@ -264,7 +270,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.user_api.who_am_i()
         return obj["is_superuser"]
 
-    def get_detector(self, id: Union[str, Detector]) -> Detector:  # pylint: disable=redefined-builtin
+    def get_detector(
+        self,
+        id: Union[str, Detector],  # pylint: disable=redefined-builtin
+        request_timeout: Optional[Union[float, Tuple[float, float]]] = None,
+    ) -> Detector:
         """
         Get a Detector by id.
 
@@ -275,6 +285,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             print(detector)
 
         :param id: the detector id
+        :param request_timeout: The request timeout for the image query submission API request. Most users will not need
+            to modify this. If not set, the default value will be used.
 
         :return: Detector
         """
@@ -283,7 +295,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             # Short-circuit
             return id
         try:
-            obj = self.detectors_api.get_detector(id=id, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+            request_timeout = request_timeout if request_timeout is not None else DEFAULT_REQUEST_TIMEOUT
+            obj = self.detectors_api.get_detector(id=id, _request_timeout=request_timeout)
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
         return Detector.parse_obj(obj.to_dict())
@@ -662,7 +675,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         inspection_id: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         image_query_id: Optional[str] = None,
-        request_timeout: Optional[float] = None,
+        request_timeout: Optional[Union[float, Tuple[float, float]]] = None,
     ) -> ImageQuery:
         """
         Evaluates an image with Groundlight. This is the core method for getting predictions about images.
@@ -744,8 +757,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param image_query_id: The ID for the image query. This is to enable specific functionality
                             and is not intended for general external use. If not set, a random ID
                             will be generated.
-        :param request_timeout: The total request timeout for the image query submission API request. Most users will
-            not need to modify this. If not set, the default value will be used.
+        :param request_timeout: The request timeout for the image query submission API request. Most users will not need
+            to modify this. If not set, the default value will be used.
 
         :return: ImageQuery with query details and result (if wait > 0)
         :raises ValueError: If wait > 0 when want_async=True
