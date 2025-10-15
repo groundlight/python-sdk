@@ -154,6 +154,7 @@ Class | Method | HTTP request | Description
  - [BBoxGeometryRequest](docs/BBoxGeometryRequest.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
  - [BlankEnum](docs/BlankEnum.md)
+ - [BoundingBoxLabelEnum](docs/BoundingBoxLabelEnum.md)
  - [BoundingBoxModeConfiguration](docs/BoundingBoxModeConfiguration.md)
  - [BoundingBoxResult](docs/BoundingBoxResult.md)
  - [ChannelEnum](docs/ChannelEnum.md)
