@@ -1859,6 +1859,13 @@ components:
       - CHANGED_TO
       - NO_CHANGE
       - NO_QUERIES
+    BoundingBoxLabelEnum:
+      type: string
+      enum:
+      - NO_OBJECTS
+      - BOUNDING_BOX
+      - GREATER_THAN_MAX
+      - UNCLEAR
     Source:
       type: string
       enum:
