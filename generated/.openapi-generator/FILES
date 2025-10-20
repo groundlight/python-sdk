@@ -156,5 +156,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_bounding_box_label_enum.py
 tox.ini
