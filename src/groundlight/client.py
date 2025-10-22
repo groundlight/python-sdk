@@ -35,6 +35,7 @@ from model import (
     ModeEnum,
     PaginatedDetectorList,
     PaginatedImageQueryList,
+    Source,
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
@@ -1066,6 +1067,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             2. The timeout_sec is reached
             3. An error occurs
 
+            If the image query was answered on the edge or is done_processing, the result is returned immediately.
+
         **Example usage**::
 
             gl = Groundlight()
@@ -1098,8 +1101,28 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             :meth:`get_image_query` for checking result status without blocking
             :meth:`wait_for_ml_result` for waiting until the first ML result is available
         """
+
+        def should_stop_waiting(image_query: ImageQuery) -> bool:
+            """Checks if the image query should be returned immediately because no better answer is expected."""
+            if image_query.done_processing:
+                logger.debug(
+                    "The image query has completed escalating and will receive no new results, so we are "
+                    "returning it immediately."
+                )
+                return True
+            if image_query.result and image_query.result.source and image_query.result.source == Source.EDGE:
+                logger.debug(
+                    "The image query was answered on the edge, so we are returning it immediately and not waiting for "
+                    "a confident result."
+                )
+                return True
+            return False
+
         if isinstance(image_query, str):
             image_query = self.get_image_query(image_query)
+
+        if should_stop_waiting(image_query):
+            return image_query
 
         if confidence_threshold is None:
             confidence_threshold = self.get_detector(image_query.detector_id).confidence_threshold
@@ -1145,6 +1168,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             :meth:`get_image_query` for checking result status without blocking
             :meth:`wait_for_confident_result` for waiting until a confident result is available
         """
+        if isinstance(image_query, ImageQuery):
+            if image_query.result and image_query.result.source and image_query.result.source == Source.EDGE:
+                logger.debug(
+                    "The image query is from the edge, so we are returning it immediately and not waiting for an ML "
+                    "result."
+                )
+                return image_query
+        # TODO I think this is lying - it doesn't raise a TimeoutError if there is no ML result within timeout_sec
         return self._wait_for_result(image_query, condition=iq_is_answered, timeout_sec=timeout_sec)
 
     def _wait_for_result(
