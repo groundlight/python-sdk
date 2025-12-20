@@ -103,12 +103,6 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi):
     assert mc_iq.result.text is not None
 
 
-@pytest.mark.skip(
-    reason=(
-        "General users currently currently can't use bounding box detectors. If you have questions, reach out"
-        " to Groundlight support, or upgrade your plan."
-    )
-)
 def test_bounding_box_detector(gl_experimental: ExperimentalApi):
     """
     Verify that we can create and submit to a bounding box detector
@@ -123,12 +117,6 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi):
     assert bbox_iq.rois is not None
 
 
-@pytest.mark.skip(
-    reason=(
-        "General users currently currently can't use bounding box detectors. If you have questions, reach out"
-        " to Groundlight support, or upgrade your plan."
-    )
-)
 def test_bounding_box_detector_async(gl_experimental: ExperimentalApi):
     """
     Verify that we can create and submit to a bounding box detector with ask_async
