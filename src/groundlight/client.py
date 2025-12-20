@@ -1215,7 +1215,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param label: The label value to assign, typically "YES" or "NO" for binary
                      classification detectors. For multi-class detectors, use one of
-                     the defined class names. See answer mode documentation for all 
+                     the defined class names. See answer mode documentation for all
                      possible label options for all modes.
 
         :param rois: Optional list of ROI objects defining regions of interest in the
