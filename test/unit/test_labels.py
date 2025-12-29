@@ -4,6 +4,7 @@ import pytest
 from groundlight import ApiException, ExperimentalApi
 from groundlight_openapi_client.model.roi import ROI
 
+
 def test_binary_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
     det = gl_experimental.create_detector(name, "test_query")
