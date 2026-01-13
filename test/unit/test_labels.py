@@ -2,7 +2,6 @@ from datetime import datetime
 
 import pytest
 from groundlight import ApiException, ExperimentalApi
-from model import BBoxGeometryRequest, ROIRequest
 
 
 def test_binary_labels(gl_experimental: ExperimentalApi):
