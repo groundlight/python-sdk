@@ -2,7 +2,9 @@ from datetime import datetime
 
 import pytest
 from groundlight import ApiException, ExperimentalApi
+from groundlight_openapi_client.model.b_box_geometry import BBoxGeometry
 from groundlight_openapi_client.model.roi import ROI
+
 
 def test_binary_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
@@ -73,7 +75,11 @@ def test_bounding_box_labels(gl_experimental: ExperimentalApi):
     gl_experimental.add_label(iq1, "NO_OBJECTS")
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.label == "NO_OBJECTS"
-    gl_experimental.add_label(iq1, "BOUNDING_BOX", rois=[ROI(x=0.1, y=0.1, width=0.5, height=0.5)])
+    gl_experimental.add_label(
+        iq1,
+        "BOUNDING_BOX",
+        rois=[ROI(label="test_class", geometry=BBoxGeometry(left=0.1, top=0.1, right=0.6, bottom=0.6))],
+    )
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.label == "BOUNDING_BOX"
     with pytest.raises(ApiException) as _:
