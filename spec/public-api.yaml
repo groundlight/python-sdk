@@ -412,6 +412,7 @@ paths:
                       kfold_pooled__balanced_accuracy:
                         type: number
                         format: float
+                        nullable: true
                       kfold_pooled__positive_accuracy:
                         type: number
                         format: float

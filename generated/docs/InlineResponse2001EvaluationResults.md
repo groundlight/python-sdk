@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **eval_timestamp** | **datetime** |  | [optional] 
 **total_ground_truth_examples** | **int, none_type** |  | [optional] 
 **total_labeled_examples** | **int, none_type** |  | [optional] 
-**kfold_pooled__balanced_accuracy** | **float** |  | [optional] 
+**kfold_pooled__balanced_accuracy** | **float, none_type** |  | [optional] 
 **kfold_pooled__positive_accuracy** | **float, none_type** |  | [optional] 
 **kfold_pooled__negative_accuracy** | **float, none_type** |  | [optional] 
 **precision__mean** | **float, none_type** |  | [optional] 
