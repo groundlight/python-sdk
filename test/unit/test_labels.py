@@ -66,6 +66,24 @@ def test_multiclass_labels(gl_experimental: ExperimentalApi):
         gl_experimental.add_label(iq1, "MAYBE")
 
 
+def test_bounding_box_labels(gl_experimental: ExperimentalApi):
+    name = f"Test bounding box labels{datetime.utcnow()}"
+    det = gl_experimental.create_bounding_box_detector(name, "test_query", "test_class")
+    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+    gl_experimental.add_label(iq1, "NO_OBJECTS")
+    iq1 = gl_experimental.get_image_query(iq1.id)
+    assert iq1.result.label == "NO_OBJECTS"
+    gl_experimental.add_label(
+        iq1,
+        "BOUNDING_BOX",
+        rois=[gl_experimental.create_roi(label="test_class", top_left=(0.1, 0.1), bottom_right=(0.6, 0.6))],
+    )
+    iq1 = gl_experimental.get_image_query(iq1.id)
+    assert iq1.result.label == "BOUNDING_BOX"
+    with pytest.raises(ApiException) as _:
+        gl_experimental.add_label(iq1, "MAYBE")
+
+
 def test_text_recognition_labels(gl_experimental: ExperimentalApi):
     name = f"Test text recognition labels{datetime.utcnow()}"
     det = gl_experimental.create_text_recognition_detector(name, "test_query")

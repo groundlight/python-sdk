@@ -1193,7 +1193,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
         for training detectors, or to correct the results of detectors.
 
-        **Example usage**::
+        **Example usage for binary detectors**::
 
             gl = Groundlight()
 
@@ -1208,12 +1208,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             rois = [ROI(x=100, y=100, width=50, height=50)]
             gl.add_label(image_query, "YES", rois=rois)
 
+        Examples for other answer modes can be found in the documentation for each of the modes.
+
         :param image_query: Either an ImageQuery object (returned from methods like
                           `ask_ml`) or an image query ID string starting with "iq_".
 
         :param label: The label value to assign, typically "YES" or "NO" for binary
                      classification detectors. For multi-class detectors, use one of
-                     the defined class names.
+                     the defined class names. See answer mode documentation for all
+                     possible label options for all modes.
 
         :param rois: Optional list of ROI objects defining regions of interest in the
                     image. Each ROI specifies a bounding box with x, y coordinates
