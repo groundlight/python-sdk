@@ -97,7 +97,10 @@ class InlineResponse2001EvaluationResults(ModelNormal):
                 int,
                 none_type,
             ),  # noqa: E501
-            "kfold_pooled__balanced_accuracy": (float,),  # noqa: E501
+            "kfold_pooled__balanced_accuracy": (
+                float,
+                none_type,
+            ),  # noqa: E501
             "kfold_pooled__positive_accuracy": (
                 float,
                 none_type,
@@ -229,7 +232,7 @@ class InlineResponse2001EvaluationResults(ModelNormal):
             eval_timestamp (datetime): [optional]  # noqa: E501
             total_ground_truth_examples (int, none_type): [optional]  # noqa: E501
             total_labeled_examples (int, none_type): [optional]  # noqa: E501
-            kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
+            kfold_pooled__balanced_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
             precision__mean (float, none_type): [optional]  # noqa: E501
@@ -332,7 +335,7 @@ class InlineResponse2001EvaluationResults(ModelNormal):
             eval_timestamp (datetime): [optional]  # noqa: E501
             total_ground_truth_examples (int, none_type): [optional]  # noqa: E501
             total_labeled_examples (int, none_type): [optional]  # noqa: E501
-            kfold_pooled__balanced_accuracy (float): [optional]  # noqa: E501
+            kfold_pooled__balanced_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__positive_accuracy (float, none_type): [optional]  # noqa: E501
             kfold_pooled__negative_accuracy (float, none_type): [optional]  # noqa: E501
             precision__mean (float, none_type): [optional]  # noqa: E501
