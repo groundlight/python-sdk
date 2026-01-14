@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDK Client &mdash; Groundlight Python SDK 0.23.3 documentation</title>
+  <title>SDK Client &mdash; Groundlight Python SDK 0.23.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=10ab35ec"></script>
+        <script src="_static/documentation_options.js?v=db22a521"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.23.3
+                0.23.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -299,7 +299,7 @@ certificates. For security, always keep verification enabled when using the Grou
 <span class="sig-name descname"><span class="pre">add_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Label</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#groundlight.Groundlight.add_label" title="Link to this definition"></a></dt>
 <dd><p>Provide a new label (annotation) for an image query. This is used to provide ground-truth labels
 for training detectors, or to correct the results of detectors.</p>
-<p><strong>Example usage</strong>:</p>
+<p><strong>Example usage for binary detectors</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
 
 <span class="c1"># Using an ImageQuery object</span>
@@ -314,6 +314,7 @@ for training detectors, or to correct the results of detectors.</p>
 <span class="n">gl</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="n">image_query</span><span class="p">,</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span> <span class="n">rois</span><span class="o">=</span><span class="n">rois</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Examples for other answer modes can be found in the documentation for each of the modes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -321,7 +322,8 @@ for training detectors, or to correct the results of detectors.</p>
 <cite>ask_ml</cite>) or an image query ID string starting with “<a href="#id1"><span class="problematic" id="id2">iq_</span></a>”.</p></li>
 <li><p><strong>label</strong> (<em>Label</em><em> | </em><em>int</em><em> | </em><em>str</em>) – The label value to assign, typically “YES” or “NO” for binary
 classification detectors. For multi-class detectors, use one of
-the defined class names.</p></li>
+the defined class names. See answer mode documentation for all
+possible label options for all modes.</p></li>
 <li><p><strong>rois</strong> (<em>List</em><em>[</em><em>ROI</em><em>] </em><em>| </em><em>str</em><em> | </em><em>None</em>) – Optional list of ROI objects defining regions of interest in the
 image. Each ROI specifies a bounding box with x, y coordinates
 and width, height.</p></li>
@@ -4973,7 +4975,7 @@ create_[MODE]_detector methods for pro tier users</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Groundlight AI &lt;support@groundlight.ai&gt;.</p>
+    <p>&#169; Copyright 2026, Groundlight AI &lt;support@groundlight.ai&gt;.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
