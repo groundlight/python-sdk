@@ -2,13 +2,30 @@
 
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **channel** | [**ChannelEnum**](ChannelEnum.md) |  | 
 **recipient** | **str** |  | 
 **include_image** | **bool** |  | 
-**any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
+## Example
+
+```python
+from groundlight_openapi_client.models.action import Action
+
+# TODO update the JSON string below
+json = "{}"
+# create an instance of Action from a JSON string
+action_instance = Action.from_json(json)
+# print the JSON string representation of the object
+print(Action.to_json())
+
+# convert the object into a dict
+action_dict = action_instance.to_dict()
+# create an instance of Action from a dict
+action_from_dict = Action.from_dict(action_dict)
+```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
 

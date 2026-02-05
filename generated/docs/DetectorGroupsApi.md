@@ -11,21 +11,23 @@ Method | HTTP request | Description
 # **create_detector_group**
 > DetectorGroup create_detector_group(detector_group_request)
 
+Create a new detector group
 
-
-Create a new detector group  POST data:   Required:     - name (str) - name of the predictor set
+POST data:
+  Required:
+    - name (str) - name of the predictor set
 
 ### Example
 
 * Api Key Authentication (ApiToken):
 
 ```python
-import time
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detector_groups_api
-from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
-from groundlight_openapi_client.model.detector_group import DetectorGroup
+from groundlight_openapi_client.models.detector_group import DetectorGroup
+from groundlight_openapi_client.models.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -38,7 +40,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -46,25 +48,25 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detector_groups_api.DetectorGroupsApi(api_client)
-    detector_group_request = DetectorGroupRequest(
-        name="name_example",
-    ) # DetectorGroupRequest | 
+    api_instance = groundlight_openapi_client.DetectorGroupsApi(api_client)
+    detector_group_request = groundlight_openapi_client.DetectorGroupRequest() # DetectorGroupRequest | 
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.create_detector_group(detector_group_request)
+        print("The response of DetectorGroupsApi->create_detector_group:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorGroupsApi->create_detector_group: %s\n" % e)
 ```
 
 
+
 ### Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_group_request** | [**DetectorGroupRequest**](DetectorGroupRequest.md)|  |
+ **detector_group_request** | [**DetectorGroupRequest**](DetectorGroupRequest.md)|  | 
 
 ### Return type
 
@@ -79,7 +81,6 @@ Name | Type | Description  | Notes
  - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: application/json
 
-
 ### HTTP response details
 
 | Status code | Description | Response headers |
@@ -89,9 +90,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_detector_groups**
-> [DetectorGroup] get_detector_groups()
-
-
+> List[DetectorGroup] get_detector_groups()
 
 List all detector groups
 
@@ -100,11 +99,11 @@ List all detector groups
 * Api Key Authentication (ApiToken):
 
 ```python
-import time
 import groundlight_openapi_client
-from groundlight_openapi_client.api import detector_groups_api
-from groundlight_openapi_client.model.detector_group import DetectorGroup
+from groundlight_openapi_client.models.detector_group import DetectorGroup
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -117,7 +116,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -125,23 +124,25 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = detector_groups_api.DetectorGroupsApi(api_client)
+    api_instance = groundlight_openapi_client.DetectorGroupsApi(api_client)
 
-    # example, this endpoint has no required or optional parameters
     try:
         api_response = api_instance.get_detector_groups()
+        print("The response of DetectorGroupsApi->get_detector_groups:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling DetectorGroupsApi->get_detector_groups: %s\n" % e)
 ```
 
 
+
 ### Parameters
+
 This endpoint does not need any parameter.
 
 ### Return type
 
-[**[DetectorGroup]**](DetectorGroup.md)
+[**List[DetectorGroup]**](DetectorGroup.md)
 
 ### Authorization
 
@@ -151,7 +152,6 @@ This endpoint does not need any parameter.
 
  - **Content-Type**: Not defined
  - **Accept**: application/json
-
 
 ### HTTP response details
 

@@ -10,8 +10,6 @@ Method | HTTP request | Description
 # **month_to_date_account_info**
 > AccountMonthToDateInfo month_to_date_account_info()
 
-
-
 Fetches and returns the account-specific metrics based on the current user's group.
 
 ### Example
@@ -19,11 +17,11 @@ Fetches and returns the account-specific metrics based on the current user's gro
 * Api Key Authentication (ApiToken):
 
 ```python
-import time
 import groundlight_openapi_client
-from groundlight_openapi_client.api import month_to_date_account_info_api
-from groundlight_openapi_client.model.account_month_to_date_info import AccountMonthToDateInfo
+from groundlight_openapi_client.models.account_month_to_date_info import AccountMonthToDateInfo
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -36,7 +34,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -44,18 +42,20 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = month_to_date_account_info_api.MonthToDateAccountInfoApi(api_client)
+    api_instance = groundlight_openapi_client.MonthToDateAccountInfoApi(api_client)
 
-    # example, this endpoint has no required or optional parameters
     try:
         api_response = api_instance.month_to_date_account_info()
+        print("The response of MonthToDateAccountInfoApi->month_to_date_account_info:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling MonthToDateAccountInfoApi->month_to_date_account_info: %s\n" % e)
 ```
 
 
+
 ### Parameters
+
 This endpoint does not need any parameter.
 
 ### Return type
@@ -70,7 +70,6 @@ This endpoint does not need any parameter.
 
  - **Content-Type**: Not defined
  - **Accept**: application/json
-
 
 ### HTTP response details
 
