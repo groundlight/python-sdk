@@ -9,9 +9,7 @@ Method | HTTP request | Description
 
 
 # **create_note**
-> create_note(detector_id)
-
-
+> create_note(detector_id, note_request=note_request)
 
 Creates a new note.
 
@@ -20,11 +18,11 @@ Creates a new note.
 * Api Key Authentication (ApiToken):
 
 ```python
-import time
 import groundlight_openapi_client
-from groundlight_openapi_client.api import notes_api
-from groundlight_openapi_client.model.note_request import NoteRequest
+from groundlight_openapi_client.models.note_request import NoteRequest
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -37,7 +35,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -45,35 +43,25 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = notes_api.NotesApi(api_client)
-    detector_id = "detector_id_example" # str | the detector to associate the new note with
-    note_request = NoteRequest(
-        content="content_example",
-        is_pinned=True,
-        image=open('/path/to/file', 'rb'),
-    ) # NoteRequest |  (optional)
+    api_instance = groundlight_openapi_client.NotesApi(api_client)
+    detector_id = 'detector_id_example' # str | the detector to associate the new note with
+    note_request = groundlight_openapi_client.NoteRequest() # NoteRequest |  (optional)
 
-    # example passing only required values which don't have defaults set
-    try:
-        api_instance.create_note(detector_id)
-    except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling NotesApi->create_note: %s\n" % e)
-
-    # example passing only required values which don't have defaults set
-    # and optional values
     try:
         api_instance.create_note(detector_id, note_request=note_request)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling NotesApi->create_note: %s\n" % e)
 ```
 
 
+
 ### Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_id** | **str**| the detector to associate the new note with |
- **note_request** | [**NoteRequest**](NoteRequest.md)|  | [optional]
+ **detector_id** | **str**| the detector to associate the new note with | 
+ **note_request** | [**NoteRequest**](NoteRequest.md)|  | [optional] 
 
 ### Return type
 
@@ -88,7 +76,6 @@ void (empty response body)
  - **Content-Type**: application/json, application/x-www-form-urlencoded, multipart/form-data
  - **Accept**: Not defined
 
-
 ### HTTP response details
 
 | Status code | Description | Response headers |
@@ -100,8 +87,6 @@ void (empty response body)
 # **get_notes**
 > AllNotes get_notes(detector_id)
 
-
-
 Retrieves all notes from a given detector and returns them in lists, one for each note_category.
 
 ### Example
@@ -109,11 +94,11 @@ Retrieves all notes from a given detector and returns them in lists, one for eac
 * Api Key Authentication (ApiToken):
 
 ```python
-import time
 import groundlight_openapi_client
-from groundlight_openapi_client.api import notes_api
-from groundlight_openapi_client.model.all_notes import AllNotes
+from groundlight_openapi_client.models.all_notes import AllNotes
+from groundlight_openapi_client.rest import ApiException
 from pprint import pprint
+
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -126,7 +111,7 @@ configuration = groundlight_openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: ApiToken
-configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
+configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
@@ -134,23 +119,25 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = notes_api.NotesApi(api_client)
-    detector_id = "detector_id_example" # str | the detector whose notes to retrieve
+    api_instance = groundlight_openapi_client.NotesApi(api_client)
+    detector_id = 'detector_id_example' # str | the detector whose notes to retrieve
 
-    # example passing only required values which don't have defaults set
     try:
         api_response = api_instance.get_notes(detector_id)
+        print("The response of NotesApi->get_notes:\n")
         pprint(api_response)
-    except groundlight_openapi_client.ApiException as e:
+    except Exception as e:
         print("Exception when calling NotesApi->get_notes: %s\n" % e)
 ```
 
 
+
 ### Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **detector_id** | **str**| the detector whose notes to retrieve |
+ **detector_id** | **str**| the detector whose notes to retrieve | 
 
 ### Return type
 
@@ -164,7 +151,6 @@ Name | Type | Description  | Notes
 
  - **Content-Type**: Not defined
  - **Accept**: application/json
-
 
 ### HTTP response details
 
