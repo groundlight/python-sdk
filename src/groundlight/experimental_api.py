@@ -8,9 +8,11 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+import time
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
@@ -882,3 +884,143 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             auth_settings=["ApiToken"],
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
+
+    def _get_edge_base_url(self) -> str:
+        """Derives the base URL (scheme + host) from self.endpoint by stripping the path."""
+        parts = urlsplit(self.endpoint)
+        return urlunsplit((parts.scheme, parts.netloc, "", "", ""))
+
+    def _get_edge_detector_statuses(self) -> dict:
+        """Fetches detector statuses from the edge endpoint's status monitor.
+
+        :returns: A dict mapping detector IDs to their detail dicts (including ``status``).
+        """
+        url = f"{self._get_edge_base_url()}/status/metrics.json"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        metrics = response.json()
+        raw_details = metrics.get("detector_details")
+        if raw_details is None:
+            return {}
+        if isinstance(raw_details, str):
+            return json.loads(raw_details)
+        return raw_details
+
+    def configure_edge(  # noqa: PLR0913
+        self,
+        *,
+        global_config: Optional[dict] = None,
+        edge_inference_configs: Optional[dict] = None,
+        detectors: Optional[list] = None,
+        wait: float = 600,
+    ) -> None:
+        """
+        Sends configuration to a Groundlight Edge Endpoint. This method only works when the SDK
+        is connected to an Edge Endpoint -- calling it against the cloud API will raise an error.
+
+        All parameters are optional. Only the sections you provide will be updated.
+
+        Currently, the Edge Endpoint logs the received configuration. Future versions will apply
+        the configuration at runtime.
+
+        If ``wait`` is set and ``detectors`` are provided, the method will poll the edge
+        endpoint's status monitor until all configured detectors report ``status: "ready"``,
+        or until the timeout expires.
+
+        .. note::
+            This method makes a direct HTTP request rather than using the OpenAPI-generated client,
+            since this endpoint is edge-only and not part of the cloud API spec.
+
+        **Example usage**::
+
+            from groundlight import ExperimentalApi
+
+            gl = ExperimentalApi(endpoint="http://localhost:30101")
+
+            # Configure and wait up to 120s for pods to be ready
+            gl.configure_edge(
+                edge_inference_configs={
+                    "no_cloud": {
+                        "enabled": True,
+                        "always_return_edge_prediction": True,
+                        "disable_cloud_escalation": True,
+                    },
+                },
+                detectors=[
+                    {"detector_id": "det_abc123", "edge_inference_config": "no_cloud"},
+                ],
+                wait=120,
+            )
+
+            # Or just update global config (no waiting needed)
+            gl.configure_edge(global_config={"refresh_rate": 10})
+
+        :param global_config: Global edge endpoint settings (e.g., ``refresh_rate``,
+            ``confident_audit_rate``).
+        :param edge_inference_configs: Named inference config presets. Each key is a preset name,
+            and the value is a dict of settings (e.g., ``enabled``,
+            ``always_return_edge_prediction``, ``disable_cloud_escalation``).
+        :param detectors: A list of detector configuration dicts, each containing a
+            ``detector_id`` and an ``edge_inference_config`` preset name.
+        :param wait: Maximum time in seconds to wait for all configured detectors to become
+            ready on the edge endpoint. Defaults to 600 (10 minutes). Set to 0 to return
+            immediately after posting the configuration.
+
+        :raises GroundlightClientError: If the endpoint is not an Edge Endpoint, or if the
+            wait timeout expires before all detectors are ready.
+        """
+        payload = {}
+        if global_config is not None:
+            payload["global_config"] = global_config
+        if edge_inference_configs is not None:
+            payload["edge_inference_configs"] = edge_inference_configs
+        if detectors is not None:
+            payload["detectors"] = detectors
+
+        url = f"{self.endpoint}/v1/edge/configure"
+        headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
+
+        response = requests.post(url, headers=headers, json=payload)
+        if response.status_code == 404:
+            raise GroundlightClientError(
+                "This endpoint does not support edge configuration. "
+                "Are you connected to a Groundlight Edge Endpoint?"
+            )
+        response.raise_for_status()
+
+        if wait > 0 and detectors:
+            self._wait_for_edge_detectors_ready(detectors, timeout=wait)
+
+    def _wait_for_edge_detectors_ready(self, detectors: list, timeout: float) -> None:
+        POLL_INTERVAL = 5
+        detector_ids = {d["detector_id"] for d in detectors}
+        deadline = time.time() + timeout
+
+        while True:
+            try:
+                statuses = self._get_edge_detector_statuses()
+            except Exception as e:
+                logger.warning(f"Failed to fetch edge detector statuses: {e}")
+                statuses = {}
+
+            not_ready = []
+            for det_id in detector_ids:
+                det_status = statuses.get(det_id, {}).get("status")
+                if det_status != "ready":
+                    not_ready.append((det_id, det_status))
+
+            if not not_ready:
+                logger.info(f"All {len(detector_ids)} edge detector(s) are ready.")
+                return
+
+            if time.time() >= deadline:
+                summary = ", ".join(f"{did}={st or 'unknown'}" for did, st in not_ready)
+                raise GroundlightClientError(
+                    f"Timed out after {timeout}s waiting for edge detectors to be ready. "
+                    f"Not ready: {summary}"
+                )
+
+            logger.debug(
+                f"Waiting for {len(not_ready)}/{len(detector_ids)} edge detector(s) to be ready..."
+            )
+            time.sleep(POLL_INTERVAL)
