@@ -983,8 +983,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         response = requests.post(url, headers=headers, json=payload)
         if response.status_code == 404:
             raise GroundlightClientError(
-                "This endpoint does not support edge configuration. "
-                "Are you connected to a Groundlight Edge Endpoint?"
+                "This endpoint does not support edge configuration. Are you connected to a Groundlight Edge Endpoint?"
             )
         response.raise_for_status()
 
@@ -1016,11 +1015,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             if time.time() >= deadline:
                 summary = ", ".join(f"{did}={st or 'unknown'}" for did, st in not_ready)
                 raise GroundlightClientError(
-                    f"Timed out after {timeout}s waiting for edge detectors to be ready. "
-                    f"Not ready: {summary}"
+                    f"Timed out after {timeout}s waiting for edge detectors to be ready. Not ready: {summary}"
                 )
 
-            logger.debug(
-                f"Waiting for {len(not_ready)}/{len(detector_ids)} edge detector(s) to be ready..."
-            )
+            logger.debug(f"Waiting for {len(not_ready)}/{len(detector_ids)} edge detector(s) to be ready...")
             time.sleep(POLL_INTERVAL)
