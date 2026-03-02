@@ -231,6 +231,18 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             raise GroundlightClientError(msg) from e
 
     @staticmethod
+    def _propagate_result_type(iq_dict: dict) -> None:
+        """Propagate result_type into the result dict for correct Pydantic Union deserialization.
+        Edge responses may omit result_type from the result object, causing Pydantic to
+        pick the wrong type from the Union (e.g. BinaryClassificationResult instead of
+        MultiClassificationResult).
+        """
+        result = iq_dict.get("result")
+        result_type = iq_dict.get("result_type")
+        if isinstance(result, dict) and result_type and not result.get("result_type"):
+            result["result_type"] = result_type
+
+    @staticmethod
     def _fixup_image_query(iq: ImageQuery) -> ImageQuery:
         """
         Process the wire-format image query to make it more usable.
@@ -605,7 +617,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if obj.result_type == "counting" and getattr(obj.result, "label", None):
             obj.result.pop("label")
             obj.result["count"] = None
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq_dict = obj.to_dict()
+        self._propagate_result_type(iq_dict)
+        iq = ImageQuery.parse_obj(iq_dict)
         return self._fixup_image_query(iq)
 
     def list_image_queries(
@@ -636,7 +650,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if detector_id:
             params["detector_id"] = detector_id
         obj = self.image_queries_api.list_image_queries(**params)
-        image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
+        obj_dict = obj.to_dict()
+        for iq_dict in obj_dict.get("results") or []:
+            self._propagate_result_type(iq_dict)
+        image_queries = PaginatedImageQueryList.parse_obj(obj_dict)
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
@@ -809,7 +826,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        iq_dict = raw_image_query.to_dict()
+        self._propagate_result_type(iq_dict)
+        image_query = ImageQuery.parse_obj(iq_dict)
 
         if wait > 0:
             if confidence_threshold is None:
