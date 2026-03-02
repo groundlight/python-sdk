@@ -912,20 +912,21 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         global_config: Optional[dict] = None,
         edge_inference_configs: Optional[dict] = None,
         detectors: Optional[list] = None,
+        replace: bool = True,
         wait: float = 600,
     ) -> None:
         """
         Sends configuration to a Groundlight Edge Endpoint. This method only works when the SDK
         is connected to an Edge Endpoint -- calling it against the cloud API will raise an error.
 
-        All parameters are optional. Only the sections you provide will be updated.
+        By default, the incoming configuration is **merged** into the existing config (adding or
+        updating detectors, presets, and global settings). Set ``replace=True`` to **replace** the
+        entire config, which will remove any detectors not included in the new config.
 
-        Currently, the Edge Endpoint logs the received configuration. Future versions will apply
-        the configuration at runtime.
-
-        If ``wait`` is set and ``detectors`` are provided, the method will poll the edge
-        endpoint's status monitor until all configured detectors report ``status: "ready"``,
-        or until the timeout expires.
+        If ``wait`` is set and ``detectors`` are provided (or detectors are being removed),
+        the method will poll the edge endpoint's status monitor until all configured detectors
+        report ``status: "ready"`` and all removed detectors are gone, or until the timeout
+        expires.
 
         .. note::
             This method makes a direct HTTP request rather than using the OpenAPI-generated client,
@@ -937,23 +938,24 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
             gl = ExperimentalApi(endpoint="http://localhost:30101")
 
-            # Configure and wait up to 120s for pods to be ready
+            # Merge: add/update detectors (existing detectors are preserved)
             gl.configure_edge(
-                edge_inference_configs={
-                    "no_cloud": {
-                        "enabled": True,
-                        "always_return_edge_prediction": True,
-                        "disable_cloud_escalation": True,
-                    },
-                },
                 detectors=[
                     {"detector_id": "det_abc123", "edge_inference_config": "no_cloud"},
                 ],
                 wait=120,
             )
 
-            # Or just update global config (no waiting needed)
-            gl.configure_edge(global_config={"refresh_rate": 10})
+            # Replace: only these detectors will remain; all others are removed
+            gl.configure_edge(
+                edge_inference_configs={
+                    "default": {"enabled": True},
+                },
+                detectors=[
+                    {"detector_id": "det_abc123", "edge_inference_config": "default"},
+                ],
+                replace=True,
+            )
 
         :param global_config: Global edge endpoint settings (e.g., ``refresh_rate``,
             ``confident_audit_rate``).
@@ -962,6 +964,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             ``always_return_edge_prediction``, ``disable_cloud_escalation``).
         :param detectors: A list of detector configuration dicts, each containing a
             ``detector_id`` and an ``edge_inference_config`` preset name.
+        :param replace: If True, the incoming config fully replaces the existing config.
+            Detectors not in the new config will have their inference pods deleted.
         :param wait: Maximum time in seconds to wait for all configured detectors to become
             ready on the edge endpoint. Defaults to 600 (10 minutes). Set to 0 to return
             immediately after posting the configuration.
@@ -969,13 +973,15 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :raises GroundlightClientError: If the endpoint is not an Edge Endpoint, or if the
             wait timeout expires before all detectors are ready.
         """
-        payload = {}
+        payload: dict = {}
         if global_config is not None:
             payload["global_config"] = global_config
         if edge_inference_configs is not None:
             payload["edge_inference_configs"] = edge_inference_configs
         if detectors is not None:
             payload["detectors"] = detectors
+        if replace:
+            payload["replace"] = True
 
         url = f"{self.endpoint}/v1/edge/configure"
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
@@ -985,14 +991,28 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             raise GroundlightClientError(
                 "This endpoint does not support edge configuration. Are you connected to a Groundlight Edge Endpoint?"
             )
-        response.raise_for_status()
+        if not response.ok:
+            try:
+                detail = response.json().get("detail", response.text)
+            except Exception:
+                detail = response.text
+            raise GroundlightClientError(f"Edge configuration failed (HTTP {response.status_code}): {detail}")
 
-        if wait > 0 and detectors:
-            self._wait_for_edge_detectors_ready(detectors, timeout=wait)
+        result = response.json()
+        removed_ids = set(result.get("removed", []))
 
-    def _wait_for_edge_detectors_ready(self, detectors: list, timeout: float) -> None:
+        should_wait = wait > 0 and (detectors or removed_ids)
+        if should_wait:
+            expected_ids = {d["detector_id"] for d in detectors} if detectors else set()
+            self._wait_for_edge_config_applied(expected_ids, removed_ids, timeout=wait)
+
+    def _wait_for_edge_config_applied(
+        self,
+        expected_ids: set[str],
+        removed_ids: set[str],
+        timeout: float,
+    ) -> None:
         POLL_INTERVAL = 5
-        detector_ids = {d["detector_id"] for d in detectors}
         deadline = time.time() + timeout
 
         while True:
@@ -1002,21 +1022,29 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                 logger.warning(f"Failed to fetch edge detector statuses: {e}")
                 statuses = {}
 
-            not_ready = []
-            for det_id in detector_ids:
+            issues = []
+
+            for det_id in expected_ids:
                 det_status = statuses.get(det_id, {}).get("status")
                 if det_status != "ready":
-                    not_ready.append((det_id, det_status))
+                    issues.append((det_id, det_status or "unknown"))
 
-            if not not_ready:
-                logger.info(f"All {len(detector_ids)} edge detector(s) are ready.")
+            for det_id in removed_ids:
+                if det_id in statuses:
+                    issues.append((det_id, "still_present"))
+
+            if not issues:
+                logger.info(
+                    f"Edge config applied: {len(expected_ids)} detector(s) ready, "
+                    f"{len(removed_ids)} detector(s) removed."
+                )
                 return
 
             if time.time() >= deadline:
-                summary = ", ".join(f"{did}={st or 'unknown'}" for did, st in not_ready)
+                summary = ", ".join(f"{did}={st}" for did, st in issues)
                 raise GroundlightClientError(
-                    f"Timed out after {timeout}s waiting for edge detectors to be ready. Not ready: {summary}"
+                    f"Timed out after {timeout}s waiting for edge config to be applied. Issues: {summary}"
                 )
 
-            logger.debug(f"Waiting for {len(not_ready)}/{len(detector_ids)} edge detector(s) to be ready...")
+            logger.debug(f"Waiting for edge config: {len(issues)} issue(s) remaining...")
             time.sleep(POLL_INTERVAL)

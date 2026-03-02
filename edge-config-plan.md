@@ -19,11 +19,15 @@ When the SDK is pointed at the cloud API, calling this method should raise an er
 | Waiting strategy | SDK polls `GET /status/metrics.json` for detector readiness |
 | Config persistence | Runtime config written to YAML file on shared PVC; read on startup by all containers |
 
-## Implementation
+---
+
+## Implemented
 
 ### Edge Endpoint: `POST /device-api/v1/edge/configure`
 
 **File**: `app/api/routes/edge_config.py`, registered in `app/api/api.py`
+
+Currently supports **merge mode only**: incoming config is merged into the existing config.
 
 On receiving a config POST, the handler:
 1. Merges incoming JSON into the existing `RootEdgeConfig` (global_config, edge_inference_configs, detectors)
@@ -68,7 +72,7 @@ of which PVC subdirectory it has mounted.
   every 5 seconds until all configured detectors have `status: "ready"`, or raises on timeout
 - Direct `requests.post()` call, not OpenAPI-generated
 
-### End-to-End Flow
+### End-to-End Flow (merge mode)
 
 1. SDK POSTs config to edge endpoint
 2. Edge endpoint merges incoming config with existing config
@@ -81,7 +85,138 @@ of which PVC subdirectory it has mounted.
 9. SDK polls `/status/metrics.json` -- status monitor reads runtime config from PVC and reports pod readiness via Kubernetes API
 10. All detectors show `status: "ready"` -> SDK returns
 
-### Known Limitations
+### Cloud vs. Edge Detection
+
+| Scenario | What happens |
+|---|---|
+| SDK -> cloud (`api.groundlight.ai`) | Cloud returns 404 -> SDK raises error |
+| SDK -> edge endpoint (with new route) | FastAPI handles it -> returns 200 |
+| SDK -> old edge endpoint (without new route) | FastAPI returns 404 -> nginx falls back to cloud -> 404 -> SDK raises error |
+
+---
+
+## Planned: Replace Mode
+
+### Problem
+
+The current merge mode can only **add or update** detectors. It cannot remove detectors
+that are no longer desired. If a user wants to go from 5 detectors to 3, the old 2
+detectors' inference pods keep running and wasting resources.
+
+### Proposed SDK Change
+
+Add a `replace` parameter to `configure_edge()`:
+
+- `replace=False` (default): Current merge behavior. Incoming config is merged into existing.
+- `replace=True`: Incoming config fully replaces the existing config. Detectors not in the
+  new config are removed (their inference pods are deleted).
+
+### Required Edge Endpoint Changes
+
+The edge endpoint currently has **no code to delete** Kubernetes Deployments, Services,
+database records, or model files for detectors. All of this needs to be added.
+
+**Existing infrastructure we can use:**
+- `get_edge_inference_deployment_name(detector_id)` and `get_edge_inference_service_name(detector_id)`
+  in `app/core/edge_inference.py` map detector IDs to K8s resource names.
+- The service account (`edge-endpoint-service-account`) already has RBAC permissions to
+  `delete` both `deployments` and `services`. These permissions are currently unused.
+- `InferenceDeploymentManager` in `app/core/kubernetes_management.py` already has a K8s
+  client and namespace context. Adding a `delete_inference_deployment()` method here is natural.
+- `get_detector_models_dir(repository_root, detector_id)` returns the model directory
+  (`{MODEL_REPOSITORY_PATH}/{detector_id}/`). Deleting this directory removes all model
+  files (primary + oodd + all versions).
+
+**What needs to be built:**
+
+1. **`InferenceDeploymentManager.delete_inference_deployment(detector_id, is_oodd)`**
+   (`app/core/kubernetes_management.py`)
+   - Call `delete_namespaced_deployment()` to remove the inference Deployment
+   - Call `delete_namespaced_service()` to remove the inference Service
+   - The naming functions already exist to map detector ID -> resource names
+
+2. **`DatabaseManager.delete_inference_deployment_record(model_name)`**
+   (`app/core/database.py`)
+   - Delete the DB record so the model updater doesn't recreate the deployment on its
+     next refresh cycle
+
+3. **Model file cleanup**
+   - Delete `{MODEL_REPOSITORY_PATH}/{detector_id}/` (the entire detector directory,
+     which contains `primary/` and `oodd/` subdirs with versioned model files)
+   - Can use `shutil.rmtree()` (already used by `delete_model_version()`)
+
+4. **Replace logic in `edge_config.py` handler**
+   - Accept a `replace` flag in the POST body
+   - If `replace=True`: use the incoming config as-is instead of merging
+   - Diff old vs new detector sets: `removed = old_detector_ids - new_detector_ids`
+   - **Deletion must complete before new pods roll out.** The edge endpoint must wait
+     for removed detector pods to fully terminate (not just in `Terminating` state)
+     before writing DB records for new detectors. This prevents OOM from old and new
+     pods competing for the same finite GPU/memory resources.
+   - For each removed detector:
+     a. Call `InferenceDeploymentManager.delete_inference_deployment()` (primary + oodd)
+     b. Poll until the pods are fully gone (not just Terminating)
+     c. Call `DatabaseManager.delete_inference_deployment_record()` (primary + oodd)
+     d. Delete model files from disk
+     e. Clean up `EdgeInferenceManager` state (inference_client_urls, oodd URLs,
+        escalation tracking)
+   - After all deletions complete: proceed with new/retained detectors (same flow as
+     current merge mode)
+   - `configure_edge(detectors=[], replace=True)` is valid and removes all detector pods.
+
+5. **SDK changes**
+   - Add `replace: bool = False` parameter to `configure_edge()`
+   - Pass `replace` flag in POST body
+   - When `replace=True` and `wait > 0`: wait for removed pods to terminate AND for
+     new/retained pods to become ready
+
+### Ordering Guarantee
+
+When `replace=True`, the edge endpoint enforces this sequence:
+
+```
+1. Delete removed detector deployments/services
+2. Wait for removed pods to fully terminate
+3. Clean up DB records + model files for removed detectors
+4. Write DB records for new detectors
+5. Model updater picks up new detectors and creates deployments
+```
+
+This ensures old pods release their resources before new pods are scheduled,
+preventing resource exhaustion on memory/GPU-constrained edge devices.
+
+### Decisions
+
+- **Async**: The POST handler returns immediately. Deletion and re-creation happen
+  in a FastAPI background task. The SDK polls `/status/metrics.json` for completion.
+- **Termination time**: Inference pods use the K8s default of 30s
+  `terminationGracePeriodSeconds`. No custom value is set.
+- **Partial failure**: Error out. If deletion of any detector fails, the background
+  task logs the error and stops. The config is left in a partially cleaned state;
+  the user can retry.
+
+### Implementation Details
+
+**Edge endpoint needs an `InferenceDeploymentManager` on `AppState`.**
+Currently only the model-updater container creates one. The edge-endpoint container
+has the K8s service account and RBAC permissions but doesn't use them. We add
+an `InferenceDeploymentManager` to `AppState`, guarded by the existing
+`DEPLOY_DETECTOR_LEVEL_INFERENCE` env var (only set in K8s, not Docker tests).
+
+**Background task flow** (runs after POST returns):
+1. Delete K8s Deployments + Services for each removed detector
+2. Poll until pods are fully terminated (not just Terminating)
+3. Delete DB records for removed detectors
+4. Delete model files from PVC (`shutil.rmtree({MODEL_REPOSITORY_PATH}/{detector_id}/`)
+5. Write DB records for new detectors (model updater picks these up)
+
+**SDK polling**: When `replace=True` and `wait > 0`, the SDK waits until:
+- Removed detector IDs no longer appear in `/status/metrics.json`
+- New/retained detector IDs all show `status: "ready"`
+
+---
+
+## Known Limitations
 
 - **Multiprocess in-memory state**: Edge endpoint runs multiple uvicorn workers. The in-memory
   config update only applies to the worker that handles the POST. Other workers retain stale
@@ -91,14 +226,6 @@ of which PVC subdirectory it has mounted.
   seconds (default 60s), so there can be a delay before pod creation starts.
 - **File write race**: If two concurrent config POSTs hit different workers, the last write wins.
   This is acceptable for now; atomic file writes or a lock file can be added later if needed.
-
-### Cloud vs. Edge Detection
-
-| Scenario | What happens |
-|---|---|
-| SDK -> cloud (`api.groundlight.ai`) | Cloud returns 404 -> SDK raises error |
-| SDK -> edge endpoint (with new route) | FastAPI handles it -> returns 200 |
-| SDK -> old edge endpoint (without new route) | FastAPI returns 404 -> nginx falls back to cloud -> 404 -> SDK raises error |
 
 ## Future Work
 
