@@ -1,9 +1,10 @@
 """Unit tests for priming_group_id parameter in detector creation."""
+
 from unittest import mock
 
 import pytest
 from groundlight import Groundlight
-from model import Detector, ModeEnum
+from model import Detector
 
 
 @pytest.fixture(name="gl")
@@ -167,5 +168,5 @@ def test_create_detector_without_priming_group_id(gl: Groundlight, mock_detector
     detector_creation_input = call_args[0][0]
 
     # Verify priming_group_id was not set (None or not present)
-    assert not hasattr(detector_creation_input, 'priming_group_id') or detector_creation_input.priming_group_id is None
+    assert not hasattr(detector_creation_input, "priming_group_id") or detector_creation_input.priming_group_id is None
     assert isinstance(detector, Detector)
