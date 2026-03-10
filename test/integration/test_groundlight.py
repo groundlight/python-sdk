@@ -942,6 +942,9 @@ def test_delete_detector(gl: Groundlight):
 def test_create_detector_with_invalid_priming_group_id(gl: Groundlight):
     """
     Test that creating a detector with a non-existent priming_group_id returns an appropriate error.
+
+    Note: PrimingGroup IDs are provided by Groundlight representatives. If you would like to
+    use a priming_group_id, please reach out to your Groundlight representative.
     """
     name = f"Test invalid priming {datetime.utcnow()}"
     query = "Is there a dog?"

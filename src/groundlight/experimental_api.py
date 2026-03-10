@@ -670,6 +670,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
+                        to use a priming_group_id, please reach out to your Groundlight representative.
 
         :return: The created Detector object
         """

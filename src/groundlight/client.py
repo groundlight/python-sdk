@@ -449,6 +449,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param class_names: The name or names of the class to use for the detector. Only used for multi-class
                         and counting detectors.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
+                        to use a priming_group_id, please reach out to your Groundlight representative.
 
         :return: The created Detector object
         """
@@ -1606,6 +1608,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
+                        to use a priming_group_id, please reach out to your Groundlight representative.
 
         :return: The created Detector object
         """
@@ -1721,6 +1725,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
+                        to use a priming_group_id, please reach out to your Groundlight representative.
 
         :return: The created Detector object
         """
@@ -1795,6 +1801,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
+                        to use a priming_group_id, please reach out to your Groundlight representative.
 
         :return: The created Detector object
         """
