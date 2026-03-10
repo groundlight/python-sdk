@@ -138,3 +138,36 @@ def test_bounding_box_detector_async(gl_experimental: ExperimentalApi):
     # you should be able to get a "real" result by retrieving an updated image query object from the server
     _image_query = gl_experimental.get_image_query(id=async_iq.id)
     assert _image_query.result is not None
+
+
+def test_text_recognition_detector_with_priming_group_id(gl_experimental: ExperimentalApi):
+    """
+    Verify that we can create a text recognition detector with priming_group_id parameter
+    """
+    name = f"Test priming text {datetime.utcnow()}"
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+    created_detector = gl_experimental.create_text_recognition_detector(
+        name,
+        "What is the date and time?",
+        confidence_threshold=0.0,
+        priming_group_id=priming_group_id,
+    )
+    assert created_detector is not None
+    assert isinstance(created_detector, Detector)
+
+
+def test_bounding_box_detector_with_priming_group_id(gl_experimental: ExperimentalApi):
+    """
+    Verify that we can create a bounding box detector with priming_group_id parameter
+    """
+    name = f"Test priming bbox {datetime.now(timezone.utc)}"
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+    created_detector = gl_experimental.create_bounding_box_detector(
+        name,
+        "Draw a bounding box around each dog in the image",
+        "dog",
+        confidence_threshold=0.0,
+        priming_group_id=priming_group_id,
+    )
+    assert created_detector is not None
+    assert isinstance(created_detector, Detector)

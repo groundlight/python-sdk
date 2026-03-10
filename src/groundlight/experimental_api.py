@@ -644,6 +644,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a bounding box detector that can detect objects in images up to a specified maximum number of bounding
@@ -684,6 +685,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
 
         :return: The created Detector object
         """
@@ -696,6 +698,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             patience_time=patience_time,
             pipeline_config=pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.BOUNDING_BOX
 
@@ -718,6 +721,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a text recognition detector that can read specified spans of text from images.
@@ -742,6 +746,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
 
         :return: The created Detector object
         """
@@ -754,6 +762,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             patience_time=patience_time,
             pipeline_config=pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.TEXT
         mode_config = TextModeConfiguration()

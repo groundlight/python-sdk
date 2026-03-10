@@ -169,3 +169,84 @@ def test_create_detector_without_priming_group_id(gl: Groundlight, mock_detector
     # Verify priming_group_id was not set (None or not present)
     assert not hasattr(detector_creation_input, 'priming_group_id') or detector_creation_input.priming_group_id is None
     assert isinstance(detector, Detector)
+
+
+def test_create_bounding_box_detector_passes_priming_group_id(mock_detector_api):
+    """Test that priming_group_id is passed through when creating a bounding box detector."""
+    from groundlight import ExperimentalApi
+
+    gl_exp = ExperimentalApi()
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    # Update mock response for bounding box detector
+    mock_detector_response = mock.MagicMock()
+    mock_detector_response.to_dict.return_value = {
+        "id": "det_testbbox",
+        "name": "test bbox detector",
+        "query": "Draw boxes around dogs",
+        "type": "bounding_box",
+        "created_at": "2024-01-01T00:00:00Z",
+        "group_name": "default",
+        "confidence_threshold": 0.9,
+        "mode": "BOUNDING_BOX",
+        "mode_configuration": {"class_name": "dog", "max_num_bboxes": 10},
+    }
+    mock_detector_api.return_value.create_detector.return_value = mock_detector_response
+
+    detector = gl_exp.create_bounding_box_detector(
+        name="test bbox detector",
+        query="Draw boxes around dogs",
+        class_name="dog",
+        priming_group_id=priming_group_id,
+    )
+
+    # Verify the API was called
+    assert mock_detector_api.return_value.create_detector.called
+
+    # Get the detector_creation_input that was passed to the API
+    call_args = mock_detector_api.return_value.create_detector.call_args
+    detector_creation_input = call_args[0][0]
+
+    # Verify priming_group_id was set correctly
+    assert detector_creation_input.priming_group_id == priming_group_id
+    assert isinstance(detector, Detector)
+
+
+def test_create_text_recognition_detector_passes_priming_group_id(mock_detector_api):
+    """Test that priming_group_id is passed through when creating a text recognition detector."""
+    from groundlight import ExperimentalApi
+
+    gl_exp = ExperimentalApi()
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    # Update mock response for text recognition detector
+    mock_detector_response = mock.MagicMock()
+    mock_detector_response.to_dict.return_value = {
+        "id": "det_testtext",
+        "name": "test text detector",
+        "query": "Read the text",
+        "type": "text",
+        "created_at": "2024-01-01T00:00:00Z",
+        "group_name": "default",
+        "confidence_threshold": 0.9,
+        "mode": "TEXT",
+        "mode_configuration": {},
+    }
+    mock_detector_api.return_value.create_detector.return_value = mock_detector_response
+
+    detector = gl_exp.create_text_recognition_detector(
+        name="test text detector",
+        query="Read the text",
+        priming_group_id=priming_group_id,
+    )
+
+    # Verify the API was called
+    assert mock_detector_api.return_value.create_detector.called
+
+    # Get the detector_creation_input that was passed to the API
+    call_args = mock_detector_api.return_value.create_detector.call_args
+    detector_creation_input = call_args[0][0]
+
+    # Verify priming_group_id was set correctly
+    assert detector_creation_input.priming_group_id == priming_group_id
+    assert isinstance(detector, Detector)
