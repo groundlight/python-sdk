@@ -352,6 +352,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         A helper function to prepare the input for creating a detector. Individual create_detector
@@ -372,6 +373,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             patience_time = float(patience_time)
         if patience_time:
             detector_creation_input.patience_time = patience_time
+        if priming_group_id is not None:
+            detector_creation_input.priming_group_id = priming_group_id
         return detector_creation_input
 
     def create_detector(  # noqa: PLR0913
@@ -386,6 +389,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         class_names: Optional[Union[List[str], str]] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Create a new Detector with a given name and query.
@@ -443,6 +447,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         metadata later by calling `get_detector()`.
         :param class_names: The name or names of the class to use for the detector. Only used for multi-class
                         and counting detectors.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
 
         :return: The created Detector object
         """
@@ -458,6 +463,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                priming_group_id=priming_group_id,
             )
         if mode == ModeEnum.COUNT:
             if class_names is None:
@@ -473,6 +479,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                priming_group_id=priming_group_id,
             )
         if mode == ModeEnum.MULTI_CLASS:
             if class_names is None:
@@ -488,6 +495,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
                 metadata=metadata,
+                priming_group_id=priming_group_id,
             )
         raise ValueError(
             f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi"
@@ -1557,6 +1565,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a counting detector that can count objects in images up to a specified maximum count.
@@ -1595,6 +1604,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
 
         :return: The created Detector object
         """
@@ -1607,6 +1617,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             patience_time=patience_time,
             pipeline_config=pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.COUNT
 
@@ -1629,6 +1640,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a binary detector with the given name and query.
@@ -1656,6 +1668,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             patience_time=patience_time,
             pipeline_config=pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
@@ -1671,6 +1684,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a multiclass detector with the given name and query.
@@ -1705,6 +1719,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
 
         :return: The created Detector object
         """
@@ -1717,6 +1732,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             patience_time=patience_time,
             pipeline_config=pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)

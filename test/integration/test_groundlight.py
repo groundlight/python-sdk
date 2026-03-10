@@ -937,3 +937,24 @@ def test_delete_detector(gl: Groundlight):
     fake_detector_id = "det_fake123456789"
     with pytest.raises(NotFoundError):
         gl.delete_detector(fake_detector_id)  # type: ignore
+
+
+def test_create_detector_with_invalid_priming_group_id(gl: Groundlight):
+    """
+    Test that creating a detector with a non-existent priming_group_id returns an appropriate error.
+    """
+    name = f"Test invalid priming {datetime.utcnow()}"
+    query = "Is there a dog?"
+    pipeline_config = "never-review"
+    priming_group_id = "prgrp_nonexistent12345678901234567890"
+
+    with pytest.raises(NotFoundException) as exc_info:
+        gl.create_detector(
+            name=name,
+            query=query,
+            pipeline_config=pipeline_config,
+            priming_group_id=priming_group_id,
+        )
+
+    # Verify the error message mentions PrimingGroup
+    assert "PrimingGroup" in str(exc_info.value)
