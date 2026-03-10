@@ -399,7 +399,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         Text recognition detectors are in Beta, and can be created through the
         ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` method.
-        Bounding box detectors can be created using the :meth:`create_bounding_box_detector` method.
 
         **Example usage**::
 
