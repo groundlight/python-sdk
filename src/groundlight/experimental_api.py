@@ -19,7 +19,6 @@ from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
@@ -650,6 +649,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         Creates a bounding box detector that can detect objects in images up to a specified maximum number of bounding
         boxes.
 
+        This method is now available in the base Groundlight class and is maintained here for backward compatibility.
+
         **Example usage**::
 
             gl = ExperimentalApi()
@@ -689,10 +690,12 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         :return: The created Detector object
         """
-
-        detector_creation_input = self._prep_create_detector(
+        # Delegate to the parent class implementation
+        return super().create_bounding_box_detector(
             name=name,
             query=query,
+            class_name=class_name,
+            max_num_bboxes=max_num_bboxes,
             group_name=group_name,
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
@@ -700,16 +703,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             metadata=metadata,
             priming_group_id=priming_group_id,
         )
-        detector_creation_input.mode = ModeEnum.BOUNDING_BOX
-
-        if max_num_bboxes is None:
-            mode_config = BoundingBoxModeConfiguration(class_name=class_name)
-        else:
-            mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
-
-        detector_creation_input.mode_configuration = mode_config
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
 
     def create_text_recognition_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
