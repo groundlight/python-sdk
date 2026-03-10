@@ -97,6 +97,10 @@ class DetectorCreationInputRequest(ModelNormal):
             "max_length": 1362,
             "min_length": 1,
         },
+        ("priming_group_id",): {
+            "max_length": 44,
+            "min_length": 1,
+        },
     }
 
     @cached_property
@@ -164,6 +168,10 @@ class DetectorCreationInputRequest(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "priming_group_id": (
+                str,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -180,6 +188,7 @@ class DetectorCreationInputRequest(ModelNormal):
         "metadata": "metadata",  # noqa: E501
         "mode": "mode",  # noqa: E501
         "mode_configuration": "mode_configuration",  # noqa: E501
+        "priming_group_id": "priming_group_id",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -233,6 +242,7 @@ class DetectorCreationInputRequest(ModelNormal):
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            priming_group_id (str, none_type): ID of an existing PrimingGroup to associate with this detector (optional).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -330,6 +340,7 @@ class DetectorCreationInputRequest(ModelNormal):
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            priming_group_id (str, none_type): ID of an existing PrimingGroup to associate with this detector (optional).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

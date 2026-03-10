@@ -62,6 +62,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
         metadata="metadata_example",
         mode=None,
         mode_configuration=None,
+        priming_group_id="priming_group_id_example",
     ) # DetectorCreationInputRequest | 
 
     # example passing only required values which don't have defaults set

@@ -1084,6 +1084,13 @@ components:
           - $ref: '#/components/schemas/TextModeConfiguration'
           - $ref: '#/components/schemas/BoundingBoxModeConfiguration'
           nullable: true
+        priming_group_id:
+          type: string
+          nullable: true
+          minLength: 1
+          description: ID of an existing PrimingGroup to associate with this detector
+            (optional).
+          maxLength: 44
       required:
       - name
       - query

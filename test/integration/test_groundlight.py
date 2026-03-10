@@ -937,3 +937,165 @@ def test_delete_detector(gl: Groundlight):
     fake_detector_id = "det_fake123456789"
     with pytest.raises(NotFoundError):
         gl.delete_detector(fake_detector_id)  # type: ignore
+
+
+def test_create_detector_with_priming_group_id(gl: Groundlight):
+    """
+    Test creating a detector with a priming_group_id parameter.
+    """
+    name = f"Test priming group {datetime.utcnow()}"
+    query = "Is there a dog?"
+    pipeline_config = "never-review"
+    # Using a sample priming group ID format
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    detector = gl.create_detector(
+        name=name,
+        query=query,
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert str(detector)
+    assert isinstance(detector, Detector)
+    # Note: priming_group_id might not be returned in the detector object
+    # depending on the API implementation
+
+
+def test_create_binary_detector_with_priming_group_id(gl: Groundlight):
+    """
+    Test creating a binary detector with a priming_group_id parameter.
+    """
+    name = f"Test binary priming {datetime.utcnow()}"
+    query = "Is there a cat?"
+    pipeline_config = "never-review"
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    detector = gl.create_binary_detector(
+        name=name,
+        query=query,
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert str(detector)
+    assert isinstance(detector, Detector)
+
+
+def test_create_counting_detector_with_priming_group_id(gl: Groundlight):
+    """
+    Test creating a counting detector with a priming_group_id parameter.
+    """
+    name = f"Test counting priming {datetime.utcnow()}"
+    query = "How many dogs are present?"
+    class_name = "dog"
+    pipeline_config = "never-review"
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    detector = gl.create_counting_detector(
+        name=name,
+        query=query,
+        class_name=class_name,
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert str(detector)
+    assert isinstance(detector, Detector)
+    assert detector.mode == ModeEnum.COUNT
+
+
+def test_create_multiclass_detector_with_priming_group_id(gl: Groundlight):
+    """
+    Test creating a multiclass detector with a priming_group_id parameter.
+    """
+    name = f"Test multiclass priming {datetime.utcnow()}"
+    query = "What type of animal is this?"
+    class_names = ["dog", "cat", "bird"]
+    pipeline_config = "never-review"
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    detector = gl.create_multiclass_detector(
+        name=name,
+        query=query,
+        class_names=class_names,
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert str(detector)
+    assert isinstance(detector, Detector)
+    assert detector.mode == ModeEnum.MULTI_CLASS
+
+
+def test_create_detector_with_priming_group_id_and_all_params(gl: Groundlight):
+    """
+    Test creating a detector with priming_group_id along with all other parameters.
+    """
+    name = f"Test full priming {datetime.utcnow()}"
+    query = "Is there a dog?"
+    group_name = "Test group"
+    confidence_threshold = 0.825
+    patience_time = 300  # seconds
+    pipeline_config = "never-review"
+    metadata = {"location": "test-lab", "experiment": "priming-test"}
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+
+    detector = gl.create_detector(
+        name=name,
+        query=query,
+        group_name=group_name,
+        confidence_threshold=confidence_threshold,
+        patience_time=patience_time,
+        pipeline_config=pipeline_config,
+        metadata=metadata,
+        priming_group_id=priming_group_id,
+    )
+    assert isinstance(detector, Detector)
+    assert detector.name == name
+    assert detector.query == query
+    assert detector.group_name == group_name
+    assert detector.confidence_threshold == confidence_threshold
+    assert detector.metadata == metadata
+
+
+def test_create_detector_modes_with_priming_group_id(gl: Groundlight):
+    """
+    Test creating detectors in different modes with priming_group_id.
+    """
+    priming_group_id = "prgrp_test123456789012345678901234567890"
+    pipeline_config = "never-review"
+
+    # Test binary mode
+    name_binary = f"Test binary mode priming {datetime.utcnow()}"
+    binary_detector = gl.create_detector(
+        name=name_binary,
+        query="Is there a dog?",
+        mode=ModeEnum.BINARY,
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert isinstance(binary_detector, Detector)
+    assert binary_detector.mode == ModeEnum.BINARY
+
+    # Test count mode
+    name_count = f"Test count mode priming {datetime.utcnow()}"
+    count_detector = gl.create_detector(
+        name=name_count,
+        query="How many dogs?",
+        mode=ModeEnum.COUNT,
+        class_names="dog",
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert isinstance(count_detector, Detector)
+    assert count_detector.mode == ModeEnum.COUNT
+
+    # Test multiclass mode
+    name_multi = f"Test multiclass mode priming {datetime.utcnow()}"
+    multi_detector = gl.create_detector(
+        name=name_multi,
+        query="What animal?",
+        mode=ModeEnum.MULTI_CLASS,
+        class_names=["dog", "cat", "bird"],
+        pipeline_config=pipeline_config,
+        priming_group_id=priming_group_id,
+    )
+    assert isinstance(multi_detector, Detector)
+    assert multi_detector.mode == ModeEnum.MULTI_CLASS

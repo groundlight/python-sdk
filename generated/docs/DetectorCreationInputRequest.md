@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **metadata** | **str** | Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding. | [optional] 
 **mode** | **bool, date, datetime, dict, float, int, list, str, none_type** | Mode in which this detector will work.  * &#x60;BINARY&#x60; - BINARY * &#x60;COUNT&#x60; - COUNT * &#x60;MULTI_CLASS&#x60; - MULTI_CLASS * &#x60;TEXT&#x60; - TEXT * &#x60;BOUNDING_BOX&#x60; - BOUNDING_BOX | [optional] 
 **mode_configuration** | **bool, date, datetime, dict, float, int, list, str, none_type** |  | [optional] 
+**priming_group_id** | **str, none_type** | ID of an existing PrimingGroup to associate with this detector (optional). | [optional] 
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
