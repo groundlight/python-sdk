@@ -102,9 +102,7 @@ class RootEdgeConfig(BaseModel):
             if existing is None:
                 self.edge_inference_configs[config.name] = config
             elif existing is not config:
-                raise ValueError(
-                    f"A different inference config named '{config.name}' is already registered."
-                )
+                raise ValueError(f"A different inference config named '{config.name}' is already registered.")
             config_name = config.name
         else:
             config_name = edge_inference_config
@@ -113,10 +111,12 @@ class RootEdgeConfig(BaseModel):
                     f"Edge inference config '{config_name}' not defined. "
                     f"Available configs: {list(self.edge_inference_configs.keys())}"
                 )
-        self.detectors.append(DetectorConfig(
-            detector_id=detector_id,
-            edge_inference_config=config_name,
-        ))
+        self.detectors.append(
+            DetectorConfig(
+                detector_id=detector_id,
+                edge_inference_config=config_name,
+            )
+        )
 
 
 # Preset inference configs matching the standard edge-endpoint defaults.
