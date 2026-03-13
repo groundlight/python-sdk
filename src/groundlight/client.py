@@ -60,6 +60,19 @@ logger = logging.getLogger("groundlight.sdk")
 # It used to take >8 min to timeout to a bad IP address
 DEFAULT_REQUEST_TIMEOUT = 10  # seconds
 
+# Default urllib3 transport-level retry policy.  Handles stale/dead pooled
+# connections (RemoteDisconnected) that occur when the server (ALB / nginx)
+# closes an idle keep-alive connection before the client reuses it.
+DEFAULT_HTTP_TRANSPORT_RETRY = Retry(
+    total=3,
+    connect=3,
+    read=3,
+    redirect=3,
+    backoff_factor=0.2,
+    allowed_methods=None,  # retry all HTTP methods including POST
+    raise_on_status=False,  # let the SDK's own status-code handling run
+)
+
 
 class GroundlightClientError(Exception):
     pass
@@ -157,9 +170,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         # Specify the endpoint
         self.endpoint = sanitize_endpoint_url(endpoint)
         self.configuration = Configuration(host=self.endpoint)
-        if http_transport_retries is not None:
-            # Once we upgrade openapitools to ^7.7.0, retries can be passed into the constructor of Configuration above.
-            self.configuration.retries = http_transport_retries
+        # Once we upgrade openapitools to ^7.7.0, retries can be passed into the constructor of Configuration above.
+        self.configuration.retries = (
+            http_transport_retries if http_transport_retries is not None else DEFAULT_HTTP_TRANSPORT_RETRY
+        )
 
         if not api_token:
             try:
