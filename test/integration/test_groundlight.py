@@ -128,6 +128,19 @@ def test_create_detector_with_pipeline_config(gl: Groundlight):
     assert isinstance(_detector, Detector)
 
 
+def test_create_detector_with_edge_pipeline_config(gl: Groundlight):
+    name = f"Test edge-pipeline-config {datetime.utcnow()}"
+    query = "Is there a dog (edge-config)?"
+    _detector = gl.create_detector(
+        name=name,
+        query=query,
+        pipeline_config="never-review",
+        edge_pipeline_config="generic-cached-timm-efficientnetv2s-knn",
+    )
+    assert str(_detector)
+    assert isinstance(_detector, Detector)
+
+
 def test_create_detector_with_confidence_threshold(gl: Groundlight):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
