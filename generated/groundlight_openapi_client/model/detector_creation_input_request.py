@@ -93,6 +93,9 @@ class DetectorCreationInputRequest(ModelNormal):
         ("pipeline_config",): {
             "max_length": 100,
         },
+        ("edge_pipeline_config",): {
+            "max_length": 100,
+        },
         ("metadata",): {
             "max_length": 1362,
             "min_length": 1,
@@ -145,6 +148,10 @@ class DetectorCreationInputRequest(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "edge_pipeline_config": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "metadata": (str,),  # noqa: E501
             "mode": (
                 bool,
@@ -185,6 +192,7 @@ class DetectorCreationInputRequest(ModelNormal):
         "confidence_threshold": "confidence_threshold",  # noqa: E501
         "patience_time": "patience_time",  # noqa: E501
         "pipeline_config": "pipeline_config",  # noqa: E501
+        "edge_pipeline_config": "edge_pipeline_config",  # noqa: E501
         "metadata": "metadata",  # noqa: E501
         "mode": "mode",  # noqa: E501
         "mode_configuration": "mode_configuration",  # noqa: E501
@@ -239,6 +247,7 @@ class DetectorCreationInputRequest(ModelNormal):
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
             patience_time (float): How long Groundlight will attempt to generate a confident prediction. [optional] if omitted the server will use the default value of 30.0  # noqa: E501
             pipeline_config (str, none_type): (Advanced usage) Configuration needed to instantiate a prediction pipeline.. [optional]  # noqa: E501
+            edge_pipeline_config (str, none_type): (Advanced usage) Configuration for the edge inference pipeline. If not specified, the mode's default edge pipeline is used.. [optional]  # noqa: E501
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
@@ -337,6 +346,7 @@ class DetectorCreationInputRequest(ModelNormal):
             confidence_threshold (float): If the detector's prediction is below this confidence threshold, send the image query for human review.. [optional] if omitted the server will use the default value of 0.9  # noqa: E501
             patience_time (float): How long Groundlight will attempt to generate a confident prediction. [optional] if omitted the server will use the default value of 30.0  # noqa: E501
             pipeline_config (str, none_type): (Advanced usage) Configuration needed to instantiate a prediction pipeline.. [optional]  # noqa: E501
+            edge_pipeline_config (str, none_type): (Advanced usage) Configuration for the edge inference pipeline. If not specified, the mode's default edge pipeline is used.. [optional]  # noqa: E501
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501

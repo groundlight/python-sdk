@@ -59,6 +59,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
         confidence_threshold=0.9,
         patience_time=30.0,
         pipeline_config="pipeline_config_example",
+        edge_pipeline_config="edge_pipeline_config_example",
         metadata="metadata_example",
         mode=None,
         mode_configuration=None,

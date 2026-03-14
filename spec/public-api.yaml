@@ -1058,6 +1058,12 @@ components:
           description: (Advanced usage) Configuration needed to instantiate a prediction
             pipeline.
           maxLength: 100
+        edge_pipeline_config:
+          type: string
+          nullable: true
+          description: (Advanced usage) Configuration for the edge inference pipeline.
+            If not specified, the mode's default edge pipeline is used.
+          maxLength: 100
         metadata:
           type: string
           minLength: 1
