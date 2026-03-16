@@ -89,9 +89,7 @@ class DetectorsConfig(BaseModel):
                 raise ValueError(f"Edge inference config '{detector_config.edge_inference_config}' not defined.")
         return self
 
-    def add_detector(
-        self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]
-    ) -> None:
+    def add_detector(self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]) -> None:
         detector_id = detector.id if isinstance(detector, Detector) else detector
         if any(d.detector_id == detector_id for d in self.detectors):
             raise ValueError(f"A detector with ID '{detector_id}' already exists.")
@@ -135,9 +133,7 @@ class EdgeEndpointConfig(BaseModel):
         )
         return self
 
-    def add_detector(
-        self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]
-    ) -> None:
+    def add_detector(self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]) -> None:
         detectors_config = DetectorsConfig(
             edge_inference_configs=self.edge_inference_configs,
             detectors=self.detectors,
