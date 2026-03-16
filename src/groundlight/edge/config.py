@@ -86,9 +86,7 @@ class DetectorsConfig(BaseModel):
     def validate_inference_configs(self):
         for name, config in self.edge_inference_configs.items():
             if name != config.name:
-                raise ValueError(
-                    f"Edge inference config key '{name}' must match InferenceConfig.name '{config.name}'."
-                )
+                raise ValueError(f"Edge inference config key '{name}' must match InferenceConfig.name '{config.name}'.")
 
         seen_detector_ids = set()
         duplicate_detector_ids = set()
