@@ -24,10 +24,10 @@ class InferenceConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     name: str = Field(..., exclude=True, description="A unique name for this inference config preset.")
-    enabled: bool = Field(  # TODO investigate and update the functionality of this option
+    enabled: bool = Field(
         default=True, description="Whether the edge endpoint should accept image queries for this detector."
     )
-    api_token: Union[str, None] = Field(
+    api_token: Optional[str] = Field(
         default=None, description="API token used to fetch the inference model for this detector."
     )
     always_return_edge_prediction: bool = Field(
@@ -74,6 +74,63 @@ class DetectorConfig(BaseModel):
     edge_inference_config: str = Field(..., description="Config for edge inference.")
 
 
+def _validate_detector_config_state(
+    edge_inference_configs: dict[str, InferenceConfig], detectors: list[DetectorConfig]
+) -> None:
+    for name, config in edge_inference_configs.items():
+        if name != config.name:
+            raise ValueError(f"Edge inference config key '{name}' must match InferenceConfig.name '{config.name}'.")
+
+    seen_detector_ids = set()
+    duplicate_detector_ids = set()
+    for detector_config in detectors:
+        detector_id = detector_config.detector_id
+        if detector_id in seen_detector_ids:
+            duplicate_detector_ids.add(detector_id)
+        else:
+            seen_detector_ids.add(detector_id)
+    if duplicate_detector_ids:
+        duplicates = ", ".join(sorted(duplicate_detector_ids))
+        raise ValueError(f"Duplicate detector IDs are not allowed: {duplicates}.")
+
+    for detector_config in detectors:
+        if detector_config.edge_inference_config not in edge_inference_configs:
+            raise ValueError(f"Edge inference config '{detector_config.edge_inference_config}' not defined.")
+
+
+def _add_detector_to_state(
+    edge_inference_configs: dict[str, InferenceConfig],
+    detectors: list[DetectorConfig],
+    detector: Union[str, Detector],
+    edge_inference_config: Union[str, InferenceConfig],
+) -> DetectorConfig:
+    detector_id = detector.id if isinstance(detector, Detector) else detector
+    if any(existing.detector_id == detector_id for existing in detectors):
+        raise ValueError(f"A detector with ID '{detector_id}' already exists.")
+    if isinstance(edge_inference_config, InferenceConfig):
+        config = edge_inference_config
+        existing = edge_inference_configs.get(config.name)
+        if existing is None:
+            edge_inference_configs[config.name] = config
+        elif existing != config:
+            raise ValueError(f"A different inference config named '{config.name}' is already registered.")
+        config_name = config.name
+    else:
+        config_name = edge_inference_config
+        if config_name not in edge_inference_configs:
+            raise ValueError(
+                f"Edge inference config '{config_name}' not defined. "
+                f"Available configs: {list(edge_inference_configs.keys())}"
+            )
+
+    detector_config = DetectorConfig(
+        detector_id=detector_id,
+        edge_inference_config=config_name,
+    )
+    detectors.append(detector_config)
+    return detector_config
+
+
 class DetectorsConfig(BaseModel):
     """
     Detector and inference-config mappings for edge inference.
@@ -84,54 +141,11 @@ class DetectorsConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_inference_configs(self):
-        for name, config in self.edge_inference_configs.items():
-            if name != config.name:
-                raise ValueError(
-                    f"Edge inference config key '{name}' must match InferenceConfig.name '{config.name}'."
-                )
-
-        seen_detector_ids = set()
-        duplicate_detector_ids = set()
-        for detector_config in self.detectors:
-            detector_id = detector_config.detector_id
-            if detector_id in seen_detector_ids:
-                duplicate_detector_ids.add(detector_id)
-            else:
-                seen_detector_ids.add(detector_id)
-        if duplicate_detector_ids:
-            duplicates = ", ".join(sorted(duplicate_detector_ids))
-            raise ValueError(f"Duplicate detector IDs are not allowed: {duplicates}.")
-
-        for detector_config in self.detectors:
-            if detector_config.edge_inference_config not in self.edge_inference_configs:
-                raise ValueError(f"Edge inference config '{detector_config.edge_inference_config}' not defined.")
+        _validate_detector_config_state(self.edge_inference_configs, self.detectors)
         return self
 
     def add_detector(self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]) -> None:
-        detector_id = detector.id if isinstance(detector, Detector) else detector
-        if any(d.detector_id == detector_id for d in self.detectors):
-            raise ValueError(f"A detector with ID '{detector_id}' already exists.")
-        if isinstance(edge_inference_config, InferenceConfig):
-            config = edge_inference_config
-            existing = self.edge_inference_configs.get(config.name)
-            if existing is None:
-                self.edge_inference_configs[config.name] = config
-            elif existing != config:
-                raise ValueError(f"A different inference config named '{config.name}' is already registered.")
-            config_name = config.name
-        else:
-            config_name = edge_inference_config
-            if config_name not in self.edge_inference_configs:
-                raise ValueError(
-                    f"Edge inference config '{config_name}' not defined. "
-                    f"Available configs: {list(self.edge_inference_configs.keys())}"
-                )
-        self.detectors.append(
-            DetectorConfig(
-                detector_id=detector_id,
-                edge_inference_config=config_name,
-            )
-        )
+        _add_detector_to_state(self.edge_inference_configs, self.detectors, detector, edge_inference_config)
 
 
 class EdgeEndpointConfig(BaseModel):
@@ -145,20 +159,11 @@ class EdgeEndpointConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_inference_configs(self):
-        DetectorsConfig(
-            edge_inference_configs=self.edge_inference_configs,
-            detectors=self.detectors,
-        )
+        _validate_detector_config_state(self.edge_inference_configs, self.detectors)
         return self
 
     def add_detector(self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]) -> None:
-        detectors_config = DetectorsConfig(
-            edge_inference_configs=self.edge_inference_configs,
-            detectors=self.detectors,
-        )
-        detectors_config.add_detector(detector, edge_inference_config)
-        self.edge_inference_configs = detectors_config.edge_inference_configs
-        self.detectors = detectors_config.detectors
+        _add_detector_to_state(self.edge_inference_configs, self.detectors, detector, edge_inference_config)
 
     @classmethod
     def from_detectors_config(
@@ -170,9 +175,6 @@ class EdgeEndpointConfig(BaseModel):
             edge_inference_configs=copied_config.edge_inference_configs,
             detectors=copied_config.detectors,
         )
-
-
-EdgeInferenceConfig = InferenceConfig
 
 
 # Preset inference configs matching the standard edge-endpoint defaults.

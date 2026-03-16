@@ -3,10 +3,9 @@ from .config import (
     DISABLED,
     EDGE_ANSWERS_WITH_ESCALATION,
     NO_CLOUD,
-    DetectorsConfig,
     DetectorConfig,
+    DetectorsConfig,
     EdgeEndpointConfig,
-    EdgeInferenceConfig,
     GlobalConfig,
     InferenceConfig,
 )
@@ -19,7 +18,6 @@ __all__ = [
     "DetectorsConfig",
     "DetectorConfig",
     "EdgeEndpointConfig",
-    "EdgeInferenceConfig",
     "GlobalConfig",
     "InferenceConfig",
 ]
