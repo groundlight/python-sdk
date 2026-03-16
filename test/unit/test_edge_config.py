@@ -1,4 +1,5 @@
 import pytest
+
 from groundlight.edge import (
     DEFAULT,
     EDGE_ANSWERS_WITH_ESCALATION,
@@ -7,6 +8,9 @@ from groundlight.edge import (
     EdgeEndpointConfig,
     InferenceConfig,
 )
+
+ONE_DETECTOR = 1
+TWO_DETECTORS = 2
 
 
 def test_edge_endpoint_config_is_not_subclass_of_detectors_config():
@@ -32,7 +36,7 @@ def test_add_detector_allows_equivalent_named_inference_config():
         ),
     )
 
-    assert len(detectors_config.detectors) == 2
+    assert len(detectors_config.detectors) == TWO_DETECTORS
     assert list(detectors_config.edge_inference_configs.keys()) == ["custom_config"]
 
 
@@ -64,8 +68,8 @@ def test_from_detectors_config_copies_detector_data():
     config = EdgeEndpointConfig.from_detectors_config(detectors_config)
     detectors_config.add_detector("det_2", DEFAULT)
 
-    assert len(config.detectors) == 1
-    assert len(detectors_config.detectors) == 2
+    assert len(config.detectors) == ONE_DETECTOR
+    assert len(detectors_config.detectors) == TWO_DETECTORS
 
 
 def test_inference_config_validation_errors():
