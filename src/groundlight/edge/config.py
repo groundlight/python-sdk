@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from model import Detector
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -16,7 +16,7 @@ class GlobalConfig(BaseModel):
     )
 
 
-class EdgeInferenceConfig(BaseModel):
+class InferenceConfig(BaseModel):
     """
     Configuration for edge inference on a specific detector.
     """
@@ -27,7 +27,7 @@ class EdgeInferenceConfig(BaseModel):
     enabled: bool = Field(  # TODO investigate and update the functionality of this option
         default=True, description="Whether the edge endpoint should accept image queries for this detector."
     )
-    api_token: str | None = Field(
+    api_token: Union[str, None] = Field(
         default=None, description="API token used to fetch the inference model for this detector."
     )
     always_return_edge_prediction: bool = Field(
@@ -74,13 +74,12 @@ class DetectorConfig(BaseModel):
     edge_inference_config: str = Field(..., description="Config for edge inference.")
 
 
-class RootEdgeConfig(BaseModel):
+class DetectorsConfig(BaseModel):
     """
-    Root configuration for edge inference.
+    Detector and inference-config mappings for edge inference.
     """
 
-    global_config: GlobalConfig = Field(default_factory=GlobalConfig)
-    edge_inference_configs: dict[str, EdgeInferenceConfig] = Field(default_factory=dict)
+    edge_inference_configs: dict[str, InferenceConfig] = Field(default_factory=dict)
     detectors: list[DetectorConfig] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -91,17 +90,17 @@ class RootEdgeConfig(BaseModel):
         return self
 
     def add_detector(
-        self, detector: Union[str, Detector], edge_inference_config: Union[str, EdgeInferenceConfig]
+        self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]
     ) -> None:
         detector_id = detector.id if isinstance(detector, Detector) else detector
         if any(d.detector_id == detector_id for d in self.detectors):
             raise ValueError(f"A detector with ID '{detector_id}' already exists.")
-        if isinstance(edge_inference_config, EdgeInferenceConfig):
+        if isinstance(edge_inference_config, InferenceConfig):
             config = edge_inference_config
             existing = self.edge_inference_configs.get(config.name)
             if existing is None:
                 self.edge_inference_configs[config.name] = config
-            elif existing is not config:
+            elif existing != config:
                 raise ValueError(f"A different inference config named '{config.name}' is already registered.")
             config_name = config.name
         else:
@@ -119,16 +118,59 @@ class RootEdgeConfig(BaseModel):
         )
 
 
+class EdgeEndpointConfig(BaseModel):
+    """
+    Top-level edge endpoint configuration.
+    """
+
+    global_config: GlobalConfig = Field(default_factory=GlobalConfig)
+    edge_inference_configs: dict[str, InferenceConfig] = Field(default_factory=dict)
+    detectors: list[DetectorConfig] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_inference_configs(self):
+        DetectorsConfig(
+            edge_inference_configs=self.edge_inference_configs,
+            detectors=self.detectors,
+        )
+        return self
+
+    def add_detector(
+        self, detector: Union[str, Detector], edge_inference_config: Union[str, InferenceConfig]
+    ) -> None:
+        detectors_config = DetectorsConfig(
+            edge_inference_configs=self.edge_inference_configs,
+            detectors=self.detectors,
+        )
+        detectors_config.add_detector(detector, edge_inference_config)
+        self.edge_inference_configs = detectors_config.edge_inference_configs
+        self.detectors = detectors_config.detectors
+
+    @classmethod
+    def from_detectors_config(
+        cls, detectors_config: "DetectorsConfig", global_config: Optional[GlobalConfig] = None
+    ) -> "EdgeEndpointConfig":
+        copied_config = detectors_config.model_copy(deep=True)
+        return cls(
+            global_config=global_config or GlobalConfig(),
+            edge_inference_configs=copied_config.edge_inference_configs,
+            detectors=copied_config.detectors,
+        )
+
+
+EdgeInferenceConfig = InferenceConfig
+
+
 # Preset inference configs matching the standard edge-endpoint defaults.
-DEFAULT = EdgeInferenceConfig(name="default")
-EDGE_WITH_ESCALATION = EdgeInferenceConfig(
-    name="edge_with_escalation",
+DEFAULT = InferenceConfig(name="default")
+EDGE_ANSWERS_WITH_ESCALATION = InferenceConfig(
+    name="edge_answers_with_escalation",
     always_return_edge_prediction=True,
     min_time_between_escalations=2.0,
 )
-NO_CLOUD = EdgeInferenceConfig(
+NO_CLOUD = InferenceConfig(
     name="no_cloud",
     always_return_edge_prediction=True,
     disable_cloud_escalation=True,
 )
-DISABLED = EdgeInferenceConfig(name="disabled", enabled=False)
+DISABLED = InferenceConfig(name="disabled", enabled=False)
