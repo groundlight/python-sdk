@@ -84,6 +84,24 @@ class DetectorsConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_inference_configs(self):
+        for name, config in self.edge_inference_configs.items():
+            if name != config.name:
+                raise ValueError(
+                    f"Edge inference config key '{name}' must match InferenceConfig.name '{config.name}'."
+                )
+
+        seen_detector_ids = set()
+        duplicate_detector_ids = set()
+        for detector_config in self.detectors:
+            detector_id = detector_config.detector_id
+            if detector_id in seen_detector_ids:
+                duplicate_detector_ids.add(detector_id)
+            else:
+                seen_detector_ids.add(detector_id)
+        if duplicate_detector_ids:
+            duplicates = ", ".join(sorted(duplicate_detector_ids))
+            raise ValueError(f"Duplicate detector IDs are not allowed: {duplicates}.")
+
         for detector_config in self.detectors:
             if detector_config.edge_inference_config not in self.edge_inference_configs:
                 raise ValueError(f"Edge inference config '{detector_config.edge_inference_config}' not defined.")

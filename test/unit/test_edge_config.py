@@ -51,6 +51,35 @@ def test_add_detector_rejects_different_named_inference_config():
         )
 
 
+def test_constructor_rejects_duplicate_detector_ids():
+    with pytest.raises(ValueError, match="Duplicate detector IDs"):
+        DetectorsConfig(
+            edge_inference_configs={"default": DEFAULT},
+            detectors=[
+                {"detector_id": "det_1", "edge_inference_config": "default"},
+                {"detector_id": "det_1", "edge_inference_config": "default"},
+            ],
+        )
+
+
+def test_constructor_rejects_mismatched_inference_config_key_and_name():
+    with pytest.raises(ValueError, match="must match InferenceConfig.name"):
+        DetectorsConfig(
+            edge_inference_configs={"default": InferenceConfig(name="not_default")},
+            detectors=[],
+        )
+
+
+def test_constructor_accepts_matching_inference_config_key_and_name():
+    config = DetectorsConfig(
+        edge_inference_configs={"default": InferenceConfig(name="default")},
+        detectors=[{"detector_id": "det_1", "edge_inference_config": "default"}],
+    )
+
+    assert list(config.edge_inference_configs.keys()) == ["default"]
+    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
 def test_edge_endpoint_config_add_detector_delegates_to_detectors_logic():
     config = EdgeEndpointConfig()
     config.add_detector("det_1", NO_CLOUD)
