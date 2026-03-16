@@ -100,7 +100,7 @@ from groundlight import Groundlight, Detector, ImageQuery
 gl = Groundlight()
 detector: Detector = gl.get_or_create_detector(
     name="eagle-detector",
-    query="Are the baby eagles being fed??",
+    query="Are the baby eagles being fed?",
 )
 
 # Big Bear Bald Eagle Nest livestream
@@ -124,7 +124,7 @@ print(iq)
 
 Run the code using `python ask.py`. The code will submit an image from the live-stream to the Groundlight API and print the result:
 ```
-Is there an eagle visible? -- Answer: YES with confidence=0.988
+Are the baby eagles being fed? -- Answer: YES with confidence=0.988
 
 ImageQuery(
     id='iq_2pL5wwlefaOnFNQx1X6awTOd119',
