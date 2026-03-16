@@ -1,5 +1,4 @@
 import pytest
-
 from groundlight.edge import (
     DEFAULT,
     EDGE_ANSWERS_WITH_ESCALATION,
