@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from model import Detector
 from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
@@ -21,6 +21,7 @@ class InferenceConfig(BaseModel):
     Configuration for edge inference on a specific detector.
     """
 
+    # Keep shared presets immutable (DEFAULT/NO_CLOUD/etc.) so one mutation cannot globally change behavior.
     model_config = ConfigDict(frozen=True)
 
     name: str = Field(..., exclude=True, description="A unique name for this inference config preset.")
@@ -129,7 +130,7 @@ class DetectorsConfig(BaseModel):
         )
 
 
-    def to_payload(self) -> dict[str, object]:
+    def to_payload(self) -> dict[str, Any]:
         """Return flattened detector payload used by edge-endpoint config HTTP APIs."""
         return {
             "edge_inference_configs": {

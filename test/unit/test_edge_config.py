@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
+from model import Detector, DetectorTypeEnum
+
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -11,10 +13,7 @@ from groundlight.edge import (
     GlobalConfig,
     InferenceConfig,
 )
-from model import Detector, DetectorTypeEnum
 
-TWO_DETECTORS = 2
-THREE_DETECTORS = 3
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
 
@@ -23,7 +22,7 @@ def _make_detector(detector_id: str) -> Detector:
     return Detector(
         id=detector_id,
         type=DetectorTypeEnum.detector,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         name="test detector",
         query="Is there a dog?",
         group_name="default",
@@ -56,7 +55,7 @@ def test_add_detector_allows_equivalent_named_inference_config():
         ),
     )
 
-    assert len(detectors_config.detectors) == TWO_DETECTORS
+    assert len(detectors_config.detectors) == 2  # noqa: PLR2004
     assert list(detectors_config.edge_inference_configs.keys()) == ["custom_config"]
 
 
@@ -69,6 +68,14 @@ def test_add_detector_rejects_different_named_inference_config():
             "det_2",
             InferenceConfig(name="custom_config", always_return_edge_prediction=True),
         )
+
+
+def test_add_detector_rejects_duplicate_detector_id():
+    detectors_config = DetectorsConfig()
+    detectors_config.add_detector("det_1", DEFAULT)
+
+    with pytest.raises(ValueError, match="already exists"):
+        detectors_config.add_detector("det_1", DEFAULT)
 
 
 def test_constructor_rejects_duplicate_detector_ids():
@@ -100,6 +107,14 @@ def test_constructor_accepts_matching_inference_config_key_and_name():
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
 
 
+def test_constructor_rejects_undefined_inference_config_reference():
+    with pytest.raises(ValueError, match="not defined"):
+        DetectorsConfig(
+            edge_inference_configs={},
+            detectors=[{"detector_id": "det_1", "edge_inference_config": "does_not_exist"}],
+        )
+
+
 def test_edge_endpoint_config_add_detector_delegates_to_detectors_logic():
     config = EdgeEndpointConfig()
     config.add_detector("det_1", NO_CLOUD)
@@ -116,8 +131,6 @@ def test_add_detector_accepts_detector_object():
 
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
 
-
-
 def test_disabled_preset_can_be_used():
     config = EdgeEndpointConfig()
     config.add_detector("det_1", DISABLED)
@@ -133,7 +146,7 @@ def test_detectors_config_to_payload_shape():
 
     payload = detectors_config.to_payload()
 
-    assert len(payload["detectors"]) == TWO_DETECTORS
+    assert len(payload["detectors"]) == 2  # noqa: PLR2004
     assert set(payload["edge_inference_configs"].keys()) == {"default", "no_cloud"}
 
 
@@ -149,7 +162,7 @@ def test_model_dump_shape_for_edge_endpoint_config():
 
     assert payload["global_config"]["refresh_rate"] == CUSTOM_REFRESH_RATE
     assert payload["global_config"]["confident_audit_rate"] == CUSTOM_AUDIT_RATE
-    assert len(payload["detectors"]) == THREE_DETECTORS
+    assert len(payload["detectors"]) == 3  # noqa: PLR2004
     assert set(payload["edge_inference_configs"].keys()) == {"default", "edge_answers_with_escalation", "no_cloud"}
 
 
