@@ -640,6 +640,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         priming_group_id: Optional[str] = None,
     ) -> Detector:
@@ -665,6 +666,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -683,6 +686,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
             priming_group_id=priming_group_id,
         )

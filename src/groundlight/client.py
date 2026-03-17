@@ -352,6 +352,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         priming_group_id: Optional[str] = None,
     ) -> Detector:
@@ -363,6 +364,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             name=name,
             query=query,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
         )
         if group_name is not None:
             detector_creation_input.group_name = group_name
@@ -388,6 +390,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         class_names: Optional[Union[List[str], str]] = None,
         priming_group_id: Optional[str] = None,
@@ -441,6 +444,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -464,6 +469,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 confidence_threshold=confidence_threshold,
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
                 priming_group_id=priming_group_id,
             )
@@ -480,6 +486,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 confidence_threshold=confidence_threshold,
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
                 priming_group_id=priming_group_id,
             )
@@ -496,6 +503,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 confidence_threshold=confidence_threshold,
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
                 priming_group_id=priming_group_id,
             )
@@ -511,6 +519,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
@@ -541,6 +550,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                                   the query may be sent for human review.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -567,6 +578,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 group_name=group_name,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
             )
 
@@ -1566,6 +1578,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         priming_group_id: Optional[str] = None,
     ) -> Detector:
@@ -1602,6 +1615,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -1620,6 +1635,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
             priming_group_id=priming_group_id,
         )
@@ -1643,6 +1659,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         priming_group_id: Optional[str] = None,
     ) -> Detector:
@@ -1671,6 +1688,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
             priming_group_id=priming_group_id,
         )
@@ -1687,6 +1705,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         priming_group_id: Optional[str] = None,
     ) -> Detector:
@@ -1719,6 +1738,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -1737,6 +1758,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
             priming_group_id=priming_group_id,
         )
@@ -1757,6 +1779,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         priming_group_id: Optional[str] = None,
     ) -> Detector:
@@ -1795,6 +1818,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -1813,6 +1838,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
             priming_group_id=priming_group_id,
         )
