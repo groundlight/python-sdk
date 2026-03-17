@@ -117,7 +117,6 @@ def test_add_detector_accepts_detector_object():
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
 
 
-
 def test_disabled_preset_can_be_used():
     config = EdgeEndpointConfig()
     config.add_detector("det_1", DISABLED)

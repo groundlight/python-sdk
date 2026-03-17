@@ -124,10 +124,7 @@ class DetectorsConfig(BaseModel):
                 f"A different inference config named '{edge_inference_config.name}' is already registered."
             )
 
-        self.detectors.append(
-            DetectorConfig(detector_id=detector_id, edge_inference_config=edge_inference_config.name)
-        )
-
+        self.detectors.append(DetectorConfig(detector_id=detector_id, edge_inference_config=edge_inference_config.name))
 
     def to_payload(self) -> dict[str, object]:
         """Return flattened detector payload used by edge-endpoint config HTTP APIs."""
