@@ -1,8 +1,6 @@
 from datetime import datetime
 
 import pytest
-from model import Detector, DetectorTypeEnum
-
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -13,6 +11,7 @@ from groundlight.edge import (
     GlobalConfig,
     InferenceConfig,
 )
+from model import Detector, DetectorTypeEnum
 
 TWO_DETECTORS = 2
 THREE_DETECTORS = 3
