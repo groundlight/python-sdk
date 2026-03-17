@@ -1,8 +1,6 @@
 from datetime import datetime, timezone
 
 import pytest
-from model import Detector, DetectorTypeEnum
-
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -13,6 +11,7 @@ from groundlight.edge import (
     GlobalConfig,
     InferenceConfig,
 )
+from model import Detector, DetectorTypeEnum
 
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
