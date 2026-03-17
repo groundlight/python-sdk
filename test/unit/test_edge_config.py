@@ -1,8 +1,6 @@
 from datetime import datetime, timezone
 
 import pytest
-from model import Detector, DetectorTypeEnum
-
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -13,6 +11,7 @@ from groundlight.edge import (
     GlobalConfig,
     InferenceConfig,
 )
+from model import Detector, DetectorTypeEnum
 
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
@@ -130,6 +129,8 @@ def test_add_detector_accepts_detector_object():
     config.add_detector(_make_detector("det_1"), DEFAULT)
 
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
 def test_disabled_preset_can_be_used():
     config = EdgeEndpointConfig()
     config.add_detector("det_1", DISABLED)
