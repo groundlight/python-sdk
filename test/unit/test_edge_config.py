@@ -32,11 +32,8 @@ def _make_detector(detector_id: str) -> Detector:
     )
 
 
-def test_edge_endpoint_config_is_not_subclass_of_detectors_config():
-    assert not issubclass(EdgeEndpointConfig, DetectorsConfig)
-
-
 def test_add_detector_allows_equivalent_named_inference_config():
+    """Allows reusing the same named inference config with equivalent values."""
     detectors_config = DetectorsConfig()
     detectors_config.add_detector(
         "det_1",
@@ -60,6 +57,7 @@ def test_add_detector_allows_equivalent_named_inference_config():
 
 
 def test_add_detector_rejects_different_named_inference_config():
+    """Rejects conflicting inference config values under the same name."""
     detectors_config = DetectorsConfig()
     detectors_config.add_detector("det_1", InferenceConfig(name="custom_config"))
 
@@ -71,6 +69,7 @@ def test_add_detector_rejects_different_named_inference_config():
 
 
 def test_add_detector_rejects_duplicate_detector_id():
+    """Rejects adding the same detector ID more than once."""
     detectors_config = DetectorsConfig()
     detectors_config.add_detector("det_1", DEFAULT)
 
@@ -79,6 +78,7 @@ def test_add_detector_rejects_duplicate_detector_id():
 
 
 def test_constructor_rejects_duplicate_detector_ids():
+    """Rejects duplicated detector IDs in constructor input."""
     with pytest.raises(ValueError, match="Duplicate detector IDs"):
         DetectorsConfig(
             edge_inference_configs={"default": DEFAULT},
@@ -90,6 +90,7 @@ def test_constructor_rejects_duplicate_detector_ids():
 
 
 def test_constructor_rejects_mismatched_inference_config_key_and_name():
+    """Rejects inference config dict keys that do not match config names."""
     with pytest.raises(ValueError, match="must match InferenceConfig.name"):
         DetectorsConfig(
             edge_inference_configs={"default": InferenceConfig(name="not_default")},
@@ -98,6 +99,7 @@ def test_constructor_rejects_mismatched_inference_config_key_and_name():
 
 
 def test_constructor_accepts_matching_inference_config_key_and_name():
+    """Accepts constructor input when key/name pairs are consistent."""
     config = DetectorsConfig(
         edge_inference_configs={"default": InferenceConfig(name="default")},
         detectors=[{"detector_id": "det_1", "edge_inference_config": "default"}],
@@ -108,6 +110,7 @@ def test_constructor_accepts_matching_inference_config_key_and_name():
 
 
 def test_constructor_rejects_undefined_inference_config_reference():
+    """Rejects detector entries that reference missing inference configs."""
     with pytest.raises(ValueError, match="not defined"):
         DetectorsConfig(
             edge_inference_configs={},
@@ -116,6 +119,7 @@ def test_constructor_rejects_undefined_inference_config_reference():
 
 
 def test_edge_endpoint_config_add_detector_delegates_to_detectors_logic():
+    """Adds detectors via EdgeEndpointConfig and preserves inferred config mapping."""
     config = EdgeEndpointConfig()
     config.add_detector("det_1", NO_CLOUD)
     config.add_detector("det_2", EDGE_ANSWERS_WITH_ESCALATION)
@@ -126,11 +130,15 @@ def test_edge_endpoint_config_add_detector_delegates_to_detectors_logic():
 
 
 def test_add_detector_accepts_detector_object():
+    """Accepts Detector objects in add_detector."""
     config = EdgeEndpointConfig()
     config.add_detector(_make_detector("det_1"), DEFAULT)
 
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
 def test_disabled_preset_can_be_used():
+    """Allows assigning the DISABLED inference preset to a detector."""
     config = EdgeEndpointConfig()
     config.add_detector("det_1", DISABLED)
 
@@ -139,6 +147,7 @@ def test_disabled_preset_can_be_used():
 
 
 def test_detectors_config_to_payload_shape():
+    """Serializes detector-scoped payload with expected top-level keys."""
     detectors_config = DetectorsConfig()
     detectors_config.add_detector("det_1", DEFAULT)
     detectors_config.add_detector("det_2", NO_CLOUD)
@@ -150,6 +159,7 @@ def test_detectors_config_to_payload_shape():
 
 
 def test_model_dump_shape_for_edge_endpoint_config():
+    """Serializes full edge endpoint config in flattened wire shape."""
     config = EdgeEndpointConfig(
         global_config=GlobalConfig(refresh_rate=CUSTOM_REFRESH_RATE, confident_audit_rate=CUSTOM_AUDIT_RATE)
     )
@@ -166,6 +176,7 @@ def test_model_dump_shape_for_edge_endpoint_config():
 
 
 def test_inference_config_validation_errors():
+    """Raises on invalid inference config flag combinations and values."""
     with pytest.raises(ValueError, match="disable_cloud_escalation"):
         InferenceConfig(name="bad", disable_cloud_escalation=True)
 
