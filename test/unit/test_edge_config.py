@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+
 import pytest
 from groundlight.edge import (
     DEFAULT,
@@ -177,13 +178,11 @@ def test_detectors_config_to_payload_shape():
 
 def test_edge_endpoint_config_accepts_top_level_payload_shape():
     """Accepts the top-level edge endpoint payload shape used by APIs."""
-    config = EdgeEndpointConfig.model_validate(
-        {
-            "global_config": {"refresh_rate": CUSTOM_REFRESH_RATE},
-            "edge_inference_configs": {"default": {"enabled": True}},
-            "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
-        }
-    )
+    config = EdgeEndpointConfig.model_validate({
+        "global_config": {"refresh_rate": CUSTOM_REFRESH_RATE},
+        "edge_inference_configs": {"default": {"enabled": True}},
+        "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+    })
 
     assert config.global_config.refresh_rate == CUSTOM_REFRESH_RATE
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
@@ -191,8 +190,7 @@ def test_edge_endpoint_config_accepts_top_level_payload_shape():
 
 def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
     """Parses edge-endpoint YAML text using EdgeEndpointConfig.from_yaml."""
-    config = EdgeEndpointConfig.from_yaml(
-        yaml_str="""
+    config = EdgeEndpointConfig.from_yaml(yaml_str="""
         global_config:
           refresh_rate: 15.0
         edge_inference_configs:
@@ -201,8 +199,7 @@ def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
         detectors:
           - detector_id: det_1
             edge_inference_config: default
-        """
-    )
+        """)
 
     assert config.global_config.refresh_rate == 15.0
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]

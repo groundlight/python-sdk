@@ -1,9 +1,9 @@
 from typing import Any, Optional, Union
 
+import yaml
 from model import Detector
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self
-import yaml
 
 
 class GlobalConfig(BaseModel):
@@ -213,6 +213,7 @@ class EdgeEndpointConfig(ConfigBase):
     def from_payload(cls, payload: dict[str, Any]) -> "EdgeEndpointConfig":
         """Construct an EdgeEndpointConfig from a payload dictionary."""
         return cls.model_validate(payload)
+
 
 # Preset inference configs matching the standard edge-endpoint defaults.
 DEFAULT = InferenceConfig(name="default")
