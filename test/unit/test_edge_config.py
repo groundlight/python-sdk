@@ -15,6 +15,7 @@ from model import Detector, DetectorTypeEnum
 
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
+REFRESH_RATE_SECONDS = 15.0
 
 
 def _make_detector(detector_id: str) -> Detector:
@@ -178,11 +179,13 @@ def test_detectors_config_to_payload_shape():
 
 def test_edge_endpoint_config_accepts_top_level_payload_shape():
     """Accepts the top-level edge endpoint payload shape used by APIs."""
-    config = EdgeEndpointConfig.model_validate({
-        "global_config": {"refresh_rate": CUSTOM_REFRESH_RATE},
-        "edge_inference_configs": {"default": {"enabled": True}},
-        "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
-    })
+    config = EdgeEndpointConfig.model_validate(
+        {
+            "global_config": {"refresh_rate": CUSTOM_REFRESH_RATE},
+            "edge_inference_configs": {"default": {"enabled": True}},
+            "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+        }
+    )
 
     assert config.global_config.refresh_rate == CUSTOM_REFRESH_RATE
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
@@ -190,18 +193,20 @@ def test_edge_endpoint_config_accepts_top_level_payload_shape():
 
 def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
     """Parses edge-endpoint YAML text using EdgeEndpointConfig.from_yaml."""
-    config = EdgeEndpointConfig.from_yaml(yaml_str="""
+    config = EdgeEndpointConfig.from_yaml(
+        yaml_str=f"""
         global_config:
-          refresh_rate: 15.0
+          refresh_rate: {REFRESH_RATE_SECONDS}
         edge_inference_configs:
           default:
             enabled: true
         detectors:
           - detector_id: det_1
             edge_inference_config: default
-        """)
+        """
+    )
 
-    assert config.global_config.refresh_rate == 15.0
+    assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
 
 
@@ -272,14 +277,14 @@ def test_edge_endpoint_config_from_payload_round_trip():
 def test_edge_endpoint_config_from_payload_accepts_literal_payload():
     """Constructs EdgeEndpointConfig from a literal payload dictionary."""
     payload = {
-        "global_config": {"refresh_rate": 15.0},
+        "global_config": {"refresh_rate": REFRESH_RATE_SECONDS},
         "edge_inference_configs": {"default": {"enabled": True}},
         "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
     }
 
     config = EdgeEndpointConfig.from_payload(payload)
 
-    assert config.global_config.refresh_rate == 15.0
+    assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert config.edge_inference_configs["default"].name == "default"
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
 
