@@ -2,14 +2,12 @@ from typing import Any, Callable
 from unittest import mock
 
 import pytest
-from conftest import generate_test_detector_name
 from groundlight import Groundlight
 from groundlight.binary_labels import Label
 from groundlight.internalapi import InternalApiError
 from model import Detector
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
-DETECTOR_NAME = generate_test_detector_name()
 TOTAL_RETRIES = 3
 STATUS_CODES = range(500, 505)
 IMAGE_FILE = "test/assets/dog.jpeg"
@@ -22,30 +20,35 @@ def groundlight_fixture() -> Groundlight:
     return gl
 
 
+@pytest.fixture(name="detector_name")
+def detector_name_fixture(generate_test_detector_name) -> str:
+    return generate_test_detector_name("test detector")
+
+
 @pytest.fixture(name="detector")
-def detector_fixture(gl: Groundlight) -> Detector:
+def detector_fixture(gl: Groundlight, detector_name: str) -> Detector:
     return gl.get_or_create_detector(
-        name=DETECTOR_NAME, query="Is there a dog?", confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD
+        name=detector_name, query="Is there a dog?", confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD
     )
 
 
-def test_create_detector_attempts_retries(gl: Groundlight):
+def test_create_detector_attempts_retries(gl: Groundlight, detector_name: str):
     run_test(
         mocked_call="urllib3.PoolManager.request",
         api_method=gl.create_detector,
         expected_call_counts=TOTAL_RETRIES + 1,
-        name=DETECTOR_NAME,
+        name=detector_name,
         query="Is there a dog?",
         confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
     )
 
 
-def test_get_or_create_detector_attempts_retries(gl: Groundlight):
+def test_get_or_create_detector_attempts_retries(gl: Groundlight, detector_name: str):
     run_test(
         mocked_call="requests.request",
         api_method=gl.get_or_create_detector,
         expected_call_counts=TOTAL_RETRIES + 1,
-        name=DETECTOR_NAME,
+        name=detector_name,
         query="Is there a dog?",
         confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
     )
@@ -60,12 +63,12 @@ def test_get_detector_attempts_retries(gl: Groundlight, detector: Detector):
     )
 
 
-def test_get_detector_by_name_attempts_retries(gl: Groundlight):
+def test_get_detector_by_name_attempts_retries(gl: Groundlight, detector_name: str):
     run_test(
         mocked_call="requests.request",
         api_method=gl.get_detector_by_name,
         expected_call_counts=TOTAL_RETRIES + 1,
-        name=DETECTOR_NAME,
+        name=detector_name,
     )
 
 
@@ -75,12 +78,12 @@ def test_list_detectors_attempts_retries(gl: Groundlight):
     )
 
 
-def test_submit_image_query_attempts_retries(gl: Groundlight):
+def test_submit_image_query_attempts_retries(gl: Groundlight, detector_name: str):
     run_test(
         mocked_call="urllib3.PoolManager.request",
         api_method=gl.submit_image_query,
         expected_call_counts=TOTAL_RETRIES + 1,
-        detector=DETECTOR_NAME,
+        detector=detector_name,
         image=IMAGE_FILE,
         wait=1,
     )

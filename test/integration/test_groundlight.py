@@ -5,10 +5,9 @@ import json
 import random
 import string
 import time
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 
 import pytest
-from conftest import generate_test_detector_name
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
@@ -96,7 +95,7 @@ def test_create_groundlight_with_retries():
     assert gl.api_client.configuration.retries.total == retries.total
 
 
-def test_create_detector(gl: Groundlight):
+def test_create_detector(gl: Groundlight, generate_test_detector_name: Callable):
     name = generate_test_detector_name()
     query = "Is there a dog?"
     _detector = gl.create_detector(name=name, query=query)
@@ -117,7 +116,7 @@ def test_create_detector(gl: Groundlight):
     assert str(multiclass_detector)
 
 
-def test_create_detector_with_pipeline_config(gl: Groundlight):
+def test_create_detector_with_pipeline_config(gl: Groundlight, generate_test_detector_name: Callable):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
     name = generate_test_detector_name("Test never-review")
@@ -128,7 +127,7 @@ def test_create_detector_with_pipeline_config(gl: Groundlight):
     assert isinstance(_detector, Detector)
 
 
-def test_create_detector_with_edge_pipeline_config(gl: Groundlight):
+def test_create_detector_with_edge_pipeline_config(gl: Groundlight, generate_test_detector_name: Callable):
     name = generate_test_detector_name("Test edge-pipeline-config")
     query = "Is there a dog (edge-config)?"
     _detector = gl.create_detector(
@@ -141,7 +140,7 @@ def test_create_detector_with_edge_pipeline_config(gl: Groundlight):
     assert isinstance(_detector, Detector)
 
 
-def test_create_detector_with_confidence_threshold(gl: Groundlight):
+def test_create_detector_with_confidence_threshold(gl: Groundlight, generate_test_detector_name: Callable):
     # "never-review" is a special model that always returns the same result with 100% confidence.
     # It's useful for testing.
     name = generate_test_detector_name("Test with confidence")
@@ -197,7 +196,7 @@ def test_create_detector_with_confidence_threshold(gl: Groundlight):
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
-def test_create_detector_with_everything(gl: Groundlight):
+def test_create_detector_with_everything(gl: Groundlight, generate_test_detector_name: Callable):
     name = generate_test_detector_name()
     query = "Is there a dog?"
     group_name = "Test group"
@@ -232,7 +231,7 @@ def test_list_detectors(gl: Groundlight):
     assert isinstance(detectors, PaginatedDetectorList)
 
 
-def test_get_or_create_detector(gl: Groundlight):
+def test_get_or_create_detector(gl: Groundlight, generate_test_detector_name: Callable):
     # With a unique name, we should be creating a new detector.
     unique_name = generate_test_detector_name()
     query = "Is there a dog?"
@@ -410,7 +409,7 @@ def test_submit_image_query_with_low_request_timeout(gl: Groundlight, detector: 
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
-def test_create_detector_with_metadata(gl: Groundlight):
+def test_create_detector_with_metadata(gl: Groundlight, generate_test_detector_name: Callable):
     name = generate_test_detector_name()
     query = "Is there a dog?"
     metadata = generate_random_dict(target_size_bytes=200)
@@ -422,7 +421,7 @@ def test_create_detector_with_metadata(gl: Groundlight):
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
-def test_get_or_create_detector_with_metadata(gl: Groundlight):
+def test_get_or_create_detector_with_metadata(gl: Groundlight, generate_test_detector_name: Callable):
     unique_name = generate_test_detector_name()
     query = "Is there a dog?"
     metadata = generate_random_dict(target_size_bytes=200)
@@ -443,7 +442,7 @@ def test_get_or_create_detector_with_metadata(gl: Groundlight):
         [""],
     ],
 )
-def test_create_detector_with_invalid_metadata(gl: Groundlight, metadata_list: Any):
+def test_create_detector_with_invalid_metadata(gl: Groundlight, metadata_list: Any, generate_test_detector_name: Callable):
     name = generate_test_detector_name()
     query = "Is there a dog?"
 
@@ -627,7 +626,7 @@ def test_list_image_queries(gl: Groundlight):
             assert is_valid_display_result(image_query.result)
 
 
-def test_list_image_queries_with_filter(gl: Groundlight):
+def test_list_image_queries_with_filter(gl: Groundlight, generate_test_detector_name: Callable):
     # We want a fresh detector so we know exactly what image queries are associated with it
     detector = gl.create_detector(name=generate_test_detector_name(), query="Is there a dog?")
     image_query_yes = gl.ask_async(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
@@ -855,7 +854,7 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
     )
 
 
-def test_binary_detector(gl: Groundlight):
+def test_binary_detector(gl: Groundlight, generate_test_detector_name: Callable):
     """
     verify that we can create and submit to a binary detector
     """
@@ -866,7 +865,7 @@ def test_binary_detector(gl: Groundlight):
     assert binary_iq.result.label is not None
 
 
-def test_counting_detector(gl: Groundlight):
+def test_counting_detector(gl: Groundlight, generate_test_detector_name: Callable):
     """
     verify that we can create and submit to a counting detector
     """
@@ -877,7 +876,7 @@ def test_counting_detector(gl: Groundlight):
     assert count_iq.result.count is not None
 
 
-def test_counting_detector_async(gl: Groundlight):
+def test_counting_detector_async(gl: Groundlight, generate_test_detector_name: Callable):
     """
     verify that we can create and submit to a counting detector
     """
@@ -896,7 +895,7 @@ def test_counting_detector_async(gl: Groundlight):
     assert _image_query.result is not None
 
 
-def test_multiclass_detector(gl: Groundlight):
+def test_multiclass_detector(gl: Groundlight, generate_test_detector_name: Callable):
     """
     verify that we can create and submit to a multi-class detector
     """
@@ -911,7 +910,7 @@ def test_multiclass_detector(gl: Groundlight):
     assert mc_iq.result.label in class_names
 
 
-def test_delete_detector(gl: Groundlight):
+def test_delete_detector(gl: Groundlight, generate_test_detector_name: Callable):
     """
     Test deleting a detector by both ID and object, and verify proper error handling.
     """
@@ -952,7 +951,7 @@ def test_delete_detector(gl: Groundlight):
         gl.delete_detector(fake_detector_id)  # type: ignore
 
 
-def test_create_detector_with_invalid_priming_group_id(gl: Groundlight):
+def test_create_detector_with_invalid_priming_group_id(gl: Groundlight, generate_test_detector_name: Callable):
     """
     Test that creating a detector with a non-existent priming_group_id returns an appropriate error.
 

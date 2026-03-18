@@ -1,9 +1,8 @@
 import os
 import re
 import subprocess
+from typing import Callable
 from unittest.mock import patch
-
-from conftest import generate_test_detector_name
 
 
 def test_whoami():
@@ -24,7 +23,7 @@ def test_list_detector():
     assert completed_process.returncode == 0
 
 
-def test_detector_and_image_queries():
+def test_detector_and_image_queries(generate_test_detector_name: Callable):
     # test creating a detector
     test_detector_name = generate_test_detector_name("testdetector")
     completed_process = subprocess.run(

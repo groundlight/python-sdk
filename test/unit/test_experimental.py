@@ -1,12 +1,12 @@
 import time
+from typing import Callable
 
 import pytest
-from conftest import generate_test_detector_name
 from groundlight import ExperimentalApi
 from model import Detector, ImageQuery
 
 
-def test_detector_groups(gl_experimental: ExperimentalApi):
+def test_detector_groups(gl_experimental: ExperimentalApi, generate_test_detector_name: Callable):
     """
     verify that we can create a detector group and retrieve it
     """
@@ -30,7 +30,7 @@ def test_update_detector_confidence_threshold(gl_experimental: ExperimentalApi, 
     assert updated_detector.confidence_threshold == newer_confidence
 
 
-def test_update_detector_name(gl_experimental: ExperimentalApi, detector: Detector):
+def test_update_detector_name(gl_experimental: ExperimentalApi, detector: Detector, generate_test_detector_name: Callable):
     """
     verify that we can update the name of a detector
     """
@@ -40,7 +40,7 @@ def test_update_detector_name(gl_experimental: ExperimentalApi, detector: Detect
     assert updated_detector.name == new_name
 
 
-def test_update_detector_status(gl_experimental: ExperimentalApi):
+def test_update_detector_status(gl_experimental: ExperimentalApi, generate_test_detector_name: Callable):
     """
     verify that we can update the status of a detector
     """
@@ -53,7 +53,7 @@ def test_update_detector_status(gl_experimental: ExperimentalApi):
     assert updated_detector.status.value == "ON"
 
 
-def test_update_detector_escalation_type(gl_experimental: ExperimentalApi):
+def test_update_detector_escalation_type(gl_experimental: ExperimentalApi, generate_test_detector_name: Callable):
     """
     verify that we can update the escalation type of a detector
     """
@@ -90,7 +90,7 @@ def test_submit_multiple_rois(gl_experimental: ExperimentalApi, image_query_one:
     gl_experimental.add_label(image_query_one, 3, [roi] * 3)
 
 
-def test_text_recognition_detector(gl_experimental: ExperimentalApi):
+def test_text_recognition_detector(gl_experimental: ExperimentalApi, generate_test_detector_name: Callable):
     """
     verify that we can create and submit to a text recognition detector
     """
@@ -103,7 +103,7 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi):
     assert mc_iq.result.text is not None
 
 
-def test_bounding_box_detector(gl_experimental: ExperimentalApi):
+def test_bounding_box_detector(gl_experimental: ExperimentalApi, generate_test_detector_name: Callable):
     """
     Verify that we can create and submit to a bounding box detector
     """
@@ -117,7 +117,7 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi):
     assert bbox_iq.rois is not None
 
 
-def test_bounding_box_detector_async(gl_experimental: ExperimentalApi):
+def test_bounding_box_detector_async(gl_experimental: ExperimentalApi, generate_test_detector_name: Callable):
     """
     Verify that we can create and submit to a bounding box detector with ask_async
     """

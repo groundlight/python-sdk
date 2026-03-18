@@ -6,9 +6,15 @@ from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
 
-def generate_test_detector_name(prefix: str = "Test") -> str:
-    """Generates a unique detector name with a timestamp and random suffix to avoid collisions in parallel CI."""
+def _generate_test_detector_name(prefix: str = "Test") -> str:
+    """Generates a detector name with a timestamp and random suffix to ensure uniqueness."""
     return f"{prefix} {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}_{uuid4().hex[:8]}"
+
+
+@pytest.fixture(name="generate_test_detector_name")
+def fixture_test_detector_name():
+    """Fixture that provides a callable to generate unique detector names."""
+    return _generate_test_detector_name
 
 
 def pytest_configure(config):  # pylint: disable=unused-argument
@@ -33,7 +39,7 @@ def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
     query = "Is there a dog?"
     pipeline_config = "never-review"
-    return gl.create_detector(name=generate_test_detector_name(), query=query, pipeline_config=pipeline_config)
+    return gl.create_detector(name=_generate_test_detector_name(), query=query, pipeline_config=pipeline_config)
 
 
 @pytest.fixture(name="count_detector")
@@ -42,7 +48,7 @@ def fixture_count_detector(gl_experimental: ExperimentalApi) -> Detector:
     query = "How many dogs?"
     pipeline_config = "never-review-multi"  # always predicts 0
     return gl_experimental.create_counting_detector(
-        name=generate_test_detector_name(), query=query, class_name="dog", pipeline_config=pipeline_config
+        name=_generate_test_detector_name(), query=query, class_name="dog", pipeline_config=pipeline_config
     )
 
 
