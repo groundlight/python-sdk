@@ -30,7 +30,9 @@ def test_update_detector_confidence_threshold(gl_experimental: ExperimentalApi, 
     assert updated_detector.confidence_threshold == newer_confidence
 
 
-def test_update_detector_name(gl_experimental: ExperimentalApi, detector: Detector, generate_test_detector_name: Callable):
+def test_update_detector_name(
+    gl_experimental: ExperimentalApi, detector: Detector, generate_test_detector_name: Callable
+):
     """
     verify that we can update the name of a detector
     """

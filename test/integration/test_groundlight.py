@@ -442,7 +442,9 @@ def test_get_or_create_detector_with_metadata(gl: Groundlight, generate_test_det
         [""],
     ],
 )
-def test_create_detector_with_invalid_metadata(gl: Groundlight, metadata_list: Any, generate_test_detector_name: Callable):
+def test_create_detector_with_invalid_metadata(
+    gl: Groundlight, metadata_list: Any, generate_test_detector_name: Callable
+):
     name = generate_test_detector_name()
     query = "Is there a dog?"
 
