@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from typing import Callable
 
 import pytest
 from groundlight import ExperimentalApi
@@ -7,9 +7,9 @@ from groundlight_openapi_client.exceptions import NotFoundException
 
 
 @pytest.mark.skip(reason="This is an expensive test, reset may take some time")
-def test_reset_retry(gl_experimental: ExperimentalApi):
+def test_reset_retry(gl_experimental: ExperimentalApi, detector_name: Callable):
     # Reset the detector, retrying in case the reset is still ongoing
-    det = gl_experimental.create_detector(f"Test {datetime.utcnow()}", "test_query")
+    det = gl_experimental.create_detector(detector_name(), "test_query")
     iq = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     gl_experimental.reset_detector(det.id)
     success = False
@@ -27,10 +27,10 @@ def test_reset_retry(gl_experimental: ExperimentalApi):
 
 
 @pytest.mark.skip(reason="This test does not work with strong 0 shot models, enabled by default based on your account")
-def test_reset_training(gl_experimental: ExperimentalApi):
+def test_reset_training(gl_experimental: ExperimentalApi, detector_name: Callable):
     # If we reset a detector, we should have low confidence after the reset
     low_confidence_threshold = 0.6
-    det = gl_experimental.create_detector(f"Test {datetime.utcnow()}", "is this a cat")
+    det = gl_experimental.create_detector(detector_name(), "is this a cat")
     gl_experimental.reset_detector(det.id)
     iq = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg", human_review="NEVER")
     assert iq.result.confidence < low_confidence_threshold

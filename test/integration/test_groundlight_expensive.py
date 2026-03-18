@@ -7,7 +7,7 @@ We collect various expensive tests here. These tests should not be run regularly
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 import random
 import time
-from datetime import datetime
+from typing import Callable
 
 import pytest
 from groundlight import Groundlight
@@ -30,8 +30,8 @@ def fixture_gl() -> Groundlight:
 
 
 @pytest.mark.skip(reason="This test requires a human labeler who does not need to be in the testing loop")
-def test_human_label(gl: Groundlight):
-    detector = gl.create_detector(name=f"Test {datetime.utcnow()}", query="Is there a dog?")
+def test_human_label(gl: Groundlight, detector_name: Callable):
+    detector = gl.create_detector(name=detector_name(), query="Is there a dog?")
     img_query = gl.submit_image_query(
         detector=detector.id, image="test/assets/dog.jpeg", wait=60, human_review="ALWAYS"
     )
@@ -52,7 +52,7 @@ def test_human_label(gl: Groundlight):
 
 @pytest.mark.skip(reason="This test can block development depending on the state of the service")
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
-def test_detector_improvement(gl: Groundlight):
+def test_detector_improvement(gl: Groundlight, detector_name: Callable):
     # test that we get confidence improvement after sending images in
     # Pass two of each type of image in
     import time
@@ -61,7 +61,7 @@ def test_detector_improvement(gl: Groundlight):
 
     random.seed(2741)
 
-    name = f"Test test_detector_improvement {datetime.utcnow()}"  # Need a unique name
+    name = detector_name("Test test_detector_improvement")
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query)
 
@@ -122,11 +122,11 @@ def test_detector_improvement(gl: Groundlight):
 @pytest.mark.skip(
     reason="We don't yet have an SLA level to test ask_confident against, and the test is flakey as a result"
 )
-def test_ask_method_quality(gl: Groundlight, detector: Detector):
+def test_ask_method_quality(gl: Groundlight, detector: Detector, detector_name: Callable):
     # asks for some level of quality on how fast ask_ml is and that we will get a confident result from ask_confident
     fast_always_yes_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
     assert iq_is_answered(fast_always_yes_iq)
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
+    name = detector_name()
     query = "Is there a dog?"
     detector = gl.create_detector(name=name, query=query, confidence_threshold=0.8)
     fast_iq = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
