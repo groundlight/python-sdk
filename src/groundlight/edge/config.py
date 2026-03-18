@@ -1,11 +1,16 @@
 from typing import Any, Optional, Union
 
 from model import Detector
-from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self
+import yaml
 
 
 class GlobalConfig(BaseModel):
+    """Global runtime settings for edge-endpoint behavior."""
+
+    model_config = ConfigDict(extra="forbid")
+
     refresh_rate: float = Field(
         default=60.0,
         description="The interval (in seconds) at which the inference server checks for a new model binary update.",
@@ -22,7 +27,7 @@ class InferenceConfig(BaseModel):
     """
 
     # Keep shared presets immutable (DEFAULT/NO_CLOUD/etc.) so one mutation cannot globally change behavior.
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
     name: str = Field(..., exclude=True, description="A unique name for this inference config preset.")
     enabled: bool = Field(
@@ -71,17 +76,40 @@ class DetectorConfig(BaseModel):
     Configuration for a specific detector.
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     detector_id: str = Field(..., description="Detector ID")
     edge_inference_config: str = Field(..., description="Config for edge inference.")
 
 
-class DetectorsConfig(BaseModel):
-    """
-    Detector and inference-config mappings for edge inference.
-    """
+class ConfigBase(BaseModel):
+    """Shared detector/inference configuration behavior for edge config models."""
+
+    model_config = ConfigDict(extra="forbid")
 
     edge_inference_configs: dict[str, InferenceConfig] = Field(default_factory=dict)
     detectors: list[DetectorConfig] = Field(default_factory=list)
+
+    @field_validator("edge_inference_configs", mode="before")
+    @classmethod
+    def hydrate_inference_config_names(
+        cls, value: dict[str, InferenceConfig | dict[str, Any]] | None
+    ) -> dict[str, InferenceConfig | dict[str, Any]]:
+        """Hydrate InferenceConfig.name from payload mapping keys."""
+        if value is None:
+            return {}
+        if not isinstance(value, dict):
+            return value
+
+        hydrated_configs: dict[str, InferenceConfig | dict[str, Any]] = {}
+        for name, config in value.items():
+            if isinstance(config, InferenceConfig):
+                hydrated_configs[name] = config
+                continue
+            if not isinstance(config, dict):
+                raise TypeError("Each edge inference config must be an object.")
+            hydrated_configs[name] = {"name": name, **config}
+        return hydrated_configs
 
     @model_validator(mode="after")
     def validate_inference_configs(self):
@@ -128,7 +156,7 @@ class DetectorsConfig(BaseModel):
         self.detectors.append(DetectorConfig(detector_id=detector_id, edge_inference_config=edge_inference_config.name))
 
     def to_payload(self) -> dict[str, Any]:
-        """Return flattened detector payload used by edge-endpoint config HTTP APIs."""
+        """Return detector payload used by edge-endpoint config HTTP APIs."""
         return {
             "edge_inference_configs": {
                 name: config.model_dump() for name, config in self.edge_inference_configs.items()
@@ -137,36 +165,54 @@ class DetectorsConfig(BaseModel):
         }
 
 
-class EdgeEndpointConfig(BaseModel):
+class DetectorsConfig(ConfigBase):
+    """
+    Detector and inference-config mappings for edge inference.
+    """
+
+
+class EdgeEndpointConfig(ConfigBase):
     """
     Top-level edge endpoint configuration.
     """
 
     global_config: GlobalConfig = Field(default_factory=GlobalConfig)
-    detectors_config: DetectorsConfig = Field(default_factory=DetectorsConfig)
 
-    @property
-    def edge_inference_configs(self) -> dict[str, InferenceConfig]:
-        """Convenience accessor for detector inference config map."""
-        return self.detectors_config.edge_inference_configs
+    @classmethod
+    def from_yaml(
+        cls,
+        filename: Optional[str] = None,
+        yaml_str: Optional[str] = None,
+    ) -> "EdgeEndpointConfig":
+        """Create an EdgeEndpointConfig from a YAML filename or YAML string."""
+        if filename is None and yaml_str is None:
+            raise ValueError("Either filename or yaml_str must be provided.")
+        if filename is not None and yaml_str is not None:
+            raise ValueError("Only one of filename or yaml_str can be provided.")
+        if filename is not None:
+            if not filename.strip():
+                raise ValueError("filename must be a non-empty path when provided.")
+            with open(filename, "r") as f:
+                yaml_str = f.read()
 
-    @property
-    def detectors(self) -> list[DetectorConfig]:
-        """Convenience accessor for detector assignments."""
-        return self.detectors_config.detectors
+        yaml_text = yaml_str or ""
+        parsed = yaml.safe_load(yaml_text) or {}
+        return cls.model_validate(parsed)
 
-    @model_serializer(mode="plain")
-    def serialize(self):
-        """Serialize to the flattened shape expected by edge-endpoint configs."""
+    def to_payload(self) -> dict[str, Any]:
+        """Return the full edge-endpoint payload shape."""
         return {
             "global_config": self.global_config.model_dump(),
-            **self.detectors_config.to_payload(),
+            "edge_inference_configs": {
+                name: config.model_dump() for name, config in self.edge_inference_configs.items()
+            },
+            "detectors": [detector.model_dump() for detector in self.detectors],
         }
 
-    def add_detector(self, detector: Union[str, Detector], edge_inference_config: InferenceConfig) -> None:
-        """Add a detector with the given inference config. Accepts detector ID or Detector object."""
-        self.detectors_config.add_detector(detector, edge_inference_config)
-
+    @classmethod
+    def from_payload(cls, payload: dict[str, Any]) -> "EdgeEndpointConfig":
+        """Construct an EdgeEndpointConfig from a payload dictionary."""
+        return cls.model_validate(payload)
 
 # Preset inference configs matching the standard edge-endpoint defaults.
 DEFAULT = InferenceConfig(name="default")

@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-
 import pytest
 from groundlight.edge import (
     DEFAULT,
@@ -108,6 +107,25 @@ def test_constructor_accepts_matching_inference_config_key_and_name():
     assert [detector.detector_id for detector in config.detectors] == ["det_1"]
 
 
+def test_constructor_hydrates_inference_config_name_from_dict_key():
+    """Hydrates inference config names from payload dict keys."""
+    config = DetectorsConfig(
+        edge_inference_configs={"default": {"enabled": True}},
+        detectors=[{"detector_id": "det_1", "edge_inference_config": "default"}],
+    )
+
+    assert config.edge_inference_configs["default"].name == "default"
+
+
+def test_constructor_rejects_detector_map_input():
+    """Rejects detector maps and requires detector list payloads."""
+    with pytest.raises(ValueError):
+        DetectorsConfig(
+            edge_inference_configs={"default": {"enabled": True}},
+            detectors={"det_1": {"detector_id": "det_1", "edge_inference_config": "default"}},
+        )
+
+
 def test_constructor_rejects_undefined_inference_config_reference():
     """Rejects detector entries that reference missing inference configs."""
     with pytest.raises(ValueError, match="not defined"):
@@ -117,7 +135,7 @@ def test_constructor_rejects_undefined_inference_config_reference():
         )
 
 
-def test_edge_endpoint_config_add_detector_delegates_to_detectors_logic():
+def test_edge_endpoint_config_add_detector_uses_shared_config_logic():
     """Adds detectors via EdgeEndpointConfig and preserves inferred config mapping."""
     config = EdgeEndpointConfig()
     config.add_detector("det_1", NO_CLOUD)
@@ -157,8 +175,76 @@ def test_detectors_config_to_payload_shape():
     assert set(payload["edge_inference_configs"].keys()) == {"default", "no_cloud"}
 
 
+def test_edge_endpoint_config_accepts_top_level_payload_shape():
+    """Accepts the top-level edge endpoint payload shape used by APIs."""
+    config = EdgeEndpointConfig.model_validate(
+        {
+            "global_config": {"refresh_rate": CUSTOM_REFRESH_RATE},
+            "edge_inference_configs": {"default": {"enabled": True}},
+            "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+        }
+    )
+
+    assert config.global_config.refresh_rate == CUSTOM_REFRESH_RATE
+    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
+def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
+    """Parses edge-endpoint YAML text using EdgeEndpointConfig.from_yaml."""
+    config = EdgeEndpointConfig.from_yaml(
+        yaml_str="""
+        global_config:
+          refresh_rate: 15.0
+        edge_inference_configs:
+          default:
+            enabled: true
+        detectors:
+          - detector_id: det_1
+            edge_inference_config: default
+        """
+    )
+
+    assert config.global_config.refresh_rate == 15.0
+    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
+def test_edge_endpoint_config_from_yaml_accepts_filename(tmp_path):
+    """Parses edge-endpoint YAML from a file path."""
+    config_file = tmp_path / "edge-config.yaml"
+    config_file.write_text(
+        "global_config: {}\n"
+        "edge_inference_configs:\n"
+        "  default:\n"
+        "    enabled: true\n"
+        "detectors:\n"
+        "  - detector_id: det_1\n"
+        "    edge_inference_config: default\n"
+    )
+    config = EdgeEndpointConfig.from_yaml(filename=str(config_file))
+
+    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
+def test_edge_endpoint_config_from_yaml_requires_exactly_one_input():
+    """Rejects missing input and mixed filename/yaml_str input."""
+    with pytest.raises(ValueError, match="Either filename or yaml_str must be provided"):
+        EdgeEndpointConfig.from_yaml()
+
+    with pytest.raises(ValueError, match="Only one of filename or yaml_str can be provided"):
+        EdgeEndpointConfig.from_yaml(filename="a.yaml", yaml_str="global_config: {}")
+
+    with pytest.raises(ValueError, match="filename must be a non-empty path"):
+        EdgeEndpointConfig.from_yaml(filename=" ")
+
+
+def test_edge_endpoint_config_rejects_extra_top_level_fields():
+    """Rejects unknown top-level fields to avoid silent config drift."""
+    with pytest.raises(ValueError, match="Extra inputs are not permitted"):
+        EdgeEndpointConfig.model_validate({"global_config": {}, "unknown_field": True})
+
+
 def test_model_dump_shape_for_edge_endpoint_config():
-    """Serializes full edge endpoint config in flattened wire shape."""
+    """Serializes full edge endpoint config in wire payload shape."""
     config = EdgeEndpointConfig(
         global_config=GlobalConfig(refresh_rate=CUSTOM_REFRESH_RATE, confident_audit_rate=CUSTOM_AUDIT_RATE)
     )
@@ -166,12 +252,24 @@ def test_model_dump_shape_for_edge_endpoint_config():
     config.add_detector("det_2", EDGE_ANSWERS_WITH_ESCALATION)
     config.add_detector("det_3", NO_CLOUD)
 
-    payload = config.model_dump()
+    payload = config.to_payload()
 
     assert payload["global_config"]["refresh_rate"] == CUSTOM_REFRESH_RATE
     assert payload["global_config"]["confident_audit_rate"] == CUSTOM_AUDIT_RATE
     assert len(payload["detectors"]) == 3  # noqa: PLR2004
     assert set(payload["edge_inference_configs"].keys()) == {"default", "edge_answers_with_escalation", "no_cloud"}
+
+
+def test_edge_endpoint_config_from_payload_round_trip():
+    """Round-trips edge endpoint config through payload helpers."""
+    config = EdgeEndpointConfig()
+    config.add_detector("det_1", DEFAULT)
+    config.add_detector("det_2", NO_CLOUD)
+
+    payload = config.to_payload()
+    reconstructed = EdgeEndpointConfig.from_payload(payload)
+
+    assert reconstructed == config
 
 
 def test_inference_config_validation_errors():
