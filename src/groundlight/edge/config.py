@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from typing_extensions import Self
 
 
-class GlobalConfig(BaseModel):
+class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """Global runtime settings for edge-endpoint behavior."""
 
     model_config = ConfigDict(extra="forbid")
@@ -21,7 +21,7 @@ class GlobalConfig(BaseModel):
     )
 
 
-class InferenceConfig(BaseModel):
+class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """
     Configuration for edge inference on a specific detector.
     """
@@ -71,7 +71,7 @@ class InferenceConfig(BaseModel):
         return self
 
 
-class DetectorConfig(BaseModel):
+class DetectorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """
     Configuration for a specific detector.
     """
@@ -93,15 +93,15 @@ class ConfigBase(BaseModel):
     @field_validator("edge_inference_configs", mode="before")
     @classmethod
     def hydrate_inference_config_names(
-        cls, value: dict[str, InferenceConfig | dict[str, Any]] | None
-    ) -> dict[str, InferenceConfig | dict[str, Any]]:
+        cls, value: Optional[dict[str, Union[InferenceConfig, dict[str, Any]]]]
+    ) -> dict[str, Union[InferenceConfig, dict[str, Any]]]:
         """Hydrate InferenceConfig.name from payload mapping keys."""
         if value is None:
             return {}
         if not isinstance(value, dict):
             return value
 
-        hydrated_configs: dict[str, InferenceConfig | dict[str, Any]] = {}
+        hydrated_configs: dict[str, Union[InferenceConfig, dict[str, Any]]] = {}
         for name, config in value.items():
             if isinstance(config, InferenceConfig):
                 hydrated_configs[name] = config
@@ -187,7 +187,7 @@ class EdgeEndpointConfig(ConfigBase):
         if filename is not None:
             if not filename.strip():
                 raise ValueError("filename must be a non-empty path when provided.")
-            with open(filename, "r") as f:
+            with open(filename, "r", encoding="utf-8") as f:
                 yaml_str = f.read()
 
         yaml_text = yaml_str or ""
