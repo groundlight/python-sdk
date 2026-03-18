@@ -23,9 +23,9 @@ def test_list_detector():
     assert completed_process.returncode == 0
 
 
-def test_detector_and_image_queries(generate_test_detector_name: Callable):
+def test_detector_and_image_queries(detector_name: Callable):
     # test creating a detector
-    test_detector_name = generate_test_detector_name("testdetector")
+    test_detector_name = detector_name("testdetector")
     completed_process = subprocess.run(
         [
             "groundlight",
