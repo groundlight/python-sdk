@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any, Callable
 from unittest import mock
+from uuid import uuid4
 
 import pytest
 from groundlight import Groundlight
@@ -9,7 +10,7 @@ from groundlight.internalapi import InternalApiError
 from model import Detector
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
-DETECTOR_NAME = f"test detector_{datetime.utcnow().strftime('%Y=%m-%d %H:%M:%S')}"
+DETECTOR_NAME = f"test detector_{datetime.utcnow().strftime('%Y=%m-%d %H:%M:%S')}_{uuid4().hex[:8]}"
 TOTAL_RETRIES = 3
 STATUS_CODES = range(500, 505)
 IMAGE_FILE = "test/assets/dog.jpeg"
