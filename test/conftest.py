@@ -1,8 +1,14 @@
 from datetime import datetime
+from uuid import uuid4
 
 import pytest
 from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
+
+
+def generate_test_detector_name(prefix: str = "Test") -> str:
+    """Generates a unique detector name with a timestamp and random suffix to avoid collisions in parallel CI."""
+    return f"{prefix} {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}_{uuid4().hex[:8]}"
 
 
 def pytest_configure(config):  # pylint: disable=unused-argument
@@ -25,20 +31,18 @@ def fixture_gl() -> Groundlight:
 @pytest.fixture(name="detector")
 def fixture_detector(gl: Groundlight) -> Detector:
     """Creates a new Test detector."""
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "Is there a dog?"
     pipeline_config = "never-review"
-    return gl.create_detector(name=name, query=query, pipeline_config=pipeline_config)
+    return gl.create_detector(name=generate_test_detector_name(), query=query, pipeline_config=pipeline_config)
 
 
 @pytest.fixture(name="count_detector")
 def fixture_count_detector(gl_experimental: ExperimentalApi) -> Detector:
     """Creates a new Test detector."""
-    name = f"Test {datetime.utcnow()}"  # Need a unique name
     query = "How many dogs?"
     pipeline_config = "never-review-multi"  # always predicts 0
     return gl_experimental.create_counting_detector(
-        name=name, query=query, class_name="dog", pipeline_config=pipeline_config
+        name=generate_test_detector_name(), query=query, class_name="dog", pipeline_config=pipeline_config
     )
 
 

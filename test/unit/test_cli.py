@@ -1,8 +1,9 @@
 import os
 import re
 import subprocess
-from datetime import datetime
 from unittest.mock import patch
+
+from conftest import generate_test_detector_name
 
 
 def test_whoami():
@@ -25,7 +26,7 @@ def test_list_detector():
 
 def test_detector_and_image_queries():
     # test creating a detector
-    test_detector_name = f"testdetector {datetime.utcnow()}"
+    test_detector_name = generate_test_detector_name("testdetector")
     completed_process = subprocess.run(
         [
             "groundlight",

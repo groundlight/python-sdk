@@ -1,7 +1,7 @@
 import time
-from datetime import datetime, timezone
 
 import pytest
+from conftest import generate_test_detector_name
 from groundlight import ExperimentalApi
 from model import Detector, ImageQuery
 
@@ -10,7 +10,7 @@ def test_detector_groups(gl_experimental: ExperimentalApi):
     """
     verify that we can create a detector group and retrieve it
     """
-    name = f"Test {datetime.utcnow()}"
+    name = generate_test_detector_name()
     created_group = gl_experimental.create_detector_group(name)
     all_groups = gl_experimental.list_detector_groups()
     assert created_group in all_groups
@@ -34,7 +34,7 @@ def test_update_detector_name(gl_experimental: ExperimentalApi, detector: Detect
     """
     verify that we can update the name of a detector
     """
-    new_name = f"Test {datetime.utcnow()}"
+    new_name = generate_test_detector_name()
     gl_experimental.update_detector_name(detector.id, new_name)
     updated_detector = gl_experimental.get_detector(detector.id)
     assert updated_detector.name == new_name
@@ -44,7 +44,7 @@ def test_update_detector_status(gl_experimental: ExperimentalApi):
     """
     verify that we can update the status of a detector
     """
-    detector = gl_experimental.get_or_create_detector(f"test {datetime.utcnow()}", "Is there a dog?")
+    detector = gl_experimental.get_or_create_detector(generate_test_detector_name(), "Is there a dog?")
     gl_experimental.update_detector_status(detector.id, False)
     updated_detector = gl_experimental.get_detector(detector.id)
     assert updated_detector.status.value == "OFF"
@@ -57,7 +57,7 @@ def test_update_detector_escalation_type(gl_experimental: ExperimentalApi):
     """
     verify that we can update the escalation type of a detector
     """
-    detector = gl_experimental.get_or_create_detector(f"test {datetime.utcnow()}", "Is there a dog?")
+    detector = gl_experimental.get_or_create_detector(generate_test_detector_name(), "Is there a dog?")
     gl_experimental.update_detector_escalation_type(detector.id, "NO_HUMAN_LABELING")
     updated_detector = gl_experimental.get_detector(detector.id)
     updated_detector.escalation_type == "NO_HUMAN_LABELING"
@@ -94,7 +94,7 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi):
     """
     verify that we can create and submit to a text recognition detector
     """
-    name = f"Test {datetime.utcnow()}"
+    name = generate_test_detector_name()
     created_detector = gl_experimental.create_text_recognition_detector(
         name, "What is the date and time?", confidence_threshold=0.0
     )
@@ -107,7 +107,7 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi):
     """
     Verify that we can create and submit to a bounding box detector
     """
-    name = f"Test {datetime.now(timezone.utc)}"
+    name = generate_test_detector_name()
     created_detector = gl_experimental.create_bounding_box_detector(
         name, "Draw a bounding box around each dog in the image", "dog", confidence_threshold=0.0
     )
@@ -121,7 +121,7 @@ def test_bounding_box_detector_async(gl_experimental: ExperimentalApi):
     """
     Verify that we can create and submit to a bounding box detector with ask_async
     """
-    name = f"Test {datetime.now(timezone.utc)}"
+    name = generate_test_detector_name()
     created_detector = gl_experimental.create_bounding_box_detector(
         name, "Draw a bounding box around each dog in the image", "dog", confidence_threshold=0.0
     )
