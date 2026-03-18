@@ -106,9 +106,7 @@ def test_create_detector(gl: Groundlight, detector_name: Callable):
     ), "We expected the default confidence threshold to be used."
 
     # Test creating dectors with other modes
-    count_detector = gl.create_detector(
-        name=detector_name(), query=query, mode=ModeEnum.COUNT, class_names="dog"
-    )
+    count_detector = gl.create_detector(name=detector_name(), query=query, mode=ModeEnum.COUNT, class_names="dog")
     assert str(count_detector)
     multiclass_detector = gl.create_detector(
         name=detector_name(), query=query, mode=ModeEnum.MULTI_CLASS, class_names=["dog", "cat"]
