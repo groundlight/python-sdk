@@ -269,6 +269,21 @@ def test_edge_endpoint_config_from_payload_round_trip():
     assert reconstructed == config
 
 
+def test_edge_endpoint_config_from_payload_accepts_literal_payload():
+    """Constructs EdgeEndpointConfig from a literal payload dictionary."""
+    payload = {
+        "global_config": {"refresh_rate": 15.0},
+        "edge_inference_configs": {"default": {"enabled": True}},
+        "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+    }
+
+    config = EdgeEndpointConfig.from_payload(payload)
+
+    assert config.global_config.refresh_rate == 15.0
+    assert config.edge_inference_configs["default"].name == "default"
+    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+
+
 def test_inference_config_validation_errors():
     """Raises on invalid inference config flag combinations and values."""
     with pytest.raises(ValueError, match="disable_cloud_escalation"):

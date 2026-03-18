@@ -156,13 +156,8 @@ class ConfigBase(BaseModel):
         self.detectors.append(DetectorConfig(detector_id=detector_id, edge_inference_config=edge_inference_config.name))
 
     def to_payload(self) -> dict[str, Any]:
-        """Return detector payload used by edge-endpoint config HTTP APIs."""
-        return {
-            "edge_inference_configs": {
-                name: config.model_dump() for name, config in self.edge_inference_configs.items()
-            },
-            "detectors": [detector.model_dump() for detector in self.detectors],
-        }
+        """Return this config as a payload dictionary."""
+        return self.model_dump()
 
 
 class DetectorsConfig(ConfigBase):
@@ -198,16 +193,6 @@ class EdgeEndpointConfig(ConfigBase):
         yaml_text = yaml_str or ""
         parsed = yaml.safe_load(yaml_text) or {}
         return cls.model_validate(parsed)
-
-    def to_payload(self) -> dict[str, Any]:
-        """Return the full edge-endpoint payload shape."""
-        return {
-            "global_config": self.global_config.model_dump(),
-            "edge_inference_configs": {
-                name: config.model_dump() for name, config in self.edge_inference_configs.items()
-            },
-            "detectors": [detector.model_dump() for detector in self.detectors],
-        }
 
     @classmethod
     def from_payload(cls, payload: dict[str, Any]) -> "EdgeEndpointConfig":

@@ -1,5 +1,4 @@
 from .config import (
-    ConfigBase,
     DEFAULT,
     DISABLED,
     EDGE_ANSWERS_WITH_ESCALATION,
@@ -16,7 +15,6 @@ __all__ = [
     "DISABLED",
     "EDGE_ANSWERS_WITH_ESCALATION",
     "NO_CLOUD",
-    "ConfigBase",
     "DetectorsConfig",
     "DetectorConfig",
     "EdgeEndpointConfig",
