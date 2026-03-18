@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Callable
 from uuid import uuid4
 
 import pytest
@@ -12,7 +13,7 @@ def _generate_unique_detector_name(prefix: str = "Test") -> str:
 
 
 @pytest.fixture(name="detector_name")
-def fixture_detector_name():
+def fixture_detector_name() -> Callable[..., str]:
     """Fixture that provides a callable to generate unique detector names."""
     return _generate_unique_detector_name
 
