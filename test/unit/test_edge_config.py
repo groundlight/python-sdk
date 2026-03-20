@@ -235,10 +235,21 @@ def test_edge_endpoint_config_from_yaml_requires_exactly_one_input():
         EdgeEndpointConfig.from_yaml(filename=" ")
 
 
-def test_edge_endpoint_config_ignores_extra_top_level_fields():
-    """Unknown fields are silently ignored for forward compatibility (Postel's Law)."""
-    config = EdgeEndpointConfig.model_validate({"global_config": {}, "unknown_field": True})
-    assert config.global_config == GlobalConfig()
+def test_edge_endpoint_config_ignores_extra_fields_at_all_levels():
+    """Unknown fields are silently ignored at every nesting level for forward compatibility."""
+    config = EdgeEndpointConfig.model_validate({
+        "global_config": {"refresh_rate": 30.0, "unknown_global_field": "ignored"},
+        "edge_inference_configs": {
+            "default": {"enabled": True, "unknown_inference_field": 42},
+        },
+        "detectors": [
+            {"detector_id": "det_1", "edge_inference_config": "default", "unknown_detector_field": [1, 2]},
+        ],
+        "unknown_top_level_field": True,
+    })
+    assert config.global_config.refresh_rate == 30.0
+    assert config.edge_inference_configs["default"].enabled is True
+    assert config.detectors[0].detector_id == "det_1"
 
 
 def test_model_dump_shape_for_edge_endpoint_config():
