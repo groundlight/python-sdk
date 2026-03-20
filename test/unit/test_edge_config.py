@@ -307,3 +307,30 @@ def test_inference_config_validation_errors():
             always_return_edge_prediction=True,
             min_time_between_escalations=-1.0,
         )
+
+
+def test_get_edge_config_parses_response():
+    """ExperimentalApi.get_edge_config() parses the HTTP response into an EdgeEndpointConfig."""
+    from unittest.mock import Mock, patch
+
+    from groundlight import ExperimentalApi
+
+    payload = {
+        "global_config": {"refresh_rate": REFRESH_RATE_SECONDS},
+        "edge_inference_configs": {"default": {"enabled": True}},
+        "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+    }
+
+    mock_response = Mock()
+    mock_response.json.return_value = payload
+    mock_response.raise_for_status = Mock()
+
+    gl = ExperimentalApi()
+    with patch("requests.get", return_value=mock_response) as mock_get:
+        config = gl.get_edge_config()
+
+    mock_get.assert_called_once()
+    assert isinstance(config, EdgeEndpointConfig)
+    assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
+    assert config.edge_inference_configs["default"].name == "default"
+    assert [d.detector_id for d in config.detectors] == ["det_1"]
