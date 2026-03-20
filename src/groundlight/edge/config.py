@@ -9,7 +9,7 @@ from typing_extensions import Self
 class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """Global runtime settings for edge-endpoint behavior."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     refresh_rate: float = Field(
         default=60.0,
@@ -27,7 +27,7 @@ class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """
 
     # Keep shared presets immutable (DEFAULT/NO_CLOUD/etc.) so one mutation cannot globally change behavior.
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="ignore", frozen=True)
 
     name: str = Field(..., exclude=True, description="A unique name for this inference config preset.")
     enabled: bool = Field(
@@ -76,7 +76,7 @@ class DetectorConfig(BaseModel):  # pylint: disable=too-few-public-methods
     Configuration for a specific detector.
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     detector_id: str = Field(..., description="Detector ID")
     edge_inference_config: str = Field(..., description="Config for edge inference.")
@@ -85,7 +85,7 @@ class DetectorConfig(BaseModel):  # pylint: disable=too-few-public-methods
 class ConfigBase(BaseModel):
     """Shared detector/inference configuration behavior for edge config models."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     edge_inference_configs: dict[str, InferenceConfig] = Field(default_factory=dict)
     detectors: list[DetectorConfig] = Field(default_factory=list)
