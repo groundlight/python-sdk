@@ -235,10 +235,10 @@ def test_edge_endpoint_config_from_yaml_requires_exactly_one_input():
         EdgeEndpointConfig.from_yaml(filename=" ")
 
 
-def test_edge_endpoint_config_rejects_extra_top_level_fields():
-    """Rejects unknown top-level fields to avoid silent config drift."""
-    with pytest.raises(ValueError, match="Extra inputs are not permitted"):
-        EdgeEndpointConfig.model_validate({"global_config": {}, "unknown_field": True})
+def test_edge_endpoint_config_ignores_extra_top_level_fields():
+    """Unknown fields are silently ignored for forward compatibility (Postel's Law)."""
+    config = EdgeEndpointConfig.model_validate({"global_config": {}, "unknown_field": True})
+    assert config.global_config.refresh_rate == 60.0
 
 
 def test_model_dump_shape_for_edge_endpoint_config():
