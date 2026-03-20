@@ -238,7 +238,7 @@ def test_edge_endpoint_config_from_yaml_requires_exactly_one_input():
 def test_edge_endpoint_config_ignores_extra_fields_at_all_levels():
     """Unknown fields are silently ignored at every nesting level for forward compatibility."""
     config = EdgeEndpointConfig.model_validate({
-        "global_config": {"refresh_rate": 30.0, "unknown_global_field": "ignored"},
+        "global_config": {"refresh_rate": REFRESH_RATE_SECONDS, "unknown_global_field": "ignored"},
         "edge_inference_configs": {
             "default": {"enabled": True, "unknown_inference_field": 42},
         },
@@ -247,7 +247,7 @@ def test_edge_endpoint_config_ignores_extra_fields_at_all_levels():
         ],
         "unknown_top_level_field": True,
     })
-    assert config.global_config.refresh_rate == 30.0
+    assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert config.edge_inference_configs["default"].enabled is True
     assert config.detectors[0].detector_id == "det_1"
 
