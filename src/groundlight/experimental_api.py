@@ -40,6 +40,7 @@ from model import (
 )
 from urllib3.response import HTTPResponse
 
+from groundlight.edge.config import EdgeEndpointConfig
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
@@ -817,3 +818,19 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             auth_settings=["ApiToken"],
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
+
+    def get_edge_config(self) -> EdgeEndpointConfig:
+        """Retrieve the active edge endpoint configuration.
+
+        Only works when the client is pointed at an edge endpoint
+        (via GROUNDLIGHT_ENDPOINT or the endpoint constructor arg).
+        """
+        from urllib.parse import urlparse, urlunparse
+
+        parsed = urlparse(self.configuration.host)
+        base_url = urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
+        url = f"{base_url}/edge-config"
+        headers = self.get_raw_headers()
+        response = requests.get(url, headers=headers, verify=self.configuration.verify_ssl)
+        response.raise_for_status()
+        return EdgeEndpointConfig.from_payload(response.json())
