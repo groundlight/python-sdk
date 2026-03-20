@@ -238,7 +238,7 @@ def test_edge_endpoint_config_from_yaml_requires_exactly_one_input():
 def test_edge_endpoint_config_ignores_extra_top_level_fields():
     """Unknown fields are silently ignored for forward compatibility (Postel's Law)."""
     config = EdgeEndpointConfig.model_validate({"global_config": {}, "unknown_field": True})
-    assert config.global_config.refresh_rate == 60.0
+    assert config.global_config == GlobalConfig()
 
 
 def test_model_dump_shape_for_edge_endpoint_config():
