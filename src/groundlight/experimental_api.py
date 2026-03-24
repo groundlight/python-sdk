@@ -8,6 +8,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+import time
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -819,18 +820,74 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
 
+    def _edge_base_url(self) -> str:
+        """Return the scheme+host+port of the configured endpoint, without the /device-api path."""
+        from urllib.parse import urlparse, urlunparse
+
+        parsed = urlparse(self.configuration.host)
+        return urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
+
     def get_edge_config(self) -> EdgeEndpointConfig:
         """Retrieve the active edge endpoint configuration.
 
         Only works when the client is pointed at an edge endpoint
         (via GROUNDLIGHT_ENDPOINT or the endpoint constructor arg).
         """
-        from urllib.parse import urlparse, urlunparse
-
-        parsed = urlparse(self.configuration.host)
-        base_url = urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
-        url = f"{base_url}/edge-config"
+        url = f"{self._edge_base_url()}/edge-config"
         headers = self.get_raw_headers()
         response = requests.get(url, headers=headers, verify=self.configuration.verify_ssl)
         response.raise_for_status()
         return EdgeEndpointConfig.from_payload(response.json())
+
+    def get_edge_detector_readiness(self) -> dict[str, bool]:
+        """Check which configured detectors have inference pods ready to serve.
+
+        Only works when the client is pointed at an edge endpoint.
+
+        :return: Dict mapping detector_id to readiness (True/False).
+        """
+        url = f"{self._edge_base_url()}/edge-detector-readiness"
+        headers = self.get_raw_headers()
+        response = requests.get(url, headers=headers, verify=self.configuration.verify_ssl)
+        response.raise_for_status()
+        return {det_id: info["ready"] for det_id, info in response.json().items()}
+
+    def set_edge_config(
+        self,
+        config: EdgeEndpointConfig,
+        mode: str = "REPLACE",
+        timeout_sec: float = 300,
+        poll_interval_sec: float = 1,
+    ) -> EdgeEndpointConfig:
+        """Send a new edge endpoint configuration and wait until all detectors are ready.
+
+        Only works when the client is pointed at an edge endpoint.
+
+        :param config: The new configuration to apply.
+        :param mode: Currently only "REPLACE" is supported.
+        :param timeout_sec: Max seconds to wait for all detectors to become ready.
+        :param poll_interval_sec: How often to poll readiness while waiting.
+        :return: The applied configuration as reported by the edge endpoint.
+        """
+        if mode != "REPLACE":
+            raise ValueError(f"Unsupported mode: {mode!r}. Currently only 'REPLACE' is supported.")
+
+        url = f"{self._edge_base_url()}/edge-config"
+        headers = self.get_raw_headers()
+        response = requests.put(
+            url, json=config.to_payload(), headers=headers, verify=self.configuration.verify_ssl
+        )
+        response.raise_for_status()
+
+        desired_ids = {d.detector_id for d in config.detectors if d.detector_id}
+        deadline = time.time() + timeout_sec
+        while time.time() < deadline:
+            readiness = self.get_edge_detector_readiness()
+            if desired_ids and all(readiness.get(did, False) for did in desired_ids):
+                return self.get_edge_config()
+            time.sleep(poll_interval_sec)
+
+        raise TimeoutError(
+            f"Edge detectors were not all ready within {timeout_sec}s. "
+            "The edge endpoint may still be converging."
+        )
