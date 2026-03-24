@@ -874,9 +874,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         url = f"{self._edge_base_url()}/edge-config"
         headers = self.get_raw_headers()
-        response = requests.put(
-            url, json=config.to_payload(), headers=headers, verify=self.configuration.verify_ssl
-        )
+        response = requests.put(url, json=config.to_payload(), headers=headers, verify=self.configuration.verify_ssl)
         response.raise_for_status()
 
         desired_ids = {d.detector_id for d in config.detectors if d.detector_id}
@@ -888,6 +886,5 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             time.sleep(poll_interval_sec)
 
         raise TimeoutError(
-            f"Edge detectors were not all ready within {timeout_sec}s. "
-            "The edge endpoint may still be converging."
+            f"Edge detectors were not all ready within {timeout_sec}s. The edge endpoint may still be converging."
         )
