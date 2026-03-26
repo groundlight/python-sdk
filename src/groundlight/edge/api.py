@@ -5,7 +5,6 @@ import requests
 from groundlight.client import EdgeNotAvailableError
 from groundlight.edge.config import EdgeEndpointConfig
 
-
 _EDGE_METHOD_UNAVAILABLE_HINT = (
     "Make sure the client is pointed at a running edge endpoint "
     "(via GROUNDLIGHT_ENDPOINT env var or the endpoint= constructor arg)."
@@ -31,10 +30,14 @@ class EdgeAPI:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             if e.response is not None and e.response.status_code == 404:
-                raise EdgeNotAvailableError(f"Edge method not available at {url}. {_EDGE_METHOD_UNAVAILABLE_HINT}") from e
+                raise EdgeNotAvailableError(
+                    f"Edge method not available at {url}. {_EDGE_METHOD_UNAVAILABLE_HINT}"
+                ) from e
             raise
         except requests.exceptions.ConnectionError as e:
-            raise EdgeNotAvailableError(f"Could not connect to {self._base_url()}. {_EDGE_METHOD_UNAVAILABLE_HINT}") from e
+            raise EdgeNotAvailableError(
+                f"Could not connect to {self._base_url()}. {_EDGE_METHOD_UNAVAILABLE_HINT}"
+            ) from e
         return response
 
     def get_config(self) -> EdgeEndpointConfig:
