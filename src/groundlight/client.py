@@ -69,6 +69,12 @@ class ApiTokenError(GroundlightClientError):
     pass
 
 
+class EdgeNotAvailableError(GroundlightClientError):
+    """Raised when an edge-only method is called against a non-edge endpoint."""
+
+    pass
+
+
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     """
     Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,

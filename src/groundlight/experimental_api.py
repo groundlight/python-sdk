@@ -41,6 +41,7 @@ from model import (
 )
 from urllib3.response import HTTPResponse
 
+from groundlight.edge.api import EdgeAPI
 from groundlight.edge.config import EdgeEndpointConfig
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
@@ -105,6 +106,14 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
         self.edge_api = EdgeApi(self.api_client)
+        self._edge: EdgeAPI | None = None
+
+    @property
+    def edge(self) -> "EdgeAPI":
+        """Access edge-endpoint operations (e.g. ``gl.edge.get_config()``)."""
+        if self._edge is None:
+            self._edge = EdgeAPI(self)
+        return self._edge
 
     ITEMS_PER_PAGE = 100
 
@@ -828,66 +837,17 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         return urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
 
     def get_edge_config(self) -> EdgeEndpointConfig:
-        """Retrieve the active edge endpoint configuration.
-
-        Only works when the client is pointed at an edge endpoint
-        (via GROUNDLIGHT_ENDPOINT or the endpoint constructor arg).
-        """
-        url = f"{self._edge_base_url()}/edge-config"
-        headers = self.get_raw_headers()
-        response = requests.get(url, headers=headers, verify=self.configuration.verify_ssl)
-        response.raise_for_status()
-        return EdgeEndpointConfig.from_payload(response.json())
+        """Deprecated: use ``gl.edge.get_config()`` instead."""
+        return self.edge.get_config()
 
     def get_edge_detector_readiness(self) -> dict[str, bool]:
-        """Check which configured detectors have inference pods ready to serve.
-
-        Only works when the client is pointed at an edge endpoint.
-
-        :return: Dict mapping detector_id to readiness (True/False).
-        """
-        url = f"{self._edge_base_url()}/edge-detector-readiness"
-        headers = self.get_raw_headers()
-        response = requests.get(url, headers=headers, verify=self.configuration.verify_ssl)
-        response.raise_for_status()
-        return {det_id: info["ready"] for det_id, info in response.json().items()}
+        """Deprecated: use ``gl.edge.get_detector_readiness()`` instead."""
+        return self.edge.get_detector_readiness()
 
     def set_edge_config(
         self,
         config: EdgeEndpointConfig,
-        mode: str = "REPLACE",
         timeout_sec: float = 300,
-        poll_interval_sec: float = 1,
     ) -> EdgeEndpointConfig:
-        """Send a new edge endpoint configuration and wait until all detectors are ready.
-
-        Only works when the client is pointed at an edge endpoint.
-
-        :param config: The new configuration to apply.
-        :param mode: Currently only "REPLACE" is supported.
-        :param timeout_sec: Max seconds to wait for all detectors to become ready.
-        :param poll_interval_sec: How often to poll readiness while waiting.
-        :return: The applied configuration as reported by the edge endpoint.
-        """
-        if mode != "REPLACE":
-            raise ValueError(f"Unsupported mode: {mode!r}. Currently only 'REPLACE' is supported.")
-
-        url = f"{self._edge_base_url()}/edge-config"
-        headers = self.get_raw_headers()
-        response = requests.put(
-            url, json=config.to_payload(), headers=headers, verify=self.configuration.verify_ssl
-        )
-        response.raise_for_status()
-
-        desired_ids = {d.detector_id for d in config.detectors if d.detector_id}
-        deadline = time.time() + timeout_sec
-        while time.time() < deadline:
-            readiness = self.get_edge_detector_readiness()
-            if desired_ids and all(readiness.get(did, False) for did in desired_ids):
-                return self.get_edge_config()
-            time.sleep(poll_interval_sec)
-
-        raise TimeoutError(
-            f"Edge detectors were not all ready within {timeout_sec}s. "
-            "The edge endpoint may still be converging."
-        )
+        """Deprecated: use ``gl.edge.set_config()`` instead."""
+        return self.edge.set_config(config, timeout_sec=timeout_sec)
