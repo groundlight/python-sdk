@@ -8,7 +8,6 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-import time
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
