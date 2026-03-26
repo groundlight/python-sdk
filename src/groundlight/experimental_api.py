@@ -8,9 +8,9 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
-import time
 from io import BufferedReader, BytesIO
 from pathlib import Path
+from urllib.parse import urlparse, urlunparse
 from typing import Any, Dict, List, Optional, Union
 
 import requests
@@ -831,8 +831,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
     def _edge_base_url(self) -> str:
         """Return the scheme+host+port of the configured endpoint, without the /device-api path."""
-        from urllib.parse import urlparse, urlunparse
-
         parsed = urlparse(self.configuration.host)
         return urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
 

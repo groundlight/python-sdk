@@ -326,10 +326,10 @@ def test_get_edge_config_parses_response():
     mock_response.raise_for_status = Mock()
 
     gl = ExperimentalApi()
-    with patch("requests.get", return_value=mock_response) as mock_get:
+    with patch("requests.request", return_value=mock_response) as mock_request:
         config = gl.get_edge_config()
 
-    mock_get.assert_called_once()
+    mock_request.assert_called_once()
     assert isinstance(config, EdgeEndpointConfig)
     assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert config.edge_inference_configs["default"].name == "default"
