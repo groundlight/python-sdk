@@ -604,6 +604,10 @@ class PrimingGroup(BaseModel):
     active_pipeline_base_mlbinary_key: Optional[str] = Field(
         None, description="S3 key of the model binary that seeds new detectors in this group."
     )
+    is_global: bool = Field(
+        False,
+        description="If True, this priming group is visible to all users regardless of ownership.",
+    )
     disable_shadow_pipelines: bool = Field(
         False,
         description=(
