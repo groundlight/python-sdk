@@ -566,3 +566,56 @@ class PaginatedRuleList(BaseModel):
     next: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=4"])
     previous: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=2"])
     results: List[Rule]
+
+
+class MLPipeline(BaseModel):
+    """
+    An ML pipeline attached to a detector. Contains the pipeline configuration and model binary key.
+    """
+
+    id: str = Field(..., description="A unique ID for this pipeline.")
+    pipeline_config: Optional[str] = Field(None, description="Pipeline configuration string.")
+    cached_vizlogic_key: Optional[str] = Field(None, description="S3 key of the trained model binary.")
+    is_active_pipeline: bool = Field(False, description="Whether this is the active (production) pipeline.")
+    is_edge_pipeline: bool = Field(False, description="Whether this is an edge pipeline.")
+    is_unclear_pipeline: bool = Field(False, description="Whether this is an unclear-handling pipeline.")
+    is_oodd_pipeline: bool = Field(False, description="Whether this is an out-of-distribution detection pipeline.")
+    is_enabled: bool = Field(True, description="Whether this pipeline is enabled.")
+    created_at: Optional[datetime] = None
+    trained_at: Optional[datetime] = None
+
+
+class PaginatedMLPipelineList(BaseModel):
+    count: int = Field(..., examples=[123])
+    next: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=4"])
+    previous: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=2"])
+    results: List[MLPipeline]
+
+
+class PrimingGroup(BaseModel):
+    """
+    A PrimingGroup seeds new detectors with a pre-trained model binary so they start with a head start.
+    """
+
+    id: str = Field(..., description="A unique ID for this priming group.")
+    name: str = Field(..., description="A short, descriptive name for the priming group.")
+    canonical_query: Optional[str] = Field(None, description="Optional canonical query describing this priming group.")
+    active_pipeline_config: Optional[str] = Field(None, description="Pipeline config used by detectors in this group.")
+    active_pipeline_base_mlbinary_key: Optional[str] = Field(
+        None, description="S3 key of the model binary that seeds new detectors in this group."
+    )
+    disable_shadow_pipelines: bool = Field(
+        False,
+        description=(
+            "If True, new detectors in this group will not receive default shadow pipelines, "
+            "guaranteeing the primed model stays active."
+        ),
+    )
+    created_at: Optional[datetime] = None
+
+
+class PaginatedPrimingGroupList(BaseModel):
+    count: int = Field(..., examples=[123])
+    next: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=4"])
+    previous: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=2"])
+    results: List[PrimingGroup]
