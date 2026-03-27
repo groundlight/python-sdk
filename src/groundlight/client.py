@@ -8,7 +8,6 @@ from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 import requests
-
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
@@ -1882,7 +1881,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         """
         detector_id = detector.id if isinstance(detector, Detector) else detector
         url = f"{self.api_client.configuration.host}/v1/detectors/{detector_id}/pipelines"
-        response = requests.get(url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl)
+        response = requests.get(
+            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
+        )
         if response.status_code == 404:
             raise NotFoundError(f"Detector '{detector_id}' not found.")
         response.raise_for_status()
@@ -1910,7 +1911,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :return: A list of PrimingGroup objects.
         """
         url = f"{self.api_client.configuration.host}/v1/priming-groups"
-        response = requests.get(url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl)
+        response = requests.get(
+            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
+        )
         response.raise_for_status()
         data = response.json()
         return [PrimingGroup(**item) for item in data.get("results", [])]
@@ -1980,7 +1983,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :return: The PrimingGroup object.
         """
         url = f"{self.api_client.configuration.host}/v1/priming-groups/{priming_group_id}"
-        response = requests.get(url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl)
+        response = requests.get(
+            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
+        )
         if response.status_code == 404:
             raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.")
         response.raise_for_status()
