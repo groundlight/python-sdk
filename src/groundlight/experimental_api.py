@@ -106,14 +106,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
         self.edge_api = EdgeApi(self.api_client)
-        self._edge: EdgeAPI | None = None
-
-    @property
-    def edge(self) -> "EdgeAPI":
-        """Access edge-endpoint operations (e.g. ``gl.edge.get_config()``)."""
-        if self._edge is None:
-            self._edge = EdgeAPI(self)
-        return self._edge
+        self.edge = EdgeAPI(self)
 
     ITEMS_PER_PAGE = 100
 
@@ -845,7 +838,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
     def set_edge_config(
         self,
         config: EdgeEndpointConfig,
-        timeout_sec: float = 300,
+        timeout_sec: float = 600,
     ) -> EdgeEndpointConfig:
         """Deprecated: use ``gl.edge.set_config()`` instead."""
         return self.edge.set_config(config, timeout_sec=timeout_sec)
