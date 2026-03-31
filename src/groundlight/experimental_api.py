@@ -10,8 +10,8 @@ modifications or potentially be removed in future releases, which could lead to 
 import json
 from io import BufferedReader, BytesIO
 from pathlib import Path
-from urllib.parse import urlparse, urlunparse
 from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
