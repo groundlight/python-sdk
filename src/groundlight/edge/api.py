@@ -1,4 +1,5 @@
 import time
+from http import HTTPStatus
 
 import requests
 
@@ -29,7 +30,7 @@ class EdgeAPI:
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            if e.response is not None and e.response.status_code == 404:
+            if e.response is not None and e.response.status_code == HTTPStatus.NOT_FOUND:
                 raise EdgeNotAvailableError(
                     f"Edge method not available at {url}. {_EDGE_METHOD_UNAVAILABLE_HINT}"
                 ) from e
