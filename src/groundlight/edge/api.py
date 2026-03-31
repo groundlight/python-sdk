@@ -18,14 +18,14 @@ class EdgeAPI:
         self._client = client
 
     def _base_url(self) -> str:
-        return self._client._edge_base_url()
+        return self._client.edge_base_url()
 
     def _request(self, method: str, path: str, **kwargs) -> requests.Response:
         url = f"{self._base_url()}{path}"
         headers = self._client.get_raw_headers()
         try:
             response = requests.request(
-                method, url, headers=headers, verify=self._client.configuration.verify_ssl, **kwargs
+                method, url, headers=headers, verify=self._client.configuration.verify_ssl, timeout=10, **kwargs
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:

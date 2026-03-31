@@ -42,7 +42,6 @@ from model import (
 from urllib3.response import HTTPResponse
 
 from groundlight.edge.api import EdgeAPI
-from groundlight.edge.config import EdgeEndpointConfig
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
@@ -822,23 +821,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
 
-    def _edge_base_url(self) -> str:
+    def edge_base_url(self) -> str:
         """Return the scheme+host+port of the configured endpoint, without the /device-api path."""
         parsed = urlparse(self.configuration.host)
         return urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
-
-    def get_edge_config(self) -> EdgeEndpointConfig:
-        """Deprecated: use ``gl.edge.get_config()`` instead."""
-        return self.edge.get_config()
-
-    def get_edge_detector_readiness(self) -> dict[str, bool]:
-        """Deprecated: use ``gl.edge.get_detector_readiness()`` instead."""
-        return self.edge.get_detector_readiness()
-
-    def set_edge_config(
-        self,
-        config: EdgeEndpointConfig,
-        timeout_sec: float = 600,
-    ) -> EdgeEndpointConfig:
-        """Deprecated: use ``gl.edge.set_config()`` instead."""
-        return self.edge.set_config(config, timeout_sec=timeout_sec)

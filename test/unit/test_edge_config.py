@@ -309,8 +309,8 @@ def test_inference_config_validation_errors():
         )
 
 
-def test_get_edge_config_parses_response():
-    """ExperimentalApi.get_edge_config() parses the HTTP response into an EdgeEndpointConfig."""
+def test_edge_get_config_parses_response():
+    """gl.edge.get_config() parses the HTTP response into an EdgeEndpointConfig."""
     from unittest.mock import Mock, patch
 
     from groundlight import ExperimentalApi
@@ -327,7 +327,7 @@ def test_get_edge_config_parses_response():
 
     gl = ExperimentalApi()
     with patch("requests.request", return_value=mock_response) as mock_request:
-        config = gl.get_edge_config()
+        config = gl.edge.get_config()
 
     mock_request.assert_called_once()
     assert isinstance(config, EdgeEndpointConfig)
