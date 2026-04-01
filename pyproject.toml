@@ -84,6 +84,7 @@ trailing_comma_inline_array = true
 markers = [
     "skip_for_edge_endpoint",
     "run_only_for_edge_endpoint",
+    "expensive: marks tests as expensive (long-running; excluded from default test runs)",
 ]
 
 [build-system]
