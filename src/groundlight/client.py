@@ -7,7 +7,6 @@ from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-import requests
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
@@ -37,7 +36,6 @@ from model import (
     ModeEnum,
     PaginatedDetectorList,
     PaginatedImageQueryList,
-    PrimingGroup,
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
@@ -1854,4 +1852,3 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return Detector.parse_obj(obj.to_dict())
-
