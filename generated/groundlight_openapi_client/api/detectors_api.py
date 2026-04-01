@@ -26,6 +26,7 @@ from groundlight_openapi_client.model.detector_creation_input_request import Det
 from groundlight_openapi_client.model.inline_response200 import InlineResponse200
 from groundlight_openapi_client.model.inline_response2001 import InlineResponse2001
 from groundlight_openapi_client.model.paginated_detector_list import PaginatedDetectorList
+from groundlight_openapi_client.model.paginated_ml_pipeline_list import PaginatedMLPipelineList
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 
 
@@ -226,6 +227,62 @@ class DetectorsApi(object):
                 },
                 "location_map": {
                     "detector_id": "path",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.list_detector_pipelines_endpoint = _Endpoint(
+            settings={
+                "response_type": (PaginatedMLPipelineList,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/detectors/{detector_id}/pipelines",
+                "operation_id": "list_detector_pipelines",
+                "http_method": "GET",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "detector_id",
+                    "ordering",
+                    "page",
+                    "page_size",
+                    "search",
+                ],
+                "required": [
+                    "detector_id",
+                ],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                    "ordering": (str,),
+                    "page": (int,),
+                    "page_size": (int,),
+                    "search": (str,),
+                },
+                "attribute_map": {
+                    "detector_id": "detector_id",
+                    "ordering": "ordering",
+                    "page": "page",
+                    "page_size": "page_size",
+                    "search": "search",
+                },
+                "location_map": {
+                    "detector_id": "path",
+                    "ordering": "query",
+                    "page": "query",
+                    "page_size": "query",
+                    "search": "query",
                 },
                 "collection_format_map": {},
             },
@@ -610,6 +667,68 @@ class DetectorsApi(object):
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["detector_id"] = detector_id
         return self.get_detector_metrics_endpoint.call_with_http_info(**kwargs)
+
+    def list_detector_pipelines(self, detector_id, **kwargs):
+        """list_detector_pipelines  # noqa: E501
+
+        List all MLPipelines for a detector.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.list_detector_pipelines(detector_id, async_req=True)
+        >>> result = thread.get()
+
+        Args:
+            detector_id (str):
+
+        Keyword Args:
+            ordering (str): Which field to use when ordering the results.. [optional]
+            page (int): A page number within the paginated result set.. [optional]
+            page_size (int): Number of results to return per page.. [optional]
+            search (str): A search term.. [optional]
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            PaginatedMLPipelineList
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
+        return self.list_detector_pipelines_endpoint.call_with_http_info(**kwargs)
 
     def list_detectors(self, **kwargs):
         """list_detectors  # noqa: E501

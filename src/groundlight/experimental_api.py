@@ -42,9 +42,8 @@ from model import (
 )
 from urllib3.response import HTTPResponse
 
-from groundlight.exceptions import NotFoundError
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import _generate_request_id
+from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
