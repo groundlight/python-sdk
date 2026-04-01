@@ -67,14 +67,16 @@ class EdgeAPI:
         """
         self._request("PUT", "/edge-config", json=config.to_payload())
 
-        poll_interval_seconds = 1
         desired_ids = {d.detector_id for d in config.detectors if d.detector_id}
+        if not desired_ids:
+            return self.get_config()
+
         deadline = time.time() + timeout_sec
         while time.time() < deadline:
             readiness = self.get_detector_readiness()
-            if desired_ids and all(readiness.get(did, False) for did in desired_ids):
+            if all(readiness.get(did, False) for did in desired_ids):
                 return self.get_config()
-            time.sleep(poll_interval_seconds)
+            time.sleep(1)
 
         raise TimeoutError(
             f"Edge detectors were not all ready within {timeout_sec}s. "
