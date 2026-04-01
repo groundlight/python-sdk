@@ -15,7 +15,6 @@ from groundlight import ExperimentalApi
 from groundlight.internalapi import NotFoundError
 from model import MLPipeline, PrimingGroup
 
-
 # ---------------------------------------------------------------------------
 # list_detector_pipelines
 # ---------------------------------------------------------------------------
