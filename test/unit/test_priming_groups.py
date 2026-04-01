@@ -69,7 +69,7 @@ def _wait_for_trained_pipeline(gl_experimental: ExperimentalApi, detector, timeo
     while time.monotonic() < deadline:
         pipelines = gl_experimental.list_detector_pipelines(detector)
         for p in pipelines:
-            if p.is_active_pipeline and p.cached_vizlogic_key:
+            if p.is_active_pipeline and p.trained_at is not None:
                 return p
         time.sleep(5)
 
