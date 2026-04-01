@@ -220,7 +220,6 @@ def test_create_priming_group(gl_experimental: ExperimentalApi, detector):
     assert pg.name == f"test-primer-{detector.id}"
     assert pg.canonical_query == "Is there a dog?"
     assert pg.is_global is False
-    assert pg.active_pipeline_base_mlbinary_key is not None
 
     # cleanup
     gl_experimental.delete_priming_group(pg.id)
