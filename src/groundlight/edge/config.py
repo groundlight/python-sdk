@@ -78,7 +78,7 @@ class DetectorConfig(BaseModel):  # pylint: disable=too-few-public-methods
 
     model_config = ConfigDict(extra="ignore")
 
-    detector_id: str = Field(..., description="Detector ID")
+    detector_id: str = Field(..., pattern=r"^det_[A-Za-z0-9]{27}$", description="Detector ID")
     edge_inference_config: str = Field(..., description="Config for edge inference.")
 
 
