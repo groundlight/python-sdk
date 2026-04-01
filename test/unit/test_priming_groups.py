@@ -9,7 +9,6 @@ cached_vizlogic_key that can seed a PrimingGroup.  Run them explicitly with:
 """
 
 import time
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -148,9 +147,10 @@ def test_get_priming_group_unknown_raises_mocked(gl_experimental: ExperimentalAp
 
 
 def test_delete_priming_group_mocked(gl_experimental: ExperimentalApi):
-    with patch("groundlight.experimental_api.requests.get") as mock_get, patch(
-        "groundlight.experimental_api.requests.delete"
-    ) as mock_delete:
+    with (
+        patch("groundlight.experimental_api.requests.get") as mock_get,
+        patch("groundlight.experimental_api.requests.delete") as mock_delete,
+    ):
         mock_get.return_value = _mock_response(404)
         mock_delete.return_value = _mock_response(204)
 
