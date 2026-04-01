@@ -2,8 +2,8 @@
 Tests for PrimingGroup and ML pipeline methods on ExperimentalApi.
 
 The create/get/delete priming group tests are marked @pytest.mark.expensive because they
-require training a detector (submit images, wait ~45 s) before a pipeline has a
-cached_vizlogic_key that can seed a PrimingGroup.  Run them explicitly with:
+require training a detector (submit 8 labeled images, wait ~90s) before a pipeline has a
+trained_at timestamp that indicates it can seed a PrimingGroup.  Run them explicitly with:
 
     pytest -m expensive test/unit/test_priming_groups.py
 """
@@ -69,7 +69,7 @@ _MOCK_PIPELINE = {
 }
 
 _MOCK_PG = {
-    "id": "pgp_mock0000000000000001",
+    "id": "pg_mock0000000000000001",
     "name": "test-primer",
     "is_global": False,
     "canonical_query": "Is there a dog?",
@@ -101,7 +101,7 @@ def test_create_priming_group_mocked(gl_experimental: ExperimentalApi):
         )
 
     assert isinstance(pg, PrimingGroup)
-    assert pg.id == "pgp_mock0000000000000001"
+    assert pg.id == "pg_mock0000000000000001"
     assert pg.name == "test-primer"
     assert pg.canonical_query == "Is there a dog?"
     assert pg.is_global is False
@@ -131,10 +131,10 @@ def test_get_priming_group_mocked(gl_experimental: ExperimentalApi):
     with patch("groundlight.experimental_api.requests.get") as mock_get:
         mock_get.return_value = _mock_response(200, _MOCK_PG)
 
-        pg = gl_experimental.get_priming_group("pgp_mock0000000000000001")
+        pg = gl_experimental.get_priming_group("pg_mock0000000000000001")
 
     assert isinstance(pg, PrimingGroup)
-    assert pg.id == "pgp_mock0000000000000001"
+    assert pg.id == "pg_mock0000000000000001"
     assert pg.name == "test-primer"
 
 
@@ -151,14 +151,14 @@ def test_delete_priming_group_mocked(gl_experimental: ExperimentalApi):
         patch("groundlight.experimental_api.requests.get") as mock_get,
         patch("groundlight.experimental_api.requests.delete") as mock_delete,
     ):
-        mock_get.return_value = _mock_response(404)
+        mock_get.return_value = _mock_response(410)
         mock_delete.return_value = _mock_response(204)
 
-        gl_experimental.delete_priming_group("pgp_mock0000000000000001")
+        gl_experimental.delete_priming_group("pg_mock0000000000000001")
 
-        # After deletion, getting it should raise NotFoundError
+        # After deletion, getting it should raise NotFoundError (410 Gone)
         with pytest.raises(NotFoundError):
-            gl_experimental.get_priming_group("pgp_mock0000000000000001")
+            gl_experimental.get_priming_group("pg_mock0000000000000001")
 
     mock_delete.assert_called_once()
 
@@ -170,7 +170,7 @@ def test_created_priming_group_appears_in_list_mocked(gl_experimental: Experimen
 
         groups = gl_experimental.list_priming_groups()
 
-    assert any(g.id == "pgp_mock0000000000000001" for g in groups)
+    assert any(g.id == "pg_mock0000000000000001" for g in groups)
 
 
 # ---------------------------------------------------------------------------
@@ -178,14 +178,21 @@ def test_created_priming_group_appears_in_list_mocked(gl_experimental: Experimen
 # ---------------------------------------------------------------------------
 
 
-def _wait_for_trained_pipeline(gl_experimental: ExperimentalApi, detector, timeout: int = 45) -> MLPipeline:
+def _wait_for_trained_pipeline(gl_experimental: ExperimentalApi, detector, timeout: int = 90) -> MLPipeline:
     """
-    Submit the cat and dog test images, then poll until the active pipeline has a
-    cached_vizlogic_key (i.e. has been trained).  Raises TimeoutError if training
+    Submit 4 dog images (labeled YES) and 4 cat images (labeled NO), then poll until the active
+    pipeline has a trained_at timestamp (i.e. has been trained).  Raises TimeoutError if training
     doesn't complete within `timeout` seconds.
     """
-    gl_experimental.submit_image_query(detector, "test/assets/dog.jpeg", human_review="NEVER")
-    gl_experimental.submit_image_query(detector, "test/assets/cat.jpeg", human_review="NEVER")
+    # Submit 4 dog images with YES labels
+    for _ in range(4):
+        iq = gl_experimental.submit_image_query(detector, "test/assets/dog.jpeg", human_review="NEVER")
+        gl_experimental.add_label(iq, "YES")
+
+    # Submit 4 cat images with NO labels
+    for _ in range(4):
+        iq = gl_experimental.submit_image_query(detector, "test/assets/cat.jpeg", human_review="NEVER")
+        gl_experimental.add_label(iq, "NO")
 
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -209,7 +216,7 @@ def test_create_priming_group(gl_experimental: ExperimentalApi, detector):
     )
 
     assert isinstance(pg, PrimingGroup)
-    assert pg.id.startswith("pgp_")
+    assert pg.id.startswith("pg_")
     assert pg.name == f"test-primer-{detector.id}"
     assert pg.canonical_query == "Is there a dog?"
     assert pg.is_global is False

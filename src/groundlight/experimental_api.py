@@ -940,7 +940,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         **Example usage**::
 
             gl = ExperimentalApi()
-            pg = gl.get_priming_group("pgp_abc123")
+            pg = gl.get_priming_group("pg_abc123")
             print(f"Priming group name: {pg.name}")
 
         :param priming_group_id: The ID of the PrimingGroup to retrieve.
@@ -952,6 +952,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         )
         if response.status_code == 404:
             raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.")
+        if response.status_code == 410:
+            raise NotFoundError(f"PrimingGroup '{priming_group_id}' has been deleted.")
         response.raise_for_status()
         return PrimingGroup(**response.json())
 
@@ -965,7 +967,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         **Example usage**::
 
             gl = ExperimentalApi()
-            gl.delete_priming_group("pgp_abc123")
+            gl.delete_priming_group("pg_abc123")
 
         :param priming_group_id: The ID of the PrimingGroup to delete.
         """
