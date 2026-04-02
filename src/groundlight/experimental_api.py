@@ -41,7 +41,7 @@ from model import (
 )
 from urllib3.response import HTTPResponse
 
-from groundlight.edge.api import EdgeAPI
+from groundlight.edge.api import EdgeEndpointApi
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import _generate_request_id
 from groundlight.optional_imports import Image, np
@@ -104,8 +104,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
-        self.edge_api = EdgeApi(self.api_client)
-        self.edge = EdgeAPI(self)
+        # API client for fetching Edge models
+        self._edge_model_download_api = EdgeApi(self.api_client)
+
+        # API client for interacting with the EdgeEndpoint (getting/setting configuration, etc.)
+        self.edge = EdgeEndpointApi(self)
 
     ITEMS_PER_PAGE = 100
 
@@ -707,7 +710,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         """
         if isinstance(detector, Detector):
             detector = detector.id
-        obj = self.edge_api.get_model_urls(detector)
+        obj = self._edge_model_download_api.get_model_urls(detector)
         return EdgeModelInfo.parse_obj(obj.to_dict())
 
     def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:

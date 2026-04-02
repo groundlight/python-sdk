@@ -12,8 +12,8 @@ _EDGE_METHOD_UNAVAILABLE_HINT = (
 )
 
 
-class EdgeAPI:
-    """Namespace for edge-endpoint operations, accessed via ``gl.edge``."""
+class EdgeEndpointApi:
+    """Namespace for operations that are specific to the Edge Endpoint, such as setting and getting the EdgeEndpoint configuration."""
 
     def __init__(self, client) -> None:
         self._client = client
