@@ -7,7 +7,7 @@ from groundlight.client import EdgeNotAvailableError
 from groundlight.edge.config import EdgeEndpointConfig
 
 _EDGE_METHOD_UNAVAILABLE_HINT = (
-    "Make sure the client is pointed at a running edge endpoint "
+    "Make sure the client is pointed at a running Edge Endpoint "
     "(via GROUNDLIGHT_ENDPOINT env var or the endpoint= constructor arg)."
 )
 
