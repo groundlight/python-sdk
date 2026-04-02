@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
+from unittest.mock import Mock, patch
 
 import pytest
+from groundlight import ExperimentalApi
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -316,10 +318,6 @@ def test_inference_config_validation_errors():
 
 def test_edge_get_config_parses_response():
     """gl.edge.get_config() parses the HTTP response into an EdgeEndpointConfig."""
-    from unittest.mock import Mock, patch
-
-    from groundlight import ExperimentalApi
-
     payload = {
         "global_config": {"refresh_rate": REFRESH_RATE_SECONDS},
         "edge_inference_configs": {"default": {"enabled": True}},
@@ -339,3 +337,50 @@ def test_edge_get_config_parses_response():
     assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert config.edge_inference_configs["default"].name == "default"
     assert [d.detector_id for d in config.detectors] == [DET_1]
+
+
+def test_edge_set_config_sends_payload_and_polls():
+    """gl.edge.set_config() PUTs the config then polls readiness until all detectors are ready."""
+    config = EdgeEndpointConfig()
+    config.add_detector(DET_1, DEFAULT)
+
+    put_response = Mock()
+    put_response.raise_for_status = Mock()
+
+    readiness_response = Mock()
+    readiness_response.json.return_value = {DET_1: {"ready": True}}
+    readiness_response.raise_for_status = Mock()
+
+    get_response = Mock()
+    get_response.json.return_value = config.to_payload()
+    get_response.raise_for_status = Mock()
+
+    def route_request(method, url, **kwargs):
+        if method == "PUT":
+            return put_response
+        if "/edge-detector-readiness" in url:
+            return readiness_response
+        return get_response
+
+    gl = ExperimentalApi()
+    with patch("requests.request", side_effect=route_request):
+        result = gl.edge.set_config(config)
+
+    assert isinstance(result, EdgeEndpointConfig)
+    assert [d.detector_id for d in result.detectors] == [DET_1]
+
+
+def test_edge_get_detector_readiness():
+    """gl.edge.get_detector_readiness() returns a dict mapping detector IDs to booleans."""
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        DET_1: {"ready": True},
+        DET_2: {"ready": False},
+    }
+    mock_response.raise_for_status = Mock()
+
+    gl = ExperimentalApi()
+    with patch("requests.request", return_value=mock_response):
+        readiness = gl.edge.get_detector_readiness()
+
+    assert readiness == {DET_1: True, DET_2: False}

@@ -70,7 +70,7 @@ class EdgeEndpointApi:
         """
         self._request("PUT", "/edge-config", json=config.to_payload())
 
-        desired_ids = {d.detector_id for d in config.detectors if d.detector_id}
+        desired_ids = {d.detector_id for d in config.detectors}
         if not desired_ids:
             return self.get_config()
 
