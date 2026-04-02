@@ -13,7 +13,10 @@ _EDGE_METHOD_UNAVAILABLE_HINT = (
 
 
 class EdgeEndpointApi:
-    """Namespace for operations that are specific to the Edge Endpoint, such as setting and getting the EdgeEndpoint configuration."""
+    """
+    Namespace for operations that are specific to the Edge Endpoint,
+    such as setting and getting the EdgeEndpoint configuration.
+    """
 
     def __init__(self, client) -> None:
         self._client = client
