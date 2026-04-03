@@ -18,7 +18,7 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
     )
     confident_audit_rate: float = Field(
         default=1e-5,  # A detector running at 1 FPS = ~100,000 IQ/day, so 1e-5 is ~1 confident IQ/day audited
-        gt=0,
+        ge=0,
         description="The probability that any given confident prediction will be sent to the cloud for auditing.",
     )
 

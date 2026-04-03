@@ -2,6 +2,8 @@ from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 import pytest
+from pydantic import ValidationError
+
 from groundlight import ExperimentalApi
 from groundlight.edge import (
     DEFAULT,
@@ -308,7 +310,7 @@ def test_inference_config_validation_errors():
     with pytest.raises(ValueError, match="disable_cloud_escalation"):
         InferenceConfig(name="bad", disable_cloud_escalation=True)
 
-    with pytest.raises(ValueError, match="cannot be less than 0.0"):
+    with pytest.raises(ValidationError, match="greater_than"):
         InferenceConfig(
             name="bad_escalation_interval",
             always_return_edge_prediction=True,
