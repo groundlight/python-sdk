@@ -59,7 +59,7 @@ gl = ExperimentalApi(endpoint="http://localhost:30101")
 # Build a configuration with detectors and inference presets
 config = EdgeEndpointConfig()
 config.add_detector("det_YOUR_DETECTOR_ID_HERE_01", NO_CLOUD)
-config.add_detector("det_YOUR_DETECTOR_ID_HERE_02", DEFAULT)
+config.add_detector("det_YOUR_DETECTOR_ID_HERE_02", EDGE_ANSWERS_WITH_ESCALATION)
 
 # Apply the configuration and wait for detectors to be ready
 print("Applying configuration...")

@@ -318,6 +318,12 @@ def test_inference_config_validation_errors():
         )
 
 
+def test_confident_audit_rate_allows_zero():
+    """Zero is a valid confident_audit_rate (disables auditing)."""
+    gc = GlobalConfig(confident_audit_rate=0.0)
+    assert gc.confident_audit_rate == 0.0
+
+
 def test_edge_get_config_parses_response():
     """gl.edge.get_config() parses the HTTP response into an EdgeEndpointConfig."""
     payload = {
