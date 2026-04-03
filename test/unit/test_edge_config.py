@@ -2,8 +2,6 @@ from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 import pytest
-from pydantic import ValidationError
-
 from groundlight import ExperimentalApi
 from groundlight.edge import (
     DEFAULT,
@@ -16,6 +14,7 @@ from groundlight.edge import (
     InferenceConfig,
 )
 from model import Detector, DetectorTypeEnum
+from pydantic import ValidationError
 
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
