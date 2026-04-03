@@ -13,10 +13,12 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
 
     refresh_rate: float = Field(
         default=60.0,
+        gt=0,
         description="The interval (in seconds) at which the inference server checks for a new model binary update.",
     )
     confident_audit_rate: float = Field(
         default=1e-5,  # A detector running at 1 FPS = ~100,000 IQ/day, so 1e-5 is ~1 confident IQ/day audited
+        gt=0,
         description="The probability that any given confident prediction will be sent to the cloud for auditing.",
     )
 
@@ -29,7 +31,7 @@ class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
     # Keep shared presets immutable (DEFAULT/NO_CLOUD/etc.) so one mutation cannot globally change behavior.
     model_config = ConfigDict(extra="ignore", frozen=True)
 
-    name: str = Field(..., exclude=True, description="A unique name for this inference config preset.")
+    name: str = Field(..., min_length=1, exclude=True, description="A unique name for this inference config preset.")
     enabled: bool = Field(
         default=True, description="Whether the edge endpoint should accept image queries for this detector."
     )
@@ -53,9 +55,9 @@ class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
     )
     min_time_between_escalations: float = Field(
         default=2.0,
+        gt=0,
         description=(
             "The minimum time (in seconds) to wait between cloud escalations for a given detector. "
-            "Cannot be less than 0.0. "
             "Only applies when `always_return_edge_prediction=True` and `disable_cloud_escalation=False`."
         ),
     )
@@ -66,8 +68,6 @@ class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
             raise ValueError(
                 "The `disable_cloud_escalation` flag is only valid when `always_return_edge_prediction` is set to True."
             )
-        if self.min_time_between_escalations < 0.0:
-            raise ValueError("`min_time_between_escalations` cannot be less than 0.0.")
         return self
 
 
