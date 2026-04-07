@@ -250,7 +250,7 @@ Name | Type | Description  | Notes
 
 
 
-List all priming groups owned by the authenticated user.
+List all priming groups either owned by the authenticated user, or with is_global=True.
 
 ### Example
 
