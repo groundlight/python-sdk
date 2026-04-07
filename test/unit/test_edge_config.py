@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
+from unittest.mock import Mock, patch
 
 import pytest
+from groundlight import ExperimentalApi
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -12,10 +14,16 @@ from groundlight.edge import (
     InferenceConfig,
 )
 from model import Detector, DetectorTypeEnum
+from pydantic import ValidationError
 
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
 REFRESH_RATE_SECONDS = 15.0
+
+# Mock detector IDs
+DET_1 = "det_000000000000000000000000001"
+DET_2 = "det_000000000000000000000000002"
+DET_3 = "det_000000000000000000000000003"
 
 
 def _make_detector(detector_id: str) -> Detector:
@@ -36,7 +44,7 @@ def test_add_detector_allows_equivalent_named_inference_config():
     """Allows reusing the same named inference config with equivalent values."""
     detectors_config = DetectorsConfig()
     detectors_config.add_detector(
-        "det_1",
+        DET_1,
         InferenceConfig(
             name="custom_config",
             always_return_edge_prediction=True,
@@ -44,7 +52,7 @@ def test_add_detector_allows_equivalent_named_inference_config():
         ),
     )
     detectors_config.add_detector(
-        "det_2",
+        DET_2,
         InferenceConfig(
             name="custom_config",
             always_return_edge_prediction=True,
@@ -59,11 +67,11 @@ def test_add_detector_allows_equivalent_named_inference_config():
 def test_add_detector_rejects_different_named_inference_config():
     """Rejects conflicting inference config values under the same name."""
     detectors_config = DetectorsConfig()
-    detectors_config.add_detector("det_1", InferenceConfig(name="custom_config"))
+    detectors_config.add_detector(DET_1, InferenceConfig(name="custom_config"))
 
     with pytest.raises(ValueError, match="different inference config named 'custom_config'"):
         detectors_config.add_detector(
-            "det_2",
+            DET_2,
             InferenceConfig(name="custom_config", always_return_edge_prediction=True),
         )
 
@@ -71,10 +79,10 @@ def test_add_detector_rejects_different_named_inference_config():
 def test_add_detector_rejects_duplicate_detector_id():
     """Rejects adding the same detector ID more than once."""
     detectors_config = DetectorsConfig()
-    detectors_config.add_detector("det_1", DEFAULT)
+    detectors_config.add_detector(DET_1, DEFAULT)
 
     with pytest.raises(ValueError, match="already exists"):
-        detectors_config.add_detector("det_1", DEFAULT)
+        detectors_config.add_detector(DET_1, DEFAULT)
 
 
 def test_constructor_rejects_duplicate_detector_ids():
@@ -83,8 +91,8 @@ def test_constructor_rejects_duplicate_detector_ids():
         DetectorsConfig(
             edge_inference_configs={"default": DEFAULT},
             detectors=[
-                {"detector_id": "det_1", "edge_inference_config": "default"},
-                {"detector_id": "det_1", "edge_inference_config": "default"},
+                {"detector_id": DET_1, "edge_inference_config": "default"},
+                {"detector_id": DET_1, "edge_inference_config": "default"},
             ],
         )
 
@@ -102,18 +110,18 @@ def test_constructor_accepts_matching_inference_config_key_and_name():
     """Accepts constructor input when key/name pairs are consistent."""
     config = DetectorsConfig(
         edge_inference_configs={"default": InferenceConfig(name="default")},
-        detectors=[{"detector_id": "det_1", "edge_inference_config": "default"}],
+        detectors=[{"detector_id": DET_1, "edge_inference_config": "default"}],
     )
 
     assert list(config.edge_inference_configs.keys()) == ["default"]
-    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
 def test_constructor_hydrates_inference_config_name_from_dict_key():
     """Hydrates inference config names from payload dict keys."""
     config = DetectorsConfig(
         edge_inference_configs={"default": {"enabled": True}},
-        detectors=[{"detector_id": "det_1", "edge_inference_config": "default"}],
+        detectors=[{"detector_id": DET_1, "edge_inference_config": "default"}],
     )
 
     assert config.edge_inference_configs["default"].name == "default"
@@ -124,7 +132,7 @@ def test_constructor_rejects_detector_map_input():
     with pytest.raises(ValueError):
         DetectorsConfig(
             edge_inference_configs={"default": {"enabled": True}},
-            detectors={"det_1": {"detector_id": "det_1", "edge_inference_config": "default"}},
+            detectors={DET_1: {"detector_id": DET_1, "edge_inference_config": "default"}},
         )
 
 
@@ -133,33 +141,33 @@ def test_constructor_rejects_undefined_inference_config_reference():
     with pytest.raises(ValueError, match="not defined"):
         DetectorsConfig(
             edge_inference_configs={},
-            detectors=[{"detector_id": "det_1", "edge_inference_config": "does_not_exist"}],
+            detectors=[{"detector_id": DET_1, "edge_inference_config": "does_not_exist"}],
         )
 
 
 def test_edge_endpoint_config_add_detector_uses_shared_config_logic():
     """Adds detectors via EdgeEndpointConfig and preserves inferred config mapping."""
     config = EdgeEndpointConfig()
-    config.add_detector("det_1", NO_CLOUD)
-    config.add_detector("det_2", EDGE_ANSWERS_WITH_ESCALATION)
-    config.add_detector("det_3", DEFAULT)
+    config.add_detector(DET_1, NO_CLOUD)
+    config.add_detector(DET_2, EDGE_ANSWERS_WITH_ESCALATION)
+    config.add_detector(DET_3, DEFAULT)
 
-    assert [detector.detector_id for detector in config.detectors] == ["det_1", "det_2", "det_3"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1, DET_2, DET_3]
     assert set(config.edge_inference_configs.keys()) == {"no_cloud", "edge_answers_with_escalation", "default"}
 
 
 def test_add_detector_accepts_detector_object():
     """Accepts Detector objects in add_detector."""
     config = EdgeEndpointConfig()
-    config.add_detector(_make_detector("det_1"), DEFAULT)
+    config.add_detector(_make_detector(DET_1), DEFAULT)
 
-    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
 def test_disabled_preset_can_be_used():
     """Allows assigning the DISABLED inference preset to a detector."""
     config = EdgeEndpointConfig()
-    config.add_detector("det_1", DISABLED)
+    config.add_detector(DET_1, DISABLED)
 
     assert [detector.edge_inference_config for detector in config.detectors] == ["disabled"]
     assert config.edge_inference_configs["disabled"] == DISABLED
@@ -168,8 +176,8 @@ def test_disabled_preset_can_be_used():
 def test_detectors_config_to_payload_shape():
     """Serializes detector-scoped payload with expected top-level keys."""
     detectors_config = DetectorsConfig()
-    detectors_config.add_detector("det_1", DEFAULT)
-    detectors_config.add_detector("det_2", NO_CLOUD)
+    detectors_config.add_detector(DET_1, DEFAULT)
+    detectors_config.add_detector(DET_2, NO_CLOUD)
 
     payload = detectors_config.to_payload()
 
@@ -182,11 +190,11 @@ def test_edge_endpoint_config_accepts_top_level_payload_shape():
     config = EdgeEndpointConfig.model_validate({
         "global_config": {"refresh_rate": CUSTOM_REFRESH_RATE},
         "edge_inference_configs": {"default": {"enabled": True}},
-        "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+        "detectors": [{"detector_id": DET_1, "edge_inference_config": "default"}],
     })
 
     assert config.global_config.refresh_rate == CUSTOM_REFRESH_RATE
-    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
 def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
@@ -198,12 +206,12 @@ def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
           default:
             enabled: true
         detectors:
-          - detector_id: det_1
+          - detector_id: {DET_1}
             edge_inference_config: default
         """)
 
     assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
-    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
 def test_edge_endpoint_config_from_yaml_accepts_filename(tmp_path):
@@ -215,12 +223,12 @@ def test_edge_endpoint_config_from_yaml_accepts_filename(tmp_path):
         "  default:\n"
         "    enabled: true\n"
         "detectors:\n"
-        "  - detector_id: det_1\n"
+        f"  - detector_id: {DET_1}\n"
         "    edge_inference_config: default\n"
     )
     config = EdgeEndpointConfig.from_yaml(filename=str(config_file))
 
-    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
 def test_edge_endpoint_config_from_yaml_requires_exactly_one_input():
@@ -243,13 +251,13 @@ def test_edge_endpoint_config_ignores_extra_fields_at_all_levels():
             "default": {"enabled": True, "unknown_inference_field": 42},
         },
         "detectors": [
-            {"detector_id": "det_1", "edge_inference_config": "default", "unknown_detector_field": [1, 2]},
+            {"detector_id": DET_1, "edge_inference_config": "default", "unknown_detector_field": [1, 2]},
         ],
         "unknown_top_level_field": True,
     })
     assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert config.edge_inference_configs["default"].enabled is True
-    assert config.detectors[0].detector_id == "det_1"
+    assert config.detectors[0].detector_id == DET_1
 
 
 def test_model_dump_shape_for_edge_endpoint_config():
@@ -257,9 +265,9 @@ def test_model_dump_shape_for_edge_endpoint_config():
     config = EdgeEndpointConfig(
         global_config=GlobalConfig(refresh_rate=CUSTOM_REFRESH_RATE, confident_audit_rate=CUSTOM_AUDIT_RATE)
     )
-    config.add_detector("det_1", DEFAULT)
-    config.add_detector("det_2", EDGE_ANSWERS_WITH_ESCALATION)
-    config.add_detector("det_3", NO_CLOUD)
+    config.add_detector(DET_1, DEFAULT)
+    config.add_detector(DET_2, EDGE_ANSWERS_WITH_ESCALATION)
+    config.add_detector(DET_3, NO_CLOUD)
 
     payload = config.to_payload()
 
@@ -272,8 +280,8 @@ def test_model_dump_shape_for_edge_endpoint_config():
 def test_edge_endpoint_config_from_payload_round_trip():
     """Round-trips edge endpoint config through payload helpers."""
     config = EdgeEndpointConfig()
-    config.add_detector("det_1", DEFAULT)
-    config.add_detector("det_2", NO_CLOUD)
+    config.add_detector(DET_1, DEFAULT)
+    config.add_detector(DET_2, NO_CLOUD)
 
     payload = config.to_payload()
     reconstructed = EdgeEndpointConfig.from_payload(payload)
@@ -286,14 +294,14 @@ def test_edge_endpoint_config_from_payload_accepts_literal_payload():
     payload = {
         "global_config": {"refresh_rate": REFRESH_RATE_SECONDS},
         "edge_inference_configs": {"default": {"enabled": True}},
-        "detectors": [{"detector_id": "det_1", "edge_inference_config": "default"}],
+        "detectors": [{"detector_id": DET_1, "edge_inference_config": "default"}],
     }
 
     config = EdgeEndpointConfig.from_payload(payload)
 
     assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
     assert config.edge_inference_configs["default"].name == "default"
-    assert [detector.detector_id for detector in config.detectors] == ["det_1"]
+    assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
 def test_inference_config_validation_errors():
@@ -301,9 +309,85 @@ def test_inference_config_validation_errors():
     with pytest.raises(ValueError, match="disable_cloud_escalation"):
         InferenceConfig(name="bad", disable_cloud_escalation=True)
 
-    with pytest.raises(ValueError, match="cannot be less than 0.0"):
+    with pytest.raises(ValidationError, match="greater_than"):
         InferenceConfig(
             name="bad_escalation_interval",
             always_return_edge_prediction=True,
             min_time_between_escalations=-1.0,
         )
+
+
+def test_confident_audit_rate_allows_zero():
+    """Zero is a valid confident_audit_rate (disables auditing)."""
+    gc = GlobalConfig(confident_audit_rate=0.0)
+    assert gc.confident_audit_rate == 0.0
+
+
+def test_edge_get_config_parses_response():
+    """gl.edge.get_config() parses the HTTP response into an EdgeEndpointConfig."""
+    payload = {
+        "global_config": {"refresh_rate": REFRESH_RATE_SECONDS},
+        "edge_inference_configs": {"default": {"enabled": True}},
+        "detectors": [{"detector_id": DET_1, "edge_inference_config": "default"}],
+    }
+
+    mock_response = Mock()
+    mock_response.json.return_value = payload
+    mock_response.raise_for_status = Mock()
+
+    gl = ExperimentalApi()
+    with patch("requests.request", return_value=mock_response) as mock_request:
+        config = gl.edge.get_config()
+
+    mock_request.assert_called_once()
+    assert isinstance(config, EdgeEndpointConfig)
+    assert config.global_config.refresh_rate == REFRESH_RATE_SECONDS
+    assert config.edge_inference_configs["default"].name == "default"
+    assert [d.detector_id for d in config.detectors] == [DET_1]
+
+
+def test_edge_set_config_sends_payload_and_polls():
+    """gl.edge.set_config() PUTs the config then polls readiness until all detectors are ready."""
+    config = EdgeEndpointConfig()
+    config.add_detector(DET_1, DEFAULT)
+
+    put_response = Mock()
+    put_response.raise_for_status = Mock()
+
+    readiness_response = Mock()
+    readiness_response.json.return_value = {DET_1: {"ready": True}}
+    readiness_response.raise_for_status = Mock()
+
+    get_response = Mock()
+    get_response.json.return_value = config.to_payload()
+    get_response.raise_for_status = Mock()
+
+    def route_request(method, url, **kwargs):
+        if method == "PUT":
+            return put_response
+        if "/edge-detector-readiness" in url:
+            return readiness_response
+        return get_response
+
+    gl = ExperimentalApi()
+    with patch("requests.request", side_effect=route_request):
+        result = gl.edge.set_config(config)
+
+    assert isinstance(result, EdgeEndpointConfig)
+    assert [d.detector_id for d in result.detectors] == [DET_1]
+
+
+def test_edge_get_detector_readiness():
+    """gl.edge.get_detector_readiness() returns a dict mapping detector IDs to booleans."""
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        DET_1: {"ready": True},
+        DET_2: {"ready": False},
+    }
+    mock_response.raise_for_status = Mock()
+
+    gl = ExperimentalApi()
+    with patch("requests.request", return_value=mock_response):
+        readiness = gl.edge.get_detector_readiness()
+
+    assert readiness == {DET_1: True, DET_2: False}

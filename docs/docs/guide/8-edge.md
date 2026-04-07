@@ -38,6 +38,46 @@ python your_app.py
 In the above example, the `edge-endpoint` is running on the same machine as the application, so the endpoint URL is `http://localhost:30101`. If the `edge-endpoint` is running on a different machine, you should replace `localhost` with the IP address or hostname of the machine running the `edge-endpoint`.
 :::
 
+## Configuring the Edge Endpoint at Runtime
+
+:::note
+Runtime edge configuration is currently in beta and available through the `ExperimentalApi`.
+:::
+
+You can programmatically configure which detectors run on the edge and how they behave, without redeploying. 
+
+This allows applications to define the desired state of the Edge Endpoint, thereby eliminating the need to manually configure the Edge Endpoint separately.
+
+```python notest
+from groundlight import ExperimentalApi
+from groundlight.edge import EdgeEndpointConfig
+from groundlight.edge.config import NO_CLOUD, EDGE_ANSWERS_WITH_ESCALATION
+
+# Connect to an Edge Endpoint
+gl = ExperimentalApi(endpoint="http://localhost:30101")
+
+# Build a configuration with detectors and inference presets
+config = EdgeEndpointConfig()
+config.add_detector("det_YOUR_DETECTOR_ID_HERE_01", NO_CLOUD)
+config.add_detector("det_YOUR_DETECTOR_ID_HERE_02", EDGE_ANSWERS_WITH_ESCALATION)
+
+# Apply the configuration and wait for detectors to be ready
+print("Applying configuration...")
+config = gl.edge.set_config(config)
+print(f"Applied config with {len(config.detectors)} detector(s)")
+```
+
+`set_config` replaces the current configuration and blocks until all detectors have inference pods ready to serve requests (or until the timeout expires).
+
+You can also inspect the current configuration:
+
+```python notest
+# Retrieve the active configuration
+config = gl.edge.get_config()
+for det in config.detectors:
+    print(f"  {det.detector_id} -> {det.edge_inference_config}")
+```
+
 ## Edge Endpoint performance
 
 We have benchmarked the `edge-endpoint` handling 500 requests/sec at a latency of less than 50ms on an off-the-shelf [Katana 15 B13VGK-1007US](https://us.msi.com/Laptop/Katana-15-B13VX/Specification) laptop (Intel® Core™ i9-13900H CPU, NVIDIA® GeForce RTX™ 4070 Laptop GPU, 32GB DDR5 5200MHz RAM) running Ubuntu 20.04.
