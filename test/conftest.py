@@ -6,6 +6,10 @@ import pytest
 from groundlight import ExperimentalApi, Groundlight
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
+# No test in the suite expects a human review answer, and the server already blocks ~6s
+# for ML inference before returning. Client-side polling adds no value.
+TEST_IQ_SUBMISSION_WAIT = 0.0
+
 
 def _generate_unique_detector_name(prefix: str = "Test") -> str:
     """Generates a detector name with a timestamp and random suffix to ensure uniqueness."""
@@ -31,7 +35,7 @@ def pytest_configure(config):  # pylint: disable=unused-argument
 def fixture_gl() -> Groundlight:
     """Creates a Groundlight client object for testing."""
     _gl = Groundlight()
-    _gl.DEFAULT_WAIT = 10
+    _gl.DEFAULT_WAIT = TEST_IQ_SUBMISSION_WAIT
     return _gl
 
 
@@ -84,7 +88,7 @@ def fixture_image_query_zero(gl_experimental: Groundlight, count_detector: Detec
 @pytest.fixture(name="gl_experimental")
 def fixture_gl_experimental() -> ExperimentalApi:
     _gl = ExperimentalApi()
-    _gl.DEFAULT_WAIT = 10
+    _gl.DEFAULT_WAIT = TEST_IQ_SUBMISSION_WAIT
     return _gl
 
 
