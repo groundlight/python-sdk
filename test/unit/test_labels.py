@@ -2,6 +2,7 @@ from typing import Callable
 
 import pytest
 from groundlight import ApiException, ExperimentalApi
+
 from test.retry_decorator import retry_on_failure
 
 
@@ -24,7 +25,9 @@ def test_binary_labels(gl_experimental: ExperimentalApi, detector_name: Callable
 
 @retry_on_failure()
 def test_counting_labels(gl_experimental: ExperimentalApi, detector_name: Callable):
-    det = gl_experimental.create_counting_detector(detector_name("Test counting labels"), "test_query", "test_object_class")
+    det = gl_experimental.create_counting_detector(
+        detector_name("Test counting labels"), "test_query", "test_object_class"
+    )
     iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
 
     gl_experimental.add_label(iq1, 0)
@@ -71,7 +74,9 @@ def test_multiclass_labels(gl_experimental: ExperimentalApi, detector_name: Call
 
 @retry_on_failure()
 def test_bounding_box_labels(gl_experimental: ExperimentalApi, detector_name: Callable):
-    det = gl_experimental.create_bounding_box_detector(detector_name("Test bounding box labels"), "test_query", "test_class")
+    det = gl_experimental.create_bounding_box_detector(
+        detector_name("Test bounding box labels"), "test_query", "test_class"
+    )
     iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
     gl_experimental.add_label(iq1, "NO_OBJECTS")
     iq1 = gl_experimental.get_image_query(iq1.id)

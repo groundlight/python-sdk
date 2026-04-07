@@ -26,9 +26,10 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-from test.retry_decorator import retry_on_failure
 from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
+
+from test.retry_decorator import retry_on_failure
 
 DEFAULT_CONFIDENCE_THRESHOLD = 0.9
 IQ_IMPROVEMENT_THRESHOLD = 0.75

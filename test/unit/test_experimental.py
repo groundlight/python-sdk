@@ -4,6 +4,7 @@ from typing import Callable
 import pytest
 from groundlight import ExperimentalApi
 from model import Detector, ImageQuery
+
 from test.retry_decorator import retry_on_failure
 
 
