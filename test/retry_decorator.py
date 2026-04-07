@@ -1,13 +1,15 @@
 """Test-only helpers for retrying tests affected by transient cloud timing."""
 
 import functools
+import time
 from typing import Any, Callable, Tuple, Type
 
 
 def retry_on_failure(
     *,
     max_attempts: int = 3,
-    exception_types: Tuple[Type[BaseException], ...] = (Exception,),
+    exception_types: Tuple[Type[BaseException], ...] = (AssertionError,),
+    retry_delay_seconds: float = 5.0,
 ) -> Callable[[Callable[..., Any]], Callable[..., None]]:
     """Run the wrapped test up to `max_attempts` times when it raises a listed exception."""
 
@@ -24,6 +26,7 @@ def retry_on_failure(
                 except exception_types:
                     if attempt == max_attempts - 1:
                         raise
+                    time.sleep(retry_delay_seconds)
 
         return wrapper
 

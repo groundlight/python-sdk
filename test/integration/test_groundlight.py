@@ -656,6 +656,7 @@ def test_list_image_queries_with_filter(gl: Groundlight, detector_name: Callable
         assert image_query.id in iq_ids
 
 
+@retry_on_failure()
 def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     _image_query = gl.get_image_query(id=image_query_yes.id)
     assert str(_image_query)
@@ -663,12 +664,14 @@ def test_get_image_query(gl: Groundlight, image_query_yes: ImageQuery):
     assert is_valid_display_result(_image_query.result)
 
 
+@retry_on_failure()
 def test_get_image_query_label_yes(gl: Groundlight, image_query_yes: ImageQuery):
     gl.add_label(image_query_yes, Label.YES)
     retrieved_iq = gl.get_image_query(id=image_query_yes.id)
     assert retrieved_iq.result.label == Label.YES
 
 
+@retry_on_failure()
 def test_get_image_query_label_no(gl: Groundlight, image_query_no: ImageQuery):
     gl.add_label(image_query_no, Label.NO)
     retrieved_iq = gl.get_image_query(id=image_query_no.id)
@@ -839,7 +842,6 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
-@retry_on_failure()
 def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, detector: Detector, image: str):
     inspection_id = gl.start_inspection()
     metadata = {"key": "value"}
