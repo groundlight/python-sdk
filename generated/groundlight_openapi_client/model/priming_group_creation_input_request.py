@@ -130,7 +130,7 @@ class PrimingGroupCreationInputRequest(ModelNormal):
         """PrimingGroupCreationInputRequest - a model defined in OpenAPI
 
         Args:
-            name (str): Unique name for the new priming group.
+            name (str): Name for the new priming group.
             source_ml_pipeline_id (str): ID of an MLPipeline owned by this account whose trained model will seed the priming group.
 
         Keyword Args:
@@ -222,7 +222,7 @@ class PrimingGroupCreationInputRequest(ModelNormal):
         """PrimingGroupCreationInputRequest - a model defined in OpenAPI
 
         Args:
-            name (str): Unique name for the new priming group.
+            name (str): Name for the new priming group.
             source_ml_pipeline_id (str): ID of an MLPipeline owned by this account whose trained model will seed the priming group.
 
         Keyword Args:

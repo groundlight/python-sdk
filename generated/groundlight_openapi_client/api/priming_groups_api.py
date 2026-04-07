@@ -383,7 +383,7 @@ class PrimingGroupsApi(object):
     def list_priming_groups(self, **kwargs):
         """list_priming_groups  # noqa: E501
 
-        List all priming groups owned by the authenticated user.  # noqa: E501
+        List all priming groups either owned by the authenticated user, or with is_global=True.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 

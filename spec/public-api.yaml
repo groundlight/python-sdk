@@ -855,7 +855,8 @@ paths:
   /v1/priming-groups:
     get:
       operationId: List priming groups
-      description: List all priming groups owned by the authenticated user.
+      description: List all priming groups either owned by the authenticated user,
+        or with is_global=True.
       parameters:
       - name: ordering
         required: false
@@ -1737,8 +1738,8 @@ components:
         is_global:
           type: boolean
           readOnly: true
-          description: If True, this priming group is shared to all Groundlight users
-            by Groundlight admins.
+          description: If True, this priming group is shared to all Groundlight users.
+            Can only be set by Groundlight admins.
         canonical_query:
           type: string
           nullable: true
@@ -1747,16 +1748,16 @@ components:
         active_pipeline_config:
           type: string
           nullable: true
-          description: Active pipeline config override for detectors in this priming
-            group. If set, this overrides the default active pipeline config. Can
-            be either a pipeline name or full config string.
+          description: Active pipeline config override for new detectors created in
+            this priming group. If set, this overrides the default active pipeline
+            config at creation time.Can be either a pipeline name or full config string.
           maxLength: 8192
         priming_group_specific_shadow_pipeline_configs:
           nullable: true
-          description: 'Priming group-specific shadow pipeline configs to create for
-            detectors in this priming group. These are added to the default shadow
-            pipeline configs for a detector of the given modeEach entry is either
-            a pipeline name or full config string. '
+          description: 'Configs for shadow pipelines to create for detectors in this
+            priming group. These are added to the default shadow pipeline configs
+            for a detector of the given mode. Each entry is either a pipeline name
+            or full config string. '
         disable_shadow_pipelines:
           type: boolean
           description: If True, new detectors added to this priming group will not
@@ -1782,7 +1783,7 @@ components:
         name:
           type: string
           minLength: 1
-          description: Unique name for the new priming group.
+          description: Name for the new priming group.
           maxLength: 100
         source_ml_pipeline_id:
           type: string

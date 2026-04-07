@@ -168,10 +168,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_ml_pipeline.py
-test/test_paginated_ml_pipeline_list.py
-test/test_paginated_priming_group_list.py
-test/test_priming_group.py
-test/test_priming_group_creation_input_request.py
-test/test_priming_groups_api.py
 tox.ini
