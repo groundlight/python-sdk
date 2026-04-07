@@ -8,6 +8,7 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -18,11 +19,14 @@ from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
+from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
+from groundlight_openapi_client.exceptions import ApiException, NotFoundException
 from groundlight_openapi_client.model.action_request import ActionRequest
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
+from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
@@ -103,6 +107,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
+        self.priming_groups_api = PrimingGroupsApi(self.api_client)
 
         self.edge_api = EdgeApi(self.api_client)
 
@@ -846,9 +851,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector_id = detector.id if isinstance(detector, Detector) else detector
         url = f"{self.api_client.configuration.host}/v1/detectors/{detector_id}/pipelines"
         response = requests.get(
-            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
+            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl  # pylint: disable=protected-access
         )
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND:
             raise NotFoundError(f"Detector '{detector_id}' not found.")
         response.raise_for_status()
         data = response.json()
@@ -874,13 +879,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         :return: A list of PrimingGroup objects.
         """
-        url = f"{self.api_client.configuration.host}/v1/priming-groups"
-        response = requests.get(
-            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
-        )
-        response.raise_for_status()
-        data = response.json()
-        return [PrimingGroup(**item) for item in data.get("results", [])]
+        paginated_result = self.priming_groups_api.list_priming_groups()
+        return [PrimingGroup.parse_obj(pg.to_dict()) for pg in paginated_result.results]
 
     def create_priming_group(
         self,
@@ -919,19 +919,14 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                                          default shadow pipelines, ensuring the primed model stays active.
         :return: The created PrimingGroup object.
         """
-        url = f"{self.api_client.configuration.host}/v1/priming-groups"
-        payload: dict = {
-            "name": name,
-            "source_ml_pipeline_id": source_ml_pipeline_id,
-            "disable_shadow_pipelines": disable_shadow_pipelines,
-        }
-        if canonical_query is not None:
-            payload["canonical_query"] = canonical_query
-        response = requests.post(
-            url, json=payload, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
+        request = PrimingGroupCreationInputRequest(
+            name=name,
+            source_ml_pipeline_id=source_ml_pipeline_id,
+            canonical_query=canonical_query,
+            disable_shadow_pipelines=disable_shadow_pipelines,
         )
-        response.raise_for_status()
-        return PrimingGroup(**response.json())
+        result = self.priming_groups_api.create_priming_group(request)
+        return PrimingGroup.parse_obj(result.to_dict())
 
     def get_priming_group(self, priming_group_id: str) -> PrimingGroup:
         """
@@ -946,16 +941,16 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :param priming_group_id: The ID of the PrimingGroup to retrieve.
         :return: The PrimingGroup object.
         """
-        url = f"{self.api_client.configuration.host}/v1/priming-groups/{priming_group_id}"
-        response = requests.get(
-            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
-        )
-        if response.status_code == 404:
-            raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.")
-        if response.status_code == 410:
-            raise NotFoundError(f"PrimingGroup '{priming_group_id}' has been deleted.")
-        response.raise_for_status()
-        return PrimingGroup(**response.json())
+        try:
+            result = self.priming_groups_api.get_priming_group(priming_group_id)
+            return PrimingGroup.parse_obj(result.to_dict())
+        except NotFoundException as e:
+            raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.") from e
+        except ApiException as e:
+            # Handle 410 Gone (soft-deleted priming groups)
+            if e.status == HTTPStatus.GONE:
+                raise NotFoundError(f"PrimingGroup '{priming_group_id}' has been deleted.") from e
+            raise
 
     def delete_priming_group(self, priming_group_id: str) -> None:
         """
@@ -971,10 +966,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         :param priming_group_id: The ID of the PrimingGroup to delete.
         """
-        url = f"{self.api_client.configuration.host}/v1/priming-groups/{priming_group_id}"
-        response = requests.delete(
-            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl
-        )
-        if response.status_code == 404:
-            raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.")
-        response.raise_for_status()
+        try:
+            self.priming_groups_api.delete_priming_group(priming_group_id)
+        except NotFoundException as e:
+            raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.") from e
