@@ -851,7 +851,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         detector_id = detector.id if isinstance(detector, Detector) else detector
         url = f"{self.api_client.configuration.host}/v1/detectors/{detector_id}/pipelines"
         response = requests.get(
-            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl  # pylint: disable=protected-access
+            url,
+            headers=self.api_client._headers(),
+            verify=self.api_client.configuration.verify_ssl,  # pylint: disable=protected-access
         )
         if response.status_code == HTTPStatus.NOT_FOUND:
             raise NotFoundError(f"Detector '{detector_id}' not found.")
