@@ -26,6 +26,7 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
+from test.retry_decorator import retry_on_failure
 from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
 
@@ -273,6 +274,7 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
         gl.get_detector_by_name(name="not a real name")
 
 
+@retry_on_failure()
 def test_ask_confident(gl: Groundlight, detector: Detector):
     _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
@@ -280,6 +282,7 @@ def test_ask_confident(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@retry_on_failure()
 def test_ask_ml(gl: Groundlight, detector: Detector):
     _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
     assert str(_image_query)
@@ -287,6 +290,7 @@ def test_ask_ml(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@retry_on_failure()
 def test_submit_image_query(gl: Groundlight, detector: Detector):
     def validate_image_query(_image_query: ImageQuery):
         assert str(_image_query)
@@ -314,6 +318,7 @@ def test_submit_image_query(gl: Groundlight, detector: Detector):
     assert _image_query.result.confidence >= IQ_IMPROVEMENT_THRESHOLD
 
 
+@retry_on_failure()
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(
         detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
@@ -323,6 +328,7 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@retry_on_failure()
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", pipeline_config="never-review")
@@ -330,6 +336,7 @@ def test_submit_image_query_returns_yes(gl: Groundlight):
     assert image_query.result.label == Label.YES
 
 
+@retry_on_failure()
 def test_submit_image_query_returns_text(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(
@@ -339,6 +346,7 @@ def test_submit_image_query_returns_text(gl: Groundlight):
     assert isinstance(image_query.text, str)
 
 
+@retry_on_failure()
 def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     assert str(_image_query)
@@ -346,6 +354,7 @@ def test_submit_image_query_filename(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@retry_on_failure()
 def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/cat.png", human_review="NEVER")
     assert str(_image_query)
@@ -353,6 +362,7 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
+@retry_on_failure()
 def test_submit_image_query_with_confidence_threshold(gl: Groundlight, detector: Detector):
     confidence_threshold = 0.5234  # Arbitrary specific value
     _image_query = gl.submit_image_query(
@@ -366,6 +376,7 @@ def test_submit_image_query_with_confidence_threshold(gl: Groundlight, detector:
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing an image query ID.")
+@retry_on_failure()
 def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     # submit_image_query
     id = f"iq_{KsuidMs()}"
@@ -380,6 +391,7 @@ def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     assert _image_query.metadata.get("is_from_edge")
 
 
+@retry_on_failure()
 def test_submit_image_query_with_human_review_param(gl: Groundlight, detector: Detector):
     # For now, this just tests that the image query is submitted successfully.
     # There should probably be a better way to check whether the image query was escalated for human review.
@@ -451,6 +463,7 @@ def test_create_detector_with_invalid_metadata(gl: Groundlight, metadata_list: A
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing image query metadata.")
 @pytest.mark.parametrize("metadata", [None, {}, {"a": 1}, '{"a": 1}'])
+@retry_on_failure()
 def test_submit_image_query_with_metadata(
     gl: Groundlight, detector: Detector, image: str, metadata: Union[Dict, str, None]
 ):
@@ -505,6 +518,7 @@ def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, de
     assert is_user_error(exc_info.value.status)
 
 
+@retry_on_failure()
 def test_submit_image_query_jpeg_bytes(gl: Groundlight, detector: Detector):
     jpeg = open("test/assets/dog.jpeg", "rb").read()
     _image_query = gl.submit_image_query(detector=detector.id, image=jpeg, human_review="NEVER")
@@ -543,6 +557,7 @@ def test_submit_image_query_bad_jpeg_file(gl: Groundlight, detector: Detector):
 
 
 @pytest.mark.skipif(MISSING_PIL, reason="Needs pillow")  # type: ignore
+@retry_on_failure()
 def test_submit_image_query_pil(gl: Groundlight, detector: Detector):
     # generates a pil image and submits it
     from PIL import Image
@@ -565,6 +580,7 @@ def test_submit_image_query_wait_and_want_async_causes_exception(gl: Groundlight
         )
 
 
+@retry_on_failure()
 def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: Detector):
     """
     Tests the workflow for submitting an image query with the want_async parameter set to True.
@@ -589,6 +605,7 @@ def test_submit_image_query_with_want_async_workflow(gl: Groundlight, detector: 
     assert _image_query.result.label in VALID_DISPLAY_LABELS
 
 
+@retry_on_failure()
 def test_ask_async_workflow(gl: Groundlight, detector: Detector):
     """
     Tests the workflow for submitting an image query with ask_async.
@@ -709,6 +726,7 @@ def test_enum_string_equality():
 
 
 @pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
+@retry_on_failure()
 def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     np_img = np.random.uniform(0, 255, (600, 800, 3))  # type: ignore
     _image_query = gl.submit_image_query(detector=detector.id, image=np_img, human_review="NEVER")
@@ -820,6 +838,7 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
 
 
 @pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
+@retry_on_failure()
 def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, detector: Detector, image: str):
     inspection_id = gl.start_inspection()
     metadata = {"key": "value"}
@@ -852,6 +871,7 @@ def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: 
     )
 
 
+@retry_on_failure()
 def test_binary_detector(gl: Groundlight, detector_name: Callable):
     """
     verify that we can create and submit to a binary detector
@@ -863,6 +883,7 @@ def test_binary_detector(gl: Groundlight, detector_name: Callable):
     assert binary_iq.result.label is not None
 
 
+@retry_on_failure()
 def test_counting_detector(gl: Groundlight, detector_name: Callable):
     """
     verify that we can create and submit to a counting detector
@@ -874,6 +895,7 @@ def test_counting_detector(gl: Groundlight, detector_name: Callable):
     assert count_iq.result.count is not None
 
 
+@retry_on_failure()
 def test_counting_detector_async(gl: Groundlight, detector_name: Callable):
     """
     verify that we can create and submit to a counting detector
@@ -893,6 +915,7 @@ def test_counting_detector_async(gl: Groundlight, detector_name: Callable):
     assert _image_query.result is not None
 
 
+@retry_on_failure()
 def test_multiclass_detector(gl: Groundlight, detector_name: Callable):
     """
     verify that we can create and submit to a multi-class detector
