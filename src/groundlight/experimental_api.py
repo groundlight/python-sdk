@@ -849,15 +849,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :return: A list of MLPipeline objects for this detector.
         """
         detector_id = detector.id if isinstance(detector, Detector) else detector
-        url = f"{self.api_client.configuration.host}/v1/detectors/{detector_id}/pipelines"
-        response = requests.get(
-            url, headers=self.api_client._headers(), verify=self.api_client.configuration.verify_ssl  # pylint: disable=protected-access
-        )
-        if response.status_code == HTTPStatus.NOT_FOUND:
-            raise NotFoundError(f"Detector '{detector_id}' not found.")
-        response.raise_for_status()
-        data = response.json()
-        return [MLPipeline(**item) for item in data.get("results", [])]
+        try:
+            paginated_result = self.detectors_api.list_detector_pipelines(detector_id)
+            return [MLPipeline(**p.to_dict()) for p in paginated_result.results]
+        except NotFoundException as e:
+            raise NotFoundError(f"Detector '{detector_id}' not found.") from e
 
     # ---------------------------------------------------------------------------
     # PrimingGroup methods
