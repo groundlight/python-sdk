@@ -2,6 +2,7 @@ from typing import Callable
 
 import PIL
 from groundlight import ExperimentalApi
+
 from test.retry_decorator import retry_on_failure
 
 
