@@ -859,7 +859,7 @@ def test_binary_detector(gl: Groundlight, detector_name: Callable):
     name = detector_name()
     created_detector = gl.create_binary_detector(name, "Is there a dog", confidence_threshold=0.0)
     assert created_detector is not None
-    binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert binary_iq.result.label is not None
 
 
@@ -870,7 +870,7 @@ def test_counting_detector(gl: Groundlight, detector_name: Callable):
     name = detector_name()
     created_detector = gl.create_counting_detector(name, "How many dogs", "dog", confidence_threshold=0.0)
     assert created_detector is not None
-    count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert count_iq.result.count is not None
 
 
@@ -903,7 +903,7 @@ def test_multiclass_detector(gl: Groundlight, detector_name: Callable):
         name, "What kind of dog is this?", class_names=class_names, confidence_threshold=0.0
     )
     assert created_detector is not None
-    mc_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    mc_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert mc_iq.result.label is not None
     assert mc_iq.result.label in class_names
 
@@ -928,7 +928,7 @@ def test_delete_detector(gl: Groundlight, detector_name: Callable):
     # Create another detector to test deletion by ID string and that an attached image query is deleted
     name2 = detector_name("Test delete detector 2")
     detector2 = gl.create_detector(name=name2, query=query, pipeline_config=pipeline_config)
-    gl.submit_image_query(detector2, "test/assets/dog.jpeg")
+    gl.submit_image_query(detector2, "test/assets/dog.jpeg", wait=0)
 
     time.sleep(10)
 

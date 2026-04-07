@@ -7,7 +7,7 @@ from groundlight import ApiException, ExperimentalApi
 def test_binary_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
     det = gl_experimental.create_detector(name, "test_query")
-    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg", wait=0)
     gl_experimental.add_label(iq1, "YES")
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.label == "YES"
@@ -24,7 +24,7 @@ def test_binary_labels(gl_experimental: ExperimentalApi):
 def test_counting_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
     det = gl_experimental.create_counting_detector(name, "test_query", "test_object_class")
-    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg", wait=0)
 
     gl_experimental.add_label(iq1, 0)
     iq1 = gl_experimental.get_image_query(iq1.id)
@@ -48,7 +48,7 @@ def test_counting_labels(gl_experimental: ExperimentalApi):
 def test_multiclass_labels(gl_experimental: ExperimentalApi):
     name = f"Test binary labels{datetime.utcnow()}"
     det = gl_experimental.create_multiclass_detector(name, "test_query", class_names=["apple", "banana", "cherry"])
-    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg", wait=0)
     gl_experimental.add_label(iq1, "apple")
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.label == "apple"
@@ -69,7 +69,7 @@ def test_multiclass_labels(gl_experimental: ExperimentalApi):
 def test_bounding_box_labels(gl_experimental: ExperimentalApi):
     name = f"Test bounding box labels{datetime.utcnow()}"
     det = gl_experimental.create_bounding_box_detector(name, "test_query", "test_class")
-    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg", wait=0)
     gl_experimental.add_label(iq1, "NO_OBJECTS")
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.label == "NO_OBJECTS"
@@ -87,7 +87,7 @@ def test_bounding_box_labels(gl_experimental: ExperimentalApi):
 def test_text_recognition_labels(gl_experimental: ExperimentalApi):
     name = f"Test text recognition labels{datetime.utcnow()}"
     det = gl_experimental.create_text_recognition_detector(name, "test_query")
-    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg")
+    iq1 = gl_experimental.submit_image_query(det, "test/assets/cat.jpeg", wait=0)
     gl_experimental.add_label(iq1, "apple text")
     iq1 = gl_experimental.get_image_query(iq1.id)
     assert iq1.result.text == "apple text"
