@@ -7,7 +7,7 @@ from typing import Any, Callable, Tuple, Type
 
 def retry_on_failure(
     *,
-    max_attempts: int = 3,
+    max_attempts: int = 2,
     exception_types: Tuple[Type[BaseException], ...] = (AssertionError,),
     retry_delay_seconds: float = 5.0,
 ) -> Callable[[Callable[..., Any]], Callable[..., None]]:
