@@ -80,7 +80,7 @@ def test_submit_image_query_attempts_retries(gl: Groundlight, detector_name: Cal
         expected_call_counts=TOTAL_RETRIES + 1,
         detector=detector_name(),
         image=IMAGE_FILE,
-        wait=1,
+        wait=0,
     )
 
 

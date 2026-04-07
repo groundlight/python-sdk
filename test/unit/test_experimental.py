@@ -99,7 +99,7 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi, detector_na
         name, "What is the date and time?", confidence_threshold=0.0
     )
     assert created_detector is not None
-    mc_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    mc_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert mc_iq.result.text is not None
 
 
@@ -112,7 +112,7 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi, detector_name: 
         name, "Draw a bounding box around each dog in the image", "dog", confidence_threshold=0.0
     )
     assert created_detector is not None
-    bbox_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    bbox_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert bbox_iq.result.label is not None
     assert bbox_iq.rois is not None
 

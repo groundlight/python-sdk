@@ -81,6 +81,8 @@ def test_detector_and_image_queries(detector_name: Callable):
             "submit-image-query",
             det_id_on_create,
             "test/assets/cat.jpeg",
+            "--wait",
+            "0",
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

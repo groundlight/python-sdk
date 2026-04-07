@@ -274,14 +274,14 @@ def test_get_detector_by_name(gl: Groundlight, detector: Detector):
 
 
 def test_ask_confident(gl: Groundlight, detector: Detector):
-    _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    _image_query = gl.ask_confident(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
 
 
 def test_ask_ml(gl: Groundlight, detector: Detector):
-    _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=10)
+    _image_query = gl.ask_ml(detector=detector.id, image="test/assets/dog.jpeg", wait=0)
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
@@ -294,21 +294,21 @@ def test_submit_image_query(gl: Groundlight, detector: Detector):
         assert is_valid_display_result(_image_query.result)
 
     _image_query = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, human_review="NEVER"
     )
     validate_image_query(_image_query)
     _image_query = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=3, human_review="NEVER"
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, human_review="NEVER"
     )
     validate_image_query(_image_query)
     _image_query = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=10, patience_time=20, human_review="NEVER"
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, patience_time=20, human_review="NEVER"
     )
     validate_image_query(_image_query)
     _image_query = gl.submit_image_query(detector=detector.id, image="test/assets/dog.jpeg", human_review="NEVER")
     validate_image_query(_image_query)
     _image_query = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=180, confidence_threshold=0.75, human_review="NEVER"
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, confidence_threshold=0.75, human_review="NEVER"
     )
     validate_image_query(_image_query)
     assert _image_query.result.confidence >= IQ_IMPROVEMENT_THRESHOLD
@@ -316,7 +316,7 @@ def test_submit_image_query(gl: Groundlight, detector: Detector):
 
 def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
     _image_query = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER"
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, human_review="NEVER"
     )
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
@@ -326,7 +326,7 @@ def test_submit_image_query_blocking(gl: Groundlight, detector: Detector):
 def test_submit_image_query_returns_yes(gl: Groundlight):
     # We use the "never-review" pipeline to guarantee a confident "yes" answer.
     detector = gl.get_or_create_detector(name="Always a dog", query="Is there a dog?", pipeline_config="never-review")
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10, human_review="NEVER")
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=0, human_review="NEVER")
     assert image_query.result.label == Label.YES
 
 
@@ -335,7 +335,7 @@ def test_submit_image_query_returns_text(gl: Groundlight):
     detector = gl.get_or_create_detector(
         name="Always same text", query="Is there a dog?", pipeline_config="constant-text-pred"
     )
-    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=10, human_review="NEVER")
+    image_query = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", wait=0, human_review="NEVER")
     assert isinstance(image_query.text, str)
 
 
@@ -358,7 +358,7 @@ def test_submit_image_query_with_confidence_threshold(gl: Groundlight, detector:
     _image_query = gl.submit_image_query(
         detector=detector.id,
         image="test/assets/dog.jpeg",
-        wait=10,
+        wait=0,
         confidence_threshold=confidence_threshold,
         human_review="NEVER",
     )
@@ -370,7 +370,7 @@ def test_submit_image_query_with_id(gl: Groundlight, detector: Detector):
     # submit_image_query
     id = f"iq_{KsuidMs()}"
     _image_query = gl.submit_image_query(
-        detector=detector.id, image="test/assets/dog.jpeg", wait=10, human_review="NEVER", image_query_id=id
+        detector=detector.id, image="test/assets/dog.jpeg", wait=0, human_review="NEVER", image_query_id=id
     )
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
@@ -859,7 +859,7 @@ def test_binary_detector(gl: Groundlight, detector_name: Callable):
     name = detector_name()
     created_detector = gl.create_binary_detector(name, "Is there a dog", confidence_threshold=0.0)
     assert created_detector is not None
-    binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    binary_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert binary_iq.result.label is not None
 
 
@@ -870,7 +870,7 @@ def test_counting_detector(gl: Groundlight, detector_name: Callable):
     name = detector_name()
     created_detector = gl.create_counting_detector(name, "How many dogs", "dog", confidence_threshold=0.0)
     assert created_detector is not None
-    count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert count_iq.result.count is not None
 
 
@@ -903,7 +903,7 @@ def test_multiclass_detector(gl: Groundlight, detector_name: Callable):
         name, "What kind of dog is this?", class_names=class_names, confidence_threshold=0.0
     )
     assert created_detector is not None
-    mc_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    mc_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg", wait=0)
     assert mc_iq.result.label is not None
     assert mc_iq.result.label in class_names
 
@@ -928,7 +928,7 @@ def test_delete_detector(gl: Groundlight, detector_name: Callable):
     # Create another detector to test deletion by ID string and that an attached image query is deleted
     name2 = detector_name("Test delete detector 2")
     detector2 = gl.create_detector(name=name2, query=query, pipeline_config=pipeline_config)
-    gl.submit_image_query(detector2, "test/assets/dog.jpeg")
+    gl.submit_image_query(detector2, "test/assets/dog.jpeg", wait=0)
 
     time.sleep(10)
 
