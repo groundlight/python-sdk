@@ -1,3 +1,4 @@
+from .api import EdgeEndpointApi
 from .config import (
     DEFAULT,
     DISABLED,
@@ -14,6 +15,7 @@ __all__ = [
     "DEFAULT",
     "DISABLED",
     "EDGE_ANSWERS_WITH_ESCALATION",
+    "EdgeEndpointApi",
     "NO_CLOUD",
     "DetectorsConfig",
     "DetectorConfig",

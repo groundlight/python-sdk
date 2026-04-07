@@ -11,6 +11,7 @@ import json
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
@@ -42,6 +43,7 @@ from model import (
 )
 from urllib3.response import HTTPResponse
 
+from groundlight.edge.api import EdgeEndpointApi
 from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
@@ -104,7 +106,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
 
-        self.edge_api = EdgeApi(self.api_client)
+        # API client for fetching Edge models
+        self._edge_model_download_api = EdgeApi(self.api_client)
+
+        # API client for interacting with the EdgeEndpoint (getting/setting configuration, etc.)
+        self.edge = EdgeEndpointApi(self)
 
     ITEMS_PER_PAGE = 100
 
@@ -706,7 +712,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         """
         if isinstance(detector, Detector):
             detector = detector.id
-        obj = self.edge_api.get_model_urls(detector)
+        obj = self._edge_model_download_api.get_model_urls(detector)
         return EdgeModelInfo.parse_obj(obj.to_dict())
 
     def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:
@@ -819,6 +825,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             auth_settings=["ApiToken"],
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
+
+    def edge_base_url(self) -> str:
+        """Return the scheme+host+port of the configured endpoint, without the /device-api path."""
+        parsed = urlparse(self.configuration.host)
+        return urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
 
     # ---------------------------------------------------------------------------
     # ML Pipeline methods
