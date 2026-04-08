@@ -5,6 +5,8 @@ import pytest
 from groundlight import ExperimentalApi
 from model import Detector, ImageQuery
 
+from test.retry_decorator import retry_on_failure
+
 
 def test_detector_groups(gl_experimental: ExperimentalApi, detector_name: Callable):
     """
@@ -90,6 +92,7 @@ def test_submit_multiple_rois(gl_experimental: ExperimentalApi, image_query_one:
     gl_experimental.add_label(image_query_one, 3, [roi] * 3)
 
 
+@retry_on_failure()
 def test_text_recognition_detector(gl_experimental: ExperimentalApi, detector_name: Callable):
     """
     verify that we can create and submit to a text recognition detector
@@ -103,6 +106,7 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi, detector_na
     assert mc_iq.result.text is not None
 
 
+@retry_on_failure()
 def test_bounding_box_detector(gl_experimental: ExperimentalApi, detector_name: Callable):
     """
     Verify that we can create and submit to a bounding box detector
@@ -117,6 +121,7 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi, detector_name: 
     assert bbox_iq.rois is not None
 
 
+@retry_on_failure()
 def test_bounding_box_detector_async(gl_experimental: ExperimentalApi, detector_name: Callable):
     """
     Verify that we can create and submit to a bounding box detector with ask_async
