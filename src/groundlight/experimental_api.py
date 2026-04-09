@@ -37,7 +37,6 @@ from model import (
     Condition,
     Detector,
     EdgeModelInfo,
-    MLPipeline,
     ModeEnum,
     PaginatedMLPipelineList,
     PaginatedPrimingGroupList,
