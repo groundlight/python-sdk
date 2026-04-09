@@ -304,7 +304,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             obj = self.detectors_api.get_detector(id=id, _request_timeout=request_timeout)
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
@@ -345,7 +345,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.detectors_api.list_detectors(
             page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
         )
-        return PaginatedDetectorList.parse_obj(obj.to_dict())
+        return PaginatedDetectorList.model_validate(obj.to_dict())
 
     def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -457,8 +457,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param class_names: The name or names of the class to use for the detector. Only used for multi-class
                         and counting detectors.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
-                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
-                        to use a priming_group_id, please reach out to your Groundlight representative.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -631,7 +630,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if obj.result_type == "counting" and getattr(obj.result, "label", None):
             obj.result.pop("label")
             obj.result["count"] = None
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq = ImageQuery.model_validate(obj.to_dict())
         return self._fixup_image_query(iq)
 
     def list_image_queries(
@@ -662,7 +661,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if detector_id:
             params["detector_id"] = detector_id
         obj = self.image_queries_api.list_image_queries(**params)
-        image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
+        image_queries = PaginatedImageQueryList.model_validate(obj.to_dict())
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
@@ -835,7 +834,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        image_query = ImageQuery.model_validate(raw_image_query.to_dict())
 
         if wait > 0:
             if confidence_threshold is None:
@@ -1626,8 +1625,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
-                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
-                        to use a priming_group_id, please reach out to your Groundlight representative.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -1652,7 +1650,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def create_binary_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1697,7 +1695,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             priming_group_id=priming_group_id,
         )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1749,8 +1747,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
-                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
-                        to use a priming_group_id, please reach out to your Groundlight representative.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -1770,7 +1767,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def create_bounding_box_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1829,8 +1826,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
-                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
-                        to use a priming_group_id, please reach out to your Groundlight representative.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -1855,4 +1851,4 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())

@@ -248,7 +248,7 @@ class GroundlightApiClient(ApiClient):
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
-        return Detector.parse_obj(parsed["results"][0])
+        return Detector.model_validate(parsed["results"][0])
 
     @RequestsRetryDecorator()
     def start_inspection(self) -> str:

@@ -39,6 +39,8 @@ from model import (
     EdgeModelInfo,
     MLPipeline,
     ModeEnum,
+    PaginatedMLPipelineList,
+    PaginatedPrimingGroupList,
     PaginatedRuleList,
     PayloadTemplate,
     PrimingGroup,
@@ -477,7 +479,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :return: PaginatedRuleList containing the rules and pagination info
         """
         obj = self.actions_api.list_rules(page=page, page_size=page_size)
-        return PaginatedRuleList.parse_obj(obj.to_dict())
+        return PaginatedRuleList.model_validate(obj.to_dict())
 
     def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
         """
@@ -686,8 +688,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
-                        PrimingGroup IDs are provided by Groundlight representatives. If you would like
-                        to use a priming_group_id, please reach out to your Groundlight representative.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -708,7 +709,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def _download_mlbinary_url(self, detector: Union[str, Detector]) -> EdgeModelInfo:
         """
@@ -718,7 +719,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         if isinstance(detector, Detector):
             detector = detector.id
         obj = self._edge_model_download_api.get_model_urls(detector)
-        return EdgeModelInfo.parse_obj(obj.to_dict())
+        return EdgeModelInfo.model_validate(obj.to_dict())
 
     def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:
         """
@@ -840,7 +841,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
     # ML Pipeline methods
     # ---------------------------------------------------------------------------
 
-    def list_detector_pipelines(self, detector: Union[str, Detector]) -> List[MLPipeline]:
+    def list_detector_pipelines(
+        self, detector: Union[str, Detector], page: int = 1, page_size: int = 10
+    ) -> PaginatedMLPipelineList:
         """
         Lists all ML pipelines associated with a given detector.
 
@@ -852,17 +855,19 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             gl = ExperimentalApi()
             detector = gl.get_detector("det_abc123")
             pipelines = gl.list_detector_pipelines(detector)
-            for p in pipelines:
+            for p in pipelines.results:
                 if p.is_active_pipeline:
                     print(f"Active pipeline: {p.id}, config={p.pipeline_config}")
 
         :param detector: A Detector object or detector ID string.
-        :return: A list of MLPipeline objects for this detector.
+        :param page: The page number to retrieve (1-based indexing).
+        :param page_size: The number of pipelines to return per page.
+        :return: PaginatedMLPipelineList containing the requested page of pipelines and pagination metadata.
         """
         detector_id = detector.id if isinstance(detector, Detector) else detector
         try:
-            paginated_result = self.detectors_api.list_detector_pipelines(detector_id)
-            return [MLPipeline(**p.to_dict()) for p in paginated_result.results]
+            obj = self.detectors_api.list_detector_pipelines(detector_id, page=page, page_size=page_size)
+            return PaginatedMLPipelineList.model_validate(obj.to_dict())
         except NotFoundException as e:
             raise NotFoundError(f"Detector '{detector_id}' not found.") from e
 
@@ -870,7 +875,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
     # PrimingGroup methods
     # ---------------------------------------------------------------------------
 
-    def list_priming_groups(self) -> List[PrimingGroup]:
+    def list_priming_groups(self, page: int = 1, page_size: int = 10) -> PaginatedPrimingGroupList:
         """
         Lists all PrimingGroups owned by the authenticated user's account.
 
@@ -881,13 +886,15 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
 
             gl = ExperimentalApi()
             groups = gl.list_priming_groups()
-            for g in groups:
+            for g in groups.results:
                 print(f"{g.name}: {g.id}")
 
-        :return: A list of PrimingGroup objects.
+        :param page: The page number to retrieve (1-based indexing).
+        :param page_size: The number of priming groups to return per page.
+        :return: PaginatedPrimingGroupList containing the requested page of priming groups and pagination metadata.
         """
-        paginated_result = self.priming_groups_api.list_priming_groups()
-        return [PrimingGroup.parse_obj(pg.to_dict()) for pg in paginated_result.results]
+        obj = self.priming_groups_api.list_priming_groups(page=page, page_size=page_size)
+        return PaginatedPrimingGroupList.model_validate(obj.to_dict())
 
     def create_priming_group(
         self,
@@ -908,7 +915,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             gl = ExperimentalApi()
             detector = gl.get_detector("det_abc123")
             pipelines = gl.list_detector_pipelines(detector)
-            active = next(p for p in pipelines if p.is_active_pipeline)
+            active = next(p for p in pipelines.results if p.is_active_pipeline)
 
             priming_group = gl.create_priming_group(
                 name="door-detector-primer",
@@ -933,7 +940,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             disable_shadow_pipelines=disable_shadow_pipelines,
         )
         result = self.priming_groups_api.create_priming_group(request)
-        return PrimingGroup.parse_obj(result.to_dict())
+        return PrimingGroup.model_validate(result.to_dict())
 
     def get_priming_group(self, priming_group_id: str) -> PrimingGroup:
         """
@@ -950,7 +957,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         """
         try:
             result = self.priming_groups_api.get_priming_group(priming_group_id)
-            return PrimingGroup.parse_obj(result.to_dict())
+            return PrimingGroup.model_validate(result.to_dict())
         except NotFoundException as e:
             raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.") from e
         except ApiException as e:

@@ -23,16 +23,15 @@ from model import MLPipeline, PrimingGroup
 def test_list_detector_pipelines_returns_list(gl_experimental: ExperimentalApi, detector):
     """A freshly created detector has at least one pipeline."""
     pipelines = gl_experimental.list_detector_pipelines(detector)
-    assert isinstance(pipelines, list)
-    assert len(pipelines) >= 1
-    assert all(isinstance(p, MLPipeline) for p in pipelines)
+    assert len(pipelines.results) >= 1
+    assert all(isinstance(p, MLPipeline) for p in pipelines.results)
 
 
 def test_list_detector_pipelines_accepts_detector_id_string(gl_experimental: ExperimentalApi, detector):
     """list_detector_pipelines should accept a raw ID string as well as a Detector object."""
     by_obj = gl_experimental.list_detector_pipelines(detector)
     by_id = gl_experimental.list_detector_pipelines(detector.id)
-    assert [p.id for p in by_obj] == [p.id for p in by_id]
+    assert [p.id for p in by_obj.results] == [p.id for p in by_id.results]
 
 
 def test_list_detector_pipelines_unknown_detector_raises(gl_experimental: ExperimentalApi):
@@ -47,8 +46,7 @@ def test_list_detector_pipelines_unknown_detector_raises(gl_experimental: Experi
 
 def test_list_priming_groups_returns_list(gl_experimental: ExperimentalApi):
     groups = gl_experimental.list_priming_groups()
-    assert isinstance(groups, list)
-    assert all(isinstance(g, PrimingGroup) for g in groups)
+    assert all(isinstance(g, PrimingGroup) for g in groups.results)
 
 
 # ---------------------------------------------------------------------------
@@ -75,7 +73,7 @@ def _wait_for_trained_pipeline(gl_experimental: ExperimentalApi, detector, timeo
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         pipelines = gl_experimental.list_detector_pipelines(detector)
-        for p in pipelines:
+        for p in pipelines.results:
             if p.is_active_pipeline and p.trained_at is not None:
                 return p
         time.sleep(5)
@@ -137,7 +135,7 @@ def test_get_priming_group(gl_experimental: ExperimentalApi, detector):
 @pytest.mark.expensive
 def test_get_priming_group_unknown_raises(gl_experimental: ExperimentalApi):
     with pytest.raises(NotFoundError):
-        gl_experimental.get_priming_group("pgp_doesnotexist000000000000")
+        gl_experimental.get_priming_group("pg_doesnotexist000000000000")
 
 
 @pytest.mark.expensive
@@ -165,6 +163,6 @@ def test_created_priming_group_appears_in_list(gl_experimental: ExperimentalApi,
     )
 
     groups = gl_experimental.list_priming_groups()
-    assert any(g.id == pg.id for g in groups)
+    assert any(g.id == pg.id for g in groups.results)
 
     gl_experimental.delete_priming_group(pg.id)
