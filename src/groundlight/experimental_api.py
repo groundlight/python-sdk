@@ -56,7 +56,7 @@ from groundlight.optional_imports import Image, np
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 
 
-class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
+class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,too-many-instance-attributes
     def __init__(
         self,
         endpoint: Union[str, None] = None,
