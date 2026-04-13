@@ -981,8 +981,7 @@ def test_create_detector_with_invalid_priming_group_id(gl: Groundlight, detector
     """
     Test that creating a detector with a non-existent priming_group_id returns an appropriate error.
 
-    Note: PrimingGroup IDs are provided by Groundlight representatives. If you would like to
-    use a priming_group_id, please reach out to your Groundlight representative.
+    Note: You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
     """
     name = detector_name("Test invalid priming")
     query = "Is there a dog?"

@@ -38,8 +38,8 @@ PYTEST=poetry run pytest -v
 # 	`make test TEST_ARGS="-k some_filter"`
 TEST_ARGS=
 
-CLOUD_FILTERS = -m "not run_only_for_edge_endpoint"
-EDGE_FILTERS = -m "not skip_for_edge_endpoint"
+CLOUD_FILTERS = -m "not run_only_for_edge_endpoint and not expensive"
+EDGE_FILTERS = -m "not skip_for_edge_endpoint and not expensive"
 
 # Record information about the slowest 25 tests (but don't show anything slower than 0.1 seconds)
 PROFILING_ARGS = \

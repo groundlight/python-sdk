@@ -128,6 +128,7 @@ Class | Method | HTTP request | Description
 *DetectorsApi* | [**get_detector**](docs/DetectorsApi.md#get_detector) | **GET** /v1/detectors/{id} | 
 *DetectorsApi* | [**get_detector_evaluation**](docs/DetectorsApi.md#get_detector_evaluation) | **GET** /v1/detectors/{id}/evaluation | 
 *DetectorsApi* | [**get_detector_metrics**](docs/DetectorsApi.md#get_detector_metrics) | **GET** /v1/detectors/{detector_id}/metrics | 
+*DetectorsApi* | [**list_detector_pipelines**](docs/DetectorsApi.md#list_detector_pipelines) | **GET** /v1/detectors/{detector_id}/pipelines | 
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *DetectorsApi* | [**update_detector**](docs/DetectorsApi.md#update_detector) | **PATCH** /v1/detectors/{id} | 
 *EdgeApi* | [**edge_report_metrics_create**](docs/EdgeApi.md#edge_report_metrics_create) | **POST** /v1/edge/report-metrics | 
@@ -140,6 +141,10 @@ Class | Method | HTTP request | Description
 *MonthToDateAccountInfoApi* | [**month_to_date_account_info**](docs/MonthToDateAccountInfoApi.md#month_to_date_account_info) | **GET** /v1/month-to-date-account-info | 
 *NotesApi* | [**create_note**](docs/NotesApi.md#create_note) | **POST** /v1/notes | 
 *NotesApi* | [**get_notes**](docs/NotesApi.md#get_notes) | **GET** /v1/notes | 
+*PrimingGroupsApi* | [**create_priming_group**](docs/PrimingGroupsApi.md#create_priming_group) | **POST** /v1/priming-groups | 
+*PrimingGroupsApi* | [**delete_priming_group**](docs/PrimingGroupsApi.md#delete_priming_group) | **DELETE** /v1/priming-groups/{id} | 
+*PrimingGroupsApi* | [**get_priming_group**](docs/PrimingGroupsApi.md#get_priming_group) | **GET** /v1/priming-groups/{id} | 
+*PrimingGroupsApi* | [**list_priming_groups**](docs/PrimingGroupsApi.md#list_priming_groups) | **GET** /v1/priming-groups | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /v1/me | 
 
 
@@ -180,6 +185,7 @@ Class | Method | HTTP request | Description
  - [Label](docs/Label.md)
  - [LabelValue](docs/LabelValue.md)
  - [LabelValueRequest](docs/LabelValueRequest.md)
+ - [MLPipeline](docs/MLPipeline.md)
  - [ModeEnum](docs/ModeEnum.md)
  - [MultiClassModeConfiguration](docs/MultiClassModeConfiguration.md)
  - [MultiClassificationResult](docs/MultiClassificationResult.md)
@@ -187,10 +193,14 @@ Class | Method | HTTP request | Description
  - [NoteRequest](docs/NoteRequest.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
+ - [PaginatedMLPipelineList](docs/PaginatedMLPipelineList.md)
+ - [PaginatedPrimingGroupList](docs/PaginatedPrimingGroupList.md)
  - [PaginatedRuleList](docs/PaginatedRuleList.md)
  - [PatchedDetectorRequest](docs/PatchedDetectorRequest.md)
  - [PayloadTemplate](docs/PayloadTemplate.md)
  - [PayloadTemplateRequest](docs/PayloadTemplateRequest.md)
+ - [PrimingGroup](docs/PrimingGroup.md)
+ - [PrimingGroupCreationInputRequest](docs/PrimingGroupCreationInputRequest.md)
  - [ROI](docs/ROI.md)
  - [ROIRequest](docs/ROIRequest.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)

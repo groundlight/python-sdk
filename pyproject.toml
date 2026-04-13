@@ -9,7 +9,7 @@ packages = [
     {include = "**/*.py", from = "src"},
 ]
 readme = "README.md"
-version = "0.26.0"
+version = "0.27.0"
 
 [tool.poetry.dependencies]
 # For certifi, use ">=" instead of "^" since it upgrades its "major version" every year, not really following semver
@@ -84,6 +84,7 @@ trailing_comma_inline_array = true
 markers = [
     "skip_for_edge_endpoint",
     "run_only_for_edge_endpoint",
+    "expensive: marks tests as expensive (long-running; excluded from default test runs)",
 ]
 
 [build-system]
