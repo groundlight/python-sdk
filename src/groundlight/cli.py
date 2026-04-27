@@ -18,7 +18,6 @@ from groundlight.client import ApiTokenError
 logger = logging.getLogger("groundlight.sdk")
 
 cli_app = typer.Typer(
-    no_args_is_help=True,
     context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
 )
 
@@ -33,6 +32,7 @@ def _main(
         raise typer.Exit()
     if ctx.invoked_subcommand is None:
         print(ctx.get_help())
+
 
 experimental_app = typer.Typer(
     no_args_is_help=True,
@@ -183,7 +183,7 @@ _GROUP_ORDER = [
 # Maps method names to their rich_help_panel group label for the CLI help output.
 # Applies to both stable and experimental commands. Methods not listed here fall
 # into the default "Commands" panel.
-_COMMAND_GROUPS: dict = {
+_COMMAND_GROUPS: dict[str, str] = {
     # Account
     "whoami": "Account",
     "get_month_to_date_usage": "Account",
