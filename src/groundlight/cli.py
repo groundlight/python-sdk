@@ -166,8 +166,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
     return wrapper
 
 
-# Methods to exclude from the CLI entirely. These may be too complex to express
-# as CLI commands, deprecated, or otherwise not useful from a shell context.
+# Methods to exclude from the CLI entirely
 _CLI_EXCLUDED_METHODS = {
     "make_action",
     "create_rule",
@@ -181,7 +180,6 @@ _CLI_EXCLUDED_METHODS = {
 }
 
 # Desired display order of command groups in the CLI help output.
-# Groups not listed here appear after the listed ones.
 _GROUP_ORDER = [
     "Account",
     "Detectors",
@@ -193,8 +191,7 @@ _GROUP_ORDER = [
 ]
 
 # Maps method names to their rich_help_panel group label for the CLI help output.
-# Applies to both stable and experimental commands. Methods not listed here fall
-# into the default "Commands" panel.
+# Applies to both stable and experimental commands.
 _COMMAND_GROUPS: dict[str, str] = {
     # Account
     "whoami": "Account",
