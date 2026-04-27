@@ -1,8 +1,13 @@
+import json
 import logging
 import sys
+from datetime import datetime
 from enum import Enum
 from functools import wraps
 from typing import Any, Union
+
+from groundlight_openapi_client.model_utils import OpenApiModel
+from pydantic import BaseModel
 
 import typer
 from typing_extensions import get_origin
@@ -52,15 +57,26 @@ def is_cli_representable(annotation) -> bool:
     return False
 
 
-def _format_result(result: Any) -> str:
-    """Format a method return value for CLI output.
+def _json_default(obj: Any) -> Any:
+    """Fallback serializer for json.dumps — handles datetime values."""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
-    Pydantic models are serialized to indented JSON. Everything else falls back to str().
+
+def _format_result(result: Any) -> str:
+    """Format a CLI result value as a human-readable, jq-compatible string.
+
+    Pydantic models and OpenAPI client objects are serialized to indented JSON.
+    Plain dicts and lists are also JSON. Everything else falls back to str().
     """
-    try:
+    if isinstance(result, BaseModel):
         return result.model_dump_json(indent=2)
-    except AttributeError:
-        return str(result)
+    if isinstance(result, OpenApiModel):
+        return json.dumps(result.to_dict(), indent=2, default=_json_default)
+    if isinstance(result, (dict, list)):
+        return json.dumps(result, indent=2, default=_json_default)
+    return str(result)
 
 
 def class_func_to_cli(method, is_experimental: bool = False):
