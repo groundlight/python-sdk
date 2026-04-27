@@ -41,16 +41,9 @@ def test_detector_and_image_queries(detector_name: Callable):
         check=False,
     )
     assert completed_process.returncode == 0
-    match = re.search("id='([^']+)'", completed_process.stdout)
+    match = re.search(r'"id":\s*"([^"]+)"', completed_process.stdout)
     assert match is not None
     det_id_on_create = match.group(1)
-    # The output of the create-detector command looks something like:
-    # id='det_abc123'
-    # type=<DetectorTypeEnum.detector: 'detector'>
-    # created_at=datetime.datetime(2023, 8, 30, 18, 3, 9, 489794,
-    # tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200)))
-    # name='testdetector 2023-08-31 01:03:09.039448' query='testdetector'
-    # group_name='__DEFAULT' confidence_threshold=0.9
 
     # test getting detectors
     completed_process = subprocess.run(
@@ -61,7 +54,7 @@ def test_detector_and_image_queries(detector_name: Callable):
         check=False,
     )
     assert completed_process.returncode == 0
-    match = re.search("id='([^']+)'", completed_process.stdout)
+    match = re.search(r'"id":\s*"([^"]+)"', completed_process.stdout)
     assert match is not None
     det_id_on_get = match.group(1)
     assert det_id_on_create == det_id_on_get
@@ -108,6 +101,20 @@ def test_help():
         ["groundlight", "get-detector", "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode == 0
+
+
+def test_experimental_subcommand():
+    # Both 'experimental' and 'exp' should resolve to the same subcommand group
+    for alias in ("experimental", "exp"):
+        completed_process = subprocess.run(
+            ["groundlight", alias, "--help"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        assert completed_process.returncode == 0
+        assert "list-priming-groups" in completed_process.stdout
 
 
 def test_bad_commands():

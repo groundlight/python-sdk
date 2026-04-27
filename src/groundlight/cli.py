@@ -27,11 +27,8 @@ experimental_app = typer.Typer(
     help="Experimental commands — may change or be removed without notice.",
     context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
 )
-cli_app.add_typer(experimental_app, name="experimental")
-cli_app.add_typer(experimental_app, name="exp")
-
-
-_CLI_PRIMITIVE_TYPES = (str, int, float, bool)
+cli_app.add_typer(experimental_app, name="exp", rich_help_panel="Subcommands")
+cli_app.add_typer(experimental_app, name="experimental", hidden=True)
 
 
 def is_cli_supported_type(annotation):
@@ -48,7 +45,7 @@ def is_cli_representable(annotation) -> bool:
     Primitive scalar types, Enum subclasses, and Union types (handled separately) are considered
     representable. Complex types like dict, list, bytes, and custom model classes are not.
     """
-    if annotation in _CLI_PRIMITIVE_TYPES:
+    if annotation in (str, int, float, bool):
         return True
     if isinstance(annotation, type) and issubclass(annotation, Enum):
         return True
@@ -146,22 +143,115 @@ def class_func_to_cli(method, is_experimental: bool = False):
     return wrapper
 
 
+# Methods to exclude from the CLI entirely. These may be too complex to express
+# as CLI commands, deprecated, or otherwise not useful from a shell context.
+_CLI_EXCLUDED_METHODS = {
+    "make_action",
+    "create_rule",
+    "get_rule",
+    "delete_rule",
+    "list_rules",
+    "delete_all_rules",
+    "start_inspection",
+    "update_inspection_metadata",
+    "stop_inspection",
+}
+
+# Desired display order of command groups in the CLI help output.
+# Groups not listed here appear after the listed ones.
+_GROUP_ORDER = [
+    "Account",
+    "Detectors",
+    "Image Queries",
+    "ML Pipelines & Priming",
+    "Notes",
+    "Utilities",
+]
+
+# Maps method names to their rich_help_panel group label for the CLI help output.
+# Applies to both stable and experimental commands. Methods not listed here fall
+# into the default "Commands" panel.
+_COMMAND_GROUPS: dict = {
+    # Account
+    "whoami": "Account",
+    "get_month_to_date_usage": "Account",
+    # Detectors
+    "get_detector": "Detectors",
+    "get_detector_by_name": "Detectors",
+    "list_detectors": "Detectors",
+    "create_detector": "Detectors",
+    "get_or_create_detector": "Detectors",
+    "delete_detector": "Detectors",
+    "create_binary_detector": "Detectors",
+    "create_counting_detector": "Detectors",
+    "create_multiclass_detector": "Detectors",
+    "create_bounding_box_detector": "Detectors",
+    "create_detector_group": "Detectors",
+    "list_detector_groups": "Detectors",
+    "create_roi": "Detectors",
+    "update_detector_confidence_threshold": "Detectors",
+    "update_detector_status": "Detectors",
+    "update_detector_escalation_type": "Detectors",
+    "reset_detector": "Detectors",
+    "update_detector_name": "Detectors",
+    "create_text_recognition_detector": "Detectors",
+    "get_detector_evaluation": "Detectors",
+    "get_detector_metrics": "Detectors",
+    "download_mlbinary": "Detectors",
+    # Image Queries
+    "get_image_query": "Image Queries",
+    "list_image_queries": "Image Queries",
+    "submit_image_query": "Image Queries",
+    "ask_confident": "Image Queries",
+    "ask_ml": "Image Queries",
+    "ask_async": "Image Queries",
+    "wait_for_confident_result": "Image Queries",
+    "wait_for_ml_result": "Image Queries",
+    "get_image": "Image Queries",
+    "add_label": "Image Queries",
+    # Notes
+    "get_notes": "Notes",
+    "create_note": "Notes",
+    # ML Pipelines & Priming
+    "list_detector_pipelines": "ML Pipelines & Priming",
+    "list_priming_groups": "ML Pipelines & Priming",
+    "create_priming_group": "ML Pipelines & Priming",
+    "get_priming_group": "ML Pipelines & Priming",
+    "delete_priming_group": "ML Pipelines & Priming",
+    # Utilities
+    "edge_base_url": "Utilities",
+    "get_raw_headers": "Utilities",
+}
+
+
+def _cli_sort_key(item: tuple) -> tuple:
+    """Sort key for CLI command registration that controls group and within-group ordering.
+
+    Commands are ordered first by their group's position in _GROUP_ORDER (ungrouped last),
+    then alphabetically by method name within each group.
+    """
+    name, _ = item
+    group = _COMMAND_GROUPS.get(name)
+    group_rank = _GROUP_ORDER.index(group) if group in _GROUP_ORDER else len(_GROUP_ORDER)
+    return (group_rank, name)
+
+
 def groundlight():
     """Entry point for the groundlight CLI."""
     try:
         stable_names = {n for n, m in vars(Groundlight).items() if callable(m) and not n.startswith("_")}
 
-        for name, method in vars(Groundlight).items():
-            if callable(method) and not name.startswith("_"):
+        for name, method in sorted(vars(Groundlight).items(), key=_cli_sort_key):
+            if callable(method) and not name.startswith("_") and name not in _CLI_EXCLUDED_METHODS:
                 cli_func = class_func_to_cli(method)
-                cli_app.command()(cli_func)
+                cli_app.command(rich_help_panel=_COMMAND_GROUPS.get(name))(cli_func)
 
-        for name, method in vars(ExperimentalApi).items():
-            if not callable(method) or name.startswith("_") or name in stable_names:
+        for name, method in sorted(vars(ExperimentalApi).items(), key=_cli_sort_key):
+            if not callable(method) or name.startswith("_") or name in stable_names or name in _CLI_EXCLUDED_METHODS:
                 continue
             try:
                 cli_func = class_func_to_cli(method, is_experimental=True)
-                experimental_app.command()(cli_func)
+                experimental_app.command(rich_help_panel=_COMMAND_GROUPS.get(name))(cli_func)
             except Exception as e:  # pylint: disable=broad-except
                 logger.debug("Skipping experimental CLI command '%s': %s", name, e)
 
