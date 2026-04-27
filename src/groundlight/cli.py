@@ -1,11 +1,13 @@
 import json
 import logging
 import sys
-from datetime import datetime
+from datetime import date, datetime
+from decimal import Decimal
 from enum import Enum
 from functools import wraps
 from importlib.metadata import version as importlib_version
 from typing import Any, Union
+from uuid import UUID
 
 import typer
 from groundlight_openapi_client.model_utils import OpenApiModel
@@ -15,7 +17,7 @@ from typing_extensions import get_origin
 from groundlight import ExperimentalApi, Groundlight
 from groundlight.client import ApiTokenError
 
-logger = logging.getLogger("groundlight.sdk")
+logger = logging.getLogger(__name__)
 
 cli_app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
@@ -40,7 +42,6 @@ experimental_app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
 )
 cli_app.add_typer(experimental_app, name="exp", rich_help_panel="Subcommands")
-cli_app.add_typer(experimental_app, name="experimental", hidden=True)
 
 
 def is_cli_supported_type(annotation):
@@ -67,10 +68,20 @@ def is_cli_representable(annotation) -> bool:
 
 
 def _json_default(obj: Any) -> Any:
-    """Fallback serializer for json.dumps — handles datetime values."""
-    if isinstance(obj, datetime):
+    """Fallback serializer for json.dumps for types the stdlib encoder doesn't handle.
+
+    Covers common types that appear in OpenAPI client to_dict() output. Unknown types
+    fall back to str() rather than raising, so CLI output is always usable.
+    """
+    if isinstance(obj, (datetime, date)):
         return obj.isoformat()
-    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+    if isinstance(obj, Decimal):
+        return float(obj)
+    if isinstance(obj, UUID):
+        return str(obj)
+    if isinstance(obj, Enum):
+        return obj.value
+    return str(obj)
 
 
 def _format_result(result: Any) -> str:
@@ -178,6 +189,7 @@ _GROUP_ORDER = [
     "ML Pipelines & Priming",
     "Notes",
     "Utilities",
+    "Other",
 ]
 
 # Maps method names to their rich_help_panel group label for the CLI help output.
@@ -256,14 +268,14 @@ def groundlight():
         for name, method in sorted(vars(Groundlight).items(), key=_cli_sort_key):
             if callable(method) and not name.startswith("_") and name not in _CLI_EXCLUDED_METHODS:
                 cli_func = class_func_to_cli(method)
-                cli_app.command(rich_help_panel=_COMMAND_GROUPS.get(name))(cli_func)
+                cli_app.command(rich_help_panel=_COMMAND_GROUPS.get(name, "Other"))(cli_func)
 
         for name, method in sorted(vars(ExperimentalApi).items(), key=_cli_sort_key):
             if not callable(method) or name.startswith("_") or name in stable_names or name in _CLI_EXCLUDED_METHODS:
                 continue
             try:
                 cli_func = class_func_to_cli(method, is_experimental=True)
-                experimental_app.command(rich_help_panel=_COMMAND_GROUPS.get(name))(cli_func)
+                experimental_app.command(rich_help_panel=_COMMAND_GROUPS.get(name, "Other"))(cli_func)
             except Exception as e:  # pylint: disable=broad-except
                 logger.debug("Skipping experimental CLI command '%s': %s", name, e)
 

@@ -103,6 +103,19 @@ def test_help():
     assert completed_process.returncode == 0
 
 
+def test_version():
+    for flag in ("--version", "-v"):
+        completed_process = subprocess.run(
+            ["groundlight", flag],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        assert completed_process.returncode == 0
+        assert re.match(r"\d+\.\d+\.\d+", completed_process.stdout.strip())
+
+
 def test_experimental_subcommand():
     # Both 'experimental' and 'exp' should resolve to the same subcommand group
     for alias in ("experimental", "exp"):
