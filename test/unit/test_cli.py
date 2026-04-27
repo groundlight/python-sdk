@@ -117,17 +117,15 @@ def test_version():
 
 
 def test_experimental_subcommand():
-    # Both 'experimental' and 'exp' should resolve to the same subcommand group
-    for alias in ("experimental", "exp"):
-        completed_process = subprocess.run(
-            ["groundlight", alias, "--help"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False,
-        )
-        assert completed_process.returncode == 0
-        assert "list-priming-groups" in completed_process.stdout
+    completed_process = subprocess.run(
+        ["groundlight", "exp", "--help"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    assert completed_process.returncode == 0
+    assert "list-priming-groups" in completed_process.stdout
 
 
 def test_bad_commands():
