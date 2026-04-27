@@ -303,6 +303,51 @@ paths:
                         type: integer
                     nullable: true
           description: ''
+  /v1/detectors/{detector_id}/pipelines:
+    get:
+      operationId: List detector pipelines
+      description: List all MLPipelines for a detector.
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - detectors
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMLPipelineList'
+          description: ''
   /v1/detectors/{id}:
     get:
       operationId: Get detector
@@ -807,6 +852,116 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/priming-groups:
+    get:
+      operationId: List priming groups
+      description: List all priming groups either owned by the authenticated user,
+        or with is_global=True.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - priming-groups
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPrimingGroupList'
+          description: ''
+    post:
+      operationId: Create priming group
+      description: |-
+        Create a new priming group seeded from an existing trained MLPipeline.
+
+        The cached_vizlogic_key from the source pipeline is copied as the base binary.
+        No FK to the source pipeline is stored, so deleting the source detector does
+        not affect this priming group.
+      tags:
+      - priming-groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrimingGroupCreationInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PrimingGroupCreationInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PrimingGroupCreationInputRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrimingGroup'
+          description: ''
+  /v1/priming-groups/{id}:
+    get:
+      operationId: Get priming group
+      description: Retrieve a priming group by its ID.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - priming-groups
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrimingGroup'
+          description: ''
+    delete:
+      operationId: Delete priming group
+      description: Delete a priming group. Only the owning user's account may delete
+        it.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - priming-groups
+      security:
+      - ApiToken: []
+      responses:
+        '204':
+          description: No response body
 components:
   schemas:
     AccountMonthToDateInfo:
@@ -1058,6 +1213,12 @@ components:
           description: (Advanced usage) Configuration needed to instantiate a prediction
             pipeline.
           maxLength: 100
+        edge_pipeline_config:
+          type: string
+          nullable: true
+          description: (Advanced usage) Configuration for the edge inference pipeline.
+            If not specified, the mode's default edge pipeline is used.
+          maxLength: 100
         metadata:
           type: string
           minLength: 1
@@ -1084,6 +1245,13 @@ components:
           - $ref: '#/components/schemas/TextModeConfiguration'
           - $ref: '#/components/schemas/BoundingBoxModeConfiguration'
           nullable: true
+        priming_group_id:
+          type: string
+          nullable: true
+          minLength: 1
+          description: ID of an existing PrimingGroup to associate with this detector
+            (optional).
+          maxLength: 44
       required:
       - name
       - query
@@ -1287,6 +1455,60 @@ components:
       required:
       - image_query_id
       - label
+    MLPipeline:
+      type: object
+      description: A single ML pipeline attached to a detector.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        pipeline_config:
+          type: string
+          readOnly: true
+          nullable: true
+          description: configuration needed to instantiate a prediction pipeline.
+        is_active_pipeline:
+          type: boolean
+          readOnly: true
+          description: If True, this is the pipeline is used for inference, active
+            learning, etc. for its parent Predictor.
+        is_edge_pipeline:
+          type: boolean
+          readOnly: true
+          description: If True, this pipeline is enabled for edge inference.
+        is_unclear_pipeline:
+          type: boolean
+          readOnly: true
+          description: If True, this pipeline is used to train classifier for human
+            unclear label prediction.
+        is_oodd_pipeline:
+          type: boolean
+          readOnly: true
+          description: If True, this pipeline is used for OODD.
+        is_enabled:
+          type: boolean
+          readOnly: true
+          description: If False, this pipeline will not be run for any use case.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        trained_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - id
+      - is_active_pipeline
+      - is_edge_pipeline
+      - is_enabled
+      - is_oodd_pipeline
+      - is_unclear_pipeline
+      - pipeline_config
+      - trained_at
+      x-internal: true
     ModeEnum:
       type: string
       enum:
@@ -1371,6 +1593,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImageQuery'
+    PaginatedMLPipelineList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MLPipeline'
+    PaginatedPrimingGroupList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrimingGroup'
     PaginatedRuleList:
       type: object
       required:
@@ -1457,6 +1725,87 @@ components:
           nullable: true
       required:
       - template
+    PrimingGroup:
+      type: object
+      description: A PrimingGroup owned by the authenticated user.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        is_global:
+          type: boolean
+          readOnly: true
+          description: If True, this priming group is shared to all Groundlight users.
+            Can only be set by Groundlight admins.
+        canonical_query:
+          type: string
+          nullable: true
+          description: Canonical semantic query for this priming group
+          maxLength: 300
+        active_pipeline_config:
+          type: string
+          nullable: true
+          description: Active pipeline config override for new detectors created in
+            this priming group. If set, this overrides the default active pipeline
+            config at creation time.Can be either a pipeline name or full config string.
+          maxLength: 8192
+        priming_group_specific_shadow_pipeline_configs:
+          nullable: true
+          description: 'Configs for shadow pipelines to create for detectors in this
+            priming group. These are added to the default shadow pipeline configs
+            for a detector of the given mode. Each entry is either a pipeline name
+            or full config string. '
+        disable_shadow_pipelines:
+          type: boolean
+          description: If True, new detectors added to this priming group will not
+            receive the mode-specific default shadow pipelines from INITIAL_SHADOW_PIPELINE_CONFIG_SET.
+            Priming-group-specific shadow configs still apply. Use this to guarantee
+            the primed active MLBinary is never switched off by a shadow pipeline
+            being promoted.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_global
+      - name
+      x-internal: true
+    PrimingGroupCreationInputRequest:
+      type: object
+      description: Input for creating a new user-owned PrimingGroup seeded from an
+        existing MLPipeline.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name for the new priming group.
+          maxLength: 100
+        source_ml_pipeline_id:
+          type: string
+          minLength: 1
+          description: ID of an MLPipeline owned by this account whose trained model
+            will seed the priming group.
+          maxLength: 44
+        canonical_query:
+          type: string
+          nullable: true
+          description: Optional canonical semantic query describing this priming group.
+          maxLength: 300
+        disable_shadow_pipelines:
+          type: boolean
+          default: false
+          description: If true, new detectors added to this priming group will not
+            receive the default shadow pipelines. This guarantees the primed active
+            model is never switched off.
+      required:
+      - name
+      - source_ml_pipeline_id
+      x-internal: true
     ROI:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format

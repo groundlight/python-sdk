@@ -176,7 +176,7 @@ class GroundlightApiClient(ApiClient):
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
-        if not header_param:
+        if header_param is None:
             # This will never happen in normal usage.
             logger.warning("Can't set request-id because headers not set")
         elif not header_param.get(self.REQUEST_ID_HEADER, None):
@@ -248,7 +248,7 @@ class GroundlightApiClient(ApiClient):
             raise RuntimeError(
                 f"We found multiple ({parsed['count']}) detectors with the same name. This shouldn't happen.",
             )
-        return Detector.parse_obj(parsed["results"][0])
+        return Detector.model_validate(parsed["results"][0])
 
     @RequestsRetryDecorator()
     def start_inspection(self) -> str:

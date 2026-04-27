@@ -1,7 +1,7 @@
 import os
 import re
 import subprocess
-from datetime import datetime
+from typing import Callable
 from unittest.mock import patch
 
 
@@ -23,9 +23,9 @@ def test_list_detector():
     assert completed_process.returncode == 0
 
 
-def test_detector_and_image_queries():
+def test_detector_and_image_queries(detector_name: Callable):
     # test creating a detector
-    test_detector_name = f"testdetector {datetime.utcnow()}"
+    test_detector_name = detector_name("testdetector")
     completed_process = subprocess.run(
         [
             "groundlight",
@@ -41,7 +41,9 @@ def test_detector_and_image_queries():
         check=False,
     )
     assert completed_process.returncode == 0
-    det_id_on_create = re.search("id='([^']+)'", completed_process.stdout).group(1)
+    match = re.search("id='([^']+)'", completed_process.stdout)
+    assert match is not None
+    det_id_on_create = match.group(1)
     # The output of the create-detector command looks something like:
     # id='det_abc123'
     # type=<DetectorTypeEnum.detector: 'detector'>
@@ -59,7 +61,9 @@ def test_detector_and_image_queries():
         check=False,
     )
     assert completed_process.returncode == 0
-    det_id_on_get = re.search("id='([^']+)'", completed_process.stdout).group(1)
+    match = re.search("id='([^']+)'", completed_process.stdout)
+    assert match is not None
+    det_id_on_get = match.group(1)
     assert det_id_on_create == det_id_on_get
     completed_process = subprocess.run(
         ["groundlight", "get-detector", det_id_on_create],

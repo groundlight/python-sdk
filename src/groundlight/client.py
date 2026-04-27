@@ -16,6 +16,7 @@ from groundlight_openapi_client.api.month_to_date_account_info_api import MonthT
 from groundlight_openapi_client.api.user_api import UserApi
 from groundlight_openapi_client.exceptions import NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
+from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
@@ -66,6 +67,10 @@ class GroundlightClientError(Exception):
 
 class ApiTokenError(GroundlightClientError):
     pass
+
+
+class EdgeNotAvailableError(GroundlightClientError):
+    """Raised when an edge-only method is called against a non-edge endpoint."""
 
 
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
@@ -299,7 +304,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             obj = self.detectors_api.get_detector(id=id, _request_timeout=request_timeout)
         except NotFoundException as e:
             raise NotFoundError(f"Detector with id '{id}' not found") from e
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
@@ -340,7 +345,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.detectors_api.list_detectors(
             page=page, page_size=page_size, _request_timeout=DEFAULT_REQUEST_TIMEOUT
         )
-        return PaginatedDetectorList.parse_obj(obj.to_dict())
+        return PaginatedDetectorList.model_validate(obj.to_dict())
 
     def _prep_create_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -351,7 +356,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         A helper function to prepare the input for creating a detector. Individual create_detector
@@ -361,6 +368,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             name=name,
             query=query,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
         )
         if group_name is not None:
             detector_creation_input.group_name = group_name
@@ -372,6 +380,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             patience_time = float(patience_time)
         if patience_time:
             detector_creation_input.patience_time = patience_time
+        if priming_group_id is not None:
+            detector_creation_input.priming_group_id = priming_group_id
         return detector_creation_input
 
     def create_detector(  # noqa: PLR0913
@@ -384,17 +394,18 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
         class_names: Optional[Union[List[str], str]] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Create a new Detector with a given name and query.
 
         By default will create a binary detector but alternate modes can be created by passing in a mode argument.
 
-        Text and Bounding box detectors are in Beta, and can be created through the
-        ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` and
-        :meth:`ExperimentalApi.create_bounding_box_detector` methods.
+        Text recognition detectors are in Beta, and can be created through the
+        ExperimentalApi via the :meth:`ExperimentalApi.create_text_recognition_detector` method.
 
         **Example usage**::
 
@@ -437,12 +448,16 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
         :param class_names: The name or names of the class to use for the detector. Only used for multi-class
                         and counting detectors.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -457,7 +472,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 confidence_threshold=confidence_threshold,
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
+                priming_group_id=priming_group_id,
             )
         if mode == ModeEnum.COUNT:
             if class_names is None:
@@ -472,7 +489,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 confidence_threshold=confidence_threshold,
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
+                priming_group_id=priming_group_id,
             )
         if mode == ModeEnum.MULTI_CLASS:
             if class_names is None:
@@ -487,7 +506,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 confidence_threshold=confidence_threshold,
                 patience_time=patience_time,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
+                priming_group_id=priming_group_id,
             )
         raise ValueError(
             f"Unsupported mode: {mode}, check if your desired mode is only supported in the ExperimentalApi"
@@ -501,6 +522,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         group_name: Optional[str] = None,
         confidence_threshold: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
     ) -> Detector:
         """
@@ -531,6 +553,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                                   the query may be sent for human review.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
@@ -557,6 +581,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 group_name=group_name,
                 confidence_threshold=confidence_threshold,
                 pipeline_config=pipeline_config,
+                edge_pipeline_config=edge_pipeline_config,
                 metadata=metadata,
             )
 
@@ -605,7 +630,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if obj.result_type == "counting" and getattr(obj.result, "label", None):
             obj.result.pop("label")
             obj.result["count"] = None
-        iq = ImageQuery.parse_obj(obj.to_dict())
+        iq = ImageQuery.model_validate(obj.to_dict())
         return self._fixup_image_query(iq)
 
     def list_image_queries(
@@ -636,7 +661,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if detector_id:
             params["detector_id"] = detector_id
         obj = self.image_queries_api.list_image_queries(**params)
-        image_queries = PaginatedImageQueryList.parse_obj(obj.to_dict())
+        image_queries = PaginatedImageQueryList.model_validate(obj.to_dict())
         if image_queries.results is not None:
             image_queries.results = [self._fixup_image_query(iq) for iq in image_queries.results]
         return image_queries
@@ -809,7 +834,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             params["image_query_id"] = image_query_id
 
         raw_image_query = self.image_queries_api.submit_image_query(**params)
-        image_query = ImageQuery.parse_obj(raw_image_query.to_dict())
+        image_query = ImageQuery.model_validate(raw_image_query.to_dict())
 
         if wait > 0:
             if confidence_threshold is None:
@@ -1556,7 +1581,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a counting detector that can count objects in images up to a specified maximum count.
@@ -1591,10 +1618,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -1606,7 +1637,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.COUNT
 
@@ -1617,7 +1650,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def create_binary_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1628,7 +1661,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a binary detector with the given name and query.
@@ -1655,10 +1690,12 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def create_multiclass_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
@@ -1670,7 +1707,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a multiclass detector with the given name and query.
@@ -1701,10 +1740,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
                         the detector (limited to 1KB). This metadata can be used to store additional
                         information like location, purpose, or related system IDs. You can retrieve this
                         metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -1716,10 +1759,96 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.MULTI_CLASS
         mode_config = MultiClassModeConfiguration(class_names=class_names)
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
+
+    def create_bounding_box_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+        self,
+        name: str,
+        query: str,
+        class_name: str,
+        *,
+        max_num_bboxes: Optional[int] = None,
+        group_name: Optional[str] = None,
+        confidence_threshold: Optional[float] = None,
+        patience_time: Optional[float] = None,
+        pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
+        metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
+    ) -> Detector:
+        """
+        Creates a bounding box detector that can detect objects in images up to a specified maximum number of bounding
+        boxes.
+
+        **Example usage**::
+
+            gl = Groundlight()
+
+            # Create a detector that counts people up to 5
+            detector = gl.create_bounding_box_detector(
+                name="people_counter",
+                query="Draw a bounding box around each person in the image",
+                class_name="person",
+                max_num_bboxes=5,
+                confidence_threshold=0.9,
+                patience_time=30.0
+            )
+
+            # Use the detector to find people in an image
+            image_query = gl.ask_ml(detector, "path/to/image.jpg")
+            print(f"Confidence: {image_query.result.confidence}")
+            print(f"Label: {image_query.result.label}")
+            print(f"Bounding boxes: {image_query.rois}")
+
+        :param name: A short, descriptive name for the detector.
+        :param query: A question about the object to detect in the image.
+        :param class_name: The class name of the object to detect.
+        :param max_num_bboxes: Maximum number of bounding boxes to detect (default: 10)
+        :param group_name: Optional name of a group to organize related detectors together.
+        :param confidence_threshold: A value that sets the minimum confidence level required for the ML model's
+                            predictions. If confidence is below this threshold, the query may be sent for human review.
+        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
+                            confident prediction before falling back to human review. Defaults to 30 seconds.
+        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
+                              prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
+        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
+
+        :return: The created Detector object
+        """
+
+        detector_creation_input = self._prep_create_detector(
+            name=name,
+            query=query,
+            group_name=group_name,
+            confidence_threshold=confidence_threshold,
+            patience_time=patience_time,
+            pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
+            metadata=metadata,
+            priming_group_id=priming_group_id,
+        )
+        detector_creation_input.mode = ModeEnum.BOUNDING_BOX
+
+        if max_num_bboxes is None:
+            mode_config = BoundingBoxModeConfiguration(class_name=class_name)
+        else:
+            mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
+
+        detector_creation_input.mode_configuration = mode_config
+        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Detector.model_validate(obj.to_dict())

@@ -8,9 +8,11 @@ modifications or potentially be removed in future releases, which could lead to 
 """
 
 import json
+from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from groundlight_openapi_client.api.actions_api import ActionsApi
@@ -18,12 +20,14 @@ from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
+from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
+from groundlight_openapi_client.exceptions import ApiException, NotFoundException
 from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.bounding_box_mode_configuration import BoundingBoxModeConfiguration
 from groundlight_openapi_client.model.channel_enum import ChannelEnum
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
+from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
 from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
@@ -34,21 +38,25 @@ from model import (
     Detector,
     EdgeModelInfo,
     ModeEnum,
+    PaginatedMLPipelineList,
+    PaginatedPrimingGroupList,
     PaginatedRuleList,
     PayloadTemplate,
+    PrimingGroup,
     Rule,
     WebhookAction,
 )
 from urllib3.response import HTTPResponse
 
+from groundlight.edge.api import EdgeEndpointApi
 from groundlight.images import parse_supported_image_types
-from groundlight.internalapi import _generate_request_id
+from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
 
 
-class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
+class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,too-many-instance-attributes
     def __init__(
         self,
         endpoint: Union[str, None] = None,
@@ -102,8 +110,13 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
+        self.priming_groups_api = PrimingGroupsApi(self.api_client)
 
-        self.edge_api = EdgeApi(self.api_client)
+        # API client for fetching Edge models
+        self._edge_model_download_api = EdgeApi(self.api_client)
+
+        # API client for interacting with the EdgeEndpoint (getting/setting configuration, etc.)
+        self.edge = EdgeEndpointApi(self)
 
     ITEMS_PER_PAGE = 100
 
@@ -465,7 +478,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         :return: PaginatedRuleList containing the rules and pagination info
         """
         obj = self.actions_api.list_rules(page=page, page_size=page_size)
-        return PaginatedRuleList.parse_obj(obj.to_dict())
+        return PaginatedRuleList.model_validate(obj.to_dict())
 
     def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
         """
@@ -632,82 +645,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             detector = detector.id
         self.detectors_api.update_detector(detector, patched_detector_request=PatchedDetectorRequest(name=name))
 
-    def create_bounding_box_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
-        self,
-        name: str,
-        query: str,
-        class_name: str,
-        *,
-        max_num_bboxes: Optional[int] = None,
-        group_name: Optional[str] = None,
-        confidence_threshold: Optional[float] = None,
-        patience_time: Optional[float] = None,
-        pipeline_config: Optional[str] = None,
-        metadata: Union[dict, str, None] = None,
-    ) -> Detector:
-        """
-        Creates a bounding box detector that can detect objects in images up to a specified maximum number of bounding
-        boxes.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create a detector that counts people up to 5
-            detector = gl.create_bounding_box_detector(
-                name="people_counter",
-                query="Draw a bounding box around each person in the image",
-                class_name="person",
-                max_num_bboxes=5,
-                confidence_threshold=0.9,
-                patience_time=30.0
-            )
-
-            # Use the detector to find people in an image
-            image_query = gl.ask_ml(detector, "path/to/image.jpg")
-            print(f"Confidence: {image_query.result.confidence}")
-            print(f"Label: {image_query.result.label}")
-            print(f"Bounding boxes: {image_query.rois}")
-
-        :param name: A short, descriptive name for the detector.
-        :param query: A question about the object to detect in the image.
-        :param class_name: The class name of the object to detect.
-        :param max_num_bboxes: Maximum number of bounding boxes to detect (default: 10)
-        :param group_name: Optional name of a group to organize related detectors together.
-        :param confidence_threshold: A value that sets the minimum confidence level required for the ML model's
-                            predictions. If confidence is below this threshold, the query may be sent for human review.
-        :param patience_time: The maximum time in seconds that Groundlight will attempt to generate a
-                            confident prediction before falling back to human review. Defaults to 30 seconds.
-        :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
-                              prediction pipeline for this detector.
-        :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
-                        the detector (limited to 1KB). This metadata can be used to store additional
-                        information like location, purpose, or related system IDs. You can retrieve this
-                        metadata later by calling `get_detector()`.
-
-        :return: The created Detector object
-        """
-
-        detector_creation_input = self._prep_create_detector(
-            name=name,
-            query=query,
-            group_name=group_name,
-            confidence_threshold=confidence_threshold,
-            patience_time=patience_time,
-            pipeline_config=pipeline_config,
-            metadata=metadata,
-        )
-        detector_creation_input.mode = ModeEnum.BOUNDING_BOX
-
-        if max_num_bboxes is None:
-            mode_config = BoundingBoxModeConfiguration(class_name=class_name)
-        else:
-            mode_config = BoundingBoxModeConfiguration(max_num_bboxes=max_num_bboxes, class_name=class_name)
-
-        detector_creation_input.mode_configuration = mode_config
-        obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
-
     def create_text_recognition_detector(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         name: str,
@@ -717,7 +654,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         confidence_threshold: Optional[float] = None,
         patience_time: Optional[float] = None,
         pipeline_config: Optional[str] = None,
+        edge_pipeline_config: Optional[str] = None,
         metadata: Union[dict, str, None] = None,
+        priming_group_id: Optional[str] = None,
     ) -> Detector:
         """
         Creates a text recognition detector that can read specified spans of text from images.
@@ -741,7 +680,14 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
                             confident prediction before falling back to human review. Defaults to 30 seconds.
         :param pipeline_config: Advanced usage only. Configuration string needed to instantiate a specific
                               prediction pipeline for this detector.
+        :param edge_pipeline_config: Advanced usage only. Configuration for the edge inference pipeline.
+                              If not specified, the mode's default edge pipeline is used.
         :param metadata: A dictionary or JSON string containing custom key/value pairs to associate with
+                        the detector (limited to 1KB). This metadata can be used to store additional
+                        information like location, purpose, or related system IDs. You can retrieve this
+                        metadata later by calling `get_detector()`.
+        :param priming_group_id: Optional ID of an existing PrimingGroup to associate with this detector.
+                        You can create a PrimingGroup using the ExperimentalApi's create_priming_group method.
 
         :return: The created Detector object
         """
@@ -753,14 +699,16 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             confidence_threshold=confidence_threshold,
             patience_time=patience_time,
             pipeline_config=pipeline_config,
+            edge_pipeline_config=edge_pipeline_config,
             metadata=metadata,
+            priming_group_id=priming_group_id,
         )
         detector_creation_input.mode = ModeEnum.TEXT
         mode_config = TextModeConfiguration()
 
         detector_creation_input.mode_configuration = mode_config
         obj = self.detectors_api.create_detector(detector_creation_input, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return Detector.parse_obj(obj.to_dict())
+        return Detector.model_validate(obj.to_dict())
 
     def _download_mlbinary_url(self, detector: Union[str, Detector]) -> EdgeModelInfo:
         """
@@ -769,8 +717,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
         """
         if isinstance(detector, Detector):
             detector = detector.id
-        obj = self.edge_api.get_model_urls(detector)
-        return EdgeModelInfo.parse_obj(obj.to_dict())
+        obj = self._edge_model_download_api.get_model_urls(detector)
+        return EdgeModelInfo.model_validate(obj.to_dict())
 
     def download_mlbinary(self, detector: Union[str, Detector], output_dir: str) -> None:
         """
@@ -882,3 +830,156 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods
             auth_settings=["ApiToken"],
             _preload_content=False,  # This returns the urllib3 response rather than trying any type of processing
         )
+
+    def edge_base_url(self) -> str:
+        """Return the scheme+host+port of the configured endpoint, without the /device-api path."""
+        parsed = urlparse(self.configuration.host)
+        return urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
+
+    # ---------------------------------------------------------------------------
+    # ML Pipeline methods
+    # ---------------------------------------------------------------------------
+
+    def list_detector_pipelines(
+        self, detector: Union[str, Detector], page: int = 1, page_size: int = 10
+    ) -> PaginatedMLPipelineList:
+        """
+        Lists all ML pipelines associated with a given detector.
+
+        Each detector can have multiple pipelines (active, edge, shadow, etc.). This method returns
+        all of them, which is useful when selecting a source pipeline to seed a new PrimingGroup.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            detector = gl.get_detector("det_abc123")
+            pipelines = gl.list_detector_pipelines(detector)
+            for p in pipelines.results:
+                if p.is_active_pipeline:
+                    print(f"Active pipeline: {p.id}, config={p.pipeline_config}")
+
+        :param detector: A Detector object or detector ID string.
+        :param page: The page number to retrieve (1-based indexing).
+        :param page_size: The number of pipelines to return per page.
+        :return: PaginatedMLPipelineList containing the requested page of pipelines and pagination metadata.
+        """
+        detector_id = detector.id if isinstance(detector, Detector) else detector
+        try:
+            obj = self.detectors_api.list_detector_pipelines(detector_id, page=page, page_size=page_size)
+            return PaginatedMLPipelineList.model_validate(obj.to_dict())
+        except NotFoundException as e:
+            raise NotFoundError(f"Detector '{detector_id}' not found.") from e
+
+    # ---------------------------------------------------------------------------
+    # PrimingGroup methods
+    # ---------------------------------------------------------------------------
+
+    def list_priming_groups(self, page: int = 1, page_size: int = 10) -> PaginatedPrimingGroupList:
+        """
+        Lists all PrimingGroups owned by the authenticated user's account.
+
+        PrimingGroups let you seed new detectors with a pre-trained model so they start with a
+        meaningful head start instead of a blank slate.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            groups = gl.list_priming_groups()
+            for g in groups.results:
+                print(f"{g.name}: {g.id}")
+
+        :param page: The page number to retrieve (1-based indexing).
+        :param page_size: The number of priming groups to return per page.
+        :return: PaginatedPrimingGroupList containing the requested page of priming groups and pagination metadata.
+        """
+        obj = self.priming_groups_api.list_priming_groups(page=page, page_size=page_size)
+        return PaginatedPrimingGroupList.model_validate(obj.to_dict())
+
+    def create_priming_group(
+        self,
+        name: str,
+        source_ml_pipeline_id: str,
+        canonical_query: Optional[str] = None,
+        disable_shadow_pipelines: bool = False,
+    ) -> PrimingGroup:
+        """
+        Creates a new PrimingGroup seeded from an existing ML pipeline.
+
+        The trained model binary from the source pipeline is copied into the new PrimingGroup.
+        Detectors subsequently created with this PrimingGroup's ID will start with that model
+        already loaded, bypassing the cold-start period.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            detector = gl.get_detector("det_abc123")
+            pipelines = gl.list_detector_pipelines(detector)
+            active = next(p for p in pipelines.results if p.is_active_pipeline)
+
+            priming_group = gl.create_priming_group(
+                name="door-detector-primer",
+                source_ml_pipeline_id=active.id,
+                canonical_query="Is the door open?",
+                disable_shadow_pipelines=True,
+            )
+            print(f"Created priming group: {priming_group.id}")
+
+        :param name: A short, descriptive name for the priming group.
+        :param source_ml_pipeline_id: The ID of an MLPipeline whose trained model will seed this group.
+                                      The pipeline must belong to a detector in your account.
+        :param canonical_query: An optional description of the visual question this group answers.
+        :param disable_shadow_pipelines: If True, detectors created in this group will not receive
+                                         default shadow pipelines, ensuring the primed model stays active.
+        :return: The created PrimingGroup object.
+        """
+        request = PrimingGroupCreationInputRequest(
+            name=name,
+            source_ml_pipeline_id=source_ml_pipeline_id,
+            canonical_query=canonical_query,
+            disable_shadow_pipelines=disable_shadow_pipelines,
+        )
+        result = self.priming_groups_api.create_priming_group(request)
+        return PrimingGroup.model_validate(result.to_dict())
+
+    def get_priming_group(self, priming_group_id: str) -> PrimingGroup:
+        """
+        Retrieves a PrimingGroup by ID.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            pg = gl.get_priming_group("pg_abc123")
+            print(f"Priming group name: {pg.name}")
+
+        :param priming_group_id: The ID of the PrimingGroup to retrieve.
+        :return: The PrimingGroup object.
+        """
+        try:
+            result = self.priming_groups_api.get_priming_group(priming_group_id)
+            return PrimingGroup.model_validate(result.to_dict())
+        except NotFoundException as e:
+            raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.") from e
+        except ApiException as e:
+            # Handle 410 Gone (soft-deleted priming groups)
+            if e.status == HTTPStatus.GONE:
+                raise NotFoundError(f"PrimingGroup '{priming_group_id}' has been deleted.") from e
+            raise
+
+    def delete_priming_group(self, priming_group_id: str) -> None:
+        """
+        Deletes (soft-deletes) a PrimingGroup owned by the authenticated user.
+
+        This does not delete any detectors that were created using this priming group —
+        it only removes the priming group itself. Detectors already created remain unaffected.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            gl.delete_priming_group("pg_abc123")
+
+        :param priming_group_id: The ID of the PrimingGroup to delete.
+        """
+        try:
+            self.priming_groups_api.delete_priming_group(priming_group_id)
+        except NotFoundException as e:
+            raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.") from e
