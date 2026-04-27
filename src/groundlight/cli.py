@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 from enum import Enum
 from functools import wraps
+from importlib.metadata import version as importlib_version
 from typing import Any, Union
 
 import typer
@@ -20,6 +21,18 @@ cli_app = typer.Typer(
     no_args_is_help=True,
     context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
 )
+
+
+@cli_app.callback(invoke_without_command=True)
+def _main(
+    ctx: typer.Context,
+    version: bool = typer.Option(False, "--version", "-v", is_eager=True, help="Show the SDK version and exit."),
+):
+    if version:
+        print(importlib_version("groundlight"))
+        raise typer.Exit()
+    if ctx.invoked_subcommand is None:
+        print(ctx.get_help())
 
 experimental_app = typer.Typer(
     no_args_is_help=True,
