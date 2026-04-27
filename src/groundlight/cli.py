@@ -6,10 +6,9 @@ from enum import Enum
 from functools import wraps
 from typing import Any, Union
 
+import typer
 from groundlight_openapi_client.model_utils import OpenApiModel
 from pydantic import BaseModel
-
-import typer
 from typing_extensions import get_origin
 
 from groundlight import ExperimentalApi, Groundlight
