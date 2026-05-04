@@ -4,6 +4,9 @@ import subprocess
 from typing import Callable
 from unittest.mock import patch
 
+from groundlight import ExperimentalApi, Groundlight
+from groundlight.cli import _COMMAND_GROUPS, class_func_to_cli
+
 
 def test_whoami():
     completed_process = subprocess.run(
@@ -138,3 +141,39 @@ def test_bad_commands():
         ["groundlight", "list_detectors"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode != 0
+
+
+def test_all_cli_commands_have_group():
+    """Enforce that every method registered in the CLI has an entry in _COMMAND_GROUPS.
+
+    Stable methods are always registered, so all of them must have a group. Experimental
+    methods are only checked if they are CLI-representable (i.e., class_func_to_cli does not
+    raise) — methods that get silently skipped at registration time don't appear in the CLI
+    and therefore don't need a group.
+
+    This test is the enforcement mechanism for _COMMAND_GROUPS being a complete, up-to-date
+    table. If a new method is added to Groundlight or ExperimentalApi, this test will fail
+    until a group is assigned in _COMMAND_GROUPS.
+    """
+    stable_names = {n for n, m in vars(Groundlight).items() if callable(m) and not n.startswith("_")}
+
+    missing = []
+
+    for name in stable_names:
+        if name not in _COMMAND_GROUPS:
+            missing.append(f"stable: {name}")
+
+    for name, method in vars(ExperimentalApi).items():
+        if not callable(method) or name.startswith("_") or name in stable_names:
+            continue
+        try:
+            class_func_to_cli(method, is_experimental=True)
+            # Method is CLI-representable and will be registered — it needs a group.
+            if name not in _COMMAND_GROUPS:
+                missing.append(f"experimental: {name}")
+        except Exception:
+            pass  # Method will be silently skipped at registration; no group needed.
+
+    assert not missing, f"Methods registered in CLI but missing from _COMMAND_GROUPS:\n" + "\n".join(
+        f"  {m}" for m in sorted(missing)
+    )

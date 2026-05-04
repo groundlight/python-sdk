@@ -85,7 +85,7 @@ def _json_default(obj: Any) -> Any:
 
 
 def _format_result(result: Any) -> str:
-    """Format a CLI result value as a human-readable, jq-compatible string.
+    """Format a CLI result value as a human-readable string.
 
     Pydantic models and OpenAPI client objects are serialized to indented JSON.
     Plain dicts and lists are also JSON. Everything else falls back to str().
@@ -126,6 +126,10 @@ def class_func_to_cli(method, is_experimental: bool = False):
                 file=sys.stderr,
             )
         gl = ExperimentalApi()
+        # Typer sees the fake method's annotations (for correct CLI argument types), but the
+        # actual call goes to the real method on a live ExperimentalApi instance. The fake
+        # method's name is identical to the real one, so getattr resolves to the correct
+        # implementation, including inherited Groundlight methods.
         bound_method = getattr(gl, fake_method.__name__)
         result = bound_method(*args, **kwargs)
         if result is not None:
@@ -166,19 +170,6 @@ def class_func_to_cli(method, is_experimental: bool = False):
     return wrapper
 
 
-# Methods to exclude from the CLI entirely
-_CLI_EXCLUDED_METHODS = {
-    "make_action",
-    "create_rule",
-    "get_rule",
-    "delete_rule",
-    "list_rules",
-    "delete_all_rules",
-    "start_inspection",
-    "update_inspection_metadata",
-    "stop_inspection",
-}
-
 # Desired display order of command groups in the CLI help output.
 _GROUP_ORDER = [
     "Account",
@@ -187,7 +178,6 @@ _GROUP_ORDER = [
     "ML Pipelines & Priming",
     "Notes",
     "Utilities",
-    "Other",
 ]
 
 # Maps method names to their rich_help_panel group label for the CLI help output.
@@ -248,8 +238,8 @@ _COMMAND_GROUPS: dict[str, str] = {
 def _cli_sort_key(item: tuple) -> tuple:
     """Sort key for CLI command registration that controls group and within-group ordering.
 
-    Commands are ordered first by their group's position in _GROUP_ORDER (ungrouped last),
-    then alphabetically by method name within each group.
+    Commands are ordered first by their group's position in _GROUP_ORDER, then alphabetically
+    by method name within each group.
     """
     name, _ = item
     group = _COMMAND_GROUPS.get(name)
@@ -263,16 +253,16 @@ def groundlight():
         stable_names = {n for n, m in vars(Groundlight).items() if callable(m) and not n.startswith("_")}
 
         for name, method in sorted(vars(Groundlight).items(), key=_cli_sort_key):
-            if callable(method) and not name.startswith("_") and name not in _CLI_EXCLUDED_METHODS:
+            if callable(method) and not name.startswith("_"):
                 cli_func = class_func_to_cli(method)
-                cli_app.command(rich_help_panel=_COMMAND_GROUPS.get(name, "Other"))(cli_func)
+                cli_app.command(rich_help_panel=_COMMAND_GROUPS[name])(cli_func)
 
         for name, method in sorted(vars(ExperimentalApi).items(), key=_cli_sort_key):
-            if not callable(method) or name.startswith("_") or name in stable_names or name in _CLI_EXCLUDED_METHODS:
+            if not callable(method) or name.startswith("_") or name in stable_names:
                 continue
             try:
                 cli_func = class_func_to_cli(method, is_experimental=True)
-                experimental_app.command(rich_help_panel=_COMMAND_GROUPS.get(name, "Other"))(cli_func)
+                experimental_app.command(rich_help_panel=_COMMAND_GROUPS[name])(cli_func)
             except Exception as e:  # pylint: disable=broad-except
                 logger.debug("Skipping experimental CLI command '%s': %s", name, e)
 
