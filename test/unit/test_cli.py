@@ -174,6 +174,6 @@ def test_all_cli_commands_have_group():
         except Exception:
             pass  # Method will be silently skipped at registration; no group needed.
 
-    assert not missing, f"Methods registered in CLI but missing from _COMMAND_GROUPS:\n" + "\n".join(
+    assert not missing, "Methods registered in CLI but missing from _COMMAND_GROUPS:\n" + "\n".join(
         f"  {m}" for m in sorted(missing)
     )
