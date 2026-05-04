@@ -15,35 +15,22 @@ from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
-from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
-from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.channel_enum import ChannelEnum
-from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
-from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
-from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
-from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
-    Action,
-    ActionList,
-    Condition,
     Detector,
     EdgeModelInfo,
     ModeEnum,
     PaginatedMLPipelineList,
     PaginatedPrimingGroupList,
-    PayloadTemplate,
     PrimingGroup,
-    Rule,
-    WebhookAction,
 )
 from urllib3.response import HTTPResponse
 
@@ -94,7 +81,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
                 Groundlight cloud service.
         """
         super().__init__(endpoint=endpoint, api_token=api_token, disable_tls_verification=disable_tls_verification)
-        self.actions_api = ActionsApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
@@ -105,167 +91,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
 
         # API client for interacting with the EdgeEndpoint (getting/setting configuration, etc.)
         self.edge = EdgeEndpointApi(self)
-
-    ITEMS_PER_PAGE = 100
-
-    def make_condition(self, verb: str, parameters: dict) -> Condition:
-        """
-        Creates a Condition object for use in creating alerts
-
-        This function serves as a convenience method; Condition objects can also be created directly.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create a condition for a rule
-            condition = gl.make_condition("CHANGED_TO", {"label": "YES"})
-
-        :param verb: The condition verb to use. One of "ANSWERED_CONSECUTIVELY", "ANSWERED_WITHIN_TIME",
-                    "CHANGED_TO", "NO_CHANGE", "NO_QUERIES"
-        :param condition_parameters: Additional parameters for the condition, dependant on the verb:
-            - For ANSWERED_CONSECUTIVELY: {"num_consecutive_labels": N, "label": "YES/NO"}
-            - For CHANGED_TO: {"label": "YES/NO"}
-            - For ANSWERED_WITHIN_TIME: {"time_value": N, "time_unit": "MINUTES/HOURS/DAYS"}
-
-        :return: The created Condition object
-        """
-        return Condition(verb=verb, parameters=parameters)
-
-    def make_webhook_action(
-        self, url: str, include_image: bool, payload_template: Optional[PayloadTemplate] = None
-    ) -> WebhookAction:
-        """
-        Creates a WebhookAction object for use in creating alerts
-        This function serves as a convenience method; WebhookAction objects can also be created directly.
-        **Example usage**::
-            gl = ExperimentalApi()
-            # Create a webhook action for an alert
-            action = gl.make_webhook_action("https://example.com/webhook", include_image=True)
-        :param url: The URL to send the webhook to
-        :param include_image: Whether to include the triggering image in the webhook payload
-        :param payload_template: Optional custom template for the webhook payload. The template will be rendered with
-            the alert data. The template must be a valid Jinja2 template which produces valid JSON when rendered. If no
-            template is provided, the default template designed for Slack will be used.
-        """
-        return WebhookAction(
-            url=str(url),
-            include_image=include_image,
-            payload_template=payload_template,
-        )
-
-    def make_payload_template(self, template: str, headers: Optional[Dict[str, str]] = None) -> PayloadTemplate:
-        """
-        Creates a PayloadTemplate object for use in creating alerts
-        """
-        return PayloadTemplate(template=template, headers=headers)
-
-    def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
-        self,
-        detector: Union[str, Detector],
-        name,
-        condition: Condition,
-        actions: Optional[Union[Action, List[Action], ActionList]] = None,
-        webhook_actions: Optional[Union[WebhookAction, List[WebhookAction]]] = None,
-        *,
-        enabled: bool = True,
-        snooze_time_enabled: bool = False,
-        snooze_time_value: int = 3600,
-        snooze_time_unit: str = "SECONDS",
-        human_review_required: bool = False,
-    ) -> Rule:
-        """
-        Creates an alert for a detector that will trigger actions based on specified conditions.
-
-        An alert allows you to configure automated actions when certain conditions are met,
-        such as when a detector's prediction changes or maintains a particular state.
-
-        .. note::
-            Currently, only binary mode detectors (YES/NO answers) are supported for alerts.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create an alert to send emails when door is detected as open
-            condition = gl.make_condition(
-                verb="CHANGED_TO",
-                parameters={"label": "YES"}
-            )
-            action1 = Action(channel="EMAIL", recipient="alerts@company.com", include_image=True)
-            action2 = Action(channel="TEXT", recipient="+1234567890", include_image=False)
-            alert = gl.create_alert(
-                detector="det_idhere",
-                name="Door Open Alert",
-                condition=condition,
-                actions=[action1, action2]
-            )
-
-        :param detector: The detector ID or Detector object to add the alert to
-        :param name: A unique name to identify this alert
-        :param condition: The condition to use for the alert
-        :param actions: The actions to use for the alert. Optional if webhook_actions are provided (default None)
-        :param webhook_actions: The webhook actions to use for the alert. Optional if actions are provided (default
-            None)
-        :param enabled: Whether the alert should be active when created (default True)
-        :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
-        :param snooze_time_value: Duration of snooze period (default 3600)
-        :param snooze_time_unit: Unit for snooze duration - "SECONDS", "MINUTES", "HOURS", or "DAYS" (default "SECONDS")
-        :param human_review_required: Require human verification before sending alerts (default False)
-
-        :return: The created Alert object
-        """
-        if isinstance(actions, Action):
-            actions = [actions]
-        elif isinstance(actions, ActionList):
-            actions = actions.root
-        if isinstance(detector, Detector):
-            detector = detector.id
-        if isinstance(webhook_actions, WebhookAction):
-            webhook_actions = [webhook_actions]
-        # translate pydantic type to the openapi type
-        actions = (
-            [
-                ActionRequest(
-                    channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
-                )
-                for action in actions
-            ]
-            if actions
-            else []
-        )
-        webhook_actions = (
-            [
-                WebhookActionRequest(
-                    url=str(webhook_action.url),
-                    include_image=webhook_action.include_image,
-                    payload_template=(
-                        PayloadTemplateRequest(
-                            template=webhook_action.payload_template.template,
-                            headers=webhook_action.payload_template.headers,
-                        )
-                        if webhook_action.payload_template
-                        else None
-                    ),
-                )
-                for webhook_action in webhook_actions
-            ]
-            if webhook_actions
-            else []
-        )
-        rule_input = RuleRequest(
-            detector_id=detector,
-            name=name,
-            enabled=enabled,
-            action=actions,
-            condition=ConditionRequest(verb=condition.verb, parameters=condition.parameters),
-            snooze_time_enabled=snooze_time_enabled,
-            snooze_time_value=snooze_time_value,
-            snooze_time_unit=snooze_time_unit,
-            human_review_required=human_review_required,
-            webhook_action=webhook_actions,
-        )
-        return Rule.model_validate(self.actions_api.create_rule(detector, rule_input).to_dict())
 
     def get_notes(self, detector: Union[str, Detector]) -> Dict[str, Any]:
         """
