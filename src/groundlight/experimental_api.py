@@ -7,7 +7,6 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 
-import json
 from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
@@ -52,7 +51,7 @@ from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
 
-from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
+from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError
 
 
 class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,too-many-instance-attributes
