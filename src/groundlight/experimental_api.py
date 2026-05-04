@@ -10,7 +10,7 @@ modifications or potentially be removed in future releases, which could lead to 
 from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
