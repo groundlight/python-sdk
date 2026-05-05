@@ -131,7 +131,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
         if result is not None:
             print(_format_result(result))
 
-    # not recommended practice to directly change annotations, but gets around Typer not supporting Union types
+    # Typer doesn't support Union types, so we rewrite each Union annotation to a single concrete type.
     cli_unsupported_params = []
     for name, annotation in method.__annotations__.items():
         if name == "return":
