@@ -146,10 +146,9 @@ def class_func_to_cli(method, is_experimental: bool = False):
                         break
                 if not found_supported_type:
                     cli_unsupported_params.append(name)
-        elif is_experimental and not is_cli_representable(annotation):
-            # For experimental methods only: proactively flag non-Union types that Typer cannot
-            # represent (e.g. dict, list, custom models) so the caller can skip them gracefully
-            # before Typer raises a deferred RuntimeError at cli_app() invocation time.
+        elif not is_cli_representable(annotation):
+            # Proactively flag non-Union types that Typer cannot represent (e.g. dict, list,
+            # custom models) before Typer raises a deferred RuntimeError at invocation time.
             cli_unsupported_params.append(name)
     # Ideally we could just not list the unsupported params, but it doesn't seem natively supported by Typer
     # and requires more metaprogamming than makes sense at the moment. For now, we require methods to support str
