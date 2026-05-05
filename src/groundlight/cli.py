@@ -166,6 +166,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
 # Methods that should not be exposed as CLI commands. Add a method here if its signature
 # cannot be cleanly represented as CLI arguments or if it is not useful as a shell command.
 _CLI_EXCLUDED_METHODS = {
+    "get_raw_headers",  # returns the API token in plaintext
     "make_generic_api_request",
 }
 
@@ -241,8 +242,9 @@ def _cli_sort_key(item: tuple) -> tuple:
     by method name within each group.
     """
     name, _ = item
-    group = _COMMAND_GROUPS[name]
-    return (_GROUP_ORDER.index(group), name)
+    group = _COMMAND_GROUPS.get(name)
+    order = _GROUP_ORDER.index(group) if group in _GROUP_ORDER else len(_GROUP_ORDER)
+    return (order, name)
 
 
 def _is_cli_eligible(name: str, method, skip: set) -> bool:
@@ -257,12 +259,14 @@ def _register_commands(source_cls: type, app: typer.Typer, *, skip: set = None) 
     """
     is_experimental = source_cls is ExperimentalApi
     skip = skip or set()
-    registered = {name: method for name, method in vars(source_cls).items() if _is_cli_eligible(name, method, skip)}
-    # Sort after filtering so _cli_sort_key only sees methods that belong in _COMMAND_GROUPS.
-    for name, method in sorted(registered.items(), key=_cli_sort_key):
+    registered = set()
+    for name, method in sorted(vars(source_cls).items(), key=_cli_sort_key):
+        if not _is_cli_eligible(name, method, skip):
+            continue
         cli_func = class_func_to_cli(method, is_experimental=is_experimental)
         app.command(rich_help_panel=_COMMAND_GROUPS[name])(cli_func)
-    return set(registered)
+        registered.add(name)
+    return registered
 
 
 def groundlight():
