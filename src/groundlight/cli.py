@@ -44,7 +44,6 @@ experimental_app = typer.Typer(
 cli_app.add_typer(experimental_app, name="exp", rich_help_panel="Subcommands")
 
 
-
 def is_cli_representable(annotation) -> bool:
     """Returns True if the annotation is a type Typer can natively represent as a CLI argument.
 
