@@ -40,7 +40,13 @@ def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
     if not isinstance(
         result,
-        (BinaryClassificationResult, CountingResult, MultiClassificationResult, BoundingBoxResult, TextRecognitionResult),
+        (
+            BinaryClassificationResult,
+            CountingResult,
+            MultiClassificationResult,
+            BoundingBoxResult,
+            TextRecognitionResult,
+        ),
     ):
         return False
 
