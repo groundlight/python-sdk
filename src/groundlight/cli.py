@@ -6,7 +6,7 @@ from decimal import Decimal
 from enum import Enum
 from functools import wraps
 from importlib.metadata import version as importlib_version
-from typing import Any, Union
+from typing import Any, Optional, Union
 from uuid import UUID
 
 import typer
@@ -251,7 +251,7 @@ def _is_cli_eligible(name: str, method, skip: set) -> bool:
     return callable(method) and not name.startswith("_") and name not in skip and name not in _CLI_EXCLUDED_METHODS
 
 
-def _register_commands(source_cls: type, app: typer.Typer, *, skip: set = None) -> set:
+def _register_commands(source_cls: type, app: typer.Typer, *, skip: Optional[set] = None) -> set:
     """Register all eligible public methods from source_cls as commands on the given Typer app.
 
     Returns the set of registered method names.
