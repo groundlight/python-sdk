@@ -985,14 +985,12 @@ def test_create_detector_with_invalid_priming_group_id(gl: Groundlight, detector
     """
     name = detector_name("Test invalid priming")
     query = "Is there a dog?"
-    pipeline_config = "never-review"
     priming_group_id = "prgrp_nonexistent12345678901234567890"
 
     with pytest.raises(NotFoundException) as exc_info:
         gl.create_detector(
             name=name,
             query=query,
-            pipeline_config=pipeline_config,
             priming_group_id=priming_group_id,
         )
 
