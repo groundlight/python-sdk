@@ -7,44 +7,29 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 
-import json
 from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
-from groundlight_openapi_client.api.actions_api import ActionsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
-from groundlight_openapi_client.model.action_request import ActionRequest
-from groundlight_openapi_client.model.channel_enum import ChannelEnum
-from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
-from groundlight_openapi_client.model.payload_template_request import PayloadTemplateRequest
 from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
-from groundlight_openapi_client.model.rule_request import RuleRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
-from groundlight_openapi_client.model.webhook_action_request import WebhookActionRequest
 from model import (
-    Action,
-    ActionList,
-    Condition,
     Detector,
     EdgeModelInfo,
     ModeEnum,
     PaginatedMLPipelineList,
     PaginatedPrimingGroupList,
-    PaginatedRuleList,
-    PayloadTemplate,
     PrimingGroup,
-    Rule,
-    WebhookAction,
 )
 from urllib3.response import HTTPResponse
 
@@ -53,7 +38,7 @@ from groundlight.images import parse_supported_image_types
 from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
 
-from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError, logger
+from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError
 
 
 class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -76,17 +61,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             # Create an experimental API client
             gl = ExperimentalApi()
 
-            # Create a notification rule
-            rule = gl.create_rule(
-                detector="door_detector",
-                rule_name="Door Open Alert",
-                channel="EMAIL",
-                recipient="alerts@company.com",
-                alert_on="CHANGED_TO",
-                include_image=True,
-                condition_parameters={"label": "YES"}
-            )
-
             # Create a detector group
             group = gl.create_detector_group(
                 name="Security Detectors",
@@ -106,7 +80,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
                 Groundlight cloud service.
         """
         super().__init__(endpoint=endpoint, api_token=api_token, disable_tls_verification=disable_tls_verification)
-        self.actions_api = ActionsApi(self.api_client)
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
@@ -117,407 +90,6 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
 
         # API client for interacting with the EdgeEndpoint (getting/setting configuration, etc.)
         self.edge = EdgeEndpointApi(self)
-
-    ITEMS_PER_PAGE = 100
-
-    def make_condition(self, verb: str, parameters: dict) -> Condition:
-        """
-        Creates a Condition object for use in creating alerts
-
-        This function serves as a convenience method; Condition objects can also be created directly.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create a condition for a rule
-            condition = gl.make_condition("CHANGED_TO", {"label": "YES"})
-
-        :param verb: The condition verb to use. One of "ANSWERED_CONSECUTIVELY", "ANSWERED_WITHIN_TIME",
-                    "CHANGED_TO", "NO_CHANGE", "NO_QUERIES"
-        :param condition_parameters: Additional parameters for the condition, dependant on the verb:
-            - For ANSWERED_CONSECUTIVELY: {"num_consecutive_labels": N, "label": "YES/NO"}
-            - For CHANGED_TO: {"label": "YES/NO"}
-            - For ANSWERED_WITHIN_TIME: {"time_value": N, "time_unit": "MINUTES/HOURS/DAYS"}
-
-        :return: The created Condition object
-        """
-        return Condition(verb=verb, parameters=parameters)
-
-    def make_action(
-        self,
-        channel: str,
-        recipient: str,
-        include_image: bool,
-    ) -> Action:
-        """
-        Creates an Action object for use in creating alerts
-
-        This function serves as a convenience method; Action objects can also be created directly.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create an action for an alert
-            action = gl.make_action("EMAIL", "example@example.com", include_image=True)
-
-        :param channel: The notification channel to use. One of "EMAIL" or "TEXT"
-        :param recipient: The email address or phone number to send notifications to
-        :param include_image: Whether to include the triggering image in action message
-        """
-        return Action(
-            channel=channel,
-            recipient=recipient,
-            include_image=include_image,
-        )
-
-    def make_webhook_action(
-        self, url: str, include_image: bool, payload_template: Optional[PayloadTemplate] = None
-    ) -> WebhookAction:
-        """
-        Creates a WebhookAction object for use in creating alerts
-        This function serves as a convenience method; WebhookAction objects can also be created directly.
-        **Example usage**::
-            gl = ExperimentalApi()
-            # Create a webhook action for an alert
-            action = gl.make_webhook_action("https://example.com/webhook", include_image=True)
-        :param url: The URL to send the webhook to
-        :param include_image: Whether to include the triggering image in the webhook payload
-        :param payload_template: Optional custom template for the webhook payload. The template will be rendered with
-            the alert data. The template must be a valid Jinja2 template which produces valid JSON when rendered. If no
-            template is provided, the default template designed for Slack will be used.
-        """
-        return WebhookAction(
-            url=str(url),
-            include_image=include_image,
-            payload_template=payload_template,
-        )
-
-    def make_payload_template(self, template: str, headers: Optional[Dict[str, str]] = None) -> PayloadTemplate:
-        """
-        Creates a PayloadTemplate object for use in creating alerts
-        """
-        return PayloadTemplate(template=template, headers=headers)
-
-    def create_alert(  # pylint: disable=too-many-locals, too-many-arguments  # noqa: PLR0913
-        self,
-        detector: Union[str, Detector],
-        name,
-        condition: Condition,
-        actions: Optional[Union[Action, List[Action], ActionList]] = None,
-        webhook_actions: Optional[Union[WebhookAction, List[WebhookAction]]] = None,
-        *,
-        enabled: bool = True,
-        snooze_time_enabled: bool = False,
-        snooze_time_value: int = 3600,
-        snooze_time_unit: str = "SECONDS",
-        human_review_required: bool = False,
-    ) -> Rule:
-        """
-        Creates an alert for a detector that will trigger actions based on specified conditions.
-
-        An alert allows you to configure automated actions when certain conditions are met,
-        such as when a detector's prediction changes or maintains a particular state.
-
-        .. note::
-            Currently, only binary mode detectors (YES/NO answers) are supported for alerts.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create a rule to send email alerts when door is detected as open
-            condition = gl.make_condition(
-                verb="CHANGED_TO",
-                parameters={"label": "YES"}
-            )
-            action1 = gl.make_action(
-                "EMAIL",
-                "alerts@company.com",
-                include_image=True
-            )
-            action2 = gl.make_action(
-                "TEXT",
-                "+1234567890",
-                include_image=False
-            )
-            alert = gl.create_alert(
-                detector="det_idhere",
-                name="Door Open Alert",
-                condition=condition,
-                actions=[action1, action2]
-            )
-
-        :param detector: The detector ID or Detector object to add the alert to
-        :param name: A unique name to identify this alert
-        :param condition: The condition to use for the alert
-        :param actions: The actions to use for the alert. Optional if webhook_actions are provided (default None)
-        :param webhook_actions: The webhook actions to use for the alert. Optional if actions are provided (default
-            None)
-        :param enabled: Whether the alert should be active when created (default True)
-        :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
-        :param snooze_time_value: Duration of snooze period (default 3600)
-        :param snooze_time_unit: Unit for snooze duration - "SECONDS", "MINUTES", "HOURS", or "DAYS" (default "SECONDS")
-        :param human_review_required: Require human verification before sending alerts (default False)
-
-        :return: The created Alert object
-        """
-        if isinstance(actions, Action):
-            actions = [actions]
-        elif isinstance(actions, ActionList):
-            actions = actions.root
-        if isinstance(detector, Detector):
-            detector = detector.id
-        if isinstance(webhook_actions, WebhookAction):
-            webhook_actions = [webhook_actions]
-        # translate pydantic type to the openapi type
-        actions = (
-            [
-                ActionRequest(
-                    channel=ChannelEnum(action.channel), recipient=action.recipient, include_image=action.include_image
-                )
-                for action in actions
-            ]
-            if actions
-            else []
-        )
-        webhook_actions = (
-            [
-                WebhookActionRequest(
-                    url=str(webhook_action.url),
-                    include_image=webhook_action.include_image,
-                    payload_template=(
-                        PayloadTemplateRequest(
-                            template=webhook_action.payload_template.template,
-                            headers=webhook_action.payload_template.headers,
-                        )
-                        if webhook_action.payload_template
-                        else None
-                    ),
-                )
-                for webhook_action in webhook_actions
-            ]
-            if webhook_actions
-            else []
-        )
-        rule_input = RuleRequest(
-            detector_id=detector,
-            name=name,
-            enabled=enabled,
-            action=actions,
-            condition=ConditionRequest(verb=condition.verb, parameters=condition.parameters),
-            snooze_time_enabled=snooze_time_enabled,
-            snooze_time_value=snooze_time_value,
-            snooze_time_unit=snooze_time_unit,
-            human_review_required=human_review_required,
-            webhook_action=webhook_actions,
-        )
-        return Rule.model_validate(self.actions_api.create_rule(detector, rule_input).to_dict())
-
-    def create_rule(  # pylint: disable=too-many-locals  # noqa: PLR0913
-        self,
-        detector: Union[str, Detector],
-        rule_name: str,
-        channel: Union[str, ChannelEnum],
-        recipient: str,
-        *,
-        alert_on: str = "CHANGED_TO",
-        enabled: bool = True,
-        include_image: bool = False,
-        condition_parameters: Union[str, dict, None] = None,
-        snooze_time_enabled: bool = False,
-        snooze_time_value: int = 3600,
-        snooze_time_unit: str = "SECONDS",
-        human_review_required: bool = False,
-    ) -> Rule:
-        """
-        DEPRECATED: Use create_alert instead.
-
-        Creates a notification rule for a detector that will send alerts based on specified conditions.
-
-        A notification rule allows you to configure automated alerts when certain conditions are met,
-        such as when a detector's prediction changes or maintains a particular state.
-
-        .. note::
-            Currently, only binary mode detectors (YES/NO answers) are supported for notification rules.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Create a rule to send email alerts when door is detected as open
-            rule = gl.create_rule(
-                detector="door_detector",
-                rule_name="Door Open Alert",
-                channel="EMAIL",
-                recipient="alerts@company.com",
-                alert_on="CHANGED_TO",
-                condition_parameters={"label": "YES"},
-                include_image=True
-            )
-
-            # Create a rule for consecutive motion detections via SMS
-            rule = gl.create_rule(
-                detector="motion_detector",
-                rule_name="Repeated Motion Alert",
-                channel="TEXT",
-                recipient="+1234567890",
-                alert_on="ANSWERED_CONSECUTIVELY",
-                condition_parameters={
-                    "num_consecutive_labels": 3,
-                    "label": "YES"
-                },
-                snooze_time_enabled=True,
-                snooze_time_value=1,
-                snooze_time_unit="HOURS"
-            )
-
-        :param detector: The detector ID or Detector object to add the rule to
-        :param rule_name: A unique name to identify this rule
-        :param channel: Notification channel - either "EMAIL" or "TEXT"
-        :param recipient: Email address or phone number to receive notifications
-        :param alert_on: what to alert on. One of ANSWERED_CONSECUTIVELY, ANSWERED_WITHIN_TIME,
-            CHANGED_TO, NO_CHANGE, NO_QUERIES
-        :param enabled: Whether the rule should be active when created (default True)
-        :param include_image: Whether to attach the triggering image to notifications (default False)
-        :param condition_parameters: Additional parameters for the alert condition:
-            - For ANSWERED_CONSECUTIVELY: {"num_consecutive_labels": N, "label": "YES/NO"}
-            - For CHANGED_TO: {"label": "YES/NO"}
-            - For time-based conditions: {"time_value": N, "time_unit": "MINUTES/HOURS/DAYS"}
-        :param snooze_time_enabled: Enable notification snoozing to prevent alert spam (default False)
-        :param snooze_time_value: Duration of snooze period (default 3600)
-        :param snooze_time_unit: Unit for snooze duration - "SECONDS", "MINUTES", "HOURS", or "DAYS" (default "SECONDS")
-        :param human_review_required: Require human verification before sending alerts (default False)
-
-        :return: The created Rule object
-        """
-
-        logger.warning("create_rule is no longer supported. Please use create_alert instead.")
-
-        if condition_parameters is None:
-            condition_parameters = {}
-        if isinstance(channel, str):
-            channel = ChannelEnum(channel.upper())
-        if isinstance(condition_parameters, str):
-            condition_parameters = json.loads(condition_parameters)  # type: ignore
-        action = ActionRequest(
-            channel=channel,  # type: ignore
-            recipient=recipient,
-            include_image=include_image,
-        )
-        condition = ConditionRequest(verb=alert_on, parameters=condition_parameters)  # type: ignore
-        det_id = detector.id if isinstance(detector, Detector) else detector
-        rule_input = RuleRequest(
-            detector_id=det_id,
-            name=rule_name,
-            enabled=enabled,
-            action=action,
-            condition=condition,
-            snooze_time_enabled=snooze_time_enabled,
-            snooze_time_value=snooze_time_value,
-            snooze_time_unit=snooze_time_unit,
-            human_review_required=human_review_required,
-        )
-        return Rule.model_validate(self.actions_api.create_rule(det_id, rule_input).to_dict())
-
-    def get_rule(self, action_id: int) -> Rule:
-        """
-        Gets the rule with the given id.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Get an existing rule by ID
-            rule = gl.get_rule(action_id=123)
-            print(f"Rule name: {rule.name}")
-            print(f"Rule enabled: {rule.enabled}")
-
-        :param action_id: the id of the rule to get
-        :return: the Rule object with the given id
-        """
-        return Rule.model_validate(self.actions_api.get_rule(action_id).to_dict())
-
-    def delete_rule(self, action_id: int) -> None:
-        """
-        Deletes the rule with the given id.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Delete a specific rule
-            gl.delete_rule(action_id=123)
-
-        :param action_id: the id of the rule to delete
-        """
-        self.actions_api.delete_rule(action_id)
-
-    def list_rules(self, page=1, page_size=10) -> PaginatedRuleList:
-        """
-        Gets a paginated list of all rules.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Get first page of rules
-            rules = gl.list_rules(page=1, page_size=10)
-            print(f"Total rules: {rules.count}")
-
-            # Iterate through rules on current page
-            for rule in rules.results:
-                print(f"Rule {rule.id}: {rule.name}")
-
-            # Get next page
-            next_page = gl.list_rules(page=2, page_size=10)
-
-        :param page: Page number to retrieve (default: 1)
-        :param page_size: Number of rules per page (default: 10)
-        :return: PaginatedRuleList containing the rules and pagination info
-        """
-        obj = self.actions_api.list_rules(page=page, page_size=page_size)
-        return PaginatedRuleList.model_validate(obj.to_dict())
-
-    def delete_all_rules(self, detector: Union[None, str, Detector] = None) -> int:
-        """
-        Deletes all rules associated with the given detector. If no detector is specified,
-        deletes all rules in the account.
-
-        WARNING: If no detector is specified, this will delete ALL rules in your account.
-        This action cannot be undone. Use with caution.
-
-        **Example usage**::
-
-            gl = ExperimentalApi()
-
-            # Delete all rules for a specific detector
-            detector = gl.get_detector("my_detector")
-            num_deleted = gl.delete_all_rules(detector)
-            print(f"Deleted {num_deleted} rules")
-
-            # Delete all rules in the account
-            num_deleted = gl.delete_all_rules()
-            print(f"Deleted {num_deleted} rules")
-
-        :param detector: the detector to delete the rules from. If None, deletes all rules.
-
-        :return: the number of rules deleted
-        """
-        det_id = detector.id if isinstance(detector, Detector) else detector
-        # we collect a list of all the rules to delete, then delete them
-        ids_to_delete = []
-        num_rules = self.list_rules().count
-        for page in range(1, (num_rules // self.ITEMS_PER_PAGE) + 2):
-            for rule in self.list_rules(page=page, page_size=self.ITEMS_PER_PAGE).results:
-                if det_id is None:
-                    ids_to_delete.append(rule.id)
-                elif rule.detector_id == det_id:
-                    ids_to_delete.append(rule.id)
-        for rule_id in ids_to_delete:
-            self.delete_rule(rule_id)
-        return num_rules
 
     def get_notes(self, detector: Union[str, Detector]) -> Dict[str, Any]:
         """

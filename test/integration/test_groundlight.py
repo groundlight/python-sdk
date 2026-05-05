@@ -10,7 +10,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
-from groundlight.internalapi import ApiException, InternalApiError, NotFoundError
+from groundlight.internalapi import ApiException, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
 from groundlight_openapi_client.exceptions import NotFoundException
@@ -744,93 +744,6 @@ def test_submit_numpy_image(gl: Groundlight, detector: Detector):
     assert is_valid_display_result(_image_query.result)
 
 
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_start_inspection(gl: Groundlight):
-    inspection_id = gl.start_inspection()
-
-    assert isinstance(inspection_id, str)
-    assert "inspect_" in inspection_id
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_update_inspection_metadata_success(gl: Groundlight):
-    """Starts an inspection and adds a couple pieces of metadata to it.
-    This should succeed. If there are any errors, an exception will be raised.
-    """
-    inspection_id = gl.start_inspection()
-
-    user_provided_key = "Inspector"
-    user_provided_value = "Bob"
-    gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
-
-    user_provided_key = "Engine ID"
-    user_provided_value = "1234"
-    gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_update_inspection_metadata_failure(gl: Groundlight):
-    """Attempts to add metadata to an inspection after it is closed.
-    Should raise an exception.
-    """
-    inspection_id = gl.start_inspection()
-
-    _ = gl.stop_inspection(inspection_id)
-
-    with pytest.raises(ValueError):
-        user_provided_key = "Inspector"
-        user_provided_value = "Bob"
-        gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_update_inspection_metadata_invalid_inspection_id(gl: Groundlight):
-    """Attempt to update metadata for an inspection that doesn't exist.
-    Should raise an InternalApiError.
-    """
-
-    inspection_id = "some_invalid_inspection_id"
-    user_provided_key = "Operator"
-    user_provided_value = "Bob"
-
-    with pytest.raises(InternalApiError):
-        gl.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-@retry_on_failure()
-def test_stop_inspection_pass(gl: Groundlight, detector: Detector):
-    """Starts an inspection, submits a query with the inspection ID that should pass, stops
-    the inspection, checks the result.
-    """
-    inspection_id = gl.start_inspection()
-
-    _ = gl.submit_image_query(detector=detector, image="test/assets/dog.jpeg", inspection_id=inspection_id)
-
-    assert gl.stop_inspection(inspection_id) == "PASS"
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_stop_inspection_fail(gl: Groundlight, detector: Detector):
-    """Starts an inspection, submits a query that should fail, stops
-    the inspection, checks the result.
-    """
-    inspection_id = gl.start_inspection()
-
-    iq = gl.submit_image_query(detector=detector, image="test/assets/cat.jpeg", inspection_id=inspection_id)
-    gl.add_label(iq, Label.NO)  # labeling it NO just to be sure the inspection fails
-
-    assert gl.stop_inspection(inspection_id) == "FAIL"
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint doesn't support inspection_id")
-def test_stop_inspection_with_invalid_id(gl: Groundlight):
-    inspection_id = "some_invalid_inspection_id"
-
-    with pytest.raises(InternalApiError):
-        gl.stop_inspection(inspection_id)
-
-
 def test_update_detector_confidence_threshold_success(gl: Groundlight, detector: Detector):
     """Updates the confidence threshold for a detector. This should succeed."""
     gl.update_detector_confidence_threshold(detector.id, 0.77)
@@ -845,28 +758,6 @@ def test_update_detector_confidence_threshold_failure(gl: Groundlight, detector:
 
     with pytest.raises(ValueError):
         gl.update_detector_confidence_threshold(detector.id, -1)  # too low
-
-
-@pytest.mark.skip_for_edge_endpoint(reason="The edge-endpoint does not support passing detector metadata.")
-@retry_on_failure()
-def test_submit_image_query_with_inspection_id_metadata_and_want_async(gl: Groundlight, detector: Detector, image: str):
-    inspection_id = gl.start_inspection()
-    metadata = {"key": "value"}
-    iq = gl.submit_image_query(
-        detector=detector.id,
-        image=image,
-        human_review="NEVER",
-        inspection_id=inspection_id,
-        metadata=metadata,
-        want_async=True,
-        wait=0,
-    )
-
-    iq = gl.get_image_query(iq.id)
-    iq = gl.wait_for_confident_result(iq.id)
-
-    assert iq.metadata == metadata
-    assert iq.result.label == Label.YES
 
 
 def test_submit_image_query_with_empty_inspection_id(gl: Groundlight, detector: Detector, image: str):
