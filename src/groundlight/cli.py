@@ -47,8 +47,9 @@ cli_app.add_typer(experimental_app, name="exp", rich_help_panel="Subcommands")
 def is_cli_representable(annotation) -> bool:
     """Returns True if the annotation is a type Typer can natively represent as a CLI argument.
 
-    Primitive scalar types, Enum subclasses, and Union types (handled separately) are considered
-    representable. Complex types like dict, list, bytes, and custom model classes are not.
+    Primitive scalar types, Enum subclasses, Union types (handled separately), and List/Tuple
+    of representable types are considered representable. Complex types like dict, bytes, and
+    custom model classes are not.
     """
     if annotation in (str, int, float, bool):
         return True
@@ -56,6 +57,9 @@ def is_cli_representable(annotation) -> bool:
         return True
     if get_origin(annotation) is Union:
         return True
+    if get_origin(annotation) in (list, tuple):
+        args = getattr(annotation, "__args__", None)
+        return bool(args and all(is_cli_representable(a) for a in args))
     return False
 
 
@@ -164,6 +168,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
 # Methods that should not be exposed as CLI commands. Add a method here if its signature
 # cannot be cleanly represented as CLI arguments or if it is not useful as a shell command.
 _CLI_EXCLUDED_METHODS = {
+    "create_roi",  # returns an ROI object that must be passed to another API call; not useful standalone
     "get_raw_headers",  # returns the API token in plaintext
     "make_generic_api_request",
 }
