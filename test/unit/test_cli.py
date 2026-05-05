@@ -5,7 +5,7 @@ from typing import Callable
 from unittest.mock import patch
 
 from groundlight import ExperimentalApi, Groundlight
-from groundlight.cli import _CLI_EXCLUDED_METHODS, _COMMAND_GROUPS, _is_cli_eligible
+from groundlight.cli import _COMMAND_GROUPS, _is_cli_eligible
 
 
 def test_whoami():
