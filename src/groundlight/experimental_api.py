@@ -895,7 +895,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         obj = self.priming_groups_api.list_priming_groups(page=page, page_size=page_size)
         return PaginatedPrimingGroupList.model_validate(obj.to_dict())
 
-    def create_priming_group(
+    def create_priming_group(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         name: str,
         source_ml_pipeline_id: str,
