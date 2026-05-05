@@ -151,11 +151,11 @@ def class_func_to_cli(method, is_experimental: bool = False):
             # custom models) before Typer raises a deferred RuntimeError at invocation time.
             cli_unsupported_params.append(name)
     # Ideally we could just not list the unsupported params, but it doesn't seem natively supported by Typer
-    # and requires more metaprogamming than makes sense at the moment. For now, we require methods to support str
-    for param in cli_unsupported_params:
+    # and requires more metaprogramming than makes sense at the moment. For now, we require methods to support str.
+    if cli_unsupported_params:
         raise Exception(
-            f"Parameter {param} on method {method.__name__} has an unsupported type for the CLI. Consider allowing a"
-            " string representation or writing a custom exception inside the method"
+            f"Parameter(s) {cli_unsupported_params} on method {method.__name__} have an unsupported type for the CLI."
+            " Consider allowing a string representation or adding the method to _CLI_EXCLUDED_METHODS."
         )
 
     return wrapper
