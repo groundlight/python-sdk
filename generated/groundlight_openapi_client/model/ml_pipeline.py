@@ -89,10 +89,7 @@ class MLPipeline(ModelNormal):
         """
         return {
             "id": (str,),  # noqa: E501
-            "pipeline_config": (
-                str,
-                none_type,
-            ),  # noqa: E501
+            "pipeline_config": (str,),  # noqa: E501
             "is_active_pipeline": (bool,),  # noqa: E501
             "is_edge_pipeline": (bool,),  # noqa: E501
             "is_unclear_pipeline": (bool,),  # noqa: E501
@@ -101,6 +98,32 @@ class MLPipeline(ModelNormal):
             "created_at": (datetime,),  # noqa: E501
             "trained_at": (
                 datetime,
+                none_type,
+            ),  # noqa: E501
+            "type": (str,),  # noqa: E501
+            "friendly_name": (
+                str,
+                none_type,
+            ),  # noqa: E501
+            "model_binary_id": (
+                str,
+                none_type,
+            ),  # noqa: E501
+            "training_in_progress": (
+                {str: (bool, date, datetime, dict, float, int, list, str, none_type)},
+                none_type,
+            ),  # noqa: E501
+            "metrics": ({str: (bool, date, datetime, dict, float, int, list, str, none_type)},),  # noqa: E501
+            "eval_mlbinary_key": (
+                str,
+                none_type,
+            ),  # noqa: E501
+            "eval_mlbinary_revision_number": (
+                int,
+                none_type,
+            ),  # noqa: E501
+            "eval_mlbinary_friendly_name": (
+                str,
                 none_type,
             ),  # noqa: E501
         }
@@ -119,6 +142,14 @@ class MLPipeline(ModelNormal):
         "is_enabled": "is_enabled",  # noqa: E501
         "created_at": "created_at",  # noqa: E501
         "trained_at": "trained_at",  # noqa: E501
+        "type": "type",  # noqa: E501
+        "friendly_name": "friendly_name",  # noqa: E501
+        "model_binary_id": "model_binary_id",  # noqa: E501
+        "training_in_progress": "training_in_progress",  # noqa: E501
+        "metrics": "metrics",  # noqa: E501
+        "eval_mlbinary_key": "eval_mlbinary_key",  # noqa: E501
+        "eval_mlbinary_revision_number": "eval_mlbinary_revision_number",  # noqa: E501
+        "eval_mlbinary_friendly_name": "eval_mlbinary_friendly_name",  # noqa: E501
     }
 
     read_only_vars = {
@@ -131,6 +162,13 @@ class MLPipeline(ModelNormal):
         "is_enabled",  # noqa: E501
         "created_at",  # noqa: E501
         "trained_at",  # noqa: E501
+        "type",  # noqa: E501
+        "friendly_name",  # noqa: E501
+        "training_in_progress",  # noqa: E501
+        "metrics",  # noqa: E501
+        "eval_mlbinary_key",  # noqa: E501
+        "eval_mlbinary_revision_number",  # noqa: E501
+        "eval_mlbinary_friendly_name",  # noqa: E501
     }
 
     _composed_schemas = {}
@@ -148,6 +186,14 @@ class MLPipeline(ModelNormal):
         is_enabled,
         created_at,
         trained_at,
+        type,
+        friendly_name,
+        model_binary_id,
+        training_in_progress,
+        metrics,
+        eval_mlbinary_key,
+        eval_mlbinary_revision_number,
+        eval_mlbinary_friendly_name,
         *args,
         **kwargs,
     ):  # noqa: E501
@@ -155,7 +201,7 @@ class MLPipeline(ModelNormal):
 
         Args:
             id (str):
-            pipeline_config (str, none_type): configuration needed to instantiate a prediction pipeline.
+            pipeline_config (str): Get the resolved pipeline config, including defaults.
             is_active_pipeline (bool): If True, this is the pipeline is used for inference, active learning, etc. for its parent Predictor.
             is_edge_pipeline (bool): If True, this pipeline is enabled for edge inference.
             is_unclear_pipeline (bool): If True, this pipeline is used to train classifier for human unclear label prediction.
@@ -163,6 +209,14 @@ class MLPipeline(ModelNormal):
             is_enabled (bool): If False, this pipeline will not be run for any use case.
             created_at (datetime):
             trained_at (datetime, none_type):
+            type (str): Determine the pipeline type (active, shadow, unclear, oodd).
+            friendly_name (str, none_type): Get the friendly name from the MLBinary.
+            model_binary_id (str, none_type):
+            training_in_progress ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}, none_type): Check if training is currently in progress for this pipeline.
+            metrics ({str: (bool, date, datetime, dict, float, int, list, str, none_type)}): Get the metrics for this pipeline from MLBinary metadata and evaluation results.
+            eval_mlbinary_key (str, none_type): Get the MLBinary key that was evaluated.
+            eval_mlbinary_revision_number (int, none_type): Get the revision number of the MLBinary that was evaluated.
+            eval_mlbinary_friendly_name (str, none_type): Get the friendly name of the MLBinary that was evaluated.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -232,6 +286,14 @@ class MLPipeline(ModelNormal):
         self.is_enabled = is_enabled
         self.created_at = created_at
         self.trained_at = trained_at
+        self.type = type
+        self.friendly_name = friendly_name
+        self.model_binary_id = model_binary_id
+        self.training_in_progress = training_in_progress
+        self.metrics = metrics
+        self.eval_mlbinary_key = eval_mlbinary_key
+        self.eval_mlbinary_revision_number = eval_mlbinary_revision_number
+        self.eval_mlbinary_friendly_name = eval_mlbinary_friendly_name
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map
@@ -254,9 +316,10 @@ class MLPipeline(ModelNormal):
     ])
 
     @convert_js_args_to_python_args
-    def __init__(self, *args, **kwargs):  # noqa: E501
+    def __init__(self, model_binary_id, *args, **kwargs):  # noqa: E501
         """MLPipeline - a model defined in OpenAPI
 
+            model_binary_id (str, none_type):
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
                                 will be type checked and a TypeError will be
@@ -314,6 +377,7 @@ class MLPipeline(ModelNormal):
         self._configuration = _configuration
         self._visited_composed_classes = _visited_composed_classes + (self.__class__,)
 
+        self.model_binary_id = model_binary_id
         for var_name, var_value in kwargs.items():
             if (
                 var_name not in self.attribute_map

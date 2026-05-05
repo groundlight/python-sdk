@@ -25,6 +25,7 @@ from model import (
     MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
+    TextRecognitionResult,
 )
 from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
@@ -37,11 +38,15 @@ IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
-    if (
-        not isinstance(result, BinaryClassificationResult)
-        and not isinstance(result, CountingResult)
-        and not isinstance(result, MultiClassificationResult)
-        and not isinstance(result, BoundingBoxResult)
+    if not isinstance(
+        result,
+        (
+            BinaryClassificationResult,
+            CountingResult,
+            MultiClassificationResult,
+            BoundingBoxResult,
+            TextRecognitionResult,
+        ),
     ):
         return False
 
@@ -876,14 +881,12 @@ def test_create_detector_with_invalid_priming_group_id(gl: Groundlight, detector
     """
     name = detector_name("Test invalid priming")
     query = "Is there a dog?"
-    pipeline_config = "never-review"
     priming_group_id = "prgrp_nonexistent12345678901234567890"
 
     with pytest.raises(NotFoundException) as exc_info:
         gl.create_detector(
             name=name,
             query=query,
-            pipeline_config=pipeline_config,
             priming_group_id=priming_group_id,
         )
 

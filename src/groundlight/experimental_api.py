@@ -467,10 +467,11 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         obj = self.priming_groups_api.list_priming_groups(page=page, page_size=page_size)
         return PaginatedPrimingGroupList.model_validate(obj.to_dict())
 
-    def create_priming_group(
+    def create_priming_group(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         name: str,
         source_ml_pipeline_id: str,
+        detector_mode: ModeEnum,
         canonical_query: Optional[str] = None,
         disable_shadow_pipelines: bool = False,
     ) -> PrimingGroup:
@@ -491,6 +492,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             priming_group = gl.create_priming_group(
                 name="door-detector-primer",
                 source_ml_pipeline_id=active.id,
+                detector_mode=ModeEnum.BINARY,
                 canonical_query="Is the door open?",
                 disable_shadow_pipelines=True,
             )
@@ -499,6 +501,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         :param name: A short, descriptive name for the priming group.
         :param source_ml_pipeline_id: The ID of an MLPipeline whose trained model will seed this group.
                                       The pipeline must belong to a detector in your account.
+        :param detector_mode: Detector mode this priming group is intended for (BINARY, MULTI_CLASS, etc.).
+                              Must match the mode supported by the source MLPipeline's pipeline_config.
         :param canonical_query: An optional description of the visual question this group answers.
         :param disable_shadow_pipelines: If True, detectors created in this group will not receive
                                          default shadow pipelines, ensuring the primed model stays active.
@@ -507,6 +511,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         request = PrimingGroupCreationInputRequest(
             name=name,
             source_ml_pipeline_id=source_ml_pipeline_id,
+            detector_mode=ModeEnum(detector_mode).value,
             canonical_query=canonical_query,
             disable_shadow_pipelines=disable_shadow_pipelines,
         )

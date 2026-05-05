@@ -52,6 +52,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     priming_group_creation_input_request = PrimingGroupCreationInputRequest(
         name="name_example",
         source_ml_pipeline_id="source_ml_pipeline_id_example",
+        detector_mode=None,
         canonical_query="canonical_query_example",
         disable_shadow_pipelines=False,
     ) # PrimingGroupCreationInputRequest | 
