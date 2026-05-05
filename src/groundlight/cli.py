@@ -19,9 +19,9 @@ from groundlight.client import ApiTokenError
 
 logger = logging.getLogger(__name__)
 
-cli_app = typer.Typer(
-    context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
-)
+_TYPER_CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"], "max_content_width": 800}
+
+cli_app = typer.Typer(context_settings=_TYPER_CONTEXT_SETTINGS)
 
 
 @cli_app.callback(invoke_without_command=True)
@@ -33,23 +33,16 @@ def _main(
         print(importlib_version("groundlight"))
         raise typer.Exit()
     if ctx.invoked_subcommand is None:
-        print(ctx.get_help())
+        typer.echo(ctx.get_help())
 
 
 experimental_app = typer.Typer(
     no_args_is_help=True,
     help="Experimental commands — may change or be removed without notice.",
-    context_settings={"help_option_names": ["-h", "--help"], "max_content_width": 800},
+    context_settings=_TYPER_CONTEXT_SETTINGS,
 )
 cli_app.add_typer(experimental_app, name="exp", rich_help_panel="Subcommands")
 
-
-def is_cli_supported_type(annotation):
-    """
-    Check if the annotation is a type that can be supported by the CLI
-    str is a supported type, but is given precedence over other types
-    """
-    return annotation in (int, float, bool)
 
 
 def is_cli_representable(annotation) -> bool:
@@ -148,7 +141,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
             else:
                 found_supported_type = False
                 for arg in annotation.__args__:
-                    if is_cli_supported_type(arg):
+                    if is_cli_representable(arg):
                         found_supported_type = True
                         wrapper.__annotations__[name] = arg
                         break
@@ -169,6 +162,12 @@ def class_func_to_cli(method, is_experimental: bool = False):
 
     return wrapper
 
+
+# Methods that should not be exposed as CLI commands. Add a method here if its signature
+# cannot be cleanly represented as CLI arguments or if it is not useful as a shell command.
+_CLI_EXCLUDED_METHODS = {
+    "make_generic_api_request",
+}
 
 # Desired display order of command groups in the CLI help output.
 _GROUP_ORDER = [
@@ -242,30 +241,35 @@ def _cli_sort_key(item: tuple) -> tuple:
     by method name within each group.
     """
     name, _ = item
-    group = _COMMAND_GROUPS.get(name)
-    group_rank = _GROUP_ORDER.index(group) if group in _GROUP_ORDER else len(_GROUP_ORDER)
-    return (group_rank, name)
+    group = _COMMAND_GROUPS[name]
+    return (_GROUP_ORDER.index(group), name)
+
+
+def _is_cli_eligible(name: str, method, skip: set) -> bool:
+    """Returns True if a class method should be registered as a CLI command."""
+    return callable(method) and not name.startswith("_") and name not in skip and name not in _CLI_EXCLUDED_METHODS
+
+
+def _register_commands(source_cls: type, app: typer.Typer, *, skip: set = None) -> set:
+    """Register all eligible public methods from source_cls as commands on the given Typer app.
+
+    Returns the set of registered method names.
+    """
+    is_experimental = source_cls is ExperimentalApi
+    skip = skip or set()
+    registered = {name: method for name, method in vars(source_cls).items() if _is_cli_eligible(name, method, skip)}
+    # Sort after filtering so _cli_sort_key only sees methods that belong in _COMMAND_GROUPS.
+    for name, method in sorted(registered.items(), key=_cli_sort_key):
+        cli_func = class_func_to_cli(method, is_experimental=is_experimental)
+        app.command(rich_help_panel=_COMMAND_GROUPS[name])(cli_func)
+    return set(registered)
 
 
 def groundlight():
     """Entry point for the groundlight CLI."""
     try:
-        stable_names = {n for n, m in vars(Groundlight).items() if callable(m) and not n.startswith("_")}
-
-        for name, method in sorted(vars(Groundlight).items(), key=_cli_sort_key):
-            if callable(method) and not name.startswith("_"):
-                cli_func = class_func_to_cli(method)
-                cli_app.command(rich_help_panel=_COMMAND_GROUPS[name])(cli_func)
-
-        for name, method in sorted(vars(ExperimentalApi).items(), key=_cli_sort_key):
-            if not callable(method) or name.startswith("_") or name in stable_names:
-                continue
-            try:
-                cli_func = class_func_to_cli(method, is_experimental=True)
-                experimental_app.command(rich_help_panel=_COMMAND_GROUPS[name])(cli_func)
-            except Exception as e:  # pylint: disable=broad-except
-                logger.debug("Skipping experimental CLI command '%s': %s", name, e)
-
+        stable_names = _register_commands(Groundlight, cli_app)
+        _register_commands(ExperimentalApi, experimental_app, skip=stable_names)
         cli_app()
     except ApiTokenError as e:
         print(e)

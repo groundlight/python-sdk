@@ -5,7 +5,7 @@ from typing import Callable
 from unittest.mock import patch
 
 from groundlight import ExperimentalApi, Groundlight
-from groundlight.cli import _COMMAND_GROUPS, class_func_to_cli
+from groundlight.cli import _CLI_EXCLUDED_METHODS, _COMMAND_GROUPS, _is_cli_eligible
 
 
 def test_whoami():
@@ -146,16 +146,11 @@ def test_bad_commands():
 def test_all_cli_commands_have_group():
     """Enforce that every method registered in the CLI has an entry in _COMMAND_GROUPS.
 
-    Stable methods are always registered, so all of them must have a group. Experimental
-    methods are only checked if they are CLI-representable (i.e., class_func_to_cli does not
-    raise) — methods that get silently skipped at registration time don't appear in the CLI
-    and therefore don't need a group.
-
-    This test is the enforcement mechanism for _COMMAND_GROUPS being a complete, up-to-date
-    table. If a new method is added to Groundlight or ExperimentalApi, this test will fail
-    until a group is assigned in _COMMAND_GROUPS.
+    All stable methods and all experimental methods not in _CLI_EXCLUDED_METHODS must have
+    a group. If a new method is added to Groundlight or ExperimentalApi without a group
+    assignment, this test fails with a clear message listing what's missing.
     """
-    stable_names = {n for n, m in vars(Groundlight).items() if callable(m) and not n.startswith("_")}
+    stable_names = {n for n, m in vars(Groundlight).items() if _is_cli_eligible(n, m, skip=set())}
 
     missing = []
 
@@ -164,15 +159,10 @@ def test_all_cli_commands_have_group():
             missing.append(f"stable: {name}")
 
     for name, method in vars(ExperimentalApi).items():
-        if not callable(method) or name.startswith("_") or name in stable_names:
+        if not _is_cli_eligible(name, method, skip=stable_names):
             continue
-        try:
-            class_func_to_cli(method, is_experimental=True)
-            # Method is CLI-representable and will be registered — it needs a group.
-            if name not in _COMMAND_GROUPS:
-                missing.append(f"experimental: {name}")
-        except Exception:
-            pass  # Method will be silently skipped at registration; no group needed.
+        if name not in _COMMAND_GROUPS:
+            missing.append(f"experimental: {name}")
 
     assert not missing, "Methods registered in CLI but missing from _COMMAND_GROUPS:\n" + "\n".join(
         f"  {m}" for m in sorted(missing)
