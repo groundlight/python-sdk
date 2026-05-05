@@ -7,8 +7,10 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **str** |  | [readonly] 
 **name** | **str** |  | 
+**num_classes** | **int, none_type** | Number of output classes this priming group is trained for. Set automatically from the source predictor when created via create_user_priming_group (MULTI_CLASS only). Nullable for legacy rows and for modes where class count isn&#39;t meaningful; a follow-up PR will tighten this after manual backfill. | [readonly] 
 **is_global** | **bool** | If True, this priming group is shared to all Groundlight users. Can only be set by Groundlight admins. | [readonly] 
 **created_at** | **datetime** |  | [readonly] 
+**detector_mode** | **bool, date, datetime, dict, float, int, list, str, none_type** | Detector mode this priming group is intended for (BINARY, MULTI_CLASS, etc.). Validated against the pipeline_config of every active and shadow base MLBinary in clean(). Nullable only for legacy rows pre-dating this field; new PrimingGroups must set it.  * &#x60;BINARY&#x60; - BINARY * &#x60;COUNT&#x60; - COUNT * &#x60;MULTI_CLASS&#x60; - MULTI_CLASS * &#x60;TEXT&#x60; - TEXT * &#x60;BOUNDING_BOX&#x60; - BOUNDING_BOX | [optional] 
 **canonical_query** | **str, none_type** | Canonical semantic query for this priming group | [optional] 
 **active_pipeline_config** | **str, none_type** | Active pipeline config override for new detectors created in this priming group. If set, this overrides the default active pipeline config at creation time.Can be either a pipeline name or full config string. | [optional] 
 **priming_group_specific_shadow_pipeline_configs** | **bool, date, datetime, dict, float, int, list, str, none_type** | Configs for shadow pipelines to create for detectors in this priming group. These are added to the default shadow pipeline configs for a detector of the given mode. Each entry is either a pipeline name or full config string.  | [optional] 

@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **str** | Name for the new priming group. | 
 **source_ml_pipeline_id** | **str** | ID of an MLPipeline owned by this account whose trained model will seed the priming group. | 
+**detector_mode** | **bool, date, datetime, dict, float, int, list, str, none_type** | Detector mode this priming group is intended for (BINARY, MULTI_CLASS, etc.). Must match the mode supported by the source MLPipeline&#39;s pipeline_config.  * &#x60;BINARY&#x60; - BINARY * &#x60;COUNT&#x60; - COUNT * &#x60;MULTI_CLASS&#x60; - MULTI_CLASS * &#x60;TEXT&#x60; - TEXT * &#x60;BOUNDING_BOX&#x60; - BOUNDING_BOX | 
 **canonical_query** | **str, none_type** | Optional canonical semantic query describing this priming group. | [optional] 
 **disable_shadow_pipelines** | **bool** | If true, new detectors added to this priming group will not receive the default shadow pipelines. This guarantees the primed active model is never switched off. | [optional]  if omitted the server will use the default value of False
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]

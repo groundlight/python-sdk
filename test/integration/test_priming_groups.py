@@ -13,7 +13,7 @@ import time
 import pytest
 from groundlight import ExperimentalApi
 from groundlight.internalapi import NotFoundError
-from model import MLPipeline, PrimingGroup
+from model import MLPipeline, ModeEnum, PrimingGroup
 
 # ---------------------------------------------------------------------------
 # list_detector_pipelines
@@ -88,6 +88,7 @@ def test_create_priming_group(gl_experimental: ExperimentalApi, detector):
     pg = gl_experimental.create_priming_group(
         name=f"test-primer-{detector.id}",
         source_ml_pipeline_id=trained.id,
+        detector_mode=ModeEnum.BINARY,
         canonical_query="Is there a dog?",
     )
 
@@ -108,6 +109,7 @@ def test_create_priming_group_disable_shadow_pipelines(gl_experimental: Experime
     pg = gl_experimental.create_priming_group(
         name=f"test-primer-noshadow-{detector.id}",
         source_ml_pipeline_id=trained.id,
+        detector_mode=ModeEnum.BINARY,
         disable_shadow_pipelines=True,
     )
 
@@ -123,6 +125,7 @@ def test_get_priming_group(gl_experimental: ExperimentalApi, detector):
     pg = gl_experimental.create_priming_group(
         name=f"test-primer-get-{detector.id}",
         source_ml_pipeline_id=trained.id,
+        detector_mode=ModeEnum.BINARY,
     )
 
     fetched = gl_experimental.get_priming_group(pg.id)
@@ -145,6 +148,7 @@ def test_delete_priming_group(gl_experimental: ExperimentalApi, detector):
     pg = gl_experimental.create_priming_group(
         name=f"test-primer-del-{detector.id}",
         source_ml_pipeline_id=trained.id,
+        detector_mode=ModeEnum.BINARY,
     )
 
     gl_experimental.delete_priming_group(pg.id)
@@ -160,6 +164,7 @@ def test_created_priming_group_appears_in_list(gl_experimental: ExperimentalApi,
     pg = gl_experimental.create_priming_group(
         name=f"test-primer-list-{detector.id}",
         source_ml_pipeline_id=trained.id,
+        detector_mode=ModeEnum.BINARY,
     )
 
     groups = gl_experimental.list_priming_groups()
