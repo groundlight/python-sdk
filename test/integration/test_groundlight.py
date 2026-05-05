@@ -25,6 +25,7 @@ from model import (
     MultiClassificationResult,
     PaginatedDetectorList,
     PaginatedImageQueryList,
+    TextRecognitionResult,
 )
 from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
@@ -37,11 +38,15 @@ IQ_IMPROVEMENT_THRESHOLD = 0.75
 
 def is_valid_display_result(result: Any) -> bool:
     """Is the image query result valid to display to the user?."""
-    if (
-        not isinstance(result, BinaryClassificationResult)
-        and not isinstance(result, CountingResult)
-        and not isinstance(result, MultiClassificationResult)
-        and not isinstance(result, BoundingBoxResult)
+    if not isinstance(
+        result,
+        (
+            BinaryClassificationResult,
+            CountingResult,
+            MultiClassificationResult,
+            BoundingBoxResult,
+            TextRecognitionResult,
+        ),
     ):
         return False
 

@@ -1277,6 +1277,20 @@ components:
           maxLength: 100
       required:
       - name
+    DetectorModeEnum:
+      enum:
+      - BINARY
+      - COUNT
+      - MULTI_CLASS
+      - TEXT
+      - BOUNDING_BOX
+      type: string
+      description: |-
+        * `BINARY` - BINARY
+        * `COUNT` - COUNT
+        * `MULTI_CLASS` - MULTI_CLASS
+        * `TEXT` - TEXT
+        * `BOUNDING_BOX` - BOUNDING_BOX
     DetectorTypeEnum:
       enum:
       - detector
@@ -1457,16 +1471,17 @@ components:
       - label
     MLPipeline:
       type: object
-      description: A single ML pipeline attached to a detector.
+      description: |-
+        A single ML pipeline attached to a detector.
+        Includes training status and metrics for the Pipeline Details UI.
       properties:
         id:
           type: string
           readOnly: true
         pipeline_config:
           type: string
+          description: Get the resolved pipeline config, including defaults.
           readOnly: true
-          nullable: true
-          description: configuration needed to instantiate a prediction pipeline.
         is_active_pipeline:
           type: boolean
           readOnly: true
@@ -1498,16 +1513,63 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        type:
+          type: string
+          description: Determine the pipeline type (active, shadow, unclear, oodd).
+          readOnly: true
+        friendly_name:
+          type: string
+          nullable: true
+          description: Get the friendly name from the MLBinary.
+          readOnly: true
+        model_binary_id:
+          type: string
+          nullable: true
+        training_in_progress:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Check if training is currently in progress for this pipeline.
+          readOnly: true
+        metrics:
+          type: object
+          additionalProperties: {}
+          description: Get the metrics for this pipeline from MLBinary metadata and
+            evaluation results.
+          readOnly: true
+        eval_mlbinary_key:
+          type: string
+          nullable: true
+          description: Get the MLBinary key that was evaluated.
+          readOnly: true
+        eval_mlbinary_revision_number:
+          type: integer
+          nullable: true
+          description: Get the revision number of the MLBinary that was evaluated.
+          readOnly: true
+        eval_mlbinary_friendly_name:
+          type: string
+          nullable: true
+          description: Get the friendly name of the MLBinary that was evaluated.
+          readOnly: true
       required:
       - created_at
+      - eval_mlbinary_friendly_name
+      - eval_mlbinary_key
+      - eval_mlbinary_revision_number
+      - friendly_name
       - id
       - is_active_pipeline
       - is_edge_pipeline
       - is_enabled
       - is_oodd_pipeline
       - is_unclear_pipeline
+      - metrics
+      - model_binary_id
       - pipeline_config
       - trained_at
+      - training_in_progress
+      - type
       x-internal: true
     ModeEnum:
       type: string
@@ -1547,6 +1609,9 @@ components:
           format: binary
           writeOnly: true
           nullable: true
+    NullEnum:
+      enum:
+      - null
     PaginatedDetectorList:
       type: object
       required:
@@ -1735,6 +1800,29 @@ components:
         name:
           type: string
           maxLength: 100
+        detector_mode:
+          nullable: true
+          description: |-
+            Detector mode this priming group is intended for (BINARY, MULTI_CLASS, etc.). Validated against the pipeline_config of every active and shadow base MLBinary in clean(). Nullable only for legacy rows pre-dating this field; new PrimingGroups must set it.
+
+            * `BINARY` - BINARY
+            * `COUNT` - COUNT
+            * `MULTI_CLASS` - MULTI_CLASS
+            * `TEXT` - TEXT
+            * `BOUNDING_BOX` - BOUNDING_BOX
+          oneOf:
+          - $ref: '#/components/schemas/DetectorModeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        num_classes:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Number of output classes this priming group is trained for.
+            Set automatically from the source predictor when created via create_user_priming_group
+            (MULTI_CLASS only). Nullable for legacy rows and for modes where class
+            count isn't meaningful; a follow-up PR will tighten this after manual
+            backfill.
         is_global:
           type: boolean
           readOnly: true
@@ -1774,6 +1862,7 @@ components:
       - id
       - is_global
       - name
+      - num_classes
       x-internal: true
     PrimingGroupCreationInputRequest:
       type: object
@@ -1791,6 +1880,17 @@ components:
           description: ID of an MLPipeline owned by this account whose trained model
             will seed the priming group.
           maxLength: 44
+        detector_mode:
+          allOf:
+          - $ref: '#/components/schemas/DetectorModeEnum'
+          description: |-
+            Detector mode this priming group is intended for (BINARY, MULTI_CLASS, etc.). Must match the mode supported by the source MLPipeline's pipeline_config.
+
+            * `BINARY` - BINARY
+            * `COUNT` - COUNT
+            * `MULTI_CLASS` - MULTI_CLASS
+            * `TEXT` - TEXT
+            * `BOUNDING_BOX` - BOUNDING_BOX
         canonical_query:
           type: string
           nullable: true
@@ -1803,6 +1903,7 @@ components:
             receive the default shadow pipelines. This guarantees the primed active
             model is never switched off.
       required:
+      - detector_mode
       - name
       - source_ml_pipeline_id
       x-internal: true
