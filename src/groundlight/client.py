@@ -1277,42 +1277,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         request_params = LabelValueRequest(label=label, image_query_id=image_query_id, rois=roi_requests)
         self.labels_api.create_label(request_params)
 
-    def start_inspection(self) -> str:
-        """
-        **NOTE:** For users with Inspection Reports enabled only.
-        Starts an inspection report and returns the id of the inspection.
-
-        :return: The unique identifier of the inspection.
-        """
-        return self.api_client.start_inspection()
-
-    def update_inspection_metadata(self, inspection_id: str, user_provided_key: str, user_provided_value: str) -> None:
-        """
-        **NOTE:** For users with Inspection Reports enabled only.
-        Add/update inspection metadata with the user_provided_key and user_provided_value.
-
-        :param inspection_id: The unique identifier of the inspection.
-
-        :param user_provided_key: the key in the key/value pair for the inspection metadata.
-
-        :param user_provided_value: the value in the key/value pair for the inspection metadata.
-
-        :return: None
-        """
-        self.api_client.update_inspection_metadata(inspection_id, user_provided_key, user_provided_value)
-
-    def stop_inspection(self, inspection_id: str) -> str:
-        """
-        **NOTE:** For users with Inspection Reports enabled only.
-        Stops an inspection and raises an exception if the response from the server
-        indicates that the inspection was not successfully stopped.
-
-        :param inspection_id: The unique identifier of the inspection.
-
-        :return: "PASS" or "FAIL" depending on the result of the inspection.
-        """
-        return self.api_client.stop_inspection(inspection_id)
-
     def update_detector_confidence_threshold(self, detector: Union[str, Detector], confidence_threshold: float) -> None:
         """
         Updates the confidence threshold for the given detector

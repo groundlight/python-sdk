@@ -4,6 +4,9 @@ import subprocess
 from typing import Callable
 from unittest.mock import patch
 
+from groundlight import ExperimentalApi, Groundlight
+from groundlight.cli import _COMMAND_GROUPS, _is_cli_eligible
+
 
 def test_whoami():
     completed_process = subprocess.run(
@@ -41,16 +44,9 @@ def test_detector_and_image_queries(detector_name: Callable):
         check=False,
     )
     assert completed_process.returncode == 0
-    match = re.search("id='([^']+)'", completed_process.stdout)
+    match = re.search(r'"id":\s*"([^"]+)"', completed_process.stdout)
     assert match is not None
     det_id_on_create = match.group(1)
-    # The output of the create-detector command looks something like:
-    # id='det_abc123'
-    # type=<DetectorTypeEnum.detector: 'detector'>
-    # created_at=datetime.datetime(2023, 8, 30, 18, 3, 9, 489794,
-    # tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200)))
-    # name='testdetector 2023-08-31 01:03:09.039448' query='testdetector'
-    # group_name='__DEFAULT' confidence_threshold=0.9
 
     # test getting detectors
     completed_process = subprocess.run(
@@ -61,7 +57,7 @@ def test_detector_and_image_queries(detector_name: Callable):
         check=False,
     )
     assert completed_process.returncode == 0
-    match = re.search("id='([^']+)'", completed_process.stdout)
+    match = re.search(r'"id":\s*"([^"]+)"', completed_process.stdout)
     assert match is not None
     det_id_on_get = match.group(1)
     assert det_id_on_create == det_id_on_get
@@ -110,6 +106,31 @@ def test_help():
     assert completed_process.returncode == 0
 
 
+def test_version():
+    for flag in ("--version", "-v"):
+        completed_process = subprocess.run(
+            ["groundlight", flag],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        assert completed_process.returncode == 0
+        assert re.match(r"\d+\.\d+\.\d+", completed_process.stdout.strip())
+
+
+def test_experimental_subcommand():
+    completed_process = subprocess.run(
+        ["groundlight", "exp", "--help"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    assert completed_process.returncode == 0
+    assert "list-priming-groups" in completed_process.stdout
+
+
 def test_bad_commands():
     completed_process = subprocess.run(
         ["groundlight", "wat"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
@@ -120,3 +141,29 @@ def test_bad_commands():
         ["groundlight", "list_detectors"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
     )
     assert completed_process.returncode != 0
+
+
+def test_all_cli_commands_have_group():
+    """Enforce that every method registered in the CLI has an entry in _COMMAND_GROUPS.
+
+    All stable methods and all experimental methods not in _CLI_EXCLUDED_METHODS must have
+    a group. If a new method is added to Groundlight or ExperimentalApi without a group
+    assignment, this test fails with a clear message listing what's missing.
+    """
+    stable_names = {n for n, m in vars(Groundlight).items() if _is_cli_eligible(n, m, skip=set())}
+
+    missing = []
+
+    for name in stable_names:
+        if name not in _COMMAND_GROUPS:
+            missing.append(f"stable: {name}")
+
+    for name, method in vars(ExperimentalApi).items():
+        if not _is_cli_eligible(name, method, skip=stable_names):
+            continue
+        if name not in _COMMAND_GROUPS:
+            missing.append(f"experimental: {name}")
+
+    assert not missing, "Methods registered in CLI but missing from _COMMAND_GROUPS:\n" + "\n".join(
+        f"  {m}" for m in sorted(missing)
+    )
