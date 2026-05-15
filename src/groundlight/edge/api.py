@@ -16,6 +16,12 @@ class EdgeEndpointApi:
     """
     Namespace for operations that are specific to the Edge Endpoint,
     such as setting and getting the EdgeEndpoint configuration.
+
+    Currently only available through :class:`~groundlight.ExperimentalApi`. Accessed via the
+    ``edge`` attribute::
+
+        gl = ExperimentalApi()
+        gl.edge.set_config(config)
     """
 
     def __init__(self, client) -> None:
