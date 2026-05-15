@@ -425,7 +425,7 @@ class ImageQueriesApi(object):
 
     def submit_image_query(self, detector_id, **kwargs):
         """submit_image_query  # noqa: E501
-
+        
          Submit an image query against a detector.  You must use `\"Content-Type: image/jpeg\"` or similar (image/png, image/webp, etc) for the image data. For example: ```Bash $ curl https://api.groundlight.ai/device-api/v1/image-queries?detector_id=det_abc123 \\     --header \"Content-Type: image/jpeg\" \\     --data-binary @path/to/filename.jpeg ```   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True

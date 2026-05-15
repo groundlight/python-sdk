@@ -183,7 +183,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             # Using a detector ID string directly
             gl.reset_detector("det_abc123")
 
-        :param detector: Either a Detector object or a detector ID string starting with "det_".
+        :param detector: Either a Detector object or a detector ID string starting with ``det_``.
                        The detector whose data should be reset.
 
         :return: None
@@ -207,7 +207,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             # Using a detector ID string directly
             gl.update_detector_name("det_abc123", "new_detector_name")
 
-        :param detector: Either a Detector object or a detector ID string starting with "det_".
+        :param detector: Either a Detector object or a detector ID string starting with ``det_``.
                        The detector whose name should be updated.
         :param name: The new name to assign to the detector
 
