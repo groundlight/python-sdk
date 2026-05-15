@@ -434,6 +434,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 group_name="parking-monitoring",
                 patience_time=60.0
             )
+
         :param name: A short, descriptive name for the detector. This name should be unique within your account
                     and help identify the detector's purpose.
         :param query: The question that the detector will answer about images. For binary classification,
@@ -609,7 +610,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         Get an ImageQuery by its ID. This is useful for retrieving the status and results of a
         previously submitted query.
 
-        **Example Usage:**
+        **Example usage**::
 
             gl = Groundlight()
 
@@ -753,12 +754,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
+
             - filename (string) of a jpeg file
             - byte array or BytesIO or BufferedReader with jpeg bytes
             - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
-                (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
+              (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
             - PIL Image: Any binary format must be JPEG-encoded already.
-                Any pixel format will get converted to JPEG at high quality before sending to service.
+              Any pixel format will get converted to JPEG at high quality before sending to service.
+
         :param wait: How long to poll (in seconds) for a confident answer. This is a client-side timeout.
             Default is 30.0. Set to 0 for async operation.
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
@@ -874,11 +877,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
+
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
           - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
             (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
           - PIL Image
+
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param confidence_threshold: The confidence threshold to wait for.
@@ -944,11 +949,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
+
           - filename (string) of a jpeg file
           - byte array or BytesIO or BufferedReader with jpeg bytes
           - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
             (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
           - PIL Image
+
           Any binary format must be JPEG-encoded already.  Any pixel format will get
           converted to JPEG at high quality before sending to service.
         :param wait: How long to wait (in seconds) for any ML prediction.
@@ -1032,12 +1039,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param detector: the Detector object, or string id of a detector like `det_12345`
         :param image: The image, in several possible formats:
+
             - filename (string) of a jpeg file
             - byte array or BytesIO or BufferedReader with jpeg bytes
             - numpy array with values 0-255 and dimensions (H,W,3) in BGR order
               (Note OpenCV uses BGR not RGB. `img[:, :, ::-1]` will reverse the channels)
             - PIL Image: Any binary format must be JPEG-encoded already.
               Any pixel format will get converted to JPEG at high quality before sending to service.
+
         :param patience_time: How long to wait (in seconds) for a confident answer for this image query.
             The longer the patience_time, the more likely Groundlight will arrive at a
             confident answer. This is a soft server-side timeout. If not set, use the
@@ -1236,7 +1245,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         Examples for other answer modes can be found in the documentation for each of the modes.
 
         :param image_query: Either an ImageQuery object (returned from methods like
-                          `ask_ml`) or an image query ID string starting with "iq_".
+                          `ask_ml`) or an image query ID string starting with ``iq_``.
 
         :param label: The label value to assign, typically "YES" or "NO" for binary
                      classification detectors. For multi-class detectors, use one of
@@ -1442,7 +1451,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             # Using a detector ID string directly
             gl.update_detector_status("det_abc123", enabled=True)  # Enable the detector
 
-        :param detector: Either a Detector object or a detector ID string starting with "det_".
+        :param detector: Either a Detector object or a detector ID string starting with ``det_``.
                        The detector whose status should be updated.
         :param enabled: Boolean indicating whether the detector should be enabled (True) or
                        disabled (False). When disabled, the detector will not process new queries.
@@ -1478,7 +1487,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             # Re-enable standard human labeling
             gl.update_detector_escalation_type("det_abc123", "STANDARD")
 
-        :param detector: Either a Detector object or a detector ID string starting with "det_".
+        :param detector: Either a Detector object or a detector ID string starting with ``det_``.
                        The detector whose escalation type should be updated.
         :param escalation_type: The new escalation type setting. Must be one of:
                               - "STANDARD": Allow human labeling for low-confidence queries
@@ -1516,7 +1525,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             # Using a detector ID string directly
             gl.delete_detector("det_abc123")
 
-        :param detector: Either a Detector object or a detector ID string starting with "det_".
+        :param detector: Either a Detector object or a detector ID string starting with ``det_``.
                        The detector to delete.
 
         :return: None

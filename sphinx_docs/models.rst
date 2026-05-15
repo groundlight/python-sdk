@@ -9,6 +9,12 @@ SDK Client
    :members:
    :special-members: __init__
 
+Edge Endpoint API
+=====================
+
+.. autoclass:: groundlight.edge.api.EdgeEndpointApi
+   :members:
+
 API Response Objects
 =====================
 
