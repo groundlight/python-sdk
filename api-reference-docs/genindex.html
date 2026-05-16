@@ -46,6 +46,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="models.html">SDK Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html#edge-endpoint-api">Edge Endpoint API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html#api-response-objects">API Response Objects</a></li>
 </ul>
 
@@ -76,13 +77,15 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -90,13 +93,36 @@
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi.__init__">__init__() (groundlight.ExperimentalApi method)</a>
+
+      <ul>
+        <li><a href="models.html#groundlight.Groundlight.__init__">(groundlight.Groundlight method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.Rule.action">action (model.Rule attribute)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.add_label">add_label() (groundlight.Groundlight method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.ask_async">ask_async() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.ask_confident">ask_confident() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.ask_ml">ask_ml() (groundlight.Groundlight method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -120,8 +146,28 @@
         <li><a href="models.html#model.PaginatedRuleList.count">(model.PaginatedRuleList attribute)</a>
 </li>
       </ul></li>
+      <li><a href="models.html#groundlight.Groundlight.create_binary_detector">create_binary_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.create_bounding_box_detector">create_bounding_box_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.create_counting_detector">create_counting_detector() (groundlight.Groundlight method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.create_detector">create_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.create_detector_group">create_detector_group() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.create_multiclass_detector">create_multiclass_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.create_note">create_note() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.create_priming_group">create_priming_group() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.create_roi">create_roi() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.create_text_recognition_detector">create_text_recognition_detector() (groundlight.ExperimentalApi method)</a>
+</li>
       <li><a href="models.html#model.Detector.created_at">created_at (model.Detector attribute)</a>
 
       <ul>
@@ -134,6 +180,10 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.delete_detector">delete_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.delete_priming_group">delete_priming_group() (groundlight.ExperimentalApi method)</a>
+</li>
       <li><a href="models.html#model.ImageQuery.detector_id">detector_id (model.ImageQuery attribute)</a>
 
       <ul>
@@ -146,17 +196,25 @@
 </li>
       <li><a href="models.html#model.ImageQuery.done_processing">done_processing (model.ImageQuery attribute)</a>
 </li>
+      <li><a href="models.html#groundlight.ExperimentalApi.download_mlbinary">download_mlbinary() (groundlight.ExperimentalApi method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="models.html#model.Rule.enabled">enabled (model.Rule attribute)</a>
+      <li><a href="models.html#groundlight.ExperimentalApi.edge_base_url">edge_base_url() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.edge.api.EdgeEndpointApi">EdgeEndpointApi (class in groundlight.edge.api)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#model.Rule.enabled">enabled (model.Rule attribute)</a>
+</li>
       <li><a href="models.html#model.Detector.escalation_type">escalation_type (model.Detector attribute)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi">ExperimentalApi (class in groundlight)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -164,6 +222,36 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.edge.api.EdgeEndpointApi.get_config">get_config() (groundlight.edge.api.EdgeEndpointApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.get_detector">get_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.get_detector_by_name">get_detector_by_name() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_detector_evaluation">get_detector_evaluation() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_detector_metrics">get_detector_metrics() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.edge.api.EdgeEndpointApi.get_detector_readiness">get_detector_readiness() (groundlight.edge.api.EdgeEndpointApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.get_image">get_image() (groundlight.Groundlight method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.get_image_query">get_image_query() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.get_month_to_date_usage">get_month_to_date_usage() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_notes">get_notes() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.get_or_create_detector">get_or_create_detector() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_priming_group">get_priming_group() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.get_raw_headers">get_raw_headers() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight">Groundlight (class in groundlight)</a>
+</li>
       <li><a href="models.html#model.Detector.group_name">group_name (model.Detector attribute)</a>
 </li>
   </ul></td>
@@ -191,9 +279,29 @@
   </ul></td>
 </tr></table>
 
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.list_detector_groups">list_detector_groups() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.list_detector_pipelines">list_detector_pipelines() (groundlight.ExperimentalApi method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.list_detectors">list_detectors() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.list_image_queries">list_image_queries() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.ExperimentalApi.list_priming_groups">list_priming_groups() (groundlight.ExperimentalApi method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi.make_generic_api_request">make_generic_api_request() (groundlight.ExperimentalApi method)</a>
+</li>
       <li><a href="models.html#model.Detector.metadata">metadata (model.Detector attribute)</a>
 
       <ul>
@@ -268,10 +376,14 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi.reset_detector">reset_detector() (groundlight.ExperimentalApi method)</a>
+</li>
       <li><a href="models.html#model.ImageQuery.result">result (model.ImageQuery attribute)</a>
 </li>
       <li><a href="models.html#model.ImageQuery.result_type">result_type (model.ImageQuery attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.PaginatedDetectorList.results">results (model.PaginatedDetectorList attribute)</a>
 
       <ul>
@@ -280,8 +392,6 @@
         <li><a href="models.html#model.PaginatedRuleList.results">(model.PaginatedRuleList attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.ImageQuery.rois">rois (model.ImageQuery attribute)</a>
 </li>
   </ul></td>
@@ -290,6 +400,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.edge.api.EdgeEndpointApi.set_config">set_config() (groundlight.edge.api.EdgeEndpointApi method)</a>
+</li>
       <li><a href="models.html#model.Rule.snooze_time_enabled">snooze_time_enabled (model.Rule attribute)</a>
 </li>
       <li><a href="models.html#model.Rule.snooze_time_unit">snooze_time_unit (model.Rule attribute)</a>
@@ -299,6 +411,8 @@
       <li><a href="models.html#model.Rule.snooze_time_value">snooze_time_value (model.Rule attribute)</a>
 </li>
       <li><a href="models.html#model.Detector.status">status (model.Detector attribute)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.submit_image_query">submit_image_query() (groundlight.Groundlight method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -319,10 +433,34 @@
   </ul></td>
 </tr></table>
 
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.update_detector_confidence_threshold">update_detector_confidence_threshold() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.update_detector_escalation_type">update_detector_escalation_type() (groundlight.Groundlight method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.ExperimentalApi.update_detector_name">update_detector_name() (groundlight.ExperimentalApi method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.update_detector_status">update_detector_status() (groundlight.Groundlight method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models.html#groundlight.Groundlight.wait_for_confident_result">wait_for_confident_result() (groundlight.Groundlight method)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.wait_for_ml_result">wait_for_ml_result() (groundlight.Groundlight method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#model.Rule.webhook_action">webhook_action (model.Rule attribute)</a>
+</li>
+      <li><a href="models.html#groundlight.Groundlight.whoami">whoami() (groundlight.Groundlight method)</a>
 </li>
   </ul></td>
 </tr></table>
