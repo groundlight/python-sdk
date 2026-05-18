@@ -9,7 +9,6 @@ from groundlight.images import *
 from groundlight.optional_imports import *
 from utils import make_random_jpeg
 
-
 JPEG_MIN_SIZE = 500
 
 
