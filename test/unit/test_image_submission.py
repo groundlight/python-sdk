@@ -4,11 +4,11 @@ from io import BytesIO
 from unittest import mock
 
 import pytest
-from utils import make_random_jpeg
 from groundlight import Groundlight
 from groundlight.images import MAX_BYTES_IMAGE_SIZE, MAX_IMAGE_RESOLUTION_LONGSIDE
 from groundlight.internalapi import InternalApiError
 from PIL import Image
+from utils import make_random_jpeg
 
 
 def test_submit_image_query_sends_shrunken_image(gl: Groundlight):
