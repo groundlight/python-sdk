@@ -10,6 +10,7 @@ from io import BytesIO
 from typing import Any, Callable, Dict, Optional, Union
 
 import pytest
+from utils import make_random_jpeg
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.images import MAX_IMAGE_RESOLUTION_LONGSIDE
@@ -382,11 +383,7 @@ def test_submit_image_query_shrinks_oversized_image(gl: Groundlight, detector: D
     direction is benign and intentionally not covered.
     """
     # Random noise compresses poorly, so 4000x3000 is well above the 256 KB threshold.
-    raw = os.urandom(4000 * 3000 * 3)
-    big_pil = Image.frombytes("RGB", (4000, 3000), raw)
-    buf = BytesIO()
-    big_pil.save(buf, "jpeg", quality=95)
-    big = buf.getvalue()
+    big = make_random_jpeg(4000, 3000)
 
     iq = gl.submit_image_query(detector=detector.id, image=big, human_review="NEVER")
     stored = Image.open(gl.get_image(iq.id))
