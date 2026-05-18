@@ -100,7 +100,7 @@ def test_shrink_image_if_needed_small_returns_unchanged():
 
 def test_shrink_image_if_needed_oversized_dimensions_get_resized():
     """Images above the byte threshold with longest side > 1024 are downscaled."""
-    # Random noise compresses poorly, so 3000x4000 easily exceeds the 256 KB threshold.
+    # Random noise compresses poorly, so 4000x3000 easily exceeds the 256 KB threshold.
     big = make_random_jpeg(4000, 3000)
     assert len(big) > MAX_BYTES_IMAGE_SIZE
     out = shrink_image_if_needed(big)
