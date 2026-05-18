@@ -389,7 +389,7 @@ def test_submit_image_query_shrinks_oversized_image(gl: Groundlight, detector: D
     big = buf.getvalue()
 
     iq = gl.submit_image_query(detector=detector.id, image=big, human_review="NEVER")
-    stored = Image.open(BytesIO(gl.get_image(iq.id)))
+    stored = Image.open(gl.get_image(iq.id))
     # 4000x3000 scaled so longest side == 1024 preserves the 4:3 aspect ratio.
     assert stored.size == (MAX_IMAGE_RESOLUTION_LONGSIDE, 768)
 
