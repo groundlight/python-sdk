@@ -799,6 +799,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
+        
         # Match the Groundlight cloud service's ingest pipeline locally. Saves bandwidth
         # and ensures Edge Endpoints, which do not run this step, see the same input
         # distribution cloud-trained models were trained on.
