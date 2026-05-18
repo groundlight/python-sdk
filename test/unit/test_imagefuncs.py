@@ -90,6 +90,43 @@ def test_pil_support_ref():
         assert img2.size == (509, 339)
 
 
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
+def test_recompress_shrink_image_small_returns_unchanged():
+    """Images at or below the byte threshold are passed through untouched."""
+    np.random.seed(0)
+    small = jpeg_from_numpy(np.random.uniform(0, 255, (200, 200, 3)))
+    assert len(small) <= MAX_BYTES_IMAGE_SIZE
+    assert recompress_shrink_image(small) is small
+
+
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
+def test_recompress_shrink_image_oversized_dimensions_get_resized():
+    """Images above the byte threshold with longest side > 1024 are downscaled."""
+    np.random.seed(0)
+    # Random noise compresses poorly, so 3000x4000 easily exceeds the 256 KB threshold.
+    big = jpeg_from_numpy(np.random.uniform(0, 255, (3000, 4000, 3)))
+    assert len(big) > MAX_BYTES_IMAGE_SIZE
+    out = recompress_shrink_image(big)
+    out_img = Image.open(BytesIO(out))
+    # 3000x4000 scaled so longest side == 1024 preserves the 3:4 aspect ratio.
+    assert out_img.size == (1024, 768)
+
+
+@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
+def test_recompress_shrink_image_oversized_bytes_only_gets_reencoded():
+    """Images above the byte threshold but with longest side <= 1024 are re-encoded only."""
+    np.random.seed(0)
+    arr = np.random.uniform(0, 255, (768, 1024, 3))
+    high_q = jpeg_from_numpy(arr, jpeg_quality=99)
+    assert len(high_q) > MAX_BYTES_IMAGE_SIZE
+    out = recompress_shrink_image(high_q)
+    out_img = Image.open(BytesIO(out))
+    assert out_img.size == (1024, 768)
+    # Bytes changed (proves re-encode happened) and got smaller (Q85 vs Q99).
+    assert out != high_q
+    assert len(out) < len(high_q)
+
+
 def test_byte_stream_wrapper():
     """
     Test that we can call `open` and `close` repeatedly many times on a
