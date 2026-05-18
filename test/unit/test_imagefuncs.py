@@ -17,6 +17,7 @@ def _make_random_jpeg(width: int, height: int, quality: int = 95) -> bytes:
     img.save(buf, "jpeg", quality=quality)
     return buf.getvalue()
 
+
 JPEG_MIN_SIZE = 500
 
 
