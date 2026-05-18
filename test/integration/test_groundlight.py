@@ -2,15 +2,12 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 import json
-import os
 import random
 import string
 import time
-from io import BytesIO
 from typing import Any, Callable, Dict, Optional, Union
 
 import pytest
-from utils import make_random_jpeg
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
 from groundlight.images import MAX_IMAGE_RESOLUTION_LONGSIDE
@@ -33,6 +30,7 @@ from model import (
 )
 from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
+from utils import make_random_jpeg
 
 from test.retry_decorator import retry_on_failure
 
