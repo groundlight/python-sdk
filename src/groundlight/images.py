@@ -7,7 +7,7 @@ from groundlight.optional_imports import Image, np
 
 DEFAULT_JPEG_QUALITY = 95
 
-# The Groundlight cloud service applies the same shrink-and-re-encode step on
+# The Groundlight cloud service applies the same shrink-and-encode step on
 # ingest. Doing the same work client-side saves bandwidth and ensures Edge
 # Endpoints, which do not run this step, see the same input distribution that
 # cloud-trained models expect. Keep these constants in sync with the cloud
