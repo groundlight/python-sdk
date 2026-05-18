@@ -43,7 +43,7 @@ from urllib3.util.retry import Retry
 from groundlight.binary_labels import Label, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
-from groundlight.images import ByteStreamWrapper, parse_supported_image_types, recompress_shrink_image
+from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
     GroundlightApiClient,
     NotFoundError,
@@ -799,10 +799,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         detector_id = detector.id if isinstance(detector, Detector) else detector
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
-        # Match the cloud's ingest pipeline locally. Saves bandwidth and ensures Edge
-        # Endpoints, which do not run this step, see the same input distribution
-        # cloud-trained models were trained on.
-        image_bytesio = ByteStreamWrapper(data=recompress_shrink_image(image_bytesio.read()))
+        # Match the Groundlight cloud service's ingest pipeline locally. Saves bandwidth
+        # and ensures Edge Endpoints, which do not run this step, see the same input
+        # distribution cloud-trained models were trained on.
+        image_bytesio = ByteStreamWrapper(data=shrink_image_if_needed(image_bytesio.read()))
 
         params = {
             "detector_id": detector_id,

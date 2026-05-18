@@ -374,10 +374,11 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
 def test_submit_image_query_shrinks_oversized_image(gl: Groundlight, detector: Detector):
     """Verifies the SDK shrinks oversized images client-side and the cloud stores the shrunken version.
 
-    Detects drift between the SDK and zuuul: if either side changes its algorithm such that
-    the cloud-stored dimensions differ from what the SDK produces locally, this test fails.
-    Does not catch zuuul becoming more permissive (the SDK would still shrink to a smaller
-    image that zuuul accepts as-is); that direction is benign and intentionally not covered.
+    Detects drift between the SDK and the cloud service: if either side changes its
+    algorithm such that the cloud-stored dimensions differ from what the SDK produces
+    locally, this test fails. Does not catch the cloud service becoming more permissive
+    (the SDK would still shrink to a smaller image that the cloud accepts as-is); that
+    direction is benign and intentionally not covered.
     """
     np.random.seed(0)
     # Random noise compresses poorly, so 3000x4000 is well above the 256 KB threshold.

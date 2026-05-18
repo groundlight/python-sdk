@@ -7,18 +7,14 @@ from groundlight.optional_imports import Image, np
 
 DEFAULT_JPEG_QUALITY = 95
 
-# The Groundlight cloud applies a recompress/shrink step on ingest. Doing the same
-# work client-side saves bandwidth and ensures Edge Endpoints, which do not run
-# this step, see the same input distribution that cloud-trained models expect.
-#
-# The constants and algorithm below mirror zuuul's implementation. Source of truth:
-#   - zuuul/janzu/apparati/imgtools.py::recompress_shrink_image
-#   - zuuul/janzu/reef_api/utils.py::_save_image (gate)
-#   - zuuul/janzu/authz/user-settings-defaults.yaml (default values)
-# If the cloud's behavior changes, update these together.
+# The Groundlight cloud service applies the same shrink-and-re-encode step on
+# ingest. Doing the same work client-side saves bandwidth and ensures Edge
+# Endpoints, which do not run this step, see the same input distribution that
+# cloud-trained models expect. Keep these constants in sync with the cloud
+# service if it ever changes its defaults.
 MAX_BYTES_IMAGE_SIZE = 256_000
 MAX_IMAGE_RESOLUTION_LONGSIDE = 1024
-RECOMPRESS_SHRINK_IMAGE_JPEG_QUALITY = 85
+SHRINK_JPEG_QUALITY = 85
 
 
 class ByteStreamWrapper(IOBase):
@@ -91,8 +87,8 @@ def bytestream_from_pil(pil_image: Image.Image, jpeg_quality: int = DEFAULT_JPEG
     return ByteStreamWrapper(data=bytesio)
 
 
-def recompress_shrink_image(jpeg: bytes) -> bytes:
-    """Shrink and re-encode an oversized JPEG to match the cloud's ingest pipeline.
+def shrink_image_if_needed(jpeg: bytes) -> bytes:
+    """Shrink an oversized JPEG to match the Groundlight cloud service's ingest pipeline.
 
     If the input is already at or below MAX_BYTES_IMAGE_SIZE, returns it unchanged.
     Otherwise, decodes the image, scales it (BICUBIC, aspect-ratio preserved) so the
@@ -109,7 +105,7 @@ def recompress_shrink_image(jpeg: bytes) -> bytes:
         new_size = (int(img.width * ratio), int(img.height * ratio))
         img = img.resize(new_size, resample=Image.Resampling.BICUBIC)
     buf = BytesIO()
-    img.save(buf, "jpeg", quality=RECOMPRESS_SHRINK_IMAGE_JPEG_QUALITY)
+    img.save(buf, "jpeg", quality=SHRINK_JPEG_QUALITY)
     return buf.getvalue()
 
 
