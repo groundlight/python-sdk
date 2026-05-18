@@ -1,12 +1,21 @@
 # Optional star-imports are weird and not usually recommended ...
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
+import os
 import tempfile
 from io import BytesIO
 
 import pytest
 from groundlight.images import *
 from groundlight.optional_imports import *
+
+
+def _make_random_jpeg(width: int, height: int, quality: int = 95) -> bytes:
+    """Generate a JPEG with random pixel data using PIL only."""
+    img = Image.frombytes("RGB", (width, height), os.urandom(width * height * 3))
+    buf = BytesIO()
+    img.save(buf, "jpeg", quality=quality)
+    return buf.getvalue()
 
 JPEG_MIN_SIZE = 500
 
@@ -90,34 +99,27 @@ def test_pil_support_ref():
         assert img2.size == (509, 339)
 
 
-@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_shrink_image_if_needed_small_returns_unchanged():
     """Images at or below the byte threshold are passed through untouched."""
-    np.random.seed(0)
-    small = jpeg_from_numpy(np.random.uniform(0, 255, (200, 200, 3)))
+    small = _make_random_jpeg(200, 200)
     assert len(small) <= MAX_BYTES_IMAGE_SIZE
     assert shrink_image_if_needed(small) is small
 
 
-@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_shrink_image_if_needed_oversized_dimensions_get_resized():
     """Images above the byte threshold with longest side > 1024 are downscaled."""
-    np.random.seed(0)
     # Random noise compresses poorly, so 3000x4000 easily exceeds the 256 KB threshold.
-    big = jpeg_from_numpy(np.random.uniform(0, 255, (3000, 4000, 3)))
+    big = _make_random_jpeg(4000, 3000)
     assert len(big) > MAX_BYTES_IMAGE_SIZE
     out = shrink_image_if_needed(big)
     out_img = Image.open(BytesIO(out))
-    # 3000x4000 scaled so longest side == 1024 preserves the 3:4 aspect ratio.
+    # 4000x3000 scaled so longest side == 1024 preserves the 4:3 aspect ratio.
     assert out_img.size == (1024, 768)
 
 
-@pytest.mark.skipif(MISSING_NUMPY or MISSING_PIL, reason="Needs numpy and pillow")  # type: ignore
 def test_shrink_image_if_needed_oversized_bytes_only_gets_reencoded():
     """Images above the byte threshold but with longest side <= 1024 are re-encoded only."""
-    np.random.seed(0)
-    arr = np.random.uniform(0, 255, (768, 1024, 3))
-    high_q = jpeg_from_numpy(arr, jpeg_quality=99)
+    high_q = _make_random_jpeg(1024, 768, quality=99)
     assert len(high_q) > MAX_BYTES_IMAGE_SIZE
     out = shrink_image_if_needed(high_q)
     out_img = Image.open(BytesIO(out))

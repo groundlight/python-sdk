@@ -2,6 +2,7 @@
 # ruff: noqa: F403,F405
 # pylint: disable=wildcard-import,unused-wildcard-import,redefined-outer-name,import-outside-toplevel
 import json
+import os
 import random
 import string
 import time
@@ -11,7 +12,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
-from groundlight.images import MAX_IMAGE_RESOLUTION_LONGSIDE, jpeg_from_numpy
+from groundlight.images import MAX_IMAGE_RESOLUTION_LONGSIDE
 from groundlight.internalapi import ApiException, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
@@ -380,12 +381,16 @@ def test_submit_image_query_shrinks_oversized_image(gl: Groundlight, detector: D
     (the SDK would still shrink to a smaller image that the cloud accepts as-is); that
     direction is benign and intentionally not covered.
     """
-    np.random.seed(0)
-    # Random noise compresses poorly, so 3000x4000 is well above the 256 KB threshold.
-    big = jpeg_from_numpy(np.random.uniform(0, 255, (3000, 4000, 3)))
+    # Random noise compresses poorly, so 4000x3000 is well above the 256 KB threshold.
+    raw = os.urandom(4000 * 3000 * 3)
+    big_pil = Image.frombytes("RGB", (4000, 3000), raw)
+    buf = BytesIO()
+    big_pil.save(buf, "jpeg", quality=95)
+    big = buf.getvalue()
+
     iq = gl.submit_image_query(detector=detector.id, image=big, human_review="NEVER")
     stored = Image.open(BytesIO(gl.get_image(iq.id)))
-    # 3000x4000 scaled so longest side == 1024 preserves the 3:4 aspect ratio.
+    # 4000x3000 scaled so longest side == 1024 preserves the 4:3 aspect ratio.
     assert stored.size == (MAX_IMAGE_RESOLUTION_LONGSIDE, 768)
 
 
