@@ -7,6 +7,7 @@ from io import BytesIO
 import pytest
 from groundlight.images import *
 from groundlight.optional_imports import *
+from utils import make_random_jpeg
 
 JPEG_MIN_SIZE = 500
 
@@ -88,6 +89,36 @@ def test_pil_support_ref():
         f.seek(0)
         img2 = Image.open(f)
         assert img2.size == (509, 339)
+
+
+def test_shrink_image_if_needed_small_returns_unchanged():
+    """Images at or below the byte threshold are passed through untouched."""
+    small = make_random_jpeg(200, 200)
+    assert len(small) <= MAX_BYTES_IMAGE_SIZE
+    assert shrink_image_if_needed(small) is small
+
+
+def test_shrink_image_if_needed_oversized_dimensions_get_resized():
+    """Images above the byte threshold with longest side > 1024 are downscaled."""
+    # Random noise compresses poorly, so 4000x3000 easily exceeds the 256 KB threshold.
+    big = make_random_jpeg(4000, 3000)
+    assert len(big) > MAX_BYTES_IMAGE_SIZE
+    out = shrink_image_if_needed(big)
+    out_img = Image.open(BytesIO(out))
+    # 4000x3000 scaled so longest side == 1024 preserves the 4:3 aspect ratio.
+    assert out_img.size == (1024, 768)
+
+
+def test_shrink_image_if_needed_oversized_bytes_only_gets_reencoded():
+    """Images above the byte threshold but with longest side <= 1024 are re-encoded only."""
+    high_q = make_random_jpeg(1024, 768, quality=99)
+    assert len(high_q) > MAX_BYTES_IMAGE_SIZE
+    out = shrink_image_if_needed(high_q)
+    out_img = Image.open(BytesIO(out))
+    assert out_img.size == (1024, 768)
+    # Bytes changed (proves re-encode happened) and got smaller (Q85 vs Q99).
+    assert out != high_q
+    assert len(out) < len(high_q)
 
 
 def test_byte_stream_wrapper():

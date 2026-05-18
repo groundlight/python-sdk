@@ -7,6 +7,15 @@ from groundlight.optional_imports import Image, np
 
 DEFAULT_JPEG_QUALITY = 95
 
+# The Groundlight cloud service applies the same shrink-and-encode step on
+# ingest. Doing the same work client-side saves bandwidth and ensures Edge
+# Endpoints, which do not run this step, see the same input distribution that
+# cloud-trained models expect. Keep these constants in sync with the cloud
+# service if it ever changes its defaults.
+MAX_BYTES_IMAGE_SIZE = 256_000
+MAX_IMAGE_RESOLUTION_LONGSIDE = 1024
+SHRINK_JPEG_QUALITY = 85
+
 
 class ByteStreamWrapper(IOBase):
     """This class acts as a thin wrapper around bytes in order to
@@ -76,6 +85,28 @@ def bytestream_from_pil(pil_image: Image.Image, jpeg_quality: int = DEFAULT_JPEG
     pil_image.save(bytesio, "jpeg", quality=jpeg_quality)
     bytesio.seek(0)
     return ByteStreamWrapper(data=bytesio)
+
+
+def shrink_image_if_needed(jpeg: bytes) -> bytes:
+    """Shrink an oversized JPEG to match the Groundlight cloud service's ingest pipeline.
+
+    If the input is already at or below MAX_BYTES_IMAGE_SIZE, returns it unchanged.
+    Otherwise, decodes the image, scales it (BICUBIC, aspect-ratio preserved) so the
+    longest side is at most MAX_IMAGE_RESOLUTION_LONGSIDE, and re-encodes as JPEG.
+
+    Already-lossy JPEGs are decoded and re-encoded, which is the same lossy step the
+    cloud has been doing for years; net quality reaching the ML pipeline is unchanged.
+    """
+    if len(jpeg) <= MAX_BYTES_IMAGE_SIZE:
+        return jpeg
+    img = Image.open(BytesIO(jpeg)).convert("RGB")
+    if max(img.size) > MAX_IMAGE_RESOLUTION_LONGSIDE:
+        ratio = MAX_IMAGE_RESOLUTION_LONGSIDE / max(img.size)
+        new_size = (int(img.width * ratio), int(img.height * ratio))
+        img = img.resize(new_size, resample=Image.Resampling.BICUBIC)
+    buf = BytesIO()
+    img.save(buf, "jpeg", quality=SHRINK_JPEG_QUALITY)
+    return buf.getvalue()
 
 
 def parse_supported_image_types(

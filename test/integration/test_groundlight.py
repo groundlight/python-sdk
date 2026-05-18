@@ -10,6 +10,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import pytest
 from groundlight import Groundlight
 from groundlight.binary_labels import VALID_DISPLAY_LABELS, Label, convert_internal_label_to_display
+from groundlight.images import MAX_IMAGE_RESOLUTION_LONGSIDE
 from groundlight.internalapi import ApiException, NotFoundError
 from groundlight.optional_imports import *
 from groundlight.status_codes import is_user_error
@@ -29,6 +30,7 @@ from model import (
 )
 from urllib3.exceptions import ConnectTimeoutError, MaxRetryError, ReadTimeoutError
 from urllib3.util.retry import Retry
+from utils import make_random_jpeg
 
 from test.retry_decorator import retry_on_failure
 
@@ -366,6 +368,25 @@ def test_submit_image_query_png(gl: Groundlight, detector: Detector):
     assert str(_image_query)
     assert isinstance(_image_query, ImageQuery)
     assert is_valid_display_result(_image_query.result)
+
+
+@retry_on_failure()
+def test_submit_image_query_shrinks_oversized_image(gl: Groundlight, detector: Detector):
+    """Verifies the SDK shrinks oversized images client-side and the cloud stores the shrunken version.
+
+    Detects drift between the SDK and the cloud service: if either side changes its
+    algorithm such that the cloud-stored dimensions differ from what the SDK produces
+    locally, this test fails. Does not catch the cloud service becoming more permissive
+    (the SDK would still shrink to a smaller image that the cloud accepts as-is); that
+    direction is benign and intentionally not covered.
+    """
+    # Random noise compresses poorly, so 4000x3000 is well above the 256 KB threshold.
+    big = make_random_jpeg(4000, 3000)
+
+    iq = gl.submit_image_query(detector=detector.id, image=big, human_review="NEVER")
+    stored = Image.open(gl.get_image(iq.id))
+    # 4000x3000 scaled so longest side == 1024 preserves the 4:3 aspect ratio.
+    assert stored.size == (MAX_IMAGE_RESOLUTION_LONGSIDE, 768)
 
 
 @retry_on_failure()
