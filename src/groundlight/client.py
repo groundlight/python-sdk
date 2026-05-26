@@ -1682,8 +1682,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         ``class_names``. It is designed for **mutually exclusive
         (non-overlapping)** classes — each image should fit exactly one.
         Multi-class detectors are **not** multi-label classifiers; if your
-        classes can co-occur (e.g. an image can be both "Dog" and "Wearing
-        collar"), use a separate binary detector for each class instead.
+        classes can co-occur in the same image (e.g. an image can contain both
+        a person and a dog), create a separate detector for each question you
+        want to answer instead.
 
         **Example usage**::
 
