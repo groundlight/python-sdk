@@ -1680,7 +1680,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         A multiclass detector returns exactly one label per image, chosen from
         ``class_names``. It is designed for **mutually exclusive
-        (non-overlapping)** classes — each image should fit exactly one.
+        (non-overlapping)** classes — each image should belong to exactly one.
         Multi-class detectors are **not** multi-label classifiers; if your
         classes can co-occur in the same image (e.g. an image can contain both
         a person and a dog), create a separate detector for each question you

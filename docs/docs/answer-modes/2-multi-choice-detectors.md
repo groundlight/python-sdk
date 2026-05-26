@@ -17,7 +17,7 @@ detector = gl_exp.create_multiclass_detector(
 ```
 
 :::caution Use non-overlapping classes
-Multi-class detectors are designed for **mutually exclusive** classes — each image should match exactly one. They always return a single label and are **not** multi-label classifiers.
+Multi-class detectors are designed for **mutually exclusive** classes — each image should belong to exactly one. They always return a single label and are **not** multi-label classifiers.
 
 A quick test: if your question is *"Which one of these is it?"*, a multi-class detector fits. If it's *"Which of these are present?"* — meaning more than one could be true at once — create a separate detector for each question you want to answer instead.
 :::
