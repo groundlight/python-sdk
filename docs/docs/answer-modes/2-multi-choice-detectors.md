@@ -1,6 +1,6 @@
 # Multiple Choice (Choose One) Detectors
 
-If you want to classify images into multiple categories, you can create a multi-class detector.
+If you want to classify images into one of several mutually exclusive categories, you can create a multi-class detector. As the "Choose One" name implies, the detector picks a single label from your list of `class_names` for each image.
 
 ```python notest
 from groundlight import ExperimentalApi
@@ -15,6 +15,14 @@ detector = gl_exp.create_multiclass_detector(
 )
 # highlight-end
 ```
+
+:::caution Use non-overlapping classes
+Multi-class detectors work best when your classes are **mutually exclusive** — every image should belong to exactly one class. They are *not* multi-label detectors and will not return more than one label per image.
+
+If an image could legitimately match more than one of your classes at the same time (for example, "Has a person" and "Has a vehicle" in the same frame), a multi-class detector is the wrong tool. Instead, create a separate [binary detector](1-binary-detectors.md) for each class so each one can fire independently.
+
+A good rule of thumb: if you can rephrase your query as "Which **one** of these is it?" a multi-class detector is a great fit. If the natural phrasing is "Which of these are present?", reach for multiple binary detectors instead.
+:::
 
 :::tip
 We recommend adding an "Other" class to your multi-class detector to handle cases where the image does not belong to any of the pre-defined classes.

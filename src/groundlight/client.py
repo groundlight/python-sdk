@@ -1678,6 +1678,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         """
         Creates a multiclass detector with the given name and query.
 
+        A multiclass detector returns exactly one label per image, chosen from
+        ``class_names``. It works best when the classes are **mutually exclusive
+        (non-overlapping)** — every image should belong to one and only one of
+        the listed classes. This is *not* a multi-label detector: if an image
+        could correctly match more than one class at the same time, use a
+        separate binary detector for each class instead.
+
         **Example usage**::
 
             gl = Groundlight()
