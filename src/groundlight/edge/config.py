@@ -11,10 +11,16 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
 
     model_config = ConfigDict(extra="ignore")
 
-    refresh_rate: float = Field(
+    refresh_rate: Optional[float] = Field(
         default=60.0,
         gt=0,
-        description="The interval (in seconds) at which the inference server checks for a new model binary update.",
+        le=86400,
+        description=(
+            "Interval (seconds) at which the model-updater polls for new model binaries. "
+            "Must be between 0 (exclusive) and 86400 (1 day). "
+            "Set to None to disable refresh polling entirely; detector add/remove from "
+            "set_config still takes effect immediately regardless of this setting."
+        ),
     )
     confident_audit_rate: float = Field(
         default=1e-5,  # A detector running at 1 FPS = ~100,000 IQ/day, so 1e-5 is ~1 confident IQ/day audited
