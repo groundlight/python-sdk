@@ -17,7 +17,6 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
         le=86400,
         description=(
             "Interval (seconds) at which the model-updater polls for new model binaries. "
-            "Must be between 0 (exclusive) and 86400 (1 day). "
             "Set to None to disable refresh polling entirely."
         ),
     )
