@@ -18,8 +18,7 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
         description=(
             "Interval (seconds) at which the model-updater polls for new model binaries. "
             "Must be between 0 (exclusive) and 86400 (1 day). "
-            "Set to None to disable refresh polling entirely; detector add/remove from "
-            "set_config still takes effect immediately regardless of this setting."
+            "Set to None to disable refresh polling entirely."
         ),
     )
     confident_audit_rate: float = Field(
