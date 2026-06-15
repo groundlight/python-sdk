@@ -11,14 +11,11 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
 
     model_config = ConfigDict(extra="ignore")
 
-    refresh_rate: Optional[float] = Field(
+    refresh_rate: float = Field(
         default=60.0,
         gt=0,
         le=86400,
-        description=(
-            "Interval (seconds) at which the model-updater polls for new model binaries. "
-            "Set to None to disable refresh polling entirely."
-        ),
+        description="Interval (seconds) at which the model-updater polls for new model binaries.",
     )
     confident_audit_rate: float = Field(
         default=1e-5,  # A detector running at 1 FPS = ~100,000 IQ/day, so 1e-5 is ~1 confident IQ/day audited
