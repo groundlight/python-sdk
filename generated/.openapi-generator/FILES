@@ -172,6 +172,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_detector_mode_enum.py
-test/test_null_enum.py
 tox.ini
