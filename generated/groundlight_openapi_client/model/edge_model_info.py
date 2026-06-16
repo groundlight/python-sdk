@@ -125,6 +125,7 @@ class EdgeModelInfo(ModelNormal):
                 str,
                 none_type,
             ),  # noqa: E501
+            "minimal_compatible": (bool,),  # noqa: E501
         }
 
     @cached_property
@@ -139,6 +140,7 @@ class EdgeModelInfo(ModelNormal):
         "pipeline_config": "pipeline_config",  # noqa: E501
         "oodd_pipeline_config": "oodd_pipeline_config",  # noqa: E501
         "predictor_metadata": "predictor_metadata",  # noqa: E501
+        "minimal_compatible": "minimal_compatible",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -188,6 +190,7 @@ class EdgeModelInfo(ModelNormal):
             pipeline_config (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
             oodd_pipeline_config (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
             predictor_metadata (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            minimal_compatible (bool): [optional] if omitted the server will use the default value of False  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -279,6 +282,7 @@ class EdgeModelInfo(ModelNormal):
             pipeline_config (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
             oodd_pipeline_config (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
             predictor_metadata (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
+            minimal_compatible (bool): [optional] if omitted the server will use the default value of False  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
