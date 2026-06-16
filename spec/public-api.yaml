@@ -1311,6 +1311,9 @@ components:
         pipeline_config: {}
         oodd_pipeline_config: {}
         predictor_metadata: {}
+        minimal_compatible:
+          type: boolean
+          default: false
     ImageQuery:
       type: object
       description: ImageQuery objects are the answers to natural language questions
