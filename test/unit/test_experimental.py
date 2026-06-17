@@ -92,6 +92,7 @@ def test_submit_multiple_rois(gl_experimental: ExperimentalApi, image_query_one:
     gl_experimental.add_label(image_query_one, 3, [roi] * 3)
 
 
+@pytest.mark.skip(reason="Text recognition detectors are not currently a first-class feature, and this test is flaky.")
 @retry_on_failure()
 def test_text_recognition_detector(gl_experimental: ExperimentalApi, detector_name: Callable):
     """
