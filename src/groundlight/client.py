@@ -29,13 +29,13 @@ from model import (
     ROI,
     AccountMonthToDateInfo,
     BBoxGeometry,
-    BinaryClassificationResult,
     Detector,
     DetectorGroup,
     ImageQuery,
     ModeEnum,
     PaginatedDetectorList,
     PaginatedImageQueryList,
+    ResultTypeEnum,
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
@@ -242,8 +242,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         """
         # Note: This might go away once we clean up the mapping logic server-side.
 
-        # we have to check that result is not None because the server will return a result of None if want_async=True
-        if isinstance(iq.result, BinaryClassificationResult):
+        # Gate on the discriminator (`iq.result_type`) rather than on `isinstance(iq.result, ...)`.
+        # `ImageQuery.result` is a non-discriminated Pydantic Union; because `BinaryClassificationResult`
+        # is listed first and every `*Result` subclass has a near-identical shape, results from non-binary
+        # detectors (counting, multi-class, bounding box, text) all get parsed as `BinaryClassificationResult`,
+        # which would otherwise route their labels (e.g. "BOUNDING_BOX") through binary YES/NO conversion.
+        # `iq.result` may also be None when the server returns no result yet (e.g. want_async=True).
+        if iq.result is not None and iq.result_type == ResultTypeEnum.binary_classification:
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
