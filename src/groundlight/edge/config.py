@@ -14,7 +14,8 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
     refresh_rate: float = Field(
         default=60.0,
         gt=0,
-        description="The interval (in seconds) at which the inference server checks for a new model binary update.",
+        le=86400,
+        description="Interval (seconds) at which the model-updater polls for new model binaries.",
     )
     confident_audit_rate: float = Field(
         default=1e-5,  # A detector running at 1 FPS = ~100,000 IQ/day, so 1e-5 is ~1 confident IQ/day audited
