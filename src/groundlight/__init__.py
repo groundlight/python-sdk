@@ -7,7 +7,7 @@ from model import *
 
 # Imports from our code
 from .client import Groundlight
-from .client import GroundlightClientError, ApiTokenError, EdgeNotAvailableError, NotFoundError
+from .client import GroundlightClientError, ApiTokenError, EdgeNotAvailableError, NotFoundError, VLMVerificationResult
 from .experimental_api import ExperimentalApi
 from .binary_labels import Label
 from .version import get_version

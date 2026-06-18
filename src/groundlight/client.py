@@ -3,9 +3,12 @@ import logging
 import os
 import time
 import warnings
+from dataclasses import dataclass
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
+
+import requests
 
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
@@ -71,6 +74,22 @@ class ApiTokenError(GroundlightClientError):
 
 class EdgeNotAvailableError(GroundlightClientError):
     """Raised when an edge-only method is called against a non-edge endpoint."""
+
+
+@dataclass
+class VLMVerificationResult:
+    """Result of a VLM-based alert verification via the Groundlight cloud API."""
+
+    id: str
+    query: str
+    model_id: str
+    verdict: str  # "YES" | "NO" | "UNSURE"
+    confidence: float  # 0.0–1.0
+    reasoning: str
+    created_at: str
+    input_tokens: Optional[int] = None
+    output_tokens: Optional[int] = None
+    total_cost_usd: Optional[float] = None
 
 
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
@@ -1087,6 +1106,113 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             want_async=True,
             metadata=metadata,
             inspection_id=inspection_id,
+        )
+
+    def ask_vlm(
+        self,
+        images: Union[
+            "np.ndarray",
+            List["np.ndarray"],
+            str,
+            bytes,
+            "Image.Image",
+            BytesIO,
+            BufferedReader,
+        ],
+        query: str,
+        model_id: Optional[str] = None,
+        timeout: float = 15.0,
+    ) -> VLMVerificationResult:
+        """Verify one or two images against a natural-language query using a cloud VLM.
+
+        Calls the Groundlight ``POST /v1/vlm-queries`` endpoint.  The VLM runs in the
+        Groundlight cloud (AWS Bedrock) — no local inference.
+
+        **Example usage**::
+
+            gl = Groundlight()
+
+            # Single-image verification
+            result = gl.ask_vlm(image=frame, query="Is there a fire?")
+            if result.verdict == "YES":
+                emit_alert()
+
+            # Dual-image (full frame + ROI) for better context
+            result = gl.ask_vlm(
+                images=[full_frame, roi_crop],
+                query="Is there a fire in the highlighted region?",
+            )
+            print(result.confidence, result.reasoning)
+
+        :param images: One image or a list of up to two images.  When two images are
+            provided the first is treated as the **full camera frame** and the second
+            as the **cropped region of interest (ROI)**.  Accepted formats per image:
+
+            - filename (string) of a JPEG/PNG file
+            - raw bytes or BytesIO / BufferedReader
+            - numpy array (H, W, 3) in BGR order (OpenCV convention)
+            - PIL Image
+
+        :param query: Natural-language prompt describing what to verify, e.g.
+            ``"Is there a fire visible in the image? Reason step by step."``
+        :param model_id: AWS Bedrock model ID, e.g.
+            ``"us.anthropic.claude-sonnet-4-5-20250929-v1:0"``.
+            Defaults to the server-configured default.
+        :param timeout: Request timeout in seconds (default 15 s).
+
+        :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
+            ``"UNSURE"``), ``confidence``, ``reasoning``, and token cost fields.
+        :raises requests.HTTPError: On non-2xx response from the server.
+        """
+        # Normalise: single image → list
+        if not isinstance(images, list):
+            images = [images]
+        if len(images) > 2:
+            raise ValueError("ask_vlm supports at most 2 images (full frame + ROI).")
+
+        # Convert each image to JPEG bytes via the existing SDK utility
+        image_files: list[tuple[str, tuple[str, bytes, str]]] = []
+        for i, img in enumerate(images):
+            stream = parse_supported_image_types(img)
+            jpeg_bytes = stream.read()
+            image_files.append(("images", (f"image_{i}.jpg", jpeg_bytes, "image/jpeg")))
+
+        params: dict[str, str] = {"query": query}
+        if model_id:
+            params["model_id"] = model_id
+
+        headers = {
+            "x-api-token": self.api_client.configuration.api_key["ApiToken"],
+            "X-Request-Id": f"ask_vlm_{int(time.time() * 1000)}",
+            "x-sdk-language": "python",
+        }
+
+        url = f"{self.endpoint}v1/vlm-queries"
+
+        resp = requests.post(
+            url,
+            params=params,
+            files=image_files,
+            headers=headers,
+            timeout=timeout,
+            verify=self.api_client.configuration.verify_ssl,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+        result_block = data.get("result", {})
+        cost_block = data.get("cost", {})
+        return VLMVerificationResult(
+            id=data.get("id", ""),
+            query=data.get("query", query),
+            model_id=data.get("model_id", model_id or ""),
+            verdict=result_block.get("verdict", "UNSURE"),
+            confidence=float(result_block.get("confidence", 0.0)),
+            reasoning=result_block.get("reasoning", ""),
+            created_at=data.get("created_at", ""),
+            input_tokens=cost_block.get("input_tokens"),
+            output_tokens=cost_block.get("output_tokens"),
+            total_cost_usd=cost_block.get("total_cost_usd"),
         )
 
     def wait_for_confident_result(
