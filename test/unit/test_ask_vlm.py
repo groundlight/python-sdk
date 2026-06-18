@@ -1,12 +1,9 @@
 """Unit tests for Groundlight.ask_vlm — mocks HTTP, no live server needed."""
 
-import json
-from io import BytesIO
 from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
-
 from groundlight import Groundlight, VLMVerificationResult
 
 
@@ -19,7 +16,9 @@ def gl(monkeypatch):
     return client
 
 
-def _mock_response(verdict="YES", confidence=0.92, reasoning="Flames visible.", model_id="us.anthropic.claude-sonnet-4-5-20250929-v1:0"):
+def _mock_response(
+    verdict="YES", confidence=0.92, reasoning="Flames visible.", model_id="us.anthropic.claude-sonnet-4-5-20250929-v1:0"
+):
     resp = MagicMock()
     resp.status_code = 201
     resp.json.return_value = {

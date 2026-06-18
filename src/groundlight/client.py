@@ -9,7 +9,6 @@ from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 import requests
-
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
