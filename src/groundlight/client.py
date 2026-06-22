@@ -1154,9 +1154,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param query: Natural-language prompt describing what to verify, e.g.
             ``"Is there a fire visible in the image? Reason step by step."``
-        :param model_id: AWS Bedrock model ID, e.g.
-            ``"us.anthropic.claude-sonnet-4-5-20250929-v1:0"``.
-            Defaults to the server-configured default.
+        :param model_id: Friendly alias of the VLM to use, e.g. ``"gpt-5.4"`` or
+            ``"claude-sonnet-4.5"``.  Must be one of the models supported by the
+            server.  Defaults to the server-configured default.
         :param timeout: Request timeout in seconds (default 15 s).
 
         :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
@@ -1176,9 +1176,11 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             jpeg_bytes = stream.read()
             image_files.append(("images", (f"image_{i}.jpg", jpeg_bytes, "image/jpeg")))
 
-        params: dict[str, str] = {"query": query}
+        # query and model_id are sent as multipart form fields (not query-string
+        # params): the prompt can be long and must not end up in URLs or access logs.
+        form_data: dict[str, str] = {"query": query}
         if model_id:
-            params["model_id"] = model_id
+            form_data["model_id"] = model_id
 
         headers = {
             "x-api-token": self.api_client.configuration.api_key["ApiToken"],
@@ -1190,7 +1192,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         resp = requests.post(
             url,
-            params=params,
+            data=form_data,
             files=image_files,
             headers=headers,
             timeout=timeout,

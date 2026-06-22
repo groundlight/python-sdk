@@ -75,22 +75,26 @@ class TestAskVlm:
         assert len(kwargs["files"]) == 2
 
     @patch("groundlight.client.requests")
-    def test_model_id_passed_as_query_param(self, mock_requests, gl):
-        mock_requests.post.return_value = _mock_response(model_id="us.amazon.nova-pro-v1:0")
+    def test_query_and_model_id_sent_as_form_fields(self, mock_requests, gl):
+        mock_requests.post.return_value = _mock_response(model_id="nova-pro")
 
-        gl.ask_vlm(images=np.zeros((100, 100, 3), dtype=np.uint8), query="test", model_id="us.amazon.nova-pro-v1:0")
+        gl.ask_vlm(images=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?", model_id="nova-pro")
 
         _, kwargs = mock_requests.post.call_args
-        assert kwargs["params"]["model_id"] == "us.amazon.nova-pro-v1:0"
+        # Text fields go in the multipart body, never the URL query string.
+        assert kwargs["data"]["query"] == "Is there a fire?"
+        assert kwargs["data"]["model_id"] == "nova-pro"
+        assert "params" not in kwargs or not kwargs["params"]
 
     @patch("groundlight.client.requests")
-    def test_no_model_id_omits_param(self, mock_requests, gl):
+    def test_no_model_id_omits_field(self, mock_requests, gl):
         mock_requests.post.return_value = _mock_response()
 
         gl.ask_vlm(images=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
 
         _, kwargs = mock_requests.post.call_args
-        assert "model_id" not in kwargs["params"]
+        assert "model_id" not in kwargs["data"]
+        assert kwargs["data"]["query"] == "test"
 
     def test_more_than_two_images_raises(self, gl):
         frame = np.zeros((100, 100, 3), dtype=np.uint8)
