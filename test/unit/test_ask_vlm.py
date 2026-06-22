@@ -39,7 +39,7 @@ class TestAskVlm:
     def test_returns_vlm_verification_result(self, mock_requests, gl):
         mock_requests.post.return_value = _mock_response()
 
-        result = gl.ask_vlm(images=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?")
+        result = gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?")
 
         assert isinstance(result, VLMVerificationResult)
         assert result.verdict == "YES"
@@ -53,12 +53,12 @@ class TestAskVlm:
         mock_requests.post.return_value = _mock_response()
         frame = np.zeros((480, 640, 3), dtype=np.uint8)
 
-        gl.ask_vlm(images=frame, query="Is there a fire?")
+        gl.ask_vlm(media=frame, query="Is there a fire?")
 
         _, kwargs = mock_requests.post.call_args
         files = kwargs["files"]
         assert len(files) == 1
-        assert files[0][0] == "images"
+        assert files[0][0] == "media"
         name, data, ctype = files[0][1]
         assert ctype == "image/jpeg"
         assert len(data) > 0  # bytes were produced
@@ -69,7 +69,7 @@ class TestAskVlm:
         frame = np.zeros((480, 640, 3), dtype=np.uint8)
         roi = np.zeros((120, 120, 3), dtype=np.uint8)
 
-        gl.ask_vlm(images=[frame, roi], query="Is there a fire?")
+        gl.ask_vlm(media=[frame, roi], query="Is there a fire?")
 
         _, kwargs = mock_requests.post.call_args
         assert len(kwargs["files"]) == 2
@@ -78,7 +78,7 @@ class TestAskVlm:
     def test_query_and_model_id_sent_as_form_fields(self, mock_requests, gl):
         mock_requests.post.return_value = _mock_response(model_id="nova-pro")
 
-        gl.ask_vlm(images=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?", model_id="nova-pro")
+        gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?", model_id="nova-pro")
 
         _, kwargs = mock_requests.post.call_args
         # Text fields go in the multipart body, never the URL query string.
@@ -90,16 +90,16 @@ class TestAskVlm:
     def test_no_model_id_omits_field(self, mock_requests, gl):
         mock_requests.post.return_value = _mock_response()
 
-        gl.ask_vlm(images=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
+        gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
 
         _, kwargs = mock_requests.post.call_args
         assert "model_id" not in kwargs["data"]
         assert kwargs["data"]["query"] == "test"
 
-    def test_more_than_two_images_raises(self, gl):
+    def test_more_than_eight_media_raises(self, gl):
         frame = np.zeros((100, 100, 3), dtype=np.uint8)
-        with pytest.raises(ValueError, match="at most 2"):
-            gl.ask_vlm(images=[frame, frame, frame], query="test")
+        with pytest.raises(ValueError, match="at most 8"):
+            gl.ask_vlm(media=[frame] * 9, query="test")
 
     @patch("groundlight.client.requests")
     def test_bytes_image_accepted(self, mock_requests, gl):
@@ -109,6 +109,6 @@ class TestAskVlm:
 
         # Should not raise
         try:
-            gl.ask_vlm(images=jpeg_bytes, query="test")
+            gl.ask_vlm(media=jpeg_bytes, query="test")
         except Exception:
             pass  # parse_supported_image_types may reject invalid JPEG body; that's fine here

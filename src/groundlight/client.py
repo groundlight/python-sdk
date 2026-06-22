@@ -1109,7 +1109,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
     def ask_vlm(
         self,
-        images: Union[
+        media: Union[
             "np.ndarray",
             List["np.ndarray"],
             str,
@@ -1122,40 +1122,43 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         model_id: Optional[str] = None,
         timeout: float = 15.0,
     ) -> VLMVerificationResult:
-        """Verify one or two images against a natural-language query using a cloud VLM.
+        """Verify one or more images against a natural-language query using a cloud VLM.
 
         Calls the Groundlight ``POST /v1/vlm-queries`` endpoint.  The VLM runs in the
         Groundlight cloud (AWS Bedrock) — no local inference.
+
+        The server makes no assumptions about what the images are — your ``query`` should
+        describe them. Images are presented to the model labeled ``Image 1``, ``Image 2``,
+        ... in the order given, so the query can refer to them.
 
         **Example usage**::
 
             gl = Groundlight()
 
-            # Single-image verification
-            result = gl.ask_vlm(image=frame, query="Is there a fire?")
+            # Single image
+            result = gl.ask_vlm(frame, query="Is there a fire in this image?")
             if result.verdict == "YES":
                 emit_alert()
 
-            # Dual-image (full frame + ROI) for better context
+            # Full frame + cropped ROI — describe each in the query
             result = gl.ask_vlm(
-                images=[full_frame, roi_crop],
-                query="Is there a fire in the highlighted region?",
+                media=[full_frame, roi_crop],
+                query="Image 1 is the full camera frame; image 2 is the cropped region "
+                      "a detector flagged. Is there really a fire?",
             )
             print(result.confidence, result.reasoning)
 
-        :param images: One image or a list of up to two images.  When two images are
-            provided the first is treated as the **full camera frame** and the second
-            as the **cropped region of interest (ROI)**.  Accepted formats per image:
+        :param media: One image or a list of up to 8 images.  Accepted formats per image:
 
             - filename (string) of a JPEG/PNG file
             - raw bytes or BytesIO / BufferedReader
             - numpy array (H, W, 3) in BGR order (OpenCV convention)
             - PIL Image
 
-        :param query: Natural-language prompt describing what to verify, e.g.
-            ``"Is there a fire visible in the image? Reason step by step."``
+        :param query: Natural-language prompt describing the media and what to verify,
+            e.g. ``"Is there a fire visible in the image? Reason step by step."``
         :param model_id: Friendly alias of the VLM to use, e.g.
-            ``"claude-sonnet-4.5"`` or ``"nova-pro"``.  Must be one of the
+            ``"gpt-5.4"`` or ``"claude-sonnet-4.5"``.  Must be one of the
             models supported by the server.  Defaults to the server-configured default.
         :param timeout: Request timeout in seconds (default 15 s).
 
@@ -1164,17 +1167,17 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :raises requests.HTTPError: On non-2xx response from the server.
         """
         # Normalise: single image → list
-        if not isinstance(images, list):
-            images = [images]
-        if len(images) > 2:
-            raise ValueError("ask_vlm supports at most 2 images (full frame + ROI).")
+        if not isinstance(media, list):
+            media = [media]
+        if len(media) > 8:
+            raise ValueError("ask_vlm supports at most 8 media items.")
 
         # Convert each image to JPEG bytes via the existing SDK utility
-        image_files: list[tuple[str, tuple[str, bytes, str]]] = []
-        for i, img in enumerate(images):
+        media_files: list[tuple[str, tuple[str, bytes, str]]] = []
+        for i, img in enumerate(media):
             stream = parse_supported_image_types(img)
             jpeg_bytes = stream.read()
-            image_files.append(("images", (f"image_{i}.jpg", jpeg_bytes, "image/jpeg")))
+            media_files.append(("media", (f"image_{i}.jpg", jpeg_bytes, "image/jpeg")))
 
         # query and model_id are sent as multipart form fields (not query-string
         # params): the prompt can be long and must not end up in URLs or access logs.
@@ -1193,7 +1196,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         resp = requests.post(
             url,
             data=form_data,
-            files=image_files,
+            files=media_files,
             headers=headers,
             timeout=timeout,
             verify=self.api_client.configuration.verify_ssl,
