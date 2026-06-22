@@ -1154,9 +1154,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param query: Natural-language prompt describing what to verify, e.g.
             ``"Is there a fire visible in the image? Reason step by step."``
-        :param model_id: Friendly alias of the VLM to use, e.g. ``"gpt-5.4"`` or
-            ``"claude-sonnet-4.5"``.  Must be one of the models supported by the
-            server.  Defaults to the server-configured default.
+        :param model_id: Friendly alias of the VLM to use, e.g.
+            ``"claude-sonnet-4.5"`` or ``"nova-pro"``.  Must be one of the
+            models supported by the server.  Defaults to the server-configured default.
         :param timeout: Request timeout in seconds (default 15 s).
 
         :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
