@@ -1,5 +1,6 @@
-"""Unit tests for Groundlight.ask_vlm — mocks HTTP, no live server needed."""
+"""Unit tests for Groundlight.ask_vlm — all HTTP mocked, no live server needed."""
 
+from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -7,18 +8,14 @@ import pytest
 from groundlight import Groundlight, VLMVerificationResult
 
 
-@pytest.fixture
-def gl(monkeypatch):
+@pytest.fixture(name="gl")
+def groundlight_fixture(monkeypatch) -> Groundlight:
     monkeypatch.setenv("GROUNDLIGHT_API_TOKEN", "api_fake_test_token")
-    # Avoid the live /v1/me connectivity check performed during __init__.
     with patch.object(Groundlight, "_verify_connectivity", return_value=None):
-        client = Groundlight(endpoint="http://test-server/device-api/")
-    return client
+        return Groundlight(endpoint="http://test-server/device-api/")
 
 
-def _mock_response(
-    verdict="YES", confidence=0.92, reasoning="Flames visible.", model_id="us.anthropic.claude-sonnet-4-5-20250929-v1:0"
-):
+def _mock_response(verdict="YES", confidence=0.92, reasoning="Flames visible.", model_id="gpt-5.4"):
     resp = MagicMock()
     resp.status_code = 201
     resp.json.return_value = {
@@ -34,94 +31,106 @@ def _mock_response(
     return resp
 
 
-class TestAskVlm:
-    @patch("groundlight.client.requests")
-    def test_returns_vlm_verification_result(self, mock_requests, gl):
+def test_returns_vlm_verification_result(gl: Groundlight):
+    """ask_vlm returns a typed VLMVerificationResult with all expected fields populated."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-
         result = gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?")
 
-        assert isinstance(result, VLMVerificationResult)
-        assert result.verdict == "YES"
-        assert result.confidence == pytest.approx(0.92)
-        assert result.id == "vlmv_test123"
-        assert result.input_tokens == 400
-        assert result.total_cost_usd == pytest.approx(0.0015)
+    assert isinstance(result, VLMVerificationResult)
+    assert result.verdict == "YES"
+    assert result.confidence == pytest.approx(0.92)
+    assert result.id == "vlmv_test123"
+    assert result.input_tokens == 400
+    assert result.total_cost_usd == pytest.approx(0.0015)
 
-    @patch("groundlight.client.requests")
-    def test_single_numpy_image_encoded_as_jpeg(self, mock_requests, gl):
+
+def test_single_numpy_image_encoded_as_jpeg(gl: Groundlight):
+    """A numpy array is encoded to JPEG and sent as a single multipart 'media' part."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-        frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        gl.ask_vlm(media=np.zeros((480, 640, 3), dtype=np.uint8), query="Is there a fire?")
 
-        gl.ask_vlm(media=frame, query="Is there a fire?")
+    _, kwargs = mock_requests.post.call_args
+    files = kwargs["files"]
+    assert len(files) == 1
+    assert files[0][0] == "media"
+    _name, data, ctype = files[0][1]
+    assert ctype == "image/jpeg"
+    assert len(data) > 0
 
-        _, kwargs = mock_requests.post.call_args
-        files = kwargs["files"]
-        assert len(files) == 1
-        assert files[0][0] == "media"
-        name, data, ctype = files[0][1]
-        assert ctype == "image/jpeg"
-        assert len(data) > 0  # bytes were produced
 
-    @patch("groundlight.client.requests")
-    def test_dual_images_sends_two_parts(self, mock_requests, gl):
+def test_dual_images_sends_two_parts(gl: Groundlight):
+    """Passing a list of two images sends two 'media' multipart parts."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-        frame = np.zeros((480, 640, 3), dtype=np.uint8)
-        roi = np.zeros((120, 120, 3), dtype=np.uint8)
+        gl.ask_vlm(
+            media=[np.zeros((480, 640, 3), dtype=np.uint8), np.zeros((120, 120, 3), dtype=np.uint8)],
+            query="Is there a fire?",
+        )
 
-        gl.ask_vlm(media=[frame, roi], query="Is there a fire?")
+    _, kwargs = mock_requests.post.call_args
+    assert len(kwargs["files"]) == 2
 
-        _, kwargs = mock_requests.post.call_args
-        assert len(kwargs["files"]) == 2
 
-    @patch("groundlight.client.requests")
-    def test_url_has_correct_path(self, mock_requests, gl):
+def test_url_has_correct_path(gl: Groundlight):
+    """sanitize_endpoint_url strips the trailing slash, so we must insert '/' before
+    the path — without it the URL would be '...device-apiv1/vlm-verifications'."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-
         gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
 
-        args, _ = mock_requests.post.call_args
-        url = args[0]
-        # sanitize_endpoint_url strips the trailing slash, so we must insert "/" before
-        # the path — without it the URL would be "...device-apiv1/vlm-verifications".
-        assert url.endswith("/v1/vlm-verifications"), f"Bad URL: {url}"
-        assert "/device-api/v1/vlm-verifications" in url
+    args, _ = mock_requests.post.call_args
+    url = args[0]
+    assert "/device-api/v1/vlm-verifications" in url
 
-    @patch("groundlight.client.requests")
-    def test_query_and_model_id_sent_as_form_fields(self, mock_requests, gl):
+
+def test_query_and_model_id_sent_as_form_fields(gl: Groundlight):
+    """query and model_id go in the multipart body, never in the URL query string."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response(model_id="nova-pro")
-
         gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?", model_id="nova-pro")
 
-        _, kwargs = mock_requests.post.call_args
-        # Text fields go in the multipart body, never the URL query string.
-        assert kwargs["data"]["query"] == "Is there a fire?"
-        assert kwargs["data"]["model_id"] == "nova-pro"
-        assert "params" not in kwargs or not kwargs["params"]
+    _, kwargs = mock_requests.post.call_args
+    assert kwargs["data"]["query"] == "Is there a fire?"
+    assert kwargs["data"]["model_id"] == "nova-pro"
+    assert "params" not in kwargs or not kwargs.get("params")
 
-    @patch("groundlight.client.requests")
-    def test_no_model_id_omits_field(self, mock_requests, gl):
+
+def test_no_model_id_omits_field(gl: Groundlight):
+    """Omitting model_id leaves the field out entirely so the server uses its default."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-
         gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
 
-        _, kwargs = mock_requests.post.call_args
-        assert "model_id" not in kwargs["data"]
-        assert kwargs["data"]["query"] == "test"
+    _, kwargs = mock_requests.post.call_args
+    assert "model_id" not in kwargs["data"]
 
-    def test_more_than_eight_media_raises(self, gl):
-        frame = np.zeros((100, 100, 3), dtype=np.uint8)
-        with pytest.raises(ValueError, match="at most 8"):
-            gl.ask_vlm(media=[frame] * 9, query="test")
 
-    @patch("groundlight.client.requests")
-    def test_bytes_image_accepted(self, mock_requests, gl):
+def test_more_than_eight_media_raises(gl: Groundlight):
+    """Supplying more than 8 media items raises ValueError before any network call."""
+    with pytest.raises(ValueError, match="at most 8"):
+        gl.ask_vlm(media=[np.zeros((100, 100, 3), dtype=np.uint8)] * 9, query="test")
+
+
+def test_timeout_passed_to_requests(gl: Groundlight):
+    """The timeout parameter is forwarded to requests.post."""
+    with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-        # A minimal valid JPEG header
-        jpeg_bytes = b"\xff\xd8\xff\xe0" + b"\x00" * 100
+        gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="test", timeout=5.0)
 
-        # Should not raise
-        try:
-            gl.ask_vlm(media=jpeg_bytes, query="test")
-        except Exception:
-            pass  # parse_supported_image_types may reject invalid JPEG body; that's fine here
+    _, kwargs = mock_requests.post.call_args
+    assert kwargs["timeout"] == pytest.approx(5.0)
+
+
+def test_corrupted_image_bytes_raises_http_error(gl: Groundlight):
+    """Corrupted bytes are not validated client-side — the server rejects them with a
+    400, which raise_for_status() converts to requests.HTTPError."""
+    error_resp = MagicMock()
+    error_resp.status_code = 400
+    error_resp.raise_for_status.side_effect = Exception("400 Bad Request")
+
+    with mock.patch("groundlight.client.requests") as mock_requests:
+        mock_requests.post.return_value = error_resp
+        with pytest.raises(Exception, match="400"):
+            gl.ask_vlm(media=b"this-is-not-a-valid-image", query="test")

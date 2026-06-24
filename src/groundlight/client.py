@@ -1157,14 +1157,26 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param query: Natural-language prompt describing the media and what to verify,
             e.g. ``"Is there a fire visible in the image? Reason step by step."``
-        :param model_id: Friendly alias of the VLM to use, e.g.
-            ``"gpt-5.4"`` or ``"claude-sonnet-4.5"``.  Must be one of the
-            models supported by the server.  Defaults to the server-configured default.
+        :param model_id: Friendly alias of the VLM to use.  The server is the source
+            of truth; passing an unrecognised alias returns HTTP 400.  Currently
+            supported aliases:
+
+            - ``"gpt-5.4"`` — OpenAI GPT-5.4 via Bedrock Responses API (default)
+            - ``"claude-sonnet-4.5"`` — Anthropic Claude Sonnet 4.5
+            - ``"claude-haiku-3"`` — Anthropic Claude Haiku 3
+            - ``"nova-pro"`` — Amazon Nova Pro
+            - ``"nova-lite"`` — Amazon Nova Lite
+            - ``"llama3.2-90b"`` — Meta Llama 3.2 90B
+            - ``"llama3.2-11b"`` — Meta Llama 3.2 11B
+
+            Omit to use the server-configured default (currently ``"gpt-5.4"``).
         :param timeout: Request timeout in seconds (default 15 s).
 
         :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
             ``"UNSURE"``), ``confidence``, ``reasoning``, and token cost fields.
-        :raises requests.HTTPError: On non-2xx response from the server.
+        :raises ValueError: If more than 8 media items are supplied.
+        :raises requests.HTTPError: On non-2xx response (400 for invalid model alias
+            or undecodable image bytes; 502 if the upstream VLM is unavailable).
         """
         # Normalise: single image → list
         if not isinstance(media, list):
