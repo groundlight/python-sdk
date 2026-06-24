@@ -75,6 +75,19 @@ class TestAskVlm:
         assert len(kwargs["files"]) == 2
 
     @patch("groundlight.client.requests")
+    def test_url_has_correct_path(self, mock_requests, gl):
+        mock_requests.post.return_value = _mock_response()
+
+        gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
+
+        args, _ = mock_requests.post.call_args
+        url = args[0]
+        # sanitize_endpoint_url strips the trailing slash, so we must insert "/" before
+        # the path — without it the URL would be "...device-apiv1/vlm-verifications".
+        assert url.endswith("/v1/vlm-verifications"), f"Bad URL: {url}"
+        assert "/device-api/v1/vlm-verifications" in url
+
+    @patch("groundlight.client.requests")
     def test_query_and_model_id_sent_as_form_fields(self, mock_requests, gl):
         mock_requests.post.return_value = _mock_response(model_id="nova-pro")
 

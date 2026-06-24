@@ -1191,7 +1191,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             "x-sdk-language": "python",
         }
 
-        url = f"{self.endpoint}v1/vlm-verifications"
+        url = f"{self.endpoint}/v1/vlm-verifications"
 
         resp = requests.post(
             url,
