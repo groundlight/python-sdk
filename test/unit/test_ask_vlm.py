@@ -22,8 +22,8 @@ def _mock_response(
     resp = MagicMock()
     resp.status_code = 201
     resp.json.return_value = {
-        "id": "vlmq_test123",
-        "type": "vlm_query",
+        "id": "vlmv_test123",
+        "type": "vlm_verification",
         "created_at": "2025-06-17T00:00:00Z",
         "query": "Is there a fire?",
         "model_id": model_id,
@@ -44,7 +44,7 @@ class TestAskVlm:
         assert isinstance(result, VLMVerificationResult)
         assert result.verdict == "YES"
         assert result.confidence == pytest.approx(0.92)
-        assert result.id == "vlmq_test123"
+        assert result.id == "vlmv_test123"
         assert result.input_tokens == 400
         assert result.total_cost_usd == pytest.approx(0.0015)
 

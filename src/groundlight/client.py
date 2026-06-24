@@ -1124,7 +1124,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     ) -> VLMVerificationResult:
         """Verify one or more images against a natural-language query using a cloud VLM.
 
-        Calls the Groundlight ``POST /v1/vlm-queries`` endpoint.  The VLM runs in the
+        Calls the Groundlight ``POST /v1/vlm-verifications`` endpoint.  The VLM runs in the
         Groundlight cloud (AWS Bedrock) — no local inference.
 
         The server makes no assumptions about what the images are — your ``query`` should
@@ -1191,7 +1191,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             "x-sdk-language": "python",
         }
 
-        url = f"{self.endpoint}v1/vlm-queries"
+        url = f"{self.endpoint}v1/vlm-verifications"
 
         resp = requests.post(
             url,
