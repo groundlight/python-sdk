@@ -75,8 +75,11 @@ class EdgeNotAvailableError(GroundlightClientError):
     """Raised when an edge-only method is called against a non-edge endpoint."""
 
 
+MAX_VLM_MEDIA_ITEMS = 8
+
+
 @dataclass
-class VLMVerificationResult:
+class VLMVerificationResult:  # pylint: disable=too-many-instance-attributes
     """Result of a VLM-based alert verification via the Groundlight cloud API."""
 
     id: str
@@ -1107,7 +1110,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             inspection_id=inspection_id,
         )
 
-    def ask_vlm(
+    def ask_vlm(  # pylint: disable=too-many-locals
         self,
         media: Union[
             "np.ndarray",
@@ -1174,15 +1177,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
             ``"UNSURE"``), ``confidence``, ``reasoning``, and token cost fields.
-        :raises ValueError: If more than 8 media items are supplied.
+        :raises ValueError: If more than ``MAX_VLM_MEDIA_ITEMS`` (8) images are supplied.
         :raises requests.HTTPError: On non-2xx response (400 for invalid model alias
             or undecodable image bytes; 502 if the upstream VLM is unavailable).
         """
         # Normalise: single image → list
         if not isinstance(media, list):
             media = [media]
-        if len(media) > 8:
-            raise ValueError("ask_vlm supports at most 8 media items.")
+        if len(media) > MAX_VLM_MEDIA_ITEMS:
+            raise ValueError(f"ask_vlm supports at most {MAX_VLM_MEDIA_ITEMS} media items.")
 
         # Convert each image to JPEG bytes via the existing SDK utility
         media_files: list[tuple[str, tuple[str, bytes, str]]] = []

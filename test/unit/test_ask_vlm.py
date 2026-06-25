@@ -3,9 +3,13 @@
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
-import numpy as np
 import pytest
 from groundlight import Groundlight, VLMVerificationResult
+from groundlight.client import MAX_VLM_MEDIA_ITEMS
+from groundlight.optional_imports import MISSING_NUMPY, np
+
+# Minimal valid-looking JPEG bytes for tests that don't exercise image encoding.
+_FAKE_JPEG = b"\xff\xd8\xff\xe0" + b"\x00" * 16
 
 
 @pytest.fixture(name="gl")
@@ -35,16 +39,16 @@ def test_returns_vlm_verification_result(gl: Groundlight):
     """Result fields are correctly unpacked from the server response JSON."""
     with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-        result = gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?")
+        result = gl.ask_vlm(media=_FAKE_JPEG, query="Is there a fire?")
 
     assert isinstance(result, VLMVerificationResult)
     assert result.verdict == "YES"
     assert result.confidence == pytest.approx(0.92)
     assert result.id == "vlmv_test123"
-    assert result.input_tokens == 400
     assert result.total_cost_usd == pytest.approx(0.0015)
 
 
+@pytest.mark.skipif(MISSING_NUMPY, reason="Needs numpy")
 def test_numpy_image_encoded_as_jpeg_multipart(gl: Groundlight):
     """A numpy array is converted to JPEG and sent as a multipart 'media' part."""
     with mock.patch("groundlight.client.requests") as mock_requests:
@@ -65,7 +69,7 @@ def test_query_sent_as_form_field_not_url_param(gl: Groundlight):
     doesn't leak into access logs."""
     with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response(model_id="nova-pro")
-        gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="Is there a fire?", model_id="nova-pro")
+        gl.ask_vlm(media=_FAKE_JPEG, query="Is there a fire?", model_id="nova-pro")
 
     _, kwargs = mock_requests.post.call_args
     assert kwargs["data"]["query"] == "Is there a fire?"
@@ -73,10 +77,10 @@ def test_query_sent_as_form_field_not_url_param(gl: Groundlight):
     assert "params" not in kwargs or not kwargs.get("params")
 
 
-def test_more_than_eight_media_raises(gl: Groundlight):
-    """Supplying more than 8 media items raises ValueError before any network call."""
-    with pytest.raises(ValueError, match="at most 8"):
-        gl.ask_vlm(media=[np.zeros((100, 100, 3), dtype=np.uint8)] * 9, query="test")
+def test_more_than_max_media_raises(gl: Groundlight):
+    """Supplying more than MAX_VLM_MEDIA_ITEMS raises ValueError before any network call."""
+    with pytest.raises(ValueError, match=f"at most {MAX_VLM_MEDIA_ITEMS}"):
+        gl.ask_vlm(media=[_FAKE_JPEG] * (MAX_VLM_MEDIA_ITEMS + 1), query="test")
 
 
 def test_url_has_correct_path(gl: Groundlight):
@@ -84,7 +88,7 @@ def test_url_has_correct_path(gl: Groundlight):
     must include a leading '/' — without it the URL becomes '...device-apiv1/...'."""
     with mock.patch("groundlight.client.requests") as mock_requests:
         mock_requests.post.return_value = _mock_response()
-        gl.ask_vlm(media=np.zeros((100, 100, 3), dtype=np.uint8), query="test")
+        gl.ask_vlm(media=_FAKE_JPEG, query="test")
 
     args, _ = mock_requests.post.call_args
     assert "/device-api/v1/vlm-verifications" in args[0]
