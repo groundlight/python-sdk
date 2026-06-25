@@ -180,6 +180,7 @@ _GROUP_ORDER = [
     "Image Queries",
     "ML Pipelines & Priming",
     "Notes",
+    "VLM Verification",
     "Utilities",
 ]
 
@@ -232,6 +233,8 @@ _COMMAND_GROUPS: dict[str, str] = {
     "create_priming_group": "ML Pipelines & Priming",
     "get_priming_group": "ML Pipelines & Priming",
     "delete_priming_group": "ML Pipelines & Priming",
+    # VLM Verification
+    "ask_vlm": "VLM Verification",
     # Utilities
     "edge_base_url": "Utilities",
     "get_raw_headers": "Utilities",
