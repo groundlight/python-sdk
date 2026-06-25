@@ -1154,11 +1154,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param media: One image or a list of up to 8 images.  Accepted formats per image:
 
-            - filename (string) of a JPEG/PNG/WEBP file
-            - raw bytes or BytesIO / BufferedReader containing any common image format
-              (JPEG, PNG, WEBP — the server normalises to JPEG server-side)
-            - numpy array (H, W, 3) in BGR order (OpenCV convention)
-            - PIL Image
+            - filename (string) of a JPEG or PNG file (``".jpg"``, ``".jpeg"``, ``".png"``)
+            - raw bytes, BytesIO, or BufferedReader — sent as-is; the server decodes and
+              normalises to JPEG regardless of the declared content type, so PNG/WEBP bytes
+              all work
+            - numpy array (H, W, 3) in BGR order (OpenCV convention) — converted to JPEG
+              before sending
+            - PIL Image — converted to JPEG before sending
 
         :param query: Natural-language prompt describing the media and what to verify,
             e.g. ``"Is there a fire visible in the image? Reason step by step."``
@@ -1191,7 +1193,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         if len(media) > MAX_VLM_MEDIA_ITEMS:
             raise ValueError(f"ask_vlm supports at most {MAX_VLM_MEDIA_ITEMS} media items.")
 
-        # Convert each image to JPEG bytes via the existing SDK utility
+        # Encode each item. numpy/PIL → JPEG; bytes/BytesIO/BufferedReader → pass through
+        # (server calls ensure_jpeg_format and validates by decoding, so any common format works).
         media_files: list[tuple[str, tuple[str, bytes, str]]] = []
         for i, img in enumerate(media):
             stream = parse_supported_image_types(img)

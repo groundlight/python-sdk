@@ -92,3 +92,17 @@ def test_url_has_correct_path(gl: Groundlight):
 
     args, _ = mock_requests.post.call_args
     assert "/device-api/v1/vlm-verifications" in args[0]
+
+
+def test_url_no_version_duplication_for_versioned_endpoint(monkeypatch):
+    """When the endpoint already ends with /v1 the URL must not contain /v1/v1/."""
+    monkeypatch.setenv("GROUNDLIGHT_API_TOKEN", "api_fake_test_token")
+    with patch.object(Groundlight, "_verify_connectivity", return_value=None):
+        gl_v1 = Groundlight(endpoint="http://test-server/v1")
+    with mock.patch("groundlight.client.requests") as mock_requests:
+        mock_requests.post.return_value = _mock_response()
+        gl_v1.ask_vlm(media=_FAKE_JPEG, query="test")
+    args, _ = mock_requests.post.call_args
+    url = args[0]
+    assert "/v1/v1/" not in url
+    assert url.endswith("/v1/vlm-verifications")
