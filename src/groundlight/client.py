@@ -4,7 +4,6 @@ import os
 import re
 import time
 import warnings
-from pydantic import BaseModel
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
@@ -40,6 +39,7 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
+from pydantic import BaseModel
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
 
