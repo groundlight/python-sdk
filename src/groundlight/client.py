@@ -1,6 +1,7 @@
 # pylint: disable=too-many-lines
 import logging
 import os
+import re
 import time
 import warnings
 from dataclasses import dataclass
@@ -1114,12 +1115,12 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self,
         media: Union[
             "np.ndarray",
-            List["np.ndarray"],
             str,
             bytes,
             "Image.Image",
             BytesIO,
             BufferedReader,
+            List[Union["np.ndarray", str, bytes, "Image.Image", BytesIO, BufferedReader]],
         ],
         query: str,
         model_id: Optional[str] = None,
@@ -1153,8 +1154,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :param media: One image or a list of up to 8 images.  Accepted formats per image:
 
-            - filename (string) of a JPEG/PNG file
-            - raw bytes or BytesIO / BufferedReader
+            - filename (string) of a JPEG/PNG/WEBP file
+            - raw bytes or BytesIO / BufferedReader containing any common image format
+              (JPEG, PNG, WEBP — the server normalises to JPEG server-side)
             - numpy array (H, W, 3) in BGR order (OpenCV convention)
             - PIL Image
 
@@ -1177,13 +1179,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
             ``"UNSURE"``), ``confidence``, ``reasoning``, and token cost fields.
-        :raises ValueError: If more than ``MAX_VLM_MEDIA_ITEMS`` (8) images are supplied.
+        :raises ValueError: If zero or more than ``MAX_VLM_MEDIA_ITEMS`` (8) images are supplied.
         :raises requests.HTTPError: On non-2xx response (400 for invalid model alias
             or undecodable image bytes; 502 if the upstream VLM is unavailable).
         """
         # Normalise: single image → list
         if not isinstance(media, list):
             media = [media]
+        if not media:
+            raise ValueError("ask_vlm requires at least one media item.")
         if len(media) > MAX_VLM_MEDIA_ITEMS:
             raise ValueError(f"ask_vlm supports at most {MAX_VLM_MEDIA_ITEMS} media items.")
 
@@ -1202,11 +1206,14 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         headers = {
             "x-api-token": self.api_client.configuration.api_key["ApiToken"],
-            "X-Request-Id": f"ask_vlm_{int(time.time() * 1000)}",
+            "X-Request-Id": f"ask_vlm_{time.time_ns()}",
             "x-sdk-language": "python",
         }
 
-        url = f"{self.endpoint}/v1/vlm-verifications"
+        # sanitize_endpoint_url may produce an endpoint that already ends with a
+        # version segment (e.g. ".../v1"). Strip it so we never produce ".../v1/v1/...".
+        base = re.sub(r"/v\d+$", "", self.endpoint)
+        url = f"{base}/v1/vlm-verifications"
 
         resp = requests.post(
             url,
