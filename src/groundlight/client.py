@@ -4,7 +4,7 @@ import os
 import re
 import time
 import warnings
-from dataclasses import dataclass
+from pydantic import BaseModel
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
@@ -79,8 +79,7 @@ class EdgeNotAvailableError(GroundlightClientError):
 MAX_VLM_MEDIA_ITEMS = 8
 
 
-@dataclass
-class VLMVerificationResult:  # pylint: disable=too-many-instance-attributes
+class VLMVerificationResult(BaseModel):
     """Result of a VLM-based alert verification via the Groundlight cloud API."""
 
     id: str
@@ -1114,13 +1113,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     def ask_vlm(  # pylint: disable=too-many-locals
         self,
         media: Union[
-            "np.ndarray",
+            np.ndarray,
             str,
             bytes,
-            "Image.Image",
+            Image.Image,
             BytesIO,
             BufferedReader,
-            List[Union["np.ndarray", str, bytes, "Image.Image", BytesIO, BufferedReader]],
+            List[Union[np.ndarray, str, bytes, Image.Image, BytesIO, BufferedReader]],
         ],
         query: str,
         model_id: Optional[str] = None,
