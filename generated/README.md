@@ -146,6 +146,7 @@ Class | Method | HTTP request | Description
 *PrimingGroupsApi* | [**get_priming_group**](docs/PrimingGroupsApi.md#get_priming_group) | **GET** /v1/priming-groups/{id} | 
 *PrimingGroupsApi* | [**list_priming_groups**](docs/PrimingGroupsApi.md#list_priming_groups) | **GET** /v1/priming-groups | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /v1/me | 
+*VlmVerificationsApi* | [**submit_vlm_verification**](docs/VlmVerificationsApi.md#submit_vlm_verification) | **POST** /v1/vlm-verifications | 
 
 
 ## Documentation For Models
@@ -215,6 +216,10 @@ Class | Method | HTTP request | Description
  - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
  - [VerbEnum](docs/VerbEnum.md)
+ - [VerdictEnum](docs/VerdictEnum.md)
+ - [VlmVerification](docs/VlmVerification.md)
+ - [VlmVerificationCost](docs/VlmVerificationCost.md)
+ - [VlmVerificationResult](docs/VlmVerificationResult.md)
  - [WebhookAction](docs/WebhookAction.md)
  - [WebhookActionRequest](docs/WebhookActionRequest.md)
 
