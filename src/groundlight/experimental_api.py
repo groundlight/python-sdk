@@ -19,6 +19,7 @@ from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
+from groundlight_openapi_client.api.vlm_verifications_api import VlmVerificationsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
@@ -88,6 +89,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
         self.priming_groups_api = PrimingGroupsApi(self.api_client)
+        self.vlm_verifications_api = VlmVerificationsApi(self.api_client)
 
         # API client for fetching Edge models
         self._edge_model_download_api = EdgeApi(self.api_client)
@@ -233,8 +235,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             ``"YES"`` / ``"NO"`` / ``"UNSURE"`` — ``confidence``, ``reasoning``) and ``cost``
             (``input_tokens``, ``output_tokens``, ``total_cost_usd``).
         :raises ValueError: If zero or more than ``MAX_VLM_MEDIA_ITEMS`` (8) images are supplied.
-        :raises requests.HTTPError: On non-2xx response (400 for invalid model alias
-            or undecodable image bytes; 502 if the upstream VLM is unavailable).
+        :raises groundlight_openapi_client.exceptions.ApiException: On non-2xx response (400 for
+            an invalid model alias or undecodable image bytes; 502 if the upstream VLM is unavailable).
         """
         # Normalise: single image → list
         if not isinstance(media, list):
@@ -244,38 +246,24 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         if len(media) > MAX_VLM_MEDIA_ITEMS:
             raise ValueError(f"ask_vlm_verify supports at most {MAX_VLM_MEDIA_ITEMS} media items.")
 
-        # Encode each item. numpy/PIL → JPEG; bytes/BytesIO/BufferedReader → pass through
-        # (server calls ensure_jpeg_format and validates by decoding, so any common format works).
+        # Encode each item to a byte stream. numpy/PIL → JPEG; bytes/BytesIO/BufferedReader →
+        # passed through (the server calls ensure_jpeg_format and validates by decoding, so any
+        # common image format works). The `.name` gives the generated multipart client a filename
+        # and content-type for each `media` part.
         media_files = []
         for i, img in enumerate(media):
-            jpeg_bytes = parse_supported_image_types(img).read()
-            media_files.append(("media", (f"image_{i+1}.jpg", jpeg_bytes, "image/jpeg")))
+            stream = parse_supported_image_types(img)
+            stream.name = f"image_{i}.jpg"
+            media_files.append(stream)
 
-        # query and model_id are sent as multipart form fields (not query-string
-        # params): the prompt can be long and must not end up in URLs or access logs.
-        form_data = {"query": query}
+        kwargs: Dict[str, Any] = {"_request_timeout": timeout}
         if model_id:
-            form_data["model_id"] = model_id
+            kwargs["model_id"] = model_id
 
-        headers = {
-            "x-api-token": self.configuration.api_key["ApiToken"],
-            "X-Request-Id": _generate_request_id(),
-        }
-
-        url = f"{self.endpoint}/v1/vlm-verifications"
-
-        # The openapi generator doesn't handle multipart file uploads well, so (like
-        # create_note) we issue the request directly rather than through the generated API.
-        response = requests.post(
-            url,
-            data=form_data,
-            files=media_files,
-            headers=headers,
-            timeout=timeout,
-            verify=self.api_client.configuration.verify_ssl,
-        )
-        response.raise_for_status()
-        return VlmVerification.model_validate(response.json())
+        # Use the generated client (same pattern as submit_image_query): it handles the
+        # multipart upload, auth, and base URL, then we validate into the pydantic model.
+        raw = self.vlm_verifications_api.submit_vlm_verification(media_files, query, **kwargs)
+        return VlmVerification.model_validate(raw.to_dict())
 
     def reset_detector(self, detector: Union[str, Detector]) -> None:
         """
