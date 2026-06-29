@@ -43,9 +43,7 @@ def _capturing_transport(captured: dict, data: bytes = _RESPONSE_JSON):
         resp = MagicMock()
         resp.status = 201
         resp.data = data
-        resp.getheader = lambda name, default=None: (
-            "application/json" if name.lower() == "content-type" else default
-        )
+        resp.getheader = lambda name, default=None: ("application/json" if name.lower() == "content-type" else default)
         resp.getheaders = lambda: {"Content-Type": "application/json"}
         return resp
 
