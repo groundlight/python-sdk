@@ -249,7 +249,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         media_files = []
         for i, img in enumerate(media):
             jpeg_bytes = parse_supported_image_types(img).read()
-            media_files.append(("media", (f"image_{i}.jpg", jpeg_bytes, "image/jpeg")))
+            media_files.append(("media", (f"image_{i+1}.jpg", jpeg_bytes, "image/jpeg")))
 
         # query and model_id are sent as multipart form fields (not query-string
         # params): the prompt can be long and must not end up in URLs or access logs.
