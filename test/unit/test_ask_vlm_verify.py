@@ -4,9 +4,10 @@ from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import pytest
-from groundlight import ExperimentalApi, VlmVerification
+from groundlight import ExperimentalApi
 from groundlight.experimental_api import MAX_VLM_MEDIA_ITEMS
 from groundlight.optional_imports import MISSING_NUMPY, np
+from model import VlmVerification
 
 # Minimal valid-looking JPEG bytes for tests that don't exercise image encoding.
 _FAKE_JPEG = b"\xff\xd8\xff\xe0" + b"\x00" * 16
