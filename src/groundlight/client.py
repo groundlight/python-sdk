@@ -1,14 +1,12 @@
 # pylint: disable=too-many-lines
 import logging
 import os
-import re
 import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-import requests
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
@@ -74,24 +72,6 @@ class ApiTokenError(GroundlightClientError):
 
 class EdgeNotAvailableError(GroundlightClientError):
     """Raised when an edge-only method is called against a non-edge endpoint."""
-
-
-MAX_VLM_MEDIA_ITEMS = 8
-
-
-class VLMVerificationResult(BaseModel):
-    """Result of a VLM-based alert verification via the Groundlight cloud API."""
-
-    id: str
-    query: str
-    model_id: str
-    verdict: str  # "YES" | "NO" | "UNSURE"
-    confidence: float  # 0.0–1.0
-    reasoning: str
-    created_at: str
-    input_tokens: Optional[int] = None
-    output_tokens: Optional[int] = None
-    total_cost_usd: Optional[float] = None
 
 
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
@@ -1108,139 +1088,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             want_async=True,
             metadata=metadata,
             inspection_id=inspection_id,
-        )
-
-    def ask_vlm(  # pylint: disable=too-many-locals
-        self,
-        media: Union[
-            np.ndarray,
-            str,
-            bytes,
-            Image.Image,
-            BytesIO,
-            BufferedReader,
-            List[Union[np.ndarray, str, bytes, Image.Image, BytesIO, BufferedReader]],
-        ],
-        query: str,
-        model_id: Optional[str] = None,
-        timeout: float = 15.0,
-    ) -> VLMVerificationResult:
-        """Verify one or more images against a natural-language query using a cloud VLM.
-
-        Calls the Groundlight ``POST /v1/vlm-verifications`` endpoint.  The VLM runs in the
-        Groundlight cloud (AWS Bedrock) — no local inference.
-
-        The server makes no assumptions about what the images are — your ``query`` should
-        describe them. Images are presented to the model labeled ``Image 1``, ``Image 2``,
-        ... in the order given, so the query can refer to them.
-
-        **Example usage**::
-
-            gl = Groundlight()
-
-            # Single image
-            result = gl.ask_vlm(frame, query="Is there a fire in this image?")
-            if result.verdict == "YES":
-                emit_alert()
-
-            # Full frame + cropped ROI — describe each in the query
-            result = gl.ask_vlm(
-                media=[full_frame, roi_crop],
-                query="Image 1 is the full camera frame; image 2 is the cropped region "
-                      "a detector flagged. Is there really a fire?",
-            )
-            print(result.confidence, result.reasoning)
-
-        :param media: One image or a list of up to 8 images.  Accepted formats per image:
-
-            - filename (string) of a JPEG or PNG file (``".jpg"``, ``".jpeg"``, ``".png"``)
-            - raw bytes, BytesIO, or BufferedReader — sent as-is; the server decodes and
-              normalises to JPEG regardless of the declared content type, so PNG/WEBP bytes
-              all work
-            - numpy array (H, W, 3) in BGR order (OpenCV convention) — converted to JPEG
-              before sending
-            - PIL Image — converted to JPEG before sending
-
-        :param query: Natural-language prompt describing the media and what to verify,
-            e.g. ``"Is there a fire visible in the image? Reason step by step."``
-        :param model_id: Friendly alias of the VLM to use.  The server is the source
-            of truth; passing an unrecognised alias returns HTTP 400.  Currently
-            supported aliases:
-
-            - ``"gpt-5.4"`` — OpenAI GPT-5.4 via Bedrock Responses API (default)
-            - ``"claude-sonnet-4.5"`` — Anthropic Claude Sonnet 4.5
-            - ``"claude-haiku-3"`` — Anthropic Claude Haiku 3
-            - ``"nova-pro"`` — Amazon Nova Pro
-            - ``"nova-lite"`` — Amazon Nova Lite
-            - ``"llama3.2-90b"`` — Meta Llama 3.2 90B
-            - ``"llama3.2-11b"`` — Meta Llama 3.2 11B
-
-            Omit to use the server-configured default (currently ``"gpt-5.4"``).
-        :param timeout: Request timeout in seconds (default 15 s).
-
-        :return: :class:`VLMVerificationResult` with ``verdict`` (``"YES"`` / ``"NO"`` /
-            ``"UNSURE"``), ``confidence``, ``reasoning``, and token cost fields.
-        :raises ValueError: If zero or more than ``MAX_VLM_MEDIA_ITEMS`` (8) images are supplied.
-        :raises requests.HTTPError: On non-2xx response (400 for invalid model alias
-            or undecodable image bytes; 502 if the upstream VLM is unavailable).
-        """
-        # Normalise: single image → list
-        if not isinstance(media, list):
-            media = [media]
-        if not media:
-            raise ValueError("ask_vlm requires at least one media item.")
-        if len(media) > MAX_VLM_MEDIA_ITEMS:
-            raise ValueError(f"ask_vlm supports at most {MAX_VLM_MEDIA_ITEMS} media items.")
-
-        # Encode each item. numpy/PIL → JPEG; bytes/BytesIO/BufferedReader → pass through
-        # (server calls ensure_jpeg_format and validates by decoding, so any common format works).
-        media_files: list[tuple[str, tuple[str, bytes, str]]] = []
-        for i, img in enumerate(media):
-            stream = parse_supported_image_types(img)
-            jpeg_bytes = stream.read()
-            media_files.append(("media", (f"image_{i}.jpg", jpeg_bytes, "image/jpeg")))
-
-        # query and model_id are sent as multipart form fields (not query-string
-        # params): the prompt can be long and must not end up in URLs or access logs.
-        form_data: dict[str, str] = {"query": query}
-        if model_id:
-            form_data["model_id"] = model_id
-
-        headers = {
-            "x-api-token": self.api_client.configuration.api_key["ApiToken"],
-            "X-Request-Id": f"ask_vlm_{time.time_ns()}",
-            "x-sdk-language": "python",
-        }
-
-        # sanitize_endpoint_url may produce an endpoint that already ends with a
-        # version segment (e.g. ".../v1"). Strip it so we never produce ".../v1/v1/...".
-        base = re.sub(r"/v\d+$", "", self.endpoint)
-        url = f"{base}/v1/vlm-verifications"
-
-        resp = requests.post(
-            url,
-            data=form_data,
-            files=media_files,
-            headers=headers,
-            timeout=timeout,
-            verify=self.api_client.configuration.verify_ssl,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-
-        result_block = data.get("result", {})
-        cost_block = data.get("cost", {})
-        return VLMVerificationResult(
-            id=data.get("id", ""),
-            query=data.get("query", query),
-            model_id=data.get("model_id", model_id or ""),
-            verdict=result_block.get("verdict", "UNSURE"),
-            confidence=float(result_block.get("confidence", 0.0)),
-            reasoning=result_block.get("reasoning", ""),
-            created_at=data.get("created_at", ""),
-            input_tokens=cost_block.get("input_tokens"),
-            output_tokens=cost_block.get("output_tokens"),
-            total_cost_usd=cost_block.get("total_cost_usd"),
         )
 
     def wait_for_confident_result(

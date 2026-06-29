@@ -962,6 +962,69 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/vlm-verifications:
+    post:
+      operationId: Submit VLM verification
+      description: |2
+
+        Submit one or more images for VLM-based alert verification.
+
+        Send everything as `multipart/form-data`: one to eight `media` parts, plus a
+        `query` field and an optional `model_id` field.
+
+        The `query` describes what each image is and what to look for — the server makes
+        no assumptions about the images' meaning. Images are presented to the model
+        labeled `Image 1`, `Image 2`, ... in upload order, so the query can reference
+        them (e.g. "Image 1 is the full frame; image 2 is the cropped ROI ...").
+
+        (Video parts are planned but not yet supported and are rejected.)
+
+        Requires `ENABLE_BEDROCK_VLM_ACCESS` (enabled for Standard_Internal and SciDuck accounts) and accepted terms of service.
+
+        ```bash
+        curl https://api.groundlight.ai/device-api/v1/vlm-verifications \
+            -F "media=@full_frame.jpg;type=image/jpeg" \
+            -F "media=@roi.jpg;type=image/jpeg" \
+            -F "query=Image 1 is the full camera frame; image 2 is the cropped region a detector flagged. Is there really a fire?" \
+            -F "model_id=gpt-5.4"
+        ```
+      tags:
+      - vlm-verifications
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                media:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  minItems: 1
+                  maxItems: 8
+                  description: 'One or more images (common formats: JPEG, PNG, WEBP).
+                    Video is not yet supported.'
+                query:
+                  type: string
+                  description: Natural-language prompt describing the media and what
+                    to verify.
+                model_id:
+                  type: string
+                  description: Friendly model alias (e.g. 'gpt-5.4', 'claude-sonnet-4.5').
+                    Defaults to the server default.
+              required:
+              - media
+              - query
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VlmVerification'
+          description: ''
 components:
   schemas:
     AccountMonthToDateInfo:
@@ -2338,6 +2401,79 @@ components:
       - 'YES'
       - 'NO'
       - UNCLEAR
+    VerdictEnum:
+      enum:
+      - 'YES'
+      - 'NO'
+      - UNSURE
+      type: string
+      description: |-
+        * `YES` - YES
+        * `NO` - NO
+        * `UNSURE` - UNSURE
+    VlmVerification:
+      type: object
+      description: Response shape for POST /v1/vlm-verifications.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        type:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        query:
+          type: string
+        model_id:
+          type: string
+        result:
+          $ref: '#/components/schemas/VlmVerificationResult'
+        cost:
+          $ref: '#/components/schemas/VlmVerificationCost'
+      required:
+      - cost
+      - created_at
+      - id
+      - model_id
+      - query
+      - result
+      - type
+    VlmVerificationCost:
+      type: object
+      properties:
+        input_tokens:
+          type: integer
+          nullable: true
+        output_tokens:
+          type: integer
+          nullable: true
+        total_cost_usd:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - input_tokens
+      - output_tokens
+      - total_cost_usd
+    VlmVerificationResult:
+      type: object
+      properties:
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        confidence:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        reasoning:
+          type: string
+      required:
+      - confidence
+      - reasoning
+      - verdict
   securitySchemes:
     ApiToken:
       name: x-api-token
