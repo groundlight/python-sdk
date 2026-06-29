@@ -253,7 +253,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         media_files = []
         for i, img in enumerate(media):
             stream = parse_supported_image_types(img)
-            stream.name = f"image_{i}.jpg"
+            stream.name = f"image_{i+1}.jpg"  # one-indexed naming for VLM Verifications API
             media_files.append(stream)
 
         kwargs: Dict[str, Any] = {"_request_timeout": timeout}
