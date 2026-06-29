@@ -171,7 +171,6 @@ _CLI_EXCLUDED_METHODS = {
     "create_roi",  # returns an ROI object that must be passed to another API call; not useful standalone
     "get_raw_headers",  # returns the API token in plaintext
     "make_generic_api_request",
-    "ask_vlm_verify",  # takes image media (not cleanly representable as a CLI arg) and is billable per call
 }
 
 # Desired display order of command groups in the CLI help output.
@@ -181,6 +180,7 @@ _GROUP_ORDER = [
     "Image Queries",
     "ML Pipelines & Priming",
     "Notes",
+    "VLM Verification",
     "Utilities",
 ]
 
@@ -233,6 +233,8 @@ _COMMAND_GROUPS: dict[str, str] = {
     "create_priming_group": "ML Pipelines & Priming",
     "get_priming_group": "ML Pipelines & Priming",
     "delete_priming_group": "ML Pipelines & Priming",
+    # VLM Verification
+    "ask_vlm_verify": "VLM Verification",
     # Utilities
     "edge_base_url": "Utilities",
     "get_raw_headers": "Utilities",
