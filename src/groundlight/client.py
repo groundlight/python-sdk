@@ -37,7 +37,6 @@ from model import (
     PaginatedDetectorList,
     PaginatedImageQueryList,
 )
-from pydantic import BaseModel
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
 
