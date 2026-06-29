@@ -7,7 +7,6 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 
-import re
 from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
@@ -263,10 +262,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             "X-Request-Id": _generate_request_id(),
         }
 
-        # self.endpoint may already end with a version segment (e.g. ".../v1"); strip it so
-        # we never produce ".../v1/v1/...".
-        base = re.sub(r"/v\d+$", "", self.endpoint)
-        url = f"{base}/v1/vlm-verifications"
+        url = f"{self.endpoint}/v1/vlm-verifications"
 
         # The openapi generator doesn't handle multipart file uploads well, so (like
         # create_note) we issue the request directly rather than through the generated API.
