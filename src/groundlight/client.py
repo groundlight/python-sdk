@@ -8,6 +8,7 @@ from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.api.api_tokens_api import ApiTokensApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -52,6 +53,7 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
+from groundlight.token_manager import TokenManager
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -79,7 +81,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     submit images for analysis, and retrieve predictions.
 
     The API token (auth) is specified through the **GROUNDLIGHT_API_TOKEN** environment variable by
-    default.
+    default. That value is treated as a bootstrap credential: the client mints a short-lived working
+    token, caches it under the token directory, and refreshes it in the background.
     If you are using a Groundlight Edge device, you can specify the endpoint through the
     **GROUNDLIGHT_ENDPOINT** environment variable.
 
@@ -173,6 +176,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 raise ApiTokenError(API_TOKEN_MISSING_HELP_MESSAGE) from e
             if not api_token:
                 raise ApiTokenError("No API token found.  GROUNDLIGHT_API_TOKEN environment variable is set but blank")
+        self._bootstrap_token = api_token
         self.api_token_prefix = api_token[:12]
 
         should_disable_tls_verification = disable_tls_verification
@@ -200,12 +204,36 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.user_api = UserApi(self.api_client)
         self.labels_api = LabelsApi(self.api_client)
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
+        self.api_tokens_api = ApiTokensApi(self.api_client)
+        self._token_manager = TokenManager(
+            bootstrap_token=self._bootstrap_token,
+            api_tokens_api=self.api_tokens_api,
+            set_api_token=self._set_api_token,
+        )
+        self.api_client.token_manager = self._token_manager
+        self.api_token_prefix = self._token_manager.working_token[:12]
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
 
     def __repr__(self) -> str:
         # Don't call the API here because that can get us stuck in a loop rendering exception strings
         return f"Logged in as {self.logged_in_user} to Groundlight at {self.endpoint}"
+
+    def __enter__(self) -> "Groundlight":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
+
+    def close(self) -> None:
+        """Stop background token refresh. Safe to call more than once."""
+        if self._token_manager is not None:
+            self._token_manager.close()
+
+    def _set_api_token(self, api_token: str) -> None:
+        """Install the working API token used for subsequent requests."""
+        self.configuration.api_key["ApiToken"] = api_token
+        self.api_token_prefix = api_token[:12]
 
     def _verify_connectivity(self) -> None:
         """

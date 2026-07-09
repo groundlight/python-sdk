@@ -11,6 +11,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from groundlight_openapi_client.api_client import ApiClient, ApiException
+from groundlight_openapi_client.exceptions import UnauthorizedException
 from model import Detector, ImageQuery
 
 from groundlight.status_codes import is_ok
@@ -166,12 +167,14 @@ class GroundlightApiClient(ApiClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user_agent = f"Groundlight-Python-SDK/{get_version()}/{platform.platform()}/{platform.python_version()}"
+        self.token_manager = None
+        self._reminting_token = False
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
     @RequestsRetryDecorator()
     def call_api(self, *args, **kwargs):
-        """Adds a request-id header to each API call."""
+        """Adds a request-id header to each API call, and remints on 401 when token refresh is enabled."""
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
@@ -181,7 +184,20 @@ class GroundlightApiClient(ApiClient):
         elif not header_param.get(self.REQUEST_ID_HEADER, None):
             header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
             # Note that we have updated the actual dict in args, so we don't have to put it back in
-        return super().call_api(*args, **kwargs)
+        try:
+            return super().call_api(*args, **kwargs)
+        except UnauthorizedException:
+            if self.token_manager is None or self._reminting_token:
+                raise
+            self._reminting_token = True
+            try:
+                if not self.token_manager.remint_after_unauthorized():
+                    raise
+                if header_param is not None:
+                    header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
+                return super().call_api(*args, **kwargs)
+            finally:
+                self._reminting_token = False
 
     #
     # The methods below will eventually go away when we move to properly model
