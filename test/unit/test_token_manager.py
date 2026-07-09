@@ -239,3 +239,27 @@ def test_get_token_name_by_snippet_exists_but_unused(tmp_path, bootstrap: str, a
         assert api.by_snippet_calls == 1
     finally:
         manager.close()
+
+
+def test_falls_back_to_bootstrap_when_api_tokens_missing(tmp_path, bootstrap: str):
+    api = FakeApiTokensApi()
+
+    def _missing(*_args, **_kwargs):
+        raise NotFoundException(status=404, reason="Not found")
+
+    api.list_api_tokens = _missing  # type: ignore[method-assign]
+    installed: list[str] = []
+    manager = TokenManager(
+        bootstrap_token=bootstrap,
+        api_tokens_api=api,  # type: ignore[arg-type]
+        set_api_token=installed.append,
+        token_dir=tmp_path,
+        refresh_interval=timedelta(days=30),
+    )
+    try:
+        assert manager.working_token == bootstrap
+        assert installed[-1] == bootstrap
+        assert manager._refresh_enabled is False  # pylint: disable=protected-access
+        assert manager._thread is None  # pylint: disable=protected-access
+    finally:
+        manager.close()

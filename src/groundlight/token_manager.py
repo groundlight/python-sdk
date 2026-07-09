@@ -169,10 +169,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
         self._slot: Optional[TokenSlot] = None
+        # False when the server does not expose api-tokens endpoints yet (e.g. older prod).
+        self._refresh_enabled = True
 
         self._ensure_token_dir()
         self._initialize_working_token()
-        self._start_refresh_thread()
+        if self._refresh_enabled:
+            self._start_refresh_thread()
 
     @property
     def working_token(self) -> str:
@@ -192,6 +195,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
         Returns True if a new working token was installed.
         """
+        if not self._refresh_enabled:
+            return False
         # Avoid deadlock if a mint/refresh already holds the lock and its HTTP call 401s.
         if self._lock.is_locked:
             return False
@@ -229,11 +234,34 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 if slot is not None and not self._is_expired(slot.current):
                     self._install_slot(slot)
                     return
-                self._mint_and_persist(auth_token=self.bootstrap_token, previous_slot=slot)
+                try:
+                    self._mint_and_persist(auth_token=self.bootstrap_token, previous_slot=slot)
+                except NotFoundException:
+                    # api-tokens endpoints are not deployed on this server yet.
+                    logger.warning(
+                        "API token management endpoints are unavailable; "
+                        "using the bootstrap token without auto-refresh."
+                    )
+                    self._use_bootstrap_only()
         except Timeout as exc:
             raise RuntimeError(
                 f"Timed out acquiring token lock at '{self._lock_path}'. Another process may be stuck holding the lock."
             ) from exc
+
+    def _use_bootstrap_only(self) -> None:
+        """Fall back to the bootstrap token when short-lived token APIs are unavailable."""
+        self._refresh_enabled = False
+        now = _utcnow()
+        self._slot = TokenSlot(
+            current=CachedToken(
+                raw_key=self.bootstrap_token,
+                snippet=self.bootstrap_snippet,
+                name="bootstrap",
+                expires_at=now + self.token_ttl,
+                minted_at=now,
+            )
+        )
+        self._set_api_token(self.bootstrap_token)
 
     def _start_refresh_thread(self) -> None:
         thread_name = f"gl-token-refresh-{self.bootstrap_snippet[:8]}"
