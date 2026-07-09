@@ -163,6 +163,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
         self._current: Optional[CurrentToken] = None
+        self._available = True
 
         self._ensure_token_dir()
         self._rotation_client = GroundlightApiClient(configuration)
@@ -200,14 +201,20 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 self._mint_replacement(slot, record_replaced_current=False)
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
+        except NotFoundException:
+            logger.warning(
+                "Automatic API token refresh is unavailable because this server does not support token management"
+            )
+            self._available = False
+            self._set_api_token(self._bootstrap_token)
         except TokenManagerError:
             raise
         except Exception as exc:
             raise TokenManagerError("Unable to mint a working API token with the bootstrap token") from exc
 
     def start(self) -> None:
-        """Start the background token refresh thread."""
-        if self._thread is not None:
+        """Start background refresh when the server supports token management."""
+        if not self._available or self._thread is not None:
             return
         self._thread = threading.Thread(
             target=self._run,
@@ -225,6 +232,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
     def recover_from_unauthorized(self) -> None:
         """Reload a newer cached token or re-mint using the bootstrap token."""
+        if not self._available:
+            raise TokenManagerError("Automatic token recovery is unavailable on this server")
         failed_token = self._configuration.api_key["ApiToken"]
         try:
             with self._lock:
@@ -234,6 +243,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     return
                 self._set_api_token(self._bootstrap_token)
                 self._mint_replacement(slot, record_replaced_current=False)
+        except NotFoundException:
+            logger.warning(
+                "Automatic API token refresh is unavailable because this server does not support token management"
+            )
+            self._available = False
+            self._stop_event.set()
+            self._set_api_token(self._bootstrap_token)
         except FileLockTimeout as exc:
             raise TokenManagerError("Timed out waiting to recover from an unauthorized API response") from exc
         except TokenManagerError:
@@ -260,6 +276,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     return False
                 self._mint_replacement(slot)
                 return True
+        except NotFoundException:
+            logger.warning(
+                "Automatic API token refresh is unavailable because this server does not support token management"
+            )
+            self._available = False
+            self._stop_event.set()
+            return False
         except FileLockTimeout:
             logger.warning("Skipping token refresh because the cache lock could not be acquired")
             return False

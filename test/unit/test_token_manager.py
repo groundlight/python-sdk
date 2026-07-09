@@ -16,7 +16,7 @@ from groundlight.token_manager import (
     TokenManagerError,
 )
 from groundlight_openapi_client import Configuration
-from groundlight_openapi_client.exceptions import ApiException
+from groundlight_openapi_client.exceptions import ApiException, NotFoundException
 
 BOOTSTRAP_TOKEN = "api_bootstrap_token_value_long_enough"
 NOW = datetime(2026, 7, 9, 12, 0, tzinfo=timezone.utc)
@@ -92,6 +92,20 @@ def test_initialization_reuses_valid_cached_token(mocker, tmp_path):
     second_api.list_api_tokens.assert_not_called()
     second_api.create_api_token.assert_not_called()
     assert second._configuration.api_key["ApiToken"] == first._configuration.api_key["ApiToken"]
+
+
+def test_initialization_uses_bootstrap_when_token_api_is_unavailable(mocker, tmp_path):
+    """A server without token management remains usable with the bootstrap token."""
+    api = Mock()
+    api.list_api_tokens.side_effect = NotFoundException()
+
+    manager = _manager(mocker, tmp_path, api)
+    manager.start()
+
+    assert manager._configuration.api_key["ApiToken"] == BOOTSTRAP_TOKEN
+    assert manager._thread is None
+    api.list_api_tokens.assert_called_once()
+    api.create_api_token.assert_not_called()
 
 
 def test_name_lookup_follows_pagination_and_enforces_length(mocker, tmp_path):
