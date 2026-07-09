@@ -123,8 +123,15 @@ class PreviousToken:
 
 @dataclass(frozen=True)
 class TokenSlot:
-    """Represent the current and previous tokens stored in one cache slot."""
+    """Represent the current and previous tokens stored in one cache slot.
 
+    base_name is the bootstrap token's human-readable name with any auto-generated suffix
+    stripped. It is established once at first mint and reused for all future rotations,
+    so a token chain always looks like "My Sensor ab12cd", "My Sensor ef34gh", ... rather
+    than accumulating nested suffixes.
+    """
+
+    base_name: str
     current: CurrentToken
     previous: Optional[PreviousToken] = None
 
@@ -133,6 +140,9 @@ class TokenSlot:
         """Build a token slot from its on-disk representation."""
         previous_data = data.get("previous")
         return cls(
+            # Empty string for slots written before this field existed; callers fall back
+            # to a live lookup when base_name is empty.
+            base_name=data.get("base_name", ""),
             current=CurrentToken.from_dict(data["current"]),
             previous=PreviousToken.from_dict(previous_data) if previous_data else None,
         )
@@ -140,6 +150,7 @@ class TokenSlot:
     def to_dict(self) -> Dict[str, Any]:
         """Convert the token slot to its JSON-compatible representation."""
         return {
+            "base_name": self.base_name,
             "current": self.current.to_dict(),
             "previous": self.previous.to_dict() if self.previous else None,
         }
@@ -210,10 +221,14 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     self._activate(slot.current)
                     return
                 self._set_api_token(self._bootstrap_token)
-                self._mint_replacement(slot, record_replaced_current=False)
+                # Look up the bootstrap token once: its name seeds base_name for every future
+                # rotation, and we need its exact API name to revoke it immediately after.
+                bootstrap_meta = self._find_token_by_snippet(self._bootstrap_snippet)
+                base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", bootstrap_meta.name) if bootstrap_meta else "sdk-auto"
+                self._mint_replacement(base_name=base_name, slot=slot, record_replaced_current=False)
                 # Bootstrap token has served its only purpose. Revoke it now so a leaked
                 # bootstrap token cannot be used to mint tokens in the future.
-                self._revoke_bootstrap()
+                self._revoke_bootstrap(bootstrap_meta.name if bootstrap_meta else None)
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
         except NotFoundException:
@@ -227,20 +242,19 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         except Exception as exc:
             raise TokenManagerError("Unable to mint a working API token with the bootstrap token") from exc
 
-    def _revoke_bootstrap(self) -> None:
+    def _revoke_bootstrap(self, bootstrap_api_name: Optional[str]) -> None:
         """Revoke the bootstrap token after the first working token has been persisted.
 
         Failure is logged as a warning but not raised: the working token is already active,
         so a failed revocation is not fatal. The bootstrap token will eventually expire on
         its own TTL.
         """
+        if not bootstrap_api_name:
+            logger.debug("Bootstrap token was not found in the token list; it may already be revoked.")
+            return
         try:
-            bootstrap_meta = self._find_token_by_snippet(self._bootstrap_snippet)
-            if bootstrap_meta is None:
-                logger.debug("Bootstrap token snippet not found in token list; it may already be revoked.")
-                return
-            self._api_tokens.delete_api_token(bootstrap_meta.name, _request_timeout=self._request_timeout)
-            logger.info("Bootstrap API token '%s' revoked after initial working token was minted.", bootstrap_meta.name)
+            self._api_tokens.delete_api_token(bootstrap_api_name, _request_timeout=self._request_timeout)
+            logger.info("Bootstrap API token '%s' revoked after initial working token was minted.", bootstrap_api_name)
         except Exception:  # pylint: disable=broad-exception-caught
             logger.warning(
                 "Failed to revoke bootstrap token; it remains active until it expires naturally.",
@@ -310,7 +324,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     return True
                 if not self._cleanup_previous(slot.previous):
                     return False
-                self._mint_replacement(slot)
+                # Read base_name from slot; fall back to a live lookup for old-format slots.
+                base_name = slot.base_name or self._resolve_base_name(slot.current.snippet)
+                self._mint_replacement(base_name=base_name, slot=slot)
                 return True
         except NotFoundException:
             logger.warning(
@@ -376,11 +392,15 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             if temporary_path and os.path.exists(temporary_path):
                 os.unlink(temporary_path)
 
-    def _mint_replacement(self, slot: Optional[TokenSlot], *, record_replaced_current: bool = True) -> CurrentToken:
-        """Mint, persist, and activate a replacement for the supplied slot."""
-        source_snippet = slot.current.snippet if slot else self._bootstrap_snippet
-        source_token = self._find_token_by_snippet(source_snippet)
-        new_name = self._new_token_name(source_token.name if source_token else None)
+    def _mint_replacement(
+        self,
+        base_name: str,
+        slot: Optional[TokenSlot],
+        *,
+        record_replaced_current: bool = True,
+    ) -> CurrentToken:
+        """Mint a new token, persist the updated slot, and activate the new credential."""
+        new_name = self._new_token_name(base_name)
         minted_at = _utc_now()
         response = self._api_tokens.create_api_token(
             ApiTokenRequest(name=new_name, expires_at=minted_at + timedelta(days=TOKEN_TTL_DAYS)),
@@ -392,7 +412,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             previous = PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at)
         else:
             previous = slot.previous if slot else None
-        self._write_slot(TokenSlot(current=current, previous=previous))
+        self._write_slot(TokenSlot(base_name=base_name, current=current, previous=previous))
         self._activate(current)
         return current
 
@@ -412,6 +432,18 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             if not response.next:
                 return None
             page += 1
+
+    def _resolve_base_name(self, snippet: str) -> str:
+        """Look up a token by snippet and return its name with any auto-generated suffix stripped.
+
+        Used when establishing the base_name for a new token chain (initial mint) or when
+        reading an old-format slot file that predates the base_name field.
+        Falls back to 'sdk-auto' when no matching token is found.
+        """
+        token = self._find_token_by_snippet(snippet)
+        if token is None:
+            return "sdk-auto"
+        return TOKEN_NAME_SUFFIX_PATTERN.sub("", token.name)
 
     def _get_token_by_snippet(self, snippet: str) -> ApiToken:
         """Retrieve token metadata through the dedicated snippet endpoint."""
@@ -435,18 +467,11 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         return True
 
     @staticmethod
-    def _new_token_name(base_name: Optional[str]) -> str:
-        """Create a readable, unique name that fits the API length limit.
-
-        Strips any existing hex suffix from the base name first so a token rotated many
-        times stays "My Token a7f3c2" rather than growing "My Token a7f3c2 b8e4d1 ...".
-        """
+    def _new_token_name(base_name: str) -> str:
+        """Append a unique 6-character hex suffix to base_name, truncating to fit the column limit."""
         suffix = secrets.token_hex(3)
-        if not base_name:
-            return f"sdk-auto {suffix}"
-        stripped_base = TOKEN_NAME_SUFFIX_PATTERN.sub("", base_name)
         max_base_length = TOKEN_NAME_MAX_LENGTH - TOKEN_NAME_SUFFIX_LENGTH
-        return f"{stripped_base[:max_base_length]} {suffix}"
+        return f"{base_name[:max_base_length]} {suffix}"
 
     @staticmethod
     def _current_from_response(response: ApiTokenCreateResponse, minted_at: datetime) -> CurrentToken:

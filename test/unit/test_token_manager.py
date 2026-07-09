@@ -73,6 +73,7 @@ def test_initialization_mints_and_privately_caches_token(mocker, tmp_path):
     assert manager._configuration.api_key["ApiToken"] == "api_working_token_one"
     assert stat.S_IMODE(manager._slot_path.stat().st_mode) == TOKEN_CACHE_MODE
     cached = json.loads(manager._slot_path.read_text())
+    assert cached["base_name"] == "Device token"
     assert cached["current"]["raw_key"] == "api_working_token_one"
     assert cached["previous"] is None
 
@@ -121,20 +122,20 @@ def test_initialization_uses_bootstrap_when_token_api_is_unavailable(mocker, tmp
 
 
 def test_name_lookup_follows_pagination_and_enforces_length(mocker, tmp_path):
-    """Token naming finds the matching snippet on later pages and stays within 64 characters."""
+    """Token naming finds the matching snippet on a later page and stays within 64 characters."""
     api = Mock()
     long_name = "x" * 64
     api.list_api_tokens.side_effect = [
         _page([_metadata("Other token", "api_other_token_value")], "https://example.com/page=2"),
-        _page([_metadata(long_name, BOOTSTRAP_TOKEN)]),  # pagination for mint name lookup
-        _page([_metadata(long_name, BOOTSTRAP_TOKEN)]),  # for bootstrap revocation lookup
+        _page([_metadata(long_name, BOOTSTRAP_TOKEN)]),  # bootstrap found on page 2
     ]
     api.create_api_token.return_value = _created_token(f"{'x' * 57} abc123", "api_working_token_one", NOW)
     mocker.patch.object(token_manager.secrets, "token_hex", return_value="abc123")
 
     _manager(mocker, tmp_path, api)
 
-    assert api.list_api_tokens.call_count == EXPECTED_PAGE_COUNT + 1  # +1 for revocation lookup
+    # One paginated scan to find the bootstrap token; result is reused for naming and revocation.
+    assert api.list_api_tokens.call_count == EXPECTED_PAGE_COUNT
     request = api.create_api_token.call_args.args[0]
     assert request.name == f"{'x' * 57} abc123"
     assert len(request.name) == TOKEN_NAME_MAX_LENGTH
@@ -146,7 +147,7 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     api.list_api_tokens.return_value = _page([_metadata("Device token", BOOTSTRAP_TOKEN)])
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
-    api.reset_mock()  # clear calls from init (mint + bootstrap revocation)
+    api.reset_mock()  # clear calls from init (bootstrap lookup + mint + revocation)
     old_slot = json.loads(manager._slot_path.read_text())
     old_slot["previous"] = {
         "name": "older token",
@@ -155,13 +156,15 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     manager._slot_path.write_text(json.dumps(old_slot))
     later = NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1)
     mocker.patch.object(token_manager, "_utc_now", return_value=later)
-    api.list_api_tokens.return_value = _page([_metadata("Device token abc123", "api_working_token_one")])
     api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_two", later)
 
     manager.refresh()
 
+    # Rotation reads base_name from the slot; no list call is made.
+    api.list_api_tokens.assert_not_called()
     api.delete_api_token.assert_called_once_with("older token", _request_timeout=1)
     cached = json.loads(manager._slot_path.read_text())
+    assert cached["base_name"] == "Device token"
     assert cached["current"]["raw_key"] == "api_working_token_two"
     assert cached["previous"]["name"] == "Device token abc123"
 
@@ -257,13 +260,26 @@ def test_unauthorized_recovery_raises_when_no_fresher_token_available(mocker, tm
     api.create_api_token.assert_called_once()  # only during init, not during recovery
 
 
-def test_new_token_name_strips_existing_suffix(mocker):
-    """Rotating a token reuses its base name instead of accreting a new hex suffix each cycle."""
+def test_new_token_name_appends_suffix_and_truncates(mocker):
+    """Token names append a unique hex suffix and never exceed the column limit."""
     mocker.patch.object(token_manager.secrets, "token_hex", return_value="def456")
 
-    assert TokenManager._new_token_name("Device token abc123") == "Device token def456"
     assert TokenManager._new_token_name("Device token") == "Device token def456"
-    assert TokenManager._new_token_name(None) == "sdk-auto def456"
+    assert TokenManager._new_token_name("x" * 64) == f"{'x' * 57} def456"
+    assert len(TokenManager._new_token_name("x" * 100)) == TOKEN_NAME_MAX_LENGTH
+
+
+def test_resolve_base_name_strips_existing_suffix(mocker, tmp_path):
+    """The base_name established from an existing token has any prior hex suffix stripped."""
+    api = Mock()
+    # Bootstrap token already has a suffix from a previous rotation cycle.
+    api.list_api_tokens.return_value = _page([_metadata("Device token abc123", BOOTSTRAP_TOKEN)])
+    api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_one", NOW)
+
+    _manager(mocker, tmp_path, api)
+
+    cached = json.loads((tmp_path / f"{BOOTSTRAP_TOKEN[:20]}.json").read_text())
+    assert cached["base_name"] == "Device token"
 
 
 def test_existing_token_dir_permissions_are_tightened(mocker, tmp_path):
@@ -299,3 +315,31 @@ def test_invalid_bootstrap_token_cannot_escape_cache_directory(tmp_path):
 
     with pytest.raises(TokenManagerError, match="invalid format"):
         TokenManager("../../outside-token", configuration, request_timeout=1, token_dir=tmp_path)
+
+
+def test_refresh_falls_back_to_lookup_for_old_format_slot(mocker, tmp_path):
+    """A slot written before the base_name field existed triggers a live lookup on the next refresh."""
+    api = Mock()
+    api.list_api_tokens.return_value = _page([_metadata("Device token", BOOTSTRAP_TOKEN)])
+    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
+    manager = _manager(mocker, tmp_path, api)
+    api.reset_mock()
+
+    # Simulate a slot written by an older SDK version (no base_name field).
+    slot_data = json.loads(manager._slot_path.read_text())
+    del slot_data["base_name"]
+    manager._slot_path.write_text(json.dumps(slot_data))
+
+    later = NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1)
+    mocker.patch.object(token_manager, "_utc_now", return_value=later)
+    api.list_api_tokens.return_value = _page([_metadata("Device token abc123", "api_working_token_one")])
+    api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_two", later)
+
+    manager.refresh()
+
+    # Fallback lookup was needed because base_name was absent.
+    api.list_api_tokens.assert_called()
+    cached = json.loads(manager._slot_path.read_text())
+    # After the refresh the slot has base_name for future rotations.
+    assert cached["base_name"] == "Device token"
+    assert cached["current"]["raw_key"] == "api_working_token_two"
