@@ -161,7 +161,9 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         params = {"detector_id": det_id}
         headers = {"x-api-token": self.configuration.api_key["ApiToken"]}
 
-        response = requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
+        response = self.api_client.request_with_unauthorized_recovery(
+            "POST", url, headers=headers, data=data, files=files, params=params
+        )
         response.raise_for_status()  # Raise an exception for error status codes
 
     def reset_detector(self, detector: Union[str, Detector]) -> None:

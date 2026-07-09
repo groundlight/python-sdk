@@ -31,7 +31,7 @@ CLEANUP_GRACE_FACTOR = 2
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
 TOKEN_PAGE_SIZE = 100
-LOCK_TIMEOUT_SECONDS = 5
+LOCK_TIMEOUT_SECONDS = 60
 REFRESH_INTERVAL_SECONDS = timedelta(days=REFRESH_INTERVAL_DAYS).total_seconds()
 
 
@@ -227,7 +227,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Stop background refresh work and close its API client."""
         self._stop_event.set()
         if self._thread is not None:
-            self._thread.join(timeout=self._request_timeout + 1)
+            self._thread.join()
         self._rotation_client.close()
 
     def recover_from_unauthorized(self) -> None:

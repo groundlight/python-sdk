@@ -179,23 +179,33 @@ class GroundlightApiClient(ApiClient):
         self._unauthorized_handler = handler
 
     @staticmethod
-    def _prepare_replayable_request_body(args: tuple) -> Tuple[tuple, Optional[bytes]]:
+    def _prepare_replayable_request_body(args: tuple, kwargs: dict) -> Tuple[tuple, dict, Optional[bytes], bool]:
         """Copy a stream body so each request attempt receives a fresh stream."""
-        if len(args) <= REQUEST_BODY_ARG_INDEX or not isinstance(args[REQUEST_BODY_ARG_INDEX], io.IOBase):
-            return args, None
-        body = args[REQUEST_BODY_ARG_INDEX]
+        body_is_keyword = "body" in kwargs
+        body = (
+            kwargs.get("body")
+            if body_is_keyword
+            else (args[REQUEST_BODY_ARG_INDEX] if len(args) > REQUEST_BODY_ARG_INDEX else None)
+        )
+        if not isinstance(body, io.IOBase):
+            return args, kwargs, None, body_is_keyword
         try:
             body_bytes = body.read()
         finally:
             body.close()
-        replayable_args = list(args)
-        replayable_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(body_bytes)
-        return tuple(replayable_args), body_bytes
+        if body_is_keyword:
+            kwargs = dict(kwargs)
+            kwargs["body"] = io.BytesIO(body_bytes)
+        else:
+            replayable_args = list(args)
+            replayable_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(body_bytes)
+            args = tuple(replayable_args)
+        return args, kwargs, body_bytes, body_is_keyword
 
     @RequestsRetryDecorator()
     def call_api(self, *args, **kwargs):
         """Add a request ID and retry once after token recovery from a 401."""
-        args, replayable_body = self._prepare_replayable_request_body(args)
+        args, kwargs, replayable_body, body_is_keyword = self._prepare_replayable_request_body(args, kwargs)
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
@@ -212,9 +222,13 @@ class GroundlightApiClient(ApiClient):
                 raise
             self._unauthorized_handler()
             retry_args = list(args)
+            retry_kwargs = dict(kwargs)
             if replayable_body is not None:
-                retry_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(replayable_body)
-            return super().call_api(*retry_args, **kwargs)
+                if body_is_keyword:
+                    retry_kwargs["body"] = io.BytesIO(replayable_body)
+                else:
+                    retry_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(replayable_body)
+            return super().call_api(*retry_args, **retry_kwargs)
 
     def request_with_unauthorized_recovery(self, method: str, url: str, **kwargs) -> requests.Response:
         """Send a raw request and retry once with refreshed credentials after a 401."""

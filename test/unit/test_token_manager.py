@@ -196,6 +196,22 @@ def test_refresh_thread_backs_off_after_failed_cycle(mocker, tmp_path):
     assert stop_event.wait.call_args_list == [call(0.0), call(REFRESH_INTERVAL_SECONDS)]
 
 
+def test_close_waits_for_refresh_thread_before_closing_client(mocker, tmp_path):
+    """Closing waits for in-flight refresh work before closing its HTTP client."""
+    api = Mock()
+    api.list_api_tokens.return_value = _page([_metadata("Device token", BOOTSTRAP_TOKEN)])
+    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
+    manager = _manager(mocker, tmp_path, api)
+    thread = Mock()
+    manager._thread = thread
+    rotation_client_close = mocker.patch.object(manager._rotation_client, "close")
+
+    manager.close()
+
+    thread.join.assert_called_once_with()
+    rotation_client_close.assert_called_once_with()
+
+
 def test_unauthorized_recovery_uses_newer_token_from_disk(mocker, tmp_path):
     """A 401 reloads a token another process already wrote instead of minting again."""
     api = Mock()
