@@ -141,10 +141,10 @@ def _next_token_name(base_name: Optional[str]) -> str:
     return f"{truncated}{suffix}"
 
 
-class TokenManager:
+class TokenManager:  # pylint: disable=too-many-instance-attributes
     """Manages a short-lived working token backed by a per-bootstrap-token disk cache."""
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # noqa: PLR0913 # pylint: disable=too-many-arguments
         self,
         bootstrap_token: str,
         api_tokens_api: ApiTokensApi,
@@ -195,15 +195,20 @@ class TokenManager:
         # Avoid deadlock if a mint/refresh already holds the lock and its HTTP call 401s.
         if self._lock.is_locked:
             return False
+        previous_working = self._slot.current.raw_key if self._slot is not None else None
         try:
             with self._lock:
                 self._mint_and_persist(auth_token=self.bootstrap_token, previous_slot=self._slot)
             return True
         except Timeout:
             logger.warning("Could not acquire token lock while recovering from 401; skipping remint")
+            if previous_working is not None:
+                self._set_api_token(previous_working)
             return False
         except Exception:  # pylint: disable=broad-exception-caught
             logger.exception("Failed to remint API token after 401")
+            if previous_working is not None:
+                self._set_api_token(previous_working)
             return False
 
     def _ensure_token_dir(self) -> None:

@@ -17,6 +17,7 @@ from groundlight.token_manager import (
     _next_token_name,
     token_snippet,
 )
+from groundlight_openapi_client.exceptions import NotFoundException
 
 
 def _utc(year: int, month: int, day: int, hour: int = 0, minute: int = 0) -> datetime:
@@ -83,8 +84,6 @@ class FakeApiTokensApi:
                 found.name = token["name"]
                 found.raw_key_snippet = token["raw_key_snippet"]
                 return found
-        from groundlight_openapi_client.exceptions import NotFoundException
-
         raise NotFoundException(status=404, reason="Not found")
 
 
@@ -186,14 +185,18 @@ def test_refresh_mints_and_promotes_previous(tmp_path, bootstrap: str, api: Fake
     )
     try:
         first = manager.working_token
-        first_name = manager._slot.current.name  # pylint: disable=protected-access
+        slot = manager._slot  # pylint: disable=protected-access
+        assert slot is not None
+        first_name = slot.current.name
         # Make the current token look overdue for refresh.
-        manager._slot.current.minted_at = _utc(2020, 1, 1)  # pylint: disable=protected-access
-        manager._write_slot(manager._slot)  # pylint: disable=protected-access
+        slot.current.minted_at = _utc(2020, 1, 1)
+        manager._write_slot(slot)  # pylint: disable=protected-access
         manager._refresh_once()  # pylint: disable=protected-access
         assert manager.working_token != first
-        assert manager._slot.previous is not None  # pylint: disable=protected-access
-        assert manager._slot.previous.name == first_name  # pylint: disable=protected-access
+        updated = manager._slot  # pylint: disable=protected-access
+        assert updated is not None
+        assert updated.previous is not None
+        assert updated.previous.name == first_name
     finally:
         manager.close()
 
@@ -210,11 +213,11 @@ def test_cleanup_deletes_previous_after_grace(tmp_path, bootstrap: str, api: Fak
     try:
         old_name = "Old Token"
         api.seed(old_name, "api_old_token_xxxxxxxxxxxxxxxx")
-        manager._slot.previous = PreviousToken(  # pylint: disable=protected-access
-            name=old_name, minted_at=_utc(2020, 1, 1)
-        )
-        manager._slot.current.minted_at = _utc(2020, 1, 3)  # pylint: disable=protected-access
-        manager._write_slot(manager._slot)  # pylint: disable=protected-access
+        slot = manager._slot  # pylint: disable=protected-access
+        assert slot is not None
+        slot.previous = PreviousToken(name=old_name, minted_at=_utc(2020, 1, 1))
+        slot.current.minted_at = _utc(2020, 1, 3)
+        manager._write_slot(slot)  # pylint: disable=protected-access
         manager._refresh_once()  # pylint: disable=protected-access
         assert old_name in api.deleted
     finally:
