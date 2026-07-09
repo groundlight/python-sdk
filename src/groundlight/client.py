@@ -8,6 +8,7 @@ from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.api.api_tokens_api import ApiTokensApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -41,7 +42,12 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.config import (
+    API_TOKEN_MISSING_HELP_MESSAGE,
+    API_TOKEN_VARIABLE_NAME,
+    AUTO_REFRESH_TOKEN_VARIABLE_NAME,
+    DISABLE_TLS_VARIABLE_NAME,
+)
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
@@ -52,6 +58,7 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
+from groundlight.token_manager import TokenManager
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -134,12 +141,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(
+    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,
         disable_tls_verification: Optional[bool] = None,
         http_transport_retries: Optional[Union[int, Retry]] = None,
+        auto_refresh_token: Optional[bool] = None,
     ):
         """
         Initialize a new Groundlight client instance.
@@ -155,6 +163,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             certificates. For security, always keep verification enabled when using the Groundlight cloud service.
         :param http_transport_retries: Overrides urllib3 `PoolManager` retry policy for HTTP/HTTPS (forwarded to
             `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
+        :param auto_refresh_token: If True, treat the supplied token as a bootstrap credential and use a
+            short-lived, auto-rotated working token for API calls (see token_manager.py). When not specified,
+            checks the "GROUNDLIGHT_AUTO_REFRESH_TOKEN" environment variable (1=enable, 0=disable), defaulting
+            to disabled. This is a temporary rollout gate; it requires the server-side token-management API.
 
         :return: Groundlight client
         """
@@ -201,7 +213,58 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.labels_api = LabelsApi(self.api_client)
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
+
+        if auto_refresh_token is None:
+            auto_refresh_token = bool(int(os.environ.get(AUTO_REFRESH_TOKEN_VARIABLE_NAME, 0)))
+
+        # When enabled, the supplied token is treated as a *bootstrap* credential: the
+        # TokenManager mints a short-lived working token from it, caches it on disk, and
+        # rotates it on a background thread, so the bootstrap token is never used directly
+        # for API calls. When disabled, the supplied token is used directly (legacy behavior).
+        self.token_manager: Optional[TokenManager] = None
+        if auto_refresh_token:
+            self.token_manager = TokenManager(
+                bootstrap_token=api_token,
+                token_api_factory=self._build_token_api,
+                set_active_token=self._set_active_token,
+            )
+            self._set_active_token(self.token_manager.get_working_token())
+            # Wire the manager into the client so a 401 re-mints from the bootstrap token.
+            self.api_client.token_manager = self.token_manager
+            self.token_manager.start()
+
         self._verify_connectivity()
+
+    def _build_token_api(self, token: str) -> ApiTokensApi:
+        """Build an ApiTokensApi authenticated with the given token.
+
+        Used by the TokenManager to mint, list, and delete tokens. The returned
+        client intentionally has no token_manager attached, so its own 401s never
+        recurse back into token refresh.
+        """
+        configuration = Configuration(host=self.endpoint)
+        configuration.verify_ssl = self.configuration.verify_ssl
+        configuration.assert_hostname = self.configuration.assert_hostname
+        configuration.retries = self.configuration.retries
+        configuration.api_key["ApiToken"] = token
+        return ApiTokensApi(GroundlightApiClient(configuration))
+
+    def _set_active_token(self, token: str) -> None:
+        """Point the live client at the given token for all subsequent API calls."""
+        self.configuration.api_key["ApiToken"] = token
+
+    def close(self) -> None:
+        """Stop the background token-refresh thread, if one is running. Safe to call repeatedly."""
+        if self.token_manager is not None:
+            self.token_manager.close()
+
+    def __enter__(self) -> "Groundlight":
+        """Enter a context manager; returns this client."""
+        return self
+
+    def __exit__(self, *exc_info) -> None:
+        """Exit the context manager, stopping the background refresh thread."""
+        self.close()
 
     def __repr__(self) -> str:
         # Don't call the API here because that can get us stuck in a loop rendering exception strings
