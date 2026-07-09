@@ -171,6 +171,7 @@ _CLI_EXCLUDED_METHODS = {
     "create_roi",  # returns an ROI object that must be passed to another API call; not useful standalone
     "get_raw_headers",  # returns the API token in plaintext
     "make_generic_api_request",
+    "close",  # lifecycle method (stops the token-refresh thread); not a shell command
 }
 
 # Desired display order of command groups in the CLI help output.
