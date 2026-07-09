@@ -6,6 +6,7 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
+from http import HTTPStatus
 from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
@@ -164,14 +165,20 @@ class GroundlightApiClient(ApiClient):
     """
 
     def __init__(self, *args, **kwargs):
+        """Initialize the generated API client with SDK-specific behavior."""
         super().__init__(*args, **kwargs)
         self.user_agent = f"Groundlight-Python-SDK/{get_version()}/{platform.platform()}/{platform.python_version()}"
+        self._unauthorized_handler: Optional[Callable[[], None]] = None
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
+    def set_unauthorized_handler(self, handler: Callable[[], None]) -> None:
+        """Set the callback used to recover and retry after a 401 response."""
+        self._unauthorized_handler = handler
+
     @RequestsRetryDecorator()
     def call_api(self, *args, **kwargs):
-        """Adds a request-id header to each API call."""
+        """Add a request ID and retry once after token recovery from a 401."""
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
@@ -181,7 +188,13 @@ class GroundlightApiClient(ApiClient):
         elif not header_param.get(self.REQUEST_ID_HEADER, None):
             header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
             # Note that we have updated the actual dict in args, so we don't have to put it back in
-        return super().call_api(*args, **kwargs)
+        try:
+            return super().call_api(*args, **kwargs)
+        except ApiException as exc:
+            if exc.status != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
+                raise
+            self._unauthorized_handler()
+            return super().call_api(*args, **kwargs)
 
     #
     # The methods below will eventually go away when we move to properly model
