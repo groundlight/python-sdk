@@ -290,9 +290,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         except TokenManagerError:
             raise
         except Exception as exc:
-            raise TokenManagerError(
-                "The cached token was rejected and could not be replaced"
-            ) from exc
+            raise TokenManagerError("The cached token was rejected and could not be replaced") from exc
 
     def refresh(self) -> bool:
         """Refresh the working token, returning whether the cycle completed successfully."""
