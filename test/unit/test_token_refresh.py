@@ -322,7 +322,7 @@ def test_cleanup_previous_treats_missing_as_gone(tmp_path):
     assert slot["previous"] is None
 
 
-def test_mint_falls_back_to_bootstrap_on_unauthorized(tmp_path):
+def test_refresh_falls_back_to_bootstrap_on_unauthorized(tmp_path):
     tokens_api = FakeTokensApi()
     tokens_api.unauthorized_until_bootstrap = True
     config = FakeConfiguration("api_staletoken0000000000")
@@ -334,10 +334,13 @@ def test_mint_falls_back_to_bootstrap_on_unauthorized(tmp_path):
     refresher = _make_refresher(tmp_path, tokens_api, config)
     refresher._set_active_token = track_token  # capture which token authenticates the mint
     tokens_api.last_auth_token = config.api_key["ApiToken"]
+    refresher._ensure_token_dir()
 
-    result = refresher._mint("some-name")
+    # The stale active token is rejected; refresh retries with the bootstrap token.
+    refresher._refresh(previous_current=None)
 
-    assert result["raw_key"] == tokens_api.created[0]["raw_key"]
+    assert len(tokens_api.created) == 1
+    assert config.api_key["ApiToken"] == tokens_api.created[0]["raw_key"]
 
 
 def test_slot_file_written_with_owner_only_permissions(tmp_path):

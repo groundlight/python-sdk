@@ -217,9 +217,18 @@ class TokenRefresher:  # pylint: disable=too-many-instance-attributes
     # -- minting and cleanup (all called while holding the lock) ------------------
 
     def _refresh(self, previous_current: Optional[dict]) -> None:
-        """Mint a new working token, persist it as current, and demote the old one."""
-        base_name = self._lookup_current_name() or FALLBACK_TOKEN_NAME
-        new_current = self._mint(self._generate_token_name(base_name))
+        """Mint a new working token, persist it as current, and demote the old one.
+
+        Both the name lookup and the mint use the currently active token. If that token
+        was revoked server-side (401 on either call), fall back once to the bootstrap
+        token and retry the whole sequence before giving up.
+        """
+        try:
+            new_current = self._lookup_and_mint()
+        except UnauthorizedException:
+            logger.info("Active token rejected during refresh; retrying with the bootstrap token.")
+            self._set_active_token(self._bootstrap_token)
+            new_current = self._lookup_and_mint()
 
         previous = None
         if previous_current:
@@ -227,21 +236,16 @@ class TokenRefresher:  # pylint: disable=too-many-instance-attributes
         self._write_slot(current=new_current, previous=previous)
         self._set_active_token(new_current["raw_key"])
 
-    def _mint(self, name: str) -> dict:
-        """Create a new API token and return its slot representation.
+    def _lookup_and_mint(self) -> dict:
+        """Find the active token's name (for a readable new name) and mint its replacement."""
+        base_name = self._lookup_current_name() or FALLBACK_TOKEN_NAME
+        return self._mint(self._generate_token_name(base_name))
 
-        Mints with the currently active token. If that token was revoked server-side
-        (401), falls back once to the bootstrap token before giving up.
-        """
+    def _mint(self, name: str) -> dict:
+        """Create a new API token and return its slot representation."""
         expires_at = _utcnow() + timedelta(days=TOKEN_TTL_DAYS)
         request = ApiTokenRequest(name=name, expires_at=expires_at)
-        try:
-            response = self._tokens_api.create_api_token(request, _request_timeout=MINT_REQUEST_TIMEOUT)
-        except UnauthorizedException:
-            # The active (cached) token is no longer valid. Retry with the bootstrap token.
-            logger.info("Active token rejected while minting; retrying with the bootstrap token.")
-            self._set_active_token(self._bootstrap_token)
-            response = self._tokens_api.create_api_token(request, _request_timeout=MINT_REQUEST_TIMEOUT)
+        response = self._tokens_api.create_api_token(request, _request_timeout=MINT_REQUEST_TIMEOUT)
 
         data = response.to_dict()
         minted_at = _utcnow()
