@@ -358,7 +358,10 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._set_api_token(slot.current.raw_key)
 
     def _is_expired(self, token: CachedToken) -> bool:
-        return _utcnow() >= token.expires_at
+        expires_at = token.expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        return _utcnow() >= expires_at.astimezone(timezone.utc)
 
     def _read_slot(self) -> Optional[TokenSlot]:
         if not self._slot_path.exists():
