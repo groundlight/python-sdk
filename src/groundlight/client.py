@@ -8,6 +8,7 @@ from io import BufferedReader, BytesIO
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.api.api_tokens_api import ApiTokensApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detectors_api import DetectorsApi
 from groundlight_openapi_client.api.image_queries_api import ImageQueriesApi
@@ -52,6 +53,7 @@ from groundlight.internalapi import (
     sanitize_endpoint_url,
 )
 from groundlight.optional_imports import Image, np
+from groundlight.token_refresh import TokenRefresher
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -200,12 +202,30 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.user_api = UserApi(self.api_client)
         self.labels_api = LabelsApi(self.api_client)
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
+        self.api_tokens_api = ApiTokensApi(self.api_client)
+
+        # The provided token is a bootstrap credential. Trade it for a short-lived working
+        # token and keep it rotating in the background. All API calls use the working token.
+        self._token_refresher = TokenRefresher(self.api_tokens_api, self.configuration, api_token)
+        self._token_refresher.bootstrap()
+        self._token_refresher.start()
+
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
 
     def __repr__(self) -> str:
         # Don't call the API here because that can get us stuck in a loop rendering exception strings
         return f"Logged in as {self.logged_in_user} to Groundlight at {self.endpoint}"
+
+    def close(self) -> None:
+        """Stop the background token-refresh thread. Safe to call multiple times."""
+        self._token_refresher.close()
+
+    def __enter__(self) -> "Groundlight":
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.close()
 
     def _verify_connectivity(self) -> None:
         """
