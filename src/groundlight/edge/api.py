@@ -31,10 +31,11 @@ class EdgeEndpointApi:
         return self._client.edge_base_url()
 
     def _request(self, method: str, path: str, **kwargs) -> requests.Response:
+        """Send an authenticated request to an Edge Endpoint."""
         url = f"{self._base_url()}{path}"
         headers = self._client.get_raw_headers()
         try:
-            response = requests.request(
+            response = self._client.api_client.request_with_unauthorized_recovery(
                 method, url, headers=headers, verify=self._client.configuration.verify_ssl, timeout=10, **kwargs
             )
             response.raise_for_status()

@@ -3,18 +3,20 @@ import json
 import stat
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 from groundlight import token_manager
 from groundlight.token_manager import (
     REFRESH_INTERVAL_DAYS,
+    REFRESH_INTERVAL_SECONDS,
     TOKEN_NAME_MAX_LENGTH,
     TOKEN_TTL_DAYS,
     TokenManager,
     TokenManagerError,
 )
 from groundlight_openapi_client import Configuration
+from groundlight_openapi_client.exceptions import ApiException
 
 BOOTSTRAP_TOKEN = "api_bootstrap_token_value_long_enough"
 NOW = datetime(2026, 7, 9, 12, 0, tzinfo=timezone.utc)
@@ -137,6 +139,49 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     assert cached["previous"]["name"] == "Device token abc123"
 
 
+def test_refresh_preserves_cleanup_metadata_when_deletion_fails(mocker, tmp_path):
+    """A failed cleanup postpones minting so the deletion can be retried later."""
+    api = Mock()
+    api.list_api_tokens.return_value = _page([_metadata("Device token", BOOTSTRAP_TOKEN)])
+    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
+    manager = _manager(mocker, tmp_path, api)
+    slot = json.loads(manager._slot_path.read_text())
+    slot["previous"] = {
+        "name": "older token",
+        "minted_at": (NOW - timedelta(days=2)).isoformat(),
+    }
+    manager._slot_path.write_text(json.dumps(slot))
+    mocker.patch.object(token_manager, "_utc_now", return_value=NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1))
+    api.reset_mock()
+    api.delete_api_token.side_effect = ApiException(status=500)
+
+    refresh_succeeded = manager.refresh()
+
+    assert not refresh_succeeded
+    api.create_api_token.assert_not_called()
+    cached = json.loads(manager._slot_path.read_text())
+    assert cached["previous"]["name"] == "older token"
+    assert cached["current"]["raw_key"] == "api_working_token_one"
+
+
+def test_refresh_thread_backs_off_after_failed_cycle(mocker, tmp_path):
+    """A failed refresh waits one interval instead of immediately retrying."""
+    api = Mock()
+    api.list_api_tokens.return_value = _page([_metadata("Device token", BOOTSTRAP_TOKEN)])
+    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
+    manager = _manager(mocker, tmp_path, api)
+    mocker.patch.object(token_manager, "_utc_now", return_value=NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1))
+    mocker.patch.object(manager, "refresh", return_value=False)
+    stop_event = Mock()
+    stop_event.is_set.return_value = False
+    stop_event.wait.side_effect = [False, True]
+    manager._stop_event = stop_event
+
+    manager._run()
+
+    assert stop_event.wait.call_args_list == [call(0.0), call(REFRESH_INTERVAL_SECONDS)]
+
+
 def test_unauthorized_recovery_uses_newer_token_from_disk(mocker, tmp_path):
     """A 401 reloads a token another process already wrote instead of minting again."""
     api = Mock()
@@ -163,6 +208,12 @@ def test_unauthorized_recovery_mints_with_bootstrap_token(mocker, tmp_path):
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
     api.reset_mock()
+    slot = json.loads(manager._slot_path.read_text())
+    slot["previous"] = {
+        "name": "older token",
+        "minted_at": (NOW - timedelta(days=1)).isoformat(),
+    }
+    manager._slot_path.write_text(json.dumps(slot))
     api.list_api_tokens.return_value = _page([_metadata("Device token abc123", "api_working_token_one")])
     api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_two", NOW)
 
@@ -170,6 +221,8 @@ def test_unauthorized_recovery_mints_with_bootstrap_token(mocker, tmp_path):
 
     api.create_api_token.assert_called_once()
     assert manager._configuration.api_key["ApiToken"] == "api_working_token_two"
+    cached = json.loads(manager._slot_path.read_text())
+    assert cached["previous"]["name"] == "older token"
 
 
 def test_invalid_bootstrap_token_cannot_escape_cache_directory(tmp_path):

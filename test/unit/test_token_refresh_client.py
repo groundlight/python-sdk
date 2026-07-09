@@ -1,3 +1,5 @@
+from http import HTTPStatus
+from io import BytesIO
 from unittest.mock import Mock
 
 from groundlight.client import Groundlight
@@ -38,3 +40,52 @@ def test_api_client_recovers_and_retries_once_after_unauthorized(mocker):
     assert result == "success"
     handler.assert_called_once_with()
     assert parent_call.call_count == EXPECTED_CALL_COUNT
+
+
+def test_api_client_replays_stream_body_after_unauthorized(mocker):
+    """A 401 retry resends stream content instead of reusing a closed stream."""
+    configuration = Configuration(host="https://example.com/device-api")
+    client = GroundlightApiClient(configuration)
+    client.set_unauthorized_handler(Mock())
+    request_bodies = []
+
+    def call_parent(*args, **_kwargs):
+        """Consume each stream like the generated API client does."""
+        request_bodies.append(args[5].read())
+        args[5].close()
+        if len(request_bodies) == 1:
+            raise ApiException(status=401)
+        return "success"
+
+    mocker.patch.object(ApiClient, "call_api", side_effect=call_parent)
+    body = BytesIO(b"image bytes")
+
+    result = client.call_api("/v1/image-queries", "POST", {}, [], {}, body)
+
+    assert result == "success"
+    assert body.closed
+    assert request_bodies == [b"image bytes", b"image bytes"]
+
+
+def test_raw_request_recovers_and_retries_once_after_unauthorized(mocker):
+    """Raw authenticated requests refresh their token and retry once after a 401."""
+    configuration = Configuration(host="https://example.com/device-api")
+    configuration.api_key["ApiToken"] = "old-token"
+    client = GroundlightApiClient(configuration)
+
+    def refresh_token() -> None:
+        """Simulate replacing the rejected token."""
+        configuration.api_key["ApiToken"] = "new-token"
+
+    client.set_unauthorized_handler(refresh_token)
+    unauthorized = Mock(status_code=HTTPStatus.UNAUTHORIZED)
+    success = Mock(status_code=HTTPStatus.OK)
+    request = mocker.patch("groundlight.internalapi.requests.request", side_effect=[unauthorized, success])
+
+    response = client.request_with_unauthorized_recovery(
+        "GET", "https://example.com/device-api/v1/detectors", headers={"x-api-token": "old-token"}
+    )
+
+    assert response is success
+    assert request.call_count == EXPECTED_CALL_COUNT
+    assert request.call_args_list[1].kwargs["headers"]["x-api-token"] == "new-token"

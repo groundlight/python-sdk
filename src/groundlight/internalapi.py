@@ -1,3 +1,4 @@
+import io
 import logging
 import os
 import platform
@@ -7,7 +8,7 @@ import uuid
 from enum import Enum
 from functools import wraps
 from http import HTTPStatus
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
@@ -18,6 +19,7 @@ from groundlight.status_codes import is_ok
 from groundlight.version import get_version
 
 logger = logging.getLogger("groundlight.sdk")
+REQUEST_BODY_ARG_INDEX = 5
 
 
 class NotFoundError(Exception):
@@ -176,9 +178,24 @@ class GroundlightApiClient(ApiClient):
         """Set the callback used to recover and retry after a 401 response."""
         self._unauthorized_handler = handler
 
+    @staticmethod
+    def _prepare_replayable_request_body(args: tuple) -> Tuple[tuple, Optional[bytes]]:
+        """Copy a stream body so each request attempt receives a fresh stream."""
+        if len(args) <= REQUEST_BODY_ARG_INDEX or not isinstance(args[REQUEST_BODY_ARG_INDEX], io.IOBase):
+            return args, None
+        body = args[REQUEST_BODY_ARG_INDEX]
+        try:
+            body_bytes = body.read()
+        finally:
+            body.close()
+        replayable_args = list(args)
+        replayable_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(body_bytes)
+        return tuple(replayable_args), body_bytes
+
     @RequestsRetryDecorator()
     def call_api(self, *args, **kwargs):
         """Add a request ID and retry once after token recovery from a 401."""
+        args, replayable_body = self._prepare_replayable_request_body(args)
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
@@ -194,7 +211,21 @@ class GroundlightApiClient(ApiClient):
             if exc.status != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
                 raise
             self._unauthorized_handler()
-            return super().call_api(*args, **kwargs)
+            retry_args = list(args)
+            if replayable_body is not None:
+                retry_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(replayable_body)
+            return super().call_api(*retry_args, **kwargs)
+
+    def request_with_unauthorized_recovery(self, method: str, url: str, **kwargs) -> requests.Response:
+        """Send a raw request and retry once with refreshed credentials after a 401."""
+        response = requests.request(method, url, **kwargs)
+        if response.status_code != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
+            return response
+        self._unauthorized_handler()
+        headers = dict(kwargs.get("headers", {}))
+        headers["x-api-token"] = self.configuration.api_key["ApiToken"]
+        kwargs["headers"] = headers
+        return requests.request(method, url, **kwargs)
 
     #
     # The methods below will eventually go away when we move to properly model
@@ -226,7 +257,9 @@ class GroundlightApiClient(ApiClient):
         headers = self._headers()
 
         logger.info(f"Posting label={label} to image_query {image_query_id} ...")
-        response = requests.request("POST", url, json=data, headers=headers, verify=self.configuration.verify_ssl)
+        response = self.request_with_unauthorized_recovery(
+            "POST", url, json=data, headers=headers, verify=self.configuration.verify_ssl
+        )
         elapsed = 1000 * (time.time() - start_time)
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
@@ -247,7 +280,9 @@ class GroundlightApiClient(ApiClient):
         """
         url = f"{self.configuration.host}/v1/detectors?name={name}"
         headers = self._headers()
-        response = requests.request("GET", url, headers=headers, verify=self.configuration.verify_ssl)
+        response = self.request_with_unauthorized_recovery(
+            "GET", url, headers=headers, verify=self.configuration.verify_ssl
+        )
 
         if not is_ok(response.status_code):
             raise InternalApiError(status=response.status_code, http_resp=response)

@@ -32,6 +32,7 @@ TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
 TOKEN_PAGE_SIZE = 100
 LOCK_TIMEOUT_SECONDS = 5
+REFRESH_INTERVAL_SECONDS = timedelta(days=REFRESH_INTERVAL_DAYS).total_seconds()
 
 
 class TokenManagerError(RuntimeError):
@@ -196,7 +197,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     self._activate(slot.current)
                     return
                 self._set_api_token(self._bootstrap_token)
-                self._mint_replacement(slot)
+                self._mint_replacement(slot, record_replaced_current=False)
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
         except TokenManagerError:
@@ -232,7 +233,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     self._activate(slot.current)
                     return
                 self._set_api_token(self._bootstrap_token)
-                self._mint_replacement(slot)
+                self._mint_replacement(slot, record_replaced_current=False)
         except FileLockTimeout as exc:
             raise TokenManagerError("Timed out waiting to recover from an unauthorized API response") from exc
         except TokenManagerError:
@@ -242,23 +243,26 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 "The cached token was rejected and the bootstrap token could not replace it"
             ) from exc
 
-    def refresh(self) -> None:
-        """Refresh the working token if no other process has already done so."""
+    def refresh(self) -> bool:
+        """Refresh the working token, returning whether the cycle completed successfully."""
         try:
             with self._lock:
                 slot = self._load_slot()
                 if slot is None:
                     self._set_api_token(self._bootstrap_token)
                     self._mint_replacement(None)
-                    return
+                    return True
 
                 self._activate(slot.current)
                 if _utc_now() - slot.current.minted_at < timedelta(days=REFRESH_INTERVAL_DAYS):
-                    return
-                self._cleanup_previous(slot.previous)
+                    return True
+                if not self._cleanup_previous(slot.previous):
+                    return False
                 self._mint_replacement(slot)
+                return True
         except FileLockTimeout:
             logger.warning("Skipping token refresh because the cache lock could not be acquired")
+            return False
 
     def _run(self) -> None:
         """Refresh tokens on schedule until the client is closed."""
@@ -272,9 +276,12 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             if self._stop_event.wait(wait_seconds):
                 return
             try:
-                self.refresh()
+                refresh_succeeded = self.refresh()
             except Exception:  # pylint: disable=broad-exception-caught
                 logger.warning("Automatic API token refresh failed; the current token remains active", exc_info=True)
+                refresh_succeeded = False
+            if not refresh_succeeded and self._stop_event.wait(REFRESH_INTERVAL_SECONDS):
+                return
 
     def _load_slot(self) -> Optional[TokenSlot]:
         """Load the cache slot, returning None when it does not exist."""
@@ -310,7 +317,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             if temporary_path and os.path.exists(temporary_path):
                 os.unlink(temporary_path)
 
-    def _mint_replacement(self, slot: Optional[TokenSlot]) -> CurrentToken:
+    def _mint_replacement(self, slot: Optional[TokenSlot], *, record_replaced_current: bool = True) -> CurrentToken:
         """Mint, persist, and activate a replacement for the supplied slot."""
         source_snippet = slot.current.snippet if slot else self._bootstrap_snippet
         source_token = self._find_token_by_snippet(source_snippet)
@@ -321,7 +328,11 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             _request_timeout=self._request_timeout,
         )
         current = self._current_from_response(response, minted_at)
-        previous = PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at) if slot else None
+        previous: Optional[PreviousToken]
+        if slot and record_replaced_current:
+            previous = PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at)
+        else:
+            previous = slot.previous if slot else None
         self._write_slot(TokenSlot(current=current, previous=previous))
         self._activate(current)
         return current
@@ -348,19 +359,21 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         # TODO: Before merging, switch _find_token_by_snippet callers to this method once the endpoint is live.
         return self._api_tokens.get_api_token_by_snippet(snippet, _request_timeout=self._request_timeout)
 
-    def _cleanup_previous(self, previous: Optional[PreviousToken]) -> None:
-        """Delete a superseded token after its cleanup grace period."""
+    def _cleanup_previous(self, previous: Optional[PreviousToken]) -> bool:
+        """Delete due token metadata, returning whether it is safe to replace the slot."""
         if previous is None:
-            return
+            return True
         grace_period = timedelta(days=CLEANUP_GRACE_FACTOR * REFRESH_INTERVAL_DAYS)
         if _utc_now() - previous.minted_at < grace_period:
-            return
+            return False
         try:
             self._api_tokens.delete_api_token(previous.name, _request_timeout=self._request_timeout)
         except NotFoundException:
             logger.debug("Previous API token '%s' was already deleted", previous.name)
         except ApiException:
             logger.warning("Unable to delete previous API token '%s'", previous.name, exc_info=True)
+            return False
+        return True
 
     @staticmethod
     def _new_token_name(base_name: Optional[str]) -> str:
