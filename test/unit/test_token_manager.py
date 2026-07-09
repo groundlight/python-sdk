@@ -375,6 +375,24 @@ def test_seconds_until_due_positive_for_fresh_token(tmp_path):
     assert manager._seconds_until_due() > 0.0  # noqa: SLF001
 
 
+def test_run_loop_survives_and_backs_off_on_rotation_failure(tmp_path, monkeypatch):
+    fake = FakeApiTokensApi()
+    manager, _ = make_manager(tmp_path, fake)
+    calls = {"n": 0}
+
+    def boom():
+        calls["n"] += 1
+        manager._stop_event.set()  # noqa: SLF001 - exit the loop after one failure
+        raise RuntimeError("mint failed")
+
+    monkeypatch.setattr(manager, "_seconds_until_due", lambda: 0.0)  # noqa: SLF001
+    monkeypatch.setattr(manager, "_rotate_if_due", boom)  # noqa: SLF001
+
+    manager._run()  # noqa: SLF001 - must not raise, and must not spin
+
+    assert calls["n"] == 1
+
+
 @pytest.mark.skipif(sys.platform == "win32", reason="POSIX file-mode assertion")
 def test_token_dir_is_created_private(tmp_path):
     fake = FakeApiTokensApi()

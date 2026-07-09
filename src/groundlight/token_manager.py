@@ -63,6 +63,11 @@ _SUFFIX_RE = re.compile(r" [0-9a-f]{6}$")
 # The on-disk token is valid for weeks, so a missed cycle is harmless.
 LOCK_TIMEOUT_SECONDS = 10.0
 
+# Backoff after a failed rotation. Without it, an overdue-but-failing rotation
+# would busy-loop (the token stays "due", so the next wait is 0s) and hammer the
+# API. The token is valid for weeks, so retrying every few minutes is plenty.
+REFRESH_RETRY_BACKOFF_SECONDS = 300.0
+
 TokenApiFactory = Callable[[str], ApiTokensApi]
 
 
@@ -208,8 +213,16 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             except Exception:  # pylint: disable=broad-exception-caught
                 # A transient failure (network, API, or filesystem) must not kill the
                 # refresh thread: the current token stays valid for weeks, so we log
-                # and try again on the next cycle rather than tearing down rotation.
-                logger.warning("Background API token refresh failed; will retry next cycle.", exc_info=True)
+                # and retry after a backoff. The backoff matters because a failed
+                # rotation leaves the token overdue, so the next wait would be 0s and
+                # the loop would otherwise spin and hammer the API.
+                logger.warning(
+                    "Background API token refresh failed; retrying in %ss.",
+                    REFRESH_RETRY_BACKOFF_SECONDS,
+                    exc_info=True,
+                )
+                if self._stop_event.wait(timeout=REFRESH_RETRY_BACKOFF_SECONDS):
+                    return
 
     def _seconds_until_due(self) -> float:
         """Return seconds until the current token is due for rotation (0 if overdue)."""
