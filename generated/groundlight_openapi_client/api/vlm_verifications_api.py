@@ -94,7 +94,7 @@ class VlmVerificationsApi(object):
     def submit_vlm_verification(self, media, query, **kwargs):
         """submit_vlm_verification  # noqa: E501
 
-         Submit one or more images for VLM-based alert verification.  Send everything as `multipart/form-data`: one to eight `media` parts, plus a `query` field and an optional `model_id` field.  The `query` describes what each image is and what to look for — the server makes no assumptions about the images' meaning. Images are presented to the model labeled `Image 1`, `Image 2`, ... in upload order, so the query can reference them (e.g. \"Image 1 is the full frame; image 2 is the cropped ROI ...\").  (Video parts are planned but not yet supported and are rejected.)  Requires `ENABLE_BEDROCK_VLM_ACCESS` (enabled for Standard_Internal and SciDuck accounts) and accepted terms of service.  ```bash curl https://api.groundlight.ai/device-api/v1/vlm-verifications \\     -F \"media=@full_frame.jpg;type=image/jpeg\" \\     -F \"media=@roi.jpg;type=image/jpeg\" \\     -F \"query=Image 1 is the full camera frame; image 2 is the cropped region a detector flagged. Is there really a fire?\" \\     -F \"model_id=gpt-5.4\" ```   # noqa: E501
+         Submit one or more images for VLM-based alert verification.  Send as `multipart/form-data`: one to eight `media` image parts, a `query` field, and an optional `model_id` field. Video is not yet supported. For example: ```bash $ curl https://api.groundlight.ai/device-api/v1/vlm-verifications \\     -F \"media=@image.jpg;type=image/jpeg\" \\     -F \"query=Is there a fire?\" ```   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
