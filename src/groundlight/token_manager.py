@@ -25,14 +25,11 @@ from groundlight.internalapi import GroundlightApiClient
 logger = logging.getLogger("groundlight.sdk")
 
 TOKEN_SNIPPET_LENGTH = 20
-# TODO(GL-1709): TEMPORARY short-lived values for live rotation testing only.
-# Revert to TOKEN_TTL_DAYS = 30 and REFRESH_INTERVAL_DAYS = 1 before merging.
-TOKEN_TTL_DAYS = 3 / (24 * 60)  # TODO(GL-1709): revert to 30 (temporarily 3 minutes for testing)
-REFRESH_INTERVAL_DAYS = 1 / (24 * 60)  # TODO(GL-1709): revert to 1 (temporarily 1 minute for testing)
+TOKEN_TTL_DAYS = 30
+REFRESH_INTERVAL_DAYS = 1
 CLEANUP_GRACE_FACTOR = 2
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
-TOKEN_PAGE_SIZE = 100
 LOCK_TIMEOUT_SECONDS = 60
 # After a failed background refresh the current token is still valid for the rest of its
 # TTL, so retry on a short cadence to recover quickly from a transient outage rather than
@@ -223,12 +220,17 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 self._set_api_token(self._bootstrap_token)
                 # Look up the bootstrap token once: its name seeds base_name for every future
                 # rotation, and we need its exact API name to revoke it immediately after.
-                bootstrap_meta = self._find_token_by_snippet(self._bootstrap_snippet)
-                base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", bootstrap_meta.name) if bootstrap_meta else "sdk-auto"
+                try:
+                    bootstrap_meta = self._get_token_by_snippet(self._bootstrap_snippet)
+                    base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", bootstrap_meta.name)
+                    bootstrap_api_name: Optional[str] = bootstrap_meta.name
+                except NotFoundException:
+                    base_name = "sdk-auto"
+                    bootstrap_api_name = None
                 self._mint_replacement(base_name=base_name, slot=slot, record_replaced_current=False)
                 # Bootstrap token has served its only purpose. Revoke it now so a leaked
                 # bootstrap token cannot be used to mint tokens in the future.
-                self._revoke_bootstrap(bootstrap_meta.name if bootstrap_meta else None)
+                self._revoke_bootstrap(bootstrap_api_name)
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
         except NotFoundException:
@@ -416,38 +418,20 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._activate(current)
         return current
 
-    def _find_token_by_snippet(self, snippet: str) -> Optional[ApiToken]:
-        """Find a token by iterating through all pages of token metadata."""
-        # TODO: Before merging, replace this paginated lookup with _get_token_by_snippet once that endpoint is live.
-        page = 1
-        while True:
-            response = self._api_tokens.list_api_tokens(
-                page=page,
-                page_size=TOKEN_PAGE_SIZE,
-                _request_timeout=self._request_timeout,
-            )
-            for token in response.results:
-                if token.raw_key_snippet == snippet:
-                    return token
-            if not response.next:
-                return None
-            page += 1
-
     def _resolve_base_name(self, snippet: str) -> str:
         """Look up a token by snippet and return its name with any auto-generated suffix stripped.
 
-        Used when establishing the base_name for a new token chain (initial mint) or when
-        reading an old-format slot file that predates the base_name field.
+        Used when reading an old-format slot file that predates the base_name field.
         Falls back to 'sdk-auto' when no matching token is found.
         """
-        token = self._find_token_by_snippet(snippet)
-        if token is None:
+        try:
+            token = self._get_token_by_snippet(snippet)
+            return TOKEN_NAME_SUFFIX_PATTERN.sub("", token.name)
+        except NotFoundException:
             return "sdk-auto"
-        return TOKEN_NAME_SUFFIX_PATTERN.sub("", token.name)
 
     def _get_token_by_snippet(self, snippet: str) -> ApiToken:
-        """Retrieve token metadata through the dedicated snippet endpoint."""
-        # TODO: Before merging, switch _find_token_by_snippet callers to this method once the endpoint is live.
+        """Retrieve token metadata by snippet via the dedicated API endpoint."""
         return self._api_tokens.get_api_token_by_snippet(snippet, _request_timeout=self._request_timeout)
 
     def _cleanup_previous(self, previous: Optional[PreviousToken]) -> bool:
