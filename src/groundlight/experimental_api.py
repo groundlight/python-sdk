@@ -10,7 +10,7 @@ modifications or potentially be removed in future releases, which could lead to 
 from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlparse, urlunparse
 
 import requests
@@ -19,6 +19,7 @@ from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
+from groundlight_openapi_client.api.vlm_verifications_api import VlmVerificationsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
@@ -30,6 +31,7 @@ from model import (
     PaginatedMLPipelineList,
     PaginatedPrimingGroupList,
     PrimingGroup,
+    VlmVerification,
 )
 from urllib3.response import HTTPResponse
 
@@ -39,6 +41,9 @@ from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError
+
+# Maximum number of media items accepted by ask_vlm_verify (mirrors the server's limit).
+MAX_VLM_MEDIA_ITEMS = 8
 
 
 class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -84,6 +89,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)
         self.priming_groups_api = PrimingGroupsApi(self.api_client)
+        self.vlm_verifications_api = VlmVerificationsApi(self.api_client)
 
         # API client for fetching Edge models
         self._edge_model_download_api = EdgeApi(self.api_client)
@@ -163,6 +169,101 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
 
         response = requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
         response.raise_for_status()  # Raise an exception for error status codes
+
+    def ask_vlm_verify(  # pylint: disable=too-many-locals
+        self,
+        media: Union[
+            np.ndarray,
+            str,
+            bytes,
+            Image.Image,
+            BytesIO,
+            BufferedReader,
+            List[Union[np.ndarray, str, bytes, Image.Image, BytesIO, BufferedReader]],
+        ],
+        query: str,
+        model_id: Optional[str] = None,
+        timeout: float = DEFAULT_REQUEST_TIMEOUT,
+    ) -> VlmVerification:
+        """Verify one or more images against a natural-language query using a cloud VLM.
+
+        Calls the Groundlight ``POST /v1/vlm-verifications`` endpoint. The VLM runs in the
+        Groundlight cloud (AWS Bedrock) — no local inference. This is intended for alert
+        verification (a structured ``YES`` / ``NO`` / ``UNSURE`` verdict), and each call is
+        relatively expensive, so use it deliberately rather than as a general-purpose VLM.
+
+        The server makes no assumptions about what the images are — your ``query`` should
+        describe them. Images are presented to the model labeled ``Image 1``, ``Image 2``,
+        ... in the order given, so the query can refer to them.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            # Single image
+            result = gl.ask_vlm_verify(frame, query="Is there a fire in this image?")
+            if result.result.verdict == "YES":
+                emit_alert()
+
+            # Full frame + cropped ROI — describe each in the query
+            result = gl.ask_vlm_verify(
+                media=[full_frame, roi_crop],
+                query="Image 1 is the full camera frame; image 2 is the cropped region "
+                      "a detector flagged. Is there really a fire?",
+            )
+            print(result.result.confidence, result.result.reasoning, result.cost.total_cost_usd)
+
+        :param media: One image or a list of up to 8 images. Accepted formats per image:
+
+            - filename (string) of a JPEG or PNG file (``".jpg"``, ``".jpeg"``, ``".png"``)
+            - raw bytes, BytesIO, or BufferedReader — sent as-is; the server decodes and
+              normalises to JPEG regardless of the declared content type, so PNG/WEBP bytes
+              all work
+            - numpy array (H, W, 3) in BGR order (OpenCV convention) — converted to JPEG
+              before sending
+            - PIL Image — converted to JPEG before sending
+
+        :param query: Natural-language prompt describing the media and what to verify,
+            e.g. ``"Is there a fire visible in the image? Reason step by step."``
+        :param model_id: Friendly alias of the VLM to use (e.g. ``"gpt-5.4"``,
+            ``"claude-sonnet-4.5"``). The server is the source of truth for the supported
+            aliases and the default; passing an unrecognised alias returns HTTP 400. Omit
+            to use the server-configured default.
+        :param timeout: Request timeout in seconds.
+
+        :return: A :class:`VlmVerification` with nested ``result`` (``verdict`` —
+            ``"YES"`` / ``"NO"`` / ``"UNSURE"`` — ``confidence``, ``reasoning``) and ``cost``
+            (``input_tokens``, ``output_tokens``, ``total_cost_usd``).
+        :raises ValueError: If zero or more than ``MAX_VLM_MEDIA_ITEMS`` (8) images are supplied.
+        :raises groundlight_openapi_client.exceptions.ApiException: On non-2xx response (400 for
+            an invalid model alias or undecodable image bytes; 502 if the upstream VLM is unavailable).
+        """
+        # Normalise: single image → list
+        if not isinstance(media, list):
+            media = [media]
+        if not media:
+            raise ValueError("ask_vlm_verify requires at least one media item.")
+        if len(media) > MAX_VLM_MEDIA_ITEMS:
+            raise ValueError(f"ask_vlm_verify supports at most {MAX_VLM_MEDIA_ITEMS} media items.")
+
+        # Encode each item to a byte stream. numpy/PIL → JPEG; bytes/BytesIO/BufferedReader →
+        # passed through (the server calls ensure_jpeg_format and validates by decoding, so any
+        # common image format works). The `.name` gives the generated multipart client a filename
+        # and content-type for each `media` part.
+        media_files = []
+        for i, img in enumerate(media):
+            stream = parse_supported_image_types(img)
+            stream.name = f"image_{i+1}.jpg"  # one-indexed naming for VLM Verifications API
+            media_files.append(stream)
+
+        kwargs: Dict[str, Any] = {"_request_timeout": timeout}
+        if model_id:
+            kwargs["model_id"] = model_id
+
+        # Use the generated client (same pattern as submit_image_query): it handles the
+        # multipart upload, auth, and base URL, then we validate into the pydantic model.
+        raw = self.vlm_verifications_api.submit_vlm_verification(media_files, query, **kwargs)
+        return VlmVerification.model_validate(raw.to_dict())
 
     def reset_detector(self, detector: Union[str, Detector]) -> None:
         """

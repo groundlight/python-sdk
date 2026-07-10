@@ -131,6 +131,19 @@ def test_experimental_subcommand():
     assert "list-priming-groups" in completed_process.stdout
 
 
+def test_ask_vlm_verify_registered():
+    """ask_vlm_verify is exposed as an experimental CLI command under its own group."""
+    completed_process = subprocess.run(
+        ["groundlight", "exp", "--help"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    assert completed_process.returncode == 0
+    assert "ask-vlm-verify" in completed_process.stdout
+
+
 def test_bad_commands():
     completed_process = subprocess.run(
         ["groundlight", "wat"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
