@@ -25,8 +25,10 @@ from groundlight.internalapi import GroundlightApiClient
 logger = logging.getLogger("groundlight.sdk")
 
 TOKEN_SNIPPET_LENGTH = 20
-TOKEN_TTL_DAYS = 30
-REFRESH_INTERVAL_DAYS = 1
+# TODO(GL-1709): TEMPORARY short-lived values for live rotation testing only.
+# Revert to TOKEN_TTL_DAYS = 30 and REFRESH_INTERVAL_DAYS = 1 before merging.
+TOKEN_TTL_DAYS = 3 / (24 * 60)  # TODO(GL-1709): revert to 30 (temporarily 3 minutes for testing)
+REFRESH_INTERVAL_DAYS = 1 / (24 * 60)  # TODO(GL-1709): revert to 1 (temporarily 1 minute for testing)
 CLEANUP_GRACE_FACTOR = 2
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
