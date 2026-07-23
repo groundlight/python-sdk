@@ -33,7 +33,6 @@ TOKEN_SNIPPET_LENGTH = 20
 # - stop hardcoding TOKEN_TTL_DAYS / REFRESH_INTERVAL_DAYS
 TOKEN_TTL_DAYS = 3 / (24 * 60)  # TODO(GL-1709): testing only (3 minutes); revert to 30
 REFRESH_INTERVAL_DAYS = 1 / (24 * 60)  # TODO(GL-1709): testing only (1 minute); revert to 1
-CLEANUP_GRACE_FACTOR = 2
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
 LOCK_TIMEOUT_SECONDS = 60
@@ -41,6 +40,8 @@ LOCK_TIMEOUT_SECONDS = 60
 # TTL, so retry on a short cadence to recover quickly from a transient outage rather than
 # waiting a full refresh interval (which would also spin when the token is already overdue).
 REFRESH_RETRY_BACKOFF_SECONDS = 5 * 60
+# Previous-token grace equals one refresh interval by construction: we only rotate when
+# current is at least REFRESH_INTERVAL old, and previous was demoted at that mint time.
 # Matches the trailing " xxxxxx" hex suffix this class appends, so repeated rotations
 # reuse a stable base name instead of accreting a new suffix each cycle.
 TOKEN_NAME_SUFFIX_PATTERN = re.compile(r" [0-9a-f]{6}$")
@@ -175,7 +176,10 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         if len(self._bootstrap_snippet) != TOKEN_SNIPPET_LENGTH or not re.fullmatch(
             r"[A-Za-z0-9_]+", self._bootstrap_snippet
         ):
-            raise TokenManagerError("The bootstrap API token has an invalid format")
+            raise TokenManagerError(
+                "The configured API token has an invalid format. "
+                "Check that GROUNDLIGHT_API_TOKEN is set correctly."
+            )
         self._configuration = configuration
         self._request_timeout = request_timeout
         self._token_dir = token_dir or self._default_token_dir()
@@ -252,7 +256,10 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         except TokenManagerError:
             raise
         except Exception as exc:
-            raise TokenManagerError("Unable to mint a working API token with the bootstrap token") from exc
+            raise TokenManagerError(
+                "Unable to create a working API token. "
+                "Check that GROUNDLIGHT_API_TOKEN is set to a valid token for this endpoint."
+            ) from exc
 
     def start(self) -> None:
         """Start background refresh when the server supports token management."""
@@ -300,7 +307,12 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             raise TokenManagerError("The cached token was rejected and could not be replaced") from exc
 
     def refresh(self) -> bool:
-        """Refresh the working token, returning whether the cycle completed successfully."""
+        """Use the cached token if it is still fresh; otherwise rotate under the file lock.
+
+        Rotation always completes the two-token cycle: revoke previous (best effort), demote
+        current to previous, and mint a new current. Returns False only when rotation could
+        not run (lock timeout, mint failure, or token API unavailable).
+        """
         try:
             with self._lock:
                 slot = self._load_slot()
@@ -313,12 +325,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 self._activate(slot.current)
                 if _utc_now() - slot.current.minted_at < timedelta(days=REFRESH_INTERVAL_DAYS):
                     return True
-                if not self._cleanup_previous(slot.previous):
-                    return False
-                # Read base_name from slot; fall back to a live lookup for old-format slots.
+                # Due for rotation: previous has been demoted for at least one refresh interval.
+                self._revoke_previous(slot.previous)
                 base_name = slot.base_name or self._resolve_base_name(slot.current.snippet)
                 self._mint_replacement(base_name=base_name, slot=slot)
                 return True
+        except TokenManagerError:
+            raise
         except NotFoundException:
             logger.warning(
                 "Automatic API token refresh is unavailable because this server does not support token management"
@@ -328,6 +341,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             return False
         except FileLockTimeout:
             logger.warning("Skipping token refresh because the cache lock could not be acquired")
+            return False
+        except Exception:
+            logger.warning("Automatic API token refresh failed; the current token remains active", exc_info=True)
             return False
 
     def _run(self) -> None:
@@ -426,21 +442,20 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Retrieve token metadata by snippet via the dedicated API endpoint."""
         return self._api_tokens.get_api_token_by_snippet(snippet, _request_timeout=self._request_timeout)
 
-    def _cleanup_previous(self, previous: Optional[PreviousToken]) -> bool:
-        """Delete due token metadata, returning whether it is safe to replace the slot."""
+    def _revoke_previous(self, previous: Optional[PreviousToken]) -> None:
+        """Best-effort revoke of the demoted previous token before it is replaced in the slot."""
         if previous is None:
-            return True
-        grace_period = timedelta(days=CLEANUP_GRACE_FACTOR * REFRESH_INTERVAL_DAYS)
-        if _utc_now() - previous.minted_at < grace_period:
-            return False
+            return
         try:
             self._api_tokens.delete_api_token(previous.name, _request_timeout=self._request_timeout)
         except NotFoundException:
             logger.debug("Previous API token '%s' was already deleted", previous.name)
         except ApiException:
-            logger.warning("Unable to delete previous API token '%s'", previous.name, exc_info=True)
-            return False
-        return True
+            logger.warning(
+                "Unable to delete previous API token '%s'; continuing rotation",
+                previous.name,
+                exc_info=True,
+            )
 
     @staticmethod
     def _new_token_name(base_name: str) -> str:

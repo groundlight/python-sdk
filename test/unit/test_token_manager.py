@@ -8,7 +8,6 @@ from unittest.mock import Mock, call
 import pytest
 from groundlight import token_manager
 from groundlight.token_manager import (
-    CLEANUP_GRACE_FACTOR,
     REFRESH_INTERVAL_DAYS,
     REFRESH_RETRY_BACKOFF_SECONDS,
     TOKEN_NAME_MAX_LENGTH,
@@ -137,7 +136,7 @@ def test_name_lookup_uses_snippet_endpoint_and_enforces_length(mocker, tmp_path)
 
 
 def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
-    """Scheduled refresh revokes an old previous token and records the replaced current token."""
+    """When refresh is due, revoke previous, demote current, and mint a replacement."""
     api = Mock()
     api.get_api_token_by_snippet.return_value = _metadata("Device token", BOOTSTRAP_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
@@ -146,7 +145,7 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     old_slot = json.loads(manager._slot_path.read_text())
     old_slot["previous"] = {
         "name": "older token",
-        "minted_at": (NOW - timedelta(days=CLEANUP_GRACE_FACTOR * REFRESH_INTERVAL_DAYS, seconds=1)).isoformat(),
+        "minted_at": NOW.isoformat(),
     }
     manager._slot_path.write_text(json.dumps(old_slot))
     later = NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1)
@@ -164,8 +163,8 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     assert cached["previous"]["name"] == "Device token abc123"
 
 
-def test_refresh_preserves_cleanup_metadata_when_deletion_fails(mocker, tmp_path):
-    """A failed cleanup postpones minting so the deletion can be retried later."""
+def test_refresh_continues_rotation_when_previous_delete_fails(mocker, tmp_path):
+    """A failed previous revoke does not block minting the next working token."""
     api = Mock()
     api.get_api_token_by_snippet.return_value = _metadata("Device token", BOOTSTRAP_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
@@ -173,20 +172,23 @@ def test_refresh_preserves_cleanup_metadata_when_deletion_fails(mocker, tmp_path
     slot = json.loads(manager._slot_path.read_text())
     slot["previous"] = {
         "name": "older token",
-        "minted_at": (NOW - timedelta(days=CLEANUP_GRACE_FACTOR * REFRESH_INTERVAL_DAYS, seconds=1)).isoformat(),
+        "minted_at": NOW.isoformat(),
     }
     manager._slot_path.write_text(json.dumps(slot))
-    mocker.patch.object(token_manager, "_utc_now", return_value=NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1))
+    later = NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1)
+    mocker.patch.object(token_manager, "_utc_now", return_value=later)
     api.reset_mock()
     api.delete_api_token.side_effect = ApiException(status=500)
+    api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_two", later)
 
     refresh_succeeded = manager.refresh()
 
-    assert not refresh_succeeded
-    api.create_api_token.assert_not_called()
+    assert refresh_succeeded
+    api.delete_api_token.assert_called_once_with("older token", _request_timeout=1)
+    api.create_api_token.assert_called_once()
     cached = json.loads(manager._slot_path.read_text())
-    assert cached["previous"]["name"] == "older token"
-    assert cached["current"]["raw_key"] == "api_working_token_one"
+    assert cached["current"]["raw_key"] == "api_working_token_two"
+    assert cached["previous"]["name"] == "Device token abc123"
 
 
 def test_refresh_thread_backs_off_after_failed_cycle(mocker, tmp_path):
@@ -308,7 +310,7 @@ def test_invalid_bootstrap_token_cannot_escape_cache_directory(tmp_path):
     """Invalid token snippets are rejected before cache paths are created."""
     configuration = Configuration(host="https://example.com/device-api")
 
-    with pytest.raises(TokenManagerError, match="invalid format"):
+    with pytest.raises(TokenManagerError, match="configured API token has an invalid format"):
         TokenManager("../../outside-token", configuration, request_timeout=1, token_dir=tmp_path)
 
 
@@ -321,13 +323,8 @@ def test_refresh_falls_back_to_snippet_endpoint_for_old_format_slot(mocker, tmp_
     api.reset_mock()
 
     # Simulate a slot written by an older SDK version (no base_name field).
-    # Age previous past cleanup grace so refresh can mint a replacement.
     slot_data = json.loads(manager._slot_path.read_text())
     del slot_data["base_name"]
-    slot_data["previous"] = {
-        "name": "Device token",
-        "minted_at": (NOW - timedelta(days=CLEANUP_GRACE_FACTOR * REFRESH_INTERVAL_DAYS, seconds=1)).isoformat(),
-    }
     manager._slot_path.write_text(json.dumps(slot_data))
 
     later = NOW + timedelta(days=REFRESH_INTERVAL_DAYS, seconds=1)
