@@ -26,6 +26,19 @@ class NotFoundError(Exception):
     pass
 
 
+def api_exception_detail(exc: ApiException) -> Optional[str]:
+    """Return a stripped response body from an API exception, if present."""
+    body = exc.body
+    if body is None:
+        return None
+    if isinstance(body, bytes):
+        text = body.decode("utf-8", errors="replace")
+    else:
+        text = str(body)
+    text = text.strip()
+    return text or None
+
+
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
     Currently the production API path must be exactly "/device-api".
@@ -170,11 +183,11 @@ class GroundlightApiClient(ApiClient):
         """Initialize the generated API client with SDK-specific behavior."""
         super().__init__(*args, **kwargs)
         self.user_agent = f"Groundlight-Python-SDK/{get_version()}/{platform.platform()}/{platform.python_version()}"
-        self._unauthorized_handler: Optional[Callable[[], None]] = None
+        self._unauthorized_handler: Optional[Callable[[Optional[str]], None]] = None
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
-    def set_unauthorized_handler(self, handler: Callable[[], None]) -> None:
+    def set_unauthorized_handler(self, handler: Callable[[Optional[str]], None]) -> None:
         """Set the callback used to recover and retry after a 401 response."""
         self._unauthorized_handler = handler
 
@@ -220,7 +233,7 @@ class GroundlightApiClient(ApiClient):
         except ApiException as exc:
             if exc.status != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
                 raise
-            self._unauthorized_handler()
+            self._unauthorized_handler(api_exception_detail(exc))
             retry_args = list(args)
             retry_kwargs = dict(kwargs)
             if replayable_body is not None:
@@ -235,7 +248,8 @@ class GroundlightApiClient(ApiClient):
         response = requests.request(method, url, **kwargs)
         if response.status_code != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
             return response
-        self._unauthorized_handler()
+        detail = (response.text or "").strip() or None
+        self._unauthorized_handler(detail)
         headers = dict(kwargs.get("headers", {}))
         headers["x-api-token"] = self.configuration.api_key["ApiToken"]
         kwargs["headers"] = headers

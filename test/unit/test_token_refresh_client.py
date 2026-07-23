@@ -40,7 +40,7 @@ def test_api_client_recovers_and_retries_once_after_unauthorized(mocker):
     result = client.call_api("/v1/test", "GET", {}, [], {})
 
     assert result == "success"
-    handler.assert_called_once_with()
+    handler.assert_called_once_with(None)
     assert parent_call.call_count == EXPECTED_CALL_COUNT
 
 
@@ -75,7 +75,7 @@ def test_raw_request_recovers_and_retries_once_after_unauthorized(mocker):
     configuration.api_key["ApiToken"] = "old-token"
     client = GroundlightApiClient(configuration)
 
-    def refresh_token() -> None:
+    def refresh_token(_detail=None) -> None:
         """Simulate replacing the rejected token."""
         configuration.api_key["ApiToken"] = "new-token"
 

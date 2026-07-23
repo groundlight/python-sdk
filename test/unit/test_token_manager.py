@@ -16,7 +16,7 @@ from groundlight.token_manager import (
     TokenManagerError,
 )
 from groundlight_openapi_client import Configuration
-from groundlight_openapi_client.exceptions import ApiException, NotFoundException
+from groundlight_openapi_client.exceptions import ApiException, NotFoundException, UnauthorizedException
 
 BOOTSTRAP_TOKEN = "api_bootstrap_token_value_long_enough"
 NOW = datetime(2026, 7, 9, 12, 0, tzinfo=timezone.utc)
@@ -244,6 +244,22 @@ def test_unauthorized_recovery_uses_newer_token_from_disk(mocker, tmp_path):
     api.create_api_token.assert_not_called()
 
 
+def test_initialization_surfaces_unauthorized_detail(mocker, tmp_path):
+    """A 401 during bootstrap lookup raises with the server's response body."""
+    api = Mock()
+    api.get_api_token_by_snippet.side_effect = UnauthorizedException(
+        http_resp=SimpleNamespace(
+            status=401,
+            reason="Unauthorized",
+            data="The API token has expired",
+            getheaders=lambda: {},
+        )
+    )
+
+    with pytest.raises(TokenManagerError, match="The API token has expired"):
+        _manager(mocker, tmp_path, api)
+
+
 def test_unauthorized_recovery_raises_when_no_fresher_token_available(mocker, tmp_path):
     """A rejected cached token raises loudly when no fresher token is on disk."""
     api = Mock()
@@ -251,8 +267,8 @@ def test_unauthorized_recovery_raises_when_no_fresher_token_available(mocker, tm
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
 
-    with pytest.raises(TokenManagerError, match="provision a new GROUNDLIGHT_API_TOKEN"):
-        manager.recover_from_unauthorized()
+    with pytest.raises(TokenManagerError, match="API identity has been revoked"):
+        manager.recover_from_unauthorized("API identity has been revoked")
 
     api.create_api_token.assert_called_once()  # only during init, not during recovery
 
@@ -300,7 +316,7 @@ def test_unauthorized_recovery_restores_previous_token_when_remint_fails(mocker,
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
 
-    with pytest.raises(TokenManagerError, match="provision a new GROUNDLIGHT_API_TOKEN"):
+    with pytest.raises(TokenManagerError, match="API token was rejected"):
         manager.recover_from_unauthorized()
 
     assert manager._configuration.api_key["ApiToken"] == "api_working_token_one"

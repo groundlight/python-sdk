@@ -14,13 +14,13 @@ from filelock import FileLock
 from filelock import Timeout as FileLockTimeout
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.api.api_tokens_api import ApiTokensApi
-from groundlight_openapi_client.exceptions import ApiException, NotFoundException
+from groundlight_openapi_client.exceptions import ApiException, NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.api_token import ApiToken
 from groundlight_openapi_client.model.api_token_create_response import ApiTokenCreateResponse
 from groundlight_openapi_client.model.api_token_request import ApiTokenRequest
 from platformdirs import user_data_path
 
-from groundlight.internalapi import GroundlightApiClient
+from groundlight.internalapi import GroundlightApiClient, api_exception_detail
 
 logger = logging.getLogger("groundlight.sdk")
 
@@ -252,9 +252,12 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             )
             self._available = False
             self._set_api_token(self._bootstrap_token)
+        except UnauthorizedException as exc:
+            detail = api_exception_detail(exc) or "API token was rejected"
+            raise TokenManagerError(detail) from exc
         except TokenManagerError:
             raise
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             raise TokenManagerError(
                 "Unable to create a working API token. "
                 "Check that GROUNDLIGHT_API_TOKEN is set to a valid token for this endpoint."
@@ -278,31 +281,28 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             self._thread.join()
         self._rotation_client.close()
 
-    def recover_from_unauthorized(self) -> None:
+    def recover_from_unauthorized(self, detail: Optional[str] = None) -> None:
         """Recover from a 401 by loading a fresher cached token written by another process.
 
         Does not remint from the configured bootstrap token. If no fresher token is available
-        on disk, the working token chain is broken and requires human intervention
-        (provision a new GROUNDLIGHT_API_TOKEN).
+        on disk, raise using the server's 401 detail when provided.
         """
         if not self._available:
             raise TokenManagerError("Automatic token recovery is unavailable on this server")
         failed_token = self._configuration.api_key["ApiToken"]
+        rejection = (detail or "").strip() or "API token was rejected"
         try:
             with self._lock:
                 slot = self._load_slot()
                 if slot and slot.current.raw_key != failed_token and slot.current.expires_at > _utc_now():
                     self._activate(slot.current)
                     return
-                raise TokenManagerError(
-                    "The working API token was rejected and no fresher cached token is available. "
-                    "Please provision a new GROUNDLIGHT_API_TOKEN."
-                )
+                raise TokenManagerError(rejection)
         except FileLockTimeout as exc:
             raise TokenManagerError("Timed out waiting to recover from an unauthorized API response") from exc
         except TokenManagerError:
             raise
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             raise TokenManagerError("The cached token was rejected and could not be replaced") from exc
 
     def refresh(self) -> bool:
@@ -341,7 +341,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         except FileLockTimeout:
             logger.warning("Skipping token refresh because the cache lock could not be acquired")
             return False
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             logger.warning("Automatic API token refresh failed; the current token remains active", exc_info=True)
             return False
 
