@@ -36,8 +36,9 @@ class ApiToken(BaseModel):
         ..., description="Since we're storing hashed keys, it can be useful to see the raw prefix snippet of the token."
     )
     created_at: datetime = Field(..., description="When was this token created?")
-    last_used_at: datetime = Field(
-        ..., description="The most recent time this API token was used. (Helpful for detecting suspicious activity)."
+    last_used_at: Optional[datetime] = Field(
+        ...,
+        description="The most recent time this API token was used. (Helpful for detecting suspicious activity). Null if the token has never been used.",
     )
     expires_at: Optional[datetime] = Field(
         None, description="When does this token expire? If Null, the token never expires."
@@ -57,8 +58,9 @@ class ApiTokenCreateResponse(BaseModel):
         ..., description="Since we're storing hashed keys, it can be useful to see the raw prefix snippet of the token."
     )
     created_at: datetime = Field(..., description="When was this token created?")
-    last_used_at: datetime = Field(
-        ..., description="The most recent time this API token was used. (Helpful for detecting suspicious activity)."
+    last_used_at: Optional[datetime] = Field(
+        ...,
+        description="The most recent time this API token was used. (Helpful for detecting suspicious activity). Null if the token has never been used.",
     )
     expires_at: Optional[datetime] = Field(
         None, description="When does this token expire? If Null, the token never expires."

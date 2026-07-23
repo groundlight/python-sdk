@@ -399,6 +399,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             _request_timeout=self._request_timeout,
         )
         current = self._current_from_response(response, minted_at)
+        next_previous: Optional[PreviousToken]
         if previous is not None:
             next_previous = previous
         elif slot and record_replaced_current:

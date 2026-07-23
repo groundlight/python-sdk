@@ -95,7 +95,10 @@ class ApiToken(ModelNormal):
             "name": (str,),  # noqa: E501
             "raw_key_snippet": (str,),  # noqa: E501
             "created_at": (datetime,),  # noqa: E501
-            "last_used_at": (datetime,),  # noqa: E501
+            "last_used_at": (
+                datetime,
+                none_type,
+            ),  # noqa: E501
             "expires_at": (
                 datetime,
                 none_type,

@@ -1132,9 +1132,10 @@ components:
         last_used_at:
           type: string
           format: date-time
+          nullable: true
           readOnly: true
           description: The most recent time this API token was used. (Helpful for
-            detecting suspicious activity).
+            detecting suspicious activity). Null if the token has never been used.
         expires_at:
           type: string
           format: date-time
@@ -1169,9 +1170,10 @@ components:
         last_used_at:
           type: string
           format: date-time
+          nullable: true
           readOnly: true
           description: The most recent time this API token was used. (Helpful for
-            detecting suspicious activity).
+            detecting suspicious activity). Null if the token has never been used.
         expires_at:
           type: string
           format: date-time
