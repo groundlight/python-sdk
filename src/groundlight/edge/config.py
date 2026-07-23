@@ -22,6 +22,14 @@ class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
         ge=0,
         description="The probability that any given confident prediction will be sent to the cloud for auditing.",
     )
+    reject_unconfigured_detectors: bool = Field(
+        default=False,
+        description=(
+            "If true, the edge endpoint rejects image queries for detectors that are not listed in this config, "
+            "instead of processing/escalating them. Prevents accidental use of the wrong detector and avoids "
+            "spinning up inference pods for unconfigured detectors. Defaults to false (backward-compatible)."
+        ),
+    )
 
 
 class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods

@@ -197,6 +197,13 @@ def test_edge_endpoint_config_accepts_top_level_payload_shape():
     assert [detector.detector_id for detector in config.detectors] == [DET_1]
 
 
+def test_reject_unconfigured_detectors_defaults_false_and_is_settable():
+    """GL-352: the reject_unconfigured_detectors global flag defaults off and can be enabled (backward-compatible)."""
+    assert GlobalConfig().reject_unconfigured_detectors is False
+    config = EdgeEndpointConfig.model_validate({"global_config": {"reject_unconfigured_detectors": True}})
+    assert config.global_config.reject_unconfigured_detectors is True
+
+
 def test_edge_endpoint_config_from_yaml_accepts_yaml_text():
     """Parses edge-endpoint YAML text using EdgeEndpointConfig.from_yaml."""
     config = EdgeEndpointConfig.from_yaml(yaml_str=f"""
