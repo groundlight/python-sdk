@@ -177,8 +177,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             r"[A-Za-z0-9_]+", self._bootstrap_snippet
         ):
             raise TokenManagerError(
-                "The configured API token has an invalid format. "
-                "Check that GROUNDLIGHT_API_TOKEN is set correctly."
+                "The configured API token has an invalid format. Check that GROUNDLIGHT_API_TOKEN is set correctly."
             )
         self._configuration = configuration
         self._request_timeout = request_timeout
