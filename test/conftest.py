@@ -1,10 +1,16 @@
+import os
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Iterator
 from uuid import uuid4
 
 import pytest
 from groundlight import ExperimentalApi, Groundlight
+from groundlight.config import DISABLE_TOKEN_REFRESH_VARIABLE_NAME
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
+
+# Keep background token refresh off for the test suite. Short testing TTL/refresh intervals
+# otherwise race with tests that mock urllib3/requests and assert exact call counts.
+os.environ[DISABLE_TOKEN_REFRESH_VARIABLE_NAME] = "1"
 
 
 def _generate_unique_detector_name(prefix: str = "Test") -> str:
@@ -27,17 +33,18 @@ def pytest_configure(config):  # pylint: disable=unused-argument
                 "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
             )
     finally:
-        # Always close so the token-refresh thread from this probe client does not outlive
-        # configure and race with later tests that mock the HTTP transport.
         gl.close()
 
 
 @pytest.fixture(name="gl")
-def fixture_gl() -> Groundlight:
+def fixture_gl() -> Iterator[Groundlight]:
     """Creates a Groundlight client object for testing."""
     _gl = Groundlight()
     _gl.DEFAULT_WAIT = 10
-    return _gl
+    try:
+        yield _gl
+    finally:
+        _gl.close()
 
 
 @pytest.fixture(name="detector")
@@ -87,10 +94,14 @@ def fixture_image_query_zero(gl_experimental: Groundlight, count_detector: Detec
 
 
 @pytest.fixture(name="gl_experimental")
-def fixture_gl_experimental() -> ExperimentalApi:
+def fixture_gl_experimental() -> Iterator[ExperimentalApi]:
+    """Creates an ExperimentalApi client object for testing."""
     _gl = ExperimentalApi()
     _gl.DEFAULT_WAIT = 10
-    return _gl
+    try:
+        yield _gl
+    finally:
+        _gl.close()
 
 
 @pytest.fixture(name="initial_iq")

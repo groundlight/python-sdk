@@ -41,7 +41,12 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.config import (
+    API_TOKEN_MISSING_HELP_MESSAGE,
+    API_TOKEN_VARIABLE_NAME,
+    DISABLE_TLS_VARIABLE_NAME,
+    DISABLE_TOKEN_REFRESH_VARIABLE_NAME,
+)
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
@@ -212,7 +217,15 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        self._token_manager.start()
+        # Tests set GROUNDLIGHT_DISABLE_TOKEN_REFRESH so short testing refresh intervals do not
+        # race with suites that mock the HTTP transport and assert exact call counts.
+        disable_refresh = os.environ.get(DISABLE_TOKEN_REFRESH_VARIABLE_NAME, "").lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        if not disable_refresh:
+            self._token_manager.start()
 
     def __repr__(self) -> str:
         """Return a concise description of the connected client."""

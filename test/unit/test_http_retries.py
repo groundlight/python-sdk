@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 from unittest import mock
 
 import pytest
@@ -14,16 +14,13 @@ IMAGE_FILE = "test/assets/dog.jpeg"
 
 
 @pytest.fixture(name="gl")
-def groundlight_fixture() -> Groundlight:
-    """Create a Groundlight client with token refresh stopped.
-
-    These tests patch urllib3/requests globally and assert exact call counts. A live
-    refresh thread (especially with short testing intervals) can inflate those counts.
-    """
+def groundlight_fixture() -> Iterator[Groundlight]:
+    """Create a Groundlight client for HTTP retry tests."""
     gl = Groundlight()
-    gl._token_manager.close()  # pylint: disable=protected-access
-    yield gl
-    gl.api_client.close()
+    try:
+        yield gl
+    finally:
+        gl.close()
 
 
 @pytest.fixture(name="detector")

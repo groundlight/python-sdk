@@ -11,8 +11,9 @@ from groundlight_openapi_client.api_client import ApiClient, ApiException
 EXPECTED_CALL_COUNT = 2
 
 
-def test_groundlight_starts_and_closes_token_manager(mocker):
+def test_groundlight_starts_and_closes_token_manager(mocker, monkeypatch):
     """Groundlight owns the token manager lifecycle and supports context management."""
+    monkeypatch.delenv("GROUNDLIGHT_DISABLE_TOKEN_REFRESH", raising=False)
     manager = Mock()
     token_manager_class = mocker.patch("groundlight.client.TokenManager", return_value=manager)
     mocker.patch.object(Groundlight, "_verify_connectivity")
