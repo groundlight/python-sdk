@@ -26,9 +26,13 @@ logger = logging.getLogger("groundlight.sdk")
 
 TOKEN_SNIPPET_LENGTH = 20
 # TODO(GL-1709): TEMPORARY short-lived values for live rotation testing only.
-# Revert to TOKEN_TTL_DAYS = 30 and REFRESH_INTERVAL_DAYS = 1 before merging.
-TOKEN_TTL_DAYS = 3 / (24 * 60)  # TODO(GL-1709): revert to 30 (temporarily 3 minutes for testing)
-REFRESH_INTERVAL_DAYS = 1 / (24 * 60)  # TODO(GL-1709): revert to 1 (temporarily 1 minute for testing)
+# Before merge / production: set TOKEN_TTL_DAYS = 30 and REFRESH_INTERVAL_DAYS = 1.
+# Follow-up (after zuuul exposes identity token_ttl on public /v1/api-tokens):
+# - discover rotate-vs-not from by-snippet token_ttl (null => no refresh thread)
+# - derive refresh_interval from mint expires_at as observed_ttl / 30
+# - stop hardcoding TOKEN_TTL_DAYS / REFRESH_INTERVAL_DAYS
+TOKEN_TTL_DAYS = 3 / (24 * 60)  # TODO(GL-1709): testing only (3 minutes); revert to 30
+REFRESH_INTERVAL_DAYS = 1 / (24 * 60)  # TODO(GL-1709): testing only (1 minute); revert to 1
 CLEANUP_GRACE_FACTOR = 2
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
@@ -212,7 +216,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             raise TokenManagerError(f"Groundlight token directory '{self._token_dir}' is not writable")
 
     def _initialize_token(self) -> None:
-        """Load a valid cached token or mint one from the bootstrap token, then revoke the bootstrap."""
+        """Load a valid cached token or mint one from the configured bootstrap token."""
         try:
             with self._lock:
                 slot = self._load_slot()
@@ -221,18 +225,22 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     return
                 self._set_api_token(self._bootstrap_token)
                 # Look up the bootstrap token once: its name seeds base_name for every future
-                # rotation, and we need its exact API name to revoke it immediately after.
+                # rotation, and we park that name as previous for delayed cleanup (not immediate revoke).
                 try:
                     bootstrap_meta = self._get_token_by_snippet(self._bootstrap_snippet)
                     base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", bootstrap_meta.name)
-                    bootstrap_api_name: Optional[str] = bootstrap_meta.name
+                    bootstrap_previous: Optional[PreviousToken] = PreviousToken(
+                        name=bootstrap_meta.name, minted_at=_utc_now()
+                    )
                 except NotFoundException:
                     base_name = "sdk-auto"
-                    bootstrap_api_name = None
-                self._mint_replacement(base_name=base_name, slot=slot, record_replaced_current=False)
-                # Bootstrap token has served its only purpose. Revoke it now so a leaked
-                # bootstrap token cannot be used to mint tokens in the future.
-                self._revoke_bootstrap(bootstrap_api_name)
+                    bootstrap_previous = None
+                self._mint_replacement(
+                    base_name=base_name,
+                    slot=slot,
+                    record_replaced_current=False,
+                    previous=bootstrap_previous,
+                )
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
         except NotFoundException:
@@ -245,25 +253,6 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             raise
         except Exception as exc:
             raise TokenManagerError("Unable to mint a working API token with the bootstrap token") from exc
-
-    def _revoke_bootstrap(self, bootstrap_api_name: Optional[str]) -> None:
-        """Revoke the bootstrap token after the first working token has been persisted.
-
-        Failure is logged as a warning but not raised: the working token is already active,
-        so a failed revocation is not fatal. The bootstrap token will eventually expire on
-        its own TTL.
-        """
-        if not bootstrap_api_name:
-            logger.debug("Bootstrap token was not found in the token list; it may already be revoked.")
-            return
-        try:
-            self._api_tokens.delete_api_token(bootstrap_api_name, _request_timeout=self._request_timeout)
-            logger.info("Bootstrap API token '%s' revoked after initial working token was minted.", bootstrap_api_name)
-        except Exception:  # pylint: disable=broad-exception-caught
-            logger.warning(
-                "Failed to revoke bootstrap token; it remains active until it expires naturally.",
-                exc_info=True,
-            )
 
     def start(self) -> None:
         """Start background refresh when the server supports token management."""
@@ -286,9 +275,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     def recover_from_unauthorized(self) -> None:
         """Recover from a 401 by loading a fresher cached token written by another process.
 
-        The bootstrap token has already been revoked and is never used as a fallback here.
-        If no fresher token is available on disk, the working token chain is broken and
-        requires human intervention (provision a new bootstrap token).
+        Does not remint from the configured bootstrap token. If no fresher token is available
+        on disk, the working token chain is broken and requires human intervention
+        (provision a new GROUNDLIGHT_API_TOKEN).
         """
         if not self._available:
             raise TokenManagerError("Automatic token recovery is unavailable on this server")
@@ -316,10 +305,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             with self._lock:
                 slot = self._load_slot()
                 if slot is None:
-                    # The slot file was lost. The bootstrap token has already been revoked so
-                    # recovery is not possible without human intervention.
                     raise TokenManagerError(
-                        "Token cache slot is missing and the bootstrap token has been revoked. "
+                        "Token cache slot is missing and cannot be refreshed. "
                         "Please provision a new GROUNDLIGHT_API_TOKEN."
                     )
 
@@ -402,6 +389,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         slot: Optional[TokenSlot],
         *,
         record_replaced_current: bool = True,
+        previous: Optional[PreviousToken] = None,
     ) -> CurrentToken:
         """Mint a new token, persist the updated slot, and activate the new credential."""
         new_name = self._new_token_name(base_name)
@@ -411,12 +399,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             _request_timeout=self._request_timeout,
         )
         current = self._current_from_response(response, minted_at)
-        previous: Optional[PreviousToken]
-        if slot and record_replaced_current:
-            previous = PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at)
+        if previous is not None:
+            next_previous = previous
+        elif slot and record_replaced_current:
+            next_previous = PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at)
         else:
-            previous = slot.previous if slot else None
-        self._write_slot(TokenSlot(base_name=base_name, current=current, previous=previous))
+            next_previous = slot.previous if slot else None
+        self._write_slot(TokenSlot(base_name=base_name, current=current, previous=next_previous))
         self._activate(current)
         return current
 
@@ -463,12 +452,16 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     def _current_from_response(response: ApiTokenCreateResponse, minted_at: datetime) -> CurrentToken:
         """Convert a token creation response into cached current-token data."""
         if response.expires_at is None:
-            raise TokenManagerError("The server returned a minted API token without an expiration")
+            # TODO(GL-1709): null expires_at means a never-expire identity. Once token_ttl
+            # discovery lands, skip the refresh loop instead of inventing a client-side expiry.
+            expires_at = minted_at + timedelta(days=TOKEN_TTL_DAYS)
+        else:
+            expires_at = _normalize_datetime(response.expires_at)
         return CurrentToken(
             raw_key=response.raw_key,
             snippet=response.raw_key_snippet,
             name=response.name,
-            expires_at=_normalize_datetime(response.expires_at),
+            expires_at=expires_at,
             minted_at=minted_at,
         )
 
