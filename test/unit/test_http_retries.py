@@ -15,9 +15,15 @@ IMAGE_FILE = "test/assets/dog.jpeg"
 
 @pytest.fixture(name="gl")
 def groundlight_fixture() -> Groundlight:
-    "Creates a Groundlight client"
+    """Create a Groundlight client with token refresh stopped.
+
+    These tests patch urllib3/requests globally and assert exact call counts. A live
+    refresh thread (especially with short testing intervals) can inflate those counts.
+    """
     gl = Groundlight()
-    return gl
+    gl._token_manager.close()  # pylint: disable=protected-access
+    yield gl
+    gl.api_client.close()
 
 
 @pytest.fixture(name="detector")

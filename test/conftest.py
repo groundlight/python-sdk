@@ -21,10 +21,15 @@ def fixture_detector_name() -> Callable[..., str]:
 def pytest_configure(config):  # pylint: disable=unused-argument
     # Run environment check before tests
     gl = Groundlight()
-    if gl._user_is_privileged():  # pylint: disable=protected-access
-        raise RuntimeError(
-            "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
-        )
+    try:
+        if gl._user_is_privileged():  # pylint: disable=protected-access
+            raise RuntimeError(
+                "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
+            )
+    finally:
+        # Always close so the token-refresh thread from this probe client does not outlive
+        # configure and race with later tests that mock the HTTP transport.
+        gl.close()
 
 
 @pytest.fixture(name="gl")
