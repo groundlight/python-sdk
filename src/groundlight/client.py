@@ -217,8 +217,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        # Tests set GROUNDLIGHT_DISABLE_TOKEN_REFRESH so short testing refresh intervals do not
-        # race with suites that mock the HTTP transport and assert exact call counts.
+        # Tests set GROUNDLIGHT_DISABLE_TOKEN_REFRESH so background refresh does not race with
+        # suites that mock the HTTP transport and assert exact call counts.
         disable_refresh = os.environ.get(DISABLE_TOKEN_REFRESH_VARIABLE_NAME, "").lower() in {
             "1",
             "true",

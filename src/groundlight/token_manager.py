@@ -25,14 +25,9 @@ from groundlight.internalapi import GroundlightApiClient, api_exception_detail
 logger = logging.getLogger("groundlight.sdk")
 
 TOKEN_SNIPPET_LENGTH = 20
-# TODO(GL-1709): TEMPORARY short-lived values for live rotation testing only.
-# Before merge / production: set TOKEN_TTL_DAYS = 30 and REFRESH_INTERVAL_DAYS = 1.
-# Follow-up (after zuuul exposes identity token_ttl on public /v1/api-tokens):
-# - discover rotate-vs-not from by-snippet token_ttl (null => no refresh thread)
-# - derive refresh_interval from mint expires_at as observed_ttl / 30
-# - stop hardcoding TOKEN_TTL_DAYS / REFRESH_INTERVAL_DAYS
-TOKEN_TTL_DAYS = 3 / (24 * 60)  # TODO(GL-1709): testing only (3 minutes); revert to 30
-REFRESH_INTERVAL_DAYS = 1 / (24 * 60)  # TODO(GL-1709): testing only (1 minute); revert to 1
+# Refresh fires after this fraction of the working token's observed lifetime
+# (expires_at - minted_at). Example: 30-day TTL => refresh every 1 day.
+REFRESH_INTERVAL_FRACTION = 1 / 30
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
 LOCK_TIMEOUT_SECONDS = 60
@@ -41,7 +36,7 @@ LOCK_TIMEOUT_SECONDS = 60
 # waiting a full refresh interval (which would also spin when the token is already overdue).
 REFRESH_RETRY_BACKOFF_SECONDS = 5 * 60
 # Previous-token grace equals one refresh interval by construction: we only rotate when
-# current is at least REFRESH_INTERVAL old, and previous was demoted at that mint time.
+# current is at least one refresh interval old, and previous was demoted at that mint time.
 # Matches the trailing " xxxxxx" hex suffix this class appends, so repeated rotations
 # reuse a stable base name instead of accreting a new suffix each cycle.
 TOKEN_NAME_SUFFIX_PATTERN = re.compile(r" [0-9a-f]{6}$")
@@ -83,27 +78,28 @@ class CurrentToken:
     raw_key: str
     snippet: str
     name: str
-    expires_at: datetime
+    expires_at: Optional[datetime]
     minted_at: datetime
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CurrentToken":
         """Build a current token from its on-disk representation."""
+        expires_raw = data.get("expires_at")
         return cls(
             raw_key=data["raw_key"],
             snippet=data["snippet"],
             name=data["name"],
-            expires_at=_parse_datetime(data["expires_at"]),
+            expires_at=_parse_datetime(expires_raw) if expires_raw is not None else None,
             minted_at=_parse_datetime(data["minted_at"]),
         )
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> Dict[str, Optional[str]]:
         """Convert the current token to its JSON-compatible representation."""
         return {
             "raw_key": self.raw_key,
             "snippet": self.snippet,
             "name": self.name,
-            "expires_at": _format_datetime(self.expires_at),
+            "expires_at": _format_datetime(self.expires_at) if self.expires_at is not None else None,
             "minted_at": _format_datetime(self.minted_at),
         }
 
@@ -129,7 +125,7 @@ class PreviousToken:
 class TokenSlot:
     """Represent the current and previous tokens stored in one cache slot.
 
-    base_name is the bootstrap token's human-readable name with any auto-generated suffix
+    base_name is the configured token's human-readable name with any auto-generated suffix
     stripped. It is established once at first mint and reused for all future rotations,
     so a token chain always looks like "My Sensor ab12cd", "My Sensor ef34gh", ... rather
     than accumulating nested suffixes.
@@ -219,30 +215,38 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             raise TokenManagerError(f"Groundlight token directory '{self._token_dir}' is not writable")
 
     def _initialize_token(self) -> None:
-        """Load a valid cached token or mint one from the configured bootstrap token."""
+        """Load a valid cached token, use a never-expire configured token, or mint a child."""
         try:
             with self._lock:
                 slot = self._load_slot()
-                if slot and slot.current.expires_at > _utc_now():
+                if slot and self._is_usable_cached_token(slot.current):
                     self._activate(slot.current)
                     return
+
                 self._set_api_token(self._bootstrap_token)
-                # Look up the bootstrap token once: its name seeds base_name for every future
-                # rotation, and we park that name as previous for delayed cleanup (not immediate revoke).
                 try:
-                    bootstrap_meta = self._get_token_by_snippet(self._bootstrap_snippet)
-                    base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", bootstrap_meta.name)
-                    bootstrap_previous: Optional[PreviousToken] = PreviousToken(
-                        name=bootstrap_meta.name, minted_at=_utc_now()
-                    )
+                    configured_meta = self._get_token_by_snippet(self._bootstrap_snippet)
                 except NotFoundException:
-                    base_name = "sdk-auto"
-                    bootstrap_previous = None
+                    # by-snippet missing (old server) or unknown token: try minting with a
+                    # generic base name; a subsequent 404 disables rotation.
+                    self._mint_replacement(
+                        base_name="sdk-auto",
+                        slot=slot,
+                        record_replaced_current=False,
+                        previous=None,
+                    )
+                    return
+
+                if configured_meta.expires_at is None:
+                    # Never-expire configured token: behave like pre-rotation Groundlight.
+                    return
+
+                base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", configured_meta.name)
                 self._mint_replacement(
                     base_name=base_name,
                     slot=slot,
                     record_replaced_current=False,
-                    previous=bootstrap_previous,
+                    previous=PreviousToken(name=configured_meta.name, minted_at=_utc_now()),
                 )
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
@@ -263,9 +267,18 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 "Check that GROUNDLIGHT_API_TOKEN is set to a valid token for this endpoint."
             ) from exc
 
+    @staticmethod
+    def _is_usable_cached_token(token: CurrentToken) -> bool:
+        """Whether a cached token can be activated without minting."""
+        if token.expires_at is None:
+            return True
+        return token.expires_at > _utc_now()
+
     def start(self) -> None:
-        """Start background refresh when the server supports token management."""
+        """Start background refresh when the working token is set to expire."""
         if not self._available or self._thread is not None:
+            return
+        if self._current is None or self._current.expires_at is None:
             return
         self._thread = threading.Thread(
             target=self._run,
@@ -284,8 +297,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     def recover_from_unauthorized(self, detail: Optional[str] = None) -> None:
         """Recover from a 401 by loading a fresher cached token written by another process.
 
-        Does not remint from the configured bootstrap token. If no fresher token is available
-        on disk, raise using the server's 401 detail when provided.
+        Does not remint from the configured token. If no fresher token is available on disk,
+        raise using the server's 401 detail when provided.
         """
         if not self._available:
             raise TokenManagerError("Automatic token recovery is unavailable on this server")
@@ -294,7 +307,11 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         try:
             with self._lock:
                 slot = self._load_slot()
-                if slot and slot.current.raw_key != failed_token and slot.current.expires_at > _utc_now():
+                if (
+                    slot
+                    and slot.current.raw_key != failed_token
+                    and self._is_usable_cached_token(slot.current)
+                ):
                     self._activate(slot.current)
                     return
                 raise TokenManagerError(rejection)
@@ -322,7 +339,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     )
 
                 self._activate(slot.current)
-                if _utc_now() - slot.current.minted_at < timedelta(days=REFRESH_INTERVAL_DAYS):
+                if slot.current.expires_at is None:
+                    return True
+                if _utc_now() - slot.current.minted_at < self._refresh_interval(slot.current):
                     return True
                 # Due for rotation: previous has been demoted for at least one refresh interval.
                 self._revoke_previous(slot.previous)
@@ -349,11 +368,10 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Refresh tokens on schedule until the client is closed."""
         while not self._stop_event.is_set():
             current = self._current
-            if current is None:
-                wait_seconds = 0.0
-            else:
-                refresh_at = current.minted_at + timedelta(days=REFRESH_INTERVAL_DAYS)
-                wait_seconds = max(0.0, (refresh_at - _utc_now()).total_seconds())
+            if current is None or current.expires_at is None:
+                return
+            refresh_at = current.minted_at + self._refresh_interval(current)
+            wait_seconds = max(0.0, (refresh_at - _utc_now()).total_seconds())
             if self._stop_event.wait(wait_seconds):
                 return
             try:
@@ -363,6 +381,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 refresh_succeeded = False
             if not refresh_succeeded and self._stop_event.wait(REFRESH_RETRY_BACKOFF_SECONDS):
                 return
+
+    @staticmethod
+    def _refresh_interval(token: CurrentToken) -> timedelta:
+        """Return how long to keep a working token before rotating."""
+        if token.expires_at is None:
+            raise TokenManagerError("Cannot compute a refresh interval for a never-expiring token")
+        return (token.expires_at - token.minted_at) * REFRESH_INTERVAL_FRACTION
 
     def _load_slot(self) -> Optional[TokenSlot]:
         """Load the cache slot, returning None when it does not exist."""
@@ -409,8 +434,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Mint a new token, persist the updated slot, and activate the new credential."""
         new_name = self._new_token_name(base_name)
         minted_at = _utc_now()
+        # Omit expires_at so the server applies the identity's token lifetime policy.
         response = self._api_tokens.create_api_token(
-            ApiTokenRequest(name=new_name, expires_at=minted_at + timedelta(days=TOKEN_TTL_DAYS)),
+            ApiTokenRequest(name=new_name),
             _request_timeout=self._request_timeout,
         )
         current = self._current_from_response(response, minted_at)
@@ -466,10 +492,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def _current_from_response(response: ApiTokenCreateResponse, minted_at: datetime) -> CurrentToken:
         """Convert a token creation response into cached current-token data."""
+        expires_at: Optional[datetime]
         if response.expires_at is None:
-            # TODO(GL-1709): null expires_at means a never-expire identity. Once token_ttl
-            # discovery lands, skip the refresh loop instead of inventing a client-side expiry.
-            expires_at = minted_at + timedelta(days=TOKEN_TTL_DAYS)
+            expires_at = None
         else:
             expires_at = _normalize_datetime(response.expires_at)
         return CurrentToken(
