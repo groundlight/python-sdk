@@ -41,11 +41,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
-from groundlight.config import (
-    API_TOKEN_MISSING_HELP_MESSAGE,
-    API_TOKEN_VARIABLE_NAME,
-    DISABLE_TLS_VARIABLE_NAME,
-)
+from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
@@ -216,7 +212,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        # No-op when the working token never expires (ttl is null).
+        # No-op when the working token never expires (expires_at is null).
         self._token_manager.start()
 
     def __repr__(self) -> str:
