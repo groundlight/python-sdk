@@ -1,7 +1,7 @@
 # pylint: disable=deprecated-module
 from io import BufferedReader, BytesIO, IOBase
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 from groundlight.optional_imports import Image, np
 
@@ -23,12 +23,15 @@ class ByteStreamWrapper(IOBase):
     when we want to retry accessing the file without having to re-open it.
     """
 
-    def __init__(self, data: Union[BufferedReader, BytesIO, bytes]) -> None:
+    def __init__(self, data: Union[BufferedReader, BytesIO, bytes], name: Optional[str] = None) -> None:
         super().__init__()
         if isinstance(data, (BufferedReader, BytesIO)):
             self._data = data.read()
         else:
             self._data = data
+        # An optional filename. Multipart file uploads via the generated client read `.name`
+        # to derive each part's filename and content-type.
+        self.name = name
 
     def read(self) -> bytes:
         return self._data
