@@ -211,7 +211,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        # No-op when the working token never expires (expires_at is null).
+        # No-op when the working token has no identity Token TTL.
         self._token_manager.start()
 
     def __repr__(self) -> str:

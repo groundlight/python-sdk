@@ -104,6 +104,10 @@ class ApiTokenCreateResponse(ModelNormal):
                 datetime,
                 none_type,
             ),  # noqa: E501
+            "token_ttl": (
+                int,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -117,6 +121,7 @@ class ApiTokenCreateResponse(ModelNormal):
         "last_used_at": "last_used_at",  # noqa: E501
         "raw_key": "raw_key",  # noqa: E501
         "expires_at": "expires_at",  # noqa: E501
+        "token_ttl": "token_ttl",  # noqa: E501
     }
 
     read_only_vars = {
@@ -124,6 +129,7 @@ class ApiTokenCreateResponse(ModelNormal):
         "created_at",  # noqa: E501
         "last_used_at",  # noqa: E501
         "raw_key",  # noqa: E501
+        "token_ttl",  # noqa: E501
     }
 
     _composed_schemas = {}

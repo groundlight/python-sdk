@@ -9,7 +9,7 @@ from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
 # Keep background token refresh off for the test suite so it cannot race with tests that
 # mock urllib3/requests and assert exact call counts. Production clients have no such knob;
-# rotate-vs-not is determined solely by token expires_at / ttl.
+# rotate-vs-not is determined solely by identity token_ttl.
 TokenManager.start = lambda self: None  # type: ignore[method-assign]
 
 

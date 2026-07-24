@@ -43,6 +43,10 @@ class ApiToken(BaseModel):
     expires_at: Optional[datetime] = Field(
         None, description="When does this token expire? If Null, the token never expires."
     )
+    token_ttl: Optional[int] = Field(
+        None,
+        description="Identity token lifetime policy in whole seconds. Null means tokens minted under this identity never expire (no rotation).",
+    )
 
 
 class ApiTokenCreateResponse(BaseModel):
@@ -64,6 +68,10 @@ class ApiTokenCreateResponse(BaseModel):
     )
     expires_at: Optional[datetime] = Field(
         None, description="When does this token expire? If Null, the token never expires."
+    )
+    token_ttl: Optional[int] = Field(
+        None,
+        description="Identity token lifetime policy in whole seconds. Null means tokens minted under this identity never expire (no rotation).",
     )
     raw_key: str = Field(..., description="The full API token secret. Returned only once, when the token is created.")
 

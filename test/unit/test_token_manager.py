@@ -3,7 +3,6 @@ import json
 import stat
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
-from typing import Optional
 from unittest.mock import Mock, call
 
 import pytest
@@ -28,13 +27,18 @@ _UNSET = object()
 
 
 def _expiring_metadata(name: str, raw_key: str) -> SimpleNamespace:
-    """Build by-snippet metadata for an expiring configured token."""
-    return SimpleNamespace(name=name, raw_key_snippet=raw_key[:20], expires_at=NOW + TOKEN_TTL)
+    """Build by-snippet metadata for a rotating configured token."""
+    return SimpleNamespace(
+        name=name,
+        raw_key_snippet=raw_key[:20],
+        expires_at=NOW + TOKEN_TTL,
+        token_ttl=int(TOKEN_TTL.total_seconds()),
+    )
 
 
 def _never_expire_metadata(name: str, raw_key: str) -> SimpleNamespace:
-    """Build by-snippet metadata for a never-expire configured token."""
-    return SimpleNamespace(name=name, raw_key_snippet=raw_key[:20], expires_at=None)
+    """Build by-snippet metadata for a non-rotating configured token."""
+    return SimpleNamespace(name=name, raw_key_snippet=raw_key[:20], expires_at=None, token_ttl=None)
 
 
 def _created_token(
@@ -43,17 +47,18 @@ def _created_token(
     now: datetime,
     *,
     expires_at=_UNSET,
-    created_at: Optional[datetime] = None,
+    token_ttl=_UNSET,
 ) -> SimpleNamespace:
-    """Build a token creation response. Pass expires_at=None for a never-expire child."""
-    resolved_created_at = now if created_at is None else created_at
+    """Build a token creation response. Pass token_ttl=None for a non-rotating child."""
     resolved_expires_at = now + TOKEN_TTL if expires_at is _UNSET else expires_at
+    resolved_token_ttl = int(TOKEN_TTL.total_seconds()) if token_ttl is _UNSET else token_ttl
     return SimpleNamespace(
         name=name,
         raw_key=raw_key,
         raw_key_snippet=raw_key[:20],
-        created_at=resolved_created_at,
+        created_at=now,
         expires_at=resolved_expires_at,
+        token_ttl=resolved_token_ttl,
     )
 
 
@@ -87,7 +92,7 @@ def test_initialization_mints_and_privately_caches_token(mocker, tmp_path):
     cached = json.loads(manager._slot_path.read_text())
     assert cached["base_name"] == "Device token"
     assert cached["current"]["raw_key"] == "api_working_token_one"
-    assert cached["current"]["ttl_seconds"] == TOKEN_TTL.total_seconds()
+    assert cached["current"]["token_ttl_seconds"] == TOKEN_TTL.total_seconds()
     assert cached["previous"]["name"] == "Device token"
     api.delete_api_token.assert_not_called()
 
@@ -107,7 +112,7 @@ def test_initialization_parks_configured_token_as_previous(mocker, tmp_path):
 
 
 def test_initialization_uses_never_expire_configured_token_as_is(mocker, tmp_path):
-    """A never-expire configured token is used directly with no mint or refresh thread."""
+    """A configured token with null token_ttl is used directly with no mint or refresh thread."""
     api = Mock()
     api.get_api_token_by_snippet.return_value = _never_expire_metadata("Device token", CONFIGURED_TOKEN)
 
@@ -121,24 +126,23 @@ def test_initialization_uses_never_expire_configured_token_as_is(mocker, tmp_pat
     api.create_api_token.assert_not_called()
 
 
-def test_initialization_mint_with_null_expires_at_does_not_start_refresh(mocker, tmp_path):
-    """A minted child with null expires_at is activated but does not start a refresh thread."""
+def test_initialization_hard_deadline_without_token_ttl_does_not_rotate(mocker, tmp_path):
+    """Hard-deadline-only identities (token_ttl null, expires_at set) do not rotate."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
-    api.create_api_token.return_value = _created_token(
-        "Device token abc123", "api_working_token_one", NOW, expires_at=None
+    api.get_api_token_by_snippet.return_value = SimpleNamespace(
+        name="Device token",
+        raw_key_snippet=CONFIGURED_TOKEN[:20],
+        expires_at=NOW + timedelta(days=3),
+        token_ttl=None,
     )
 
     manager = _manager(mocker, tmp_path, api)
     manager.start()
 
-    assert manager._configuration.api_key["ApiToken"] == "api_working_token_one"
-    assert manager._current is not None
-    assert manager._current.expires_at is None
+    assert manager._configuration.api_key["ApiToken"] == CONFIGURED_TOKEN
+    assert manager._current is None
     assert manager._thread is None
-    cached = json.loads(manager._slot_path.read_text())
-    assert cached["current"]["expires_at"] is None
-    assert cached["current"]["ttl_seconds"] is None
+    api.create_api_token.assert_not_called()
 
 
 def test_initialization_reuses_valid_cached_token(mocker, tmp_path):
@@ -216,8 +220,8 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     assert cached["previous"]["name"] == "Device token abc123"
 
 
-def test_refresh_interval_is_observed_ttl_over_thirty(mocker, tmp_path):
-    """Refresh becomes due after one-thirtieth of the working token's server lifetime."""
+def test_refresh_interval_is_token_ttl_over_thirty(mocker, tmp_path):
+    """Refresh becomes due after one-thirtieth of the identity Token TTL."""
     api = Mock()
     api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
@@ -357,16 +361,33 @@ def test_invalid_configured_token_cannot_escape_cache_directory(tmp_path):
         TokenManager("../../outside-token", configuration, request_timeout=1, token_dir=tmp_path)
 
 
-def test_refresh_interval_uses_server_ttl_and_clamps_non_positive(mocker, tmp_path):
-    """Refresh cadence uses server created_at/expires_at and avoids a zero/negative spin."""
+def test_refresh_interval_uses_token_ttl_not_hard_deadline_clamp(mocker, tmp_path):
+    """Refresh cadence follows identity token_ttl even when expires_at is clamped sooner."""
     api = Mock()
     api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token(
         "Device token abc123",
         "api_working_token_one",
         NOW,
-        created_at=NOW + timedelta(minutes=10),
-        expires_at=NOW + timedelta(minutes=3),
+        expires_at=NOW + timedelta(days=3),
+        token_ttl=int(TOKEN_TTL.total_seconds()),
+    )
+    manager = _manager(mocker, tmp_path, api)
+
+    assert manager._current is not None
+    assert manager._current.expires_at == NOW + timedelta(days=3)
+    assert manager._refresh_interval(manager._current) == REFRESH_INTERVAL
+
+
+def test_refresh_interval_clamps_non_positive_token_ttl(mocker, tmp_path):
+    """A non-positive token_ttl falls back to the retry backoff instead of spinning."""
+    api = Mock()
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
+    api.create_api_token.return_value = _created_token(
+        "Device token abc123",
+        "api_working_token_one",
+        NOW,
+        token_ttl=0,
     )
     manager = _manager(mocker, tmp_path, api)
 

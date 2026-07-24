@@ -103,6 +103,10 @@ class ApiToken(ModelNormal):
                 datetime,
                 none_type,
             ),  # noqa: E501
+            "token_ttl": (
+                int,
+                none_type,
+            ),  # noqa: E501
         }
 
     @cached_property
@@ -115,12 +119,14 @@ class ApiToken(ModelNormal):
         "created_at": "created_at",  # noqa: E501
         "last_used_at": "last_used_at",  # noqa: E501
         "expires_at": "expires_at",  # noqa: E501
+        "token_ttl": "token_ttl",  # noqa: E501
     }
 
     read_only_vars = {
         "raw_key_snippet",  # noqa: E501
         "created_at",  # noqa: E501
         "last_used_at",  # noqa: E501
+        "token_ttl",  # noqa: E501
     }
 
     _composed_schemas = {}

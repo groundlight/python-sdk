@@ -1192,6 +1192,12 @@ components:
           format: date-time
           nullable: true
           description: When does this token expire? If Null, the token never expires.
+        token_ttl:
+          type: integer
+          nullable: true
+          readOnly: true
+          description: Identity token lifetime policy in whole seconds. Null means
+            tokens minted under this identity never expire (no rotation).
       required:
       - created_at
       - last_used_at
@@ -1230,6 +1236,12 @@ components:
           format: date-time
           nullable: true
           description: When does this token expire? If Null, the token never expires.
+        token_ttl:
+          type: integer
+          nullable: true
+          readOnly: true
+          description: Identity token lifetime policy in whole seconds. Null means
+            tokens minted under this identity never expire (no rotation).
         raw_key:
           type: string
           readOnly: true

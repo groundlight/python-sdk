@@ -25,16 +25,16 @@ from groundlight.internalapi import GroundlightApiClient, api_exception_detail
 logger = logging.getLogger("groundlight.sdk")
 
 TOKEN_SNIPPET_LENGTH = 20
-# Refresh fires after this fraction of the server-reported token lifetime
-# (expires_at - created_at). Example: 30-day TTL => refresh every 1 day.
+# Refresh fires after this fraction of the server-reported identity token_ttl.
+# Example: 30-day token_ttl => refresh every 1 day.
 REFRESH_INTERVAL_FRACTION = 1 / 30
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
 LOCK_TIMEOUT_SECONDS = 60
 # After a failed background refresh the current token is still valid for the rest of its
-# TTL, so retry on a short cadence to recover quickly from a transient outage rather than
-# waiting a full refresh interval (which would also spin when the token is already overdue).
-# Also used as the floor when server lifetime is non-positive (clock skew).
+# lifetime, so retry on a short cadence to recover quickly from a transient outage rather
+# than waiting a full refresh interval (which would also spin when the token is already overdue).
+# Also used as the floor when token_ttl is non-positive.
 REFRESH_RETRY_BACKOFF_SECONDS = 5 * 60
 TOKEN_NAME_SUFFIX_PATTERN = re.compile(r" [0-9a-f]{6}$")
 
@@ -72,9 +72,9 @@ def _normalize_datetime(value: datetime) -> datetime:
 class CurrentToken:
     """Store the working token data needed for authentication and rotation.
 
-    expires_at comes from the server. minted_at is the local observation time used to
-    schedule refresh. ttl is the server-side lifetime (expires_at - created_at) used to
-    compute the refresh cadence without mixing server and client clocks.
+    expires_at is when this token secret dies. minted_at is the local observation time
+    used to schedule refresh. token_ttl is the identity lifetime policy from the server
+    (stable across hard-deadline clamps) used for rotate-vs-not and refresh cadence.
     """
 
     raw_key: str
@@ -82,20 +82,20 @@ class CurrentToken:
     name: str
     expires_at: Optional[datetime]
     minted_at: datetime
-    ttl: Optional[timedelta]
+    token_ttl: Optional[timedelta]
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CurrentToken":
         """Build a current token from its on-disk representation."""
         expires_raw = data.get("expires_at")
-        ttl_seconds = data["ttl_seconds"]
+        ttl_seconds = data.get("token_ttl_seconds", data.get("ttl_seconds"))
         return cls(
             raw_key=data["raw_key"],
             snippet=data["snippet"],
             name=data["name"],
             expires_at=_parse_datetime(expires_raw) if expires_raw is not None else None,
             minted_at=_parse_datetime(data["minted_at"]),
-            ttl=timedelta(seconds=ttl_seconds) if ttl_seconds is not None else None,
+            token_ttl=timedelta(seconds=ttl_seconds) if ttl_seconds is not None else None,
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -106,7 +106,7 @@ class CurrentToken:
             "name": self.name,
             "expires_at": _format_datetime(self.expires_at) if self.expires_at is not None else None,
             "minted_at": _format_datetime(self.minted_at),
-            "ttl_seconds": self.ttl.total_seconds() if self.ttl is not None else None,
+            "token_ttl_seconds": self.token_ttl.total_seconds() if self.token_ttl is not None else None,
         }
 
 
@@ -237,8 +237,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     self._available = False
                     return
 
-                if configured_meta.expires_at is None:
-                    # Never-expire configured token: behave like pre-rotation Groundlight.
+                if configured_meta.token_ttl is None:
+                    # No identity Token TTL: behave like pre-rotation Groundlight.
                     return
 
                 base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", configured_meta.name)
@@ -273,10 +273,10 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         return token.expires_at > _utc_now()
 
     def start(self) -> None:
-        """Start background refresh when the working token has a finite lifetime."""
+        """Start background refresh when the working token has a finite Token TTL."""
         if not self._available or self._thread is not None:
             return
-        if self._current is None or self._current.ttl is None:
+        if self._current is None or self._current.token_ttl is None:
             return
         self._thread = threading.Thread(
             target=self._run,
@@ -309,7 +309,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     )
 
                 self._activate(slot.current)
-                if slot.current.expires_at is None or slot.current.ttl is None:
+                if slot.current.token_ttl is None:
                     return True
                 if _utc_now() - slot.current.minted_at < self._refresh_interval(slot.current):
                     return True
@@ -339,7 +339,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Refresh tokens on schedule until the client is closed."""
         while not self._stop_event.is_set():
             current = self._current
-            if current is None or current.expires_at is None or current.ttl is None:
+            if current is None or current.token_ttl is None:
                 return
             refresh_at = current.minted_at + self._refresh_interval(current)
             wait_seconds = max(0.0, (refresh_at - _utc_now()).total_seconds())
@@ -357,12 +357,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     def _refresh_interval(token: CurrentToken) -> timedelta:
         """Return how long to keep a working token before rotating.
 
-        Uses the server-reported lifetime so client clock skew cannot invent a negative
-        interval. Non-positive lifetimes fall back to the retry backoff to avoid a spin.
+        Uses the server-reported identity token_ttl so hard-deadline clamps on
+        expires_at cannot shrink the refresh cadence. Non-positive values fall back
+        to the retry backoff to avoid a spin.
         """
-        if token.ttl is None:
-            raise TokenManagerError("Cannot compute a refresh interval for a never-expiring token")
-        interval = token.ttl * REFRESH_INTERVAL_FRACTION
+        if token.token_ttl is None:
+            raise TokenManagerError("Cannot compute a refresh interval without a Token TTL")
+        interval = token.token_ttl * REFRESH_INTERVAL_FRACTION
         if interval <= timedelta(0):
             return timedelta(seconds=REFRESH_RETRY_BACKOFF_SECONDS)
         return interval
@@ -444,24 +445,15 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def _current_from_response(response: ApiTokenCreateResponse, minted_at: datetime) -> CurrentToken:
         """Convert a token creation response into cached current-token data."""
-        if response.expires_at is None:
-            return CurrentToken(
-                raw_key=response.raw_key,
-                snippet=response.raw_key_snippet,
-                name=response.name,
-                expires_at=None,
-                minted_at=minted_at,
-                ttl=None,
-            )
-        expires_at = _normalize_datetime(response.expires_at)
-        created_at = _normalize_datetime(response.created_at)
+        expires_at = None if response.expires_at is None else _normalize_datetime(response.expires_at)
+        token_ttl = None if response.token_ttl is None else timedelta(seconds=response.token_ttl)
         return CurrentToken(
             raw_key=response.raw_key,
             snippet=response.raw_key_snippet,
             name=response.name,
             expires_at=expires_at,
             minted_at=minted_at,
-            ttl=expires_at - created_at,
+            token_ttl=token_ttl,
         )
 
     def _activate(self, token: CurrentToken) -> None:
