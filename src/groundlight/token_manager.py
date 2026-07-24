@@ -307,11 +307,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         try:
             with self._lock:
                 slot = self._load_slot()
-                if (
-                    slot
-                    and slot.current.raw_key != failed_token
-                    and self._is_usable_cached_token(slot.current)
-                ):
+                if slot and slot.current.raw_key != failed_token and self._is_usable_cached_token(slot.current):
                     self._activate(slot.current)
                     return
                 raise TokenManagerError(rejection)
