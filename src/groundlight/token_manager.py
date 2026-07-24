@@ -231,7 +231,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 except NotFoundException:
                     # Token management API unavailable: keep the configured token as-is.
                     logger.warning(
-                        "Automatic API token refresh is unavailable because this server does not support token management"
+                        "Automatic API token refresh is unavailable because this server does not support token"
+                        " management"
                     )
                     self._available = False
                     return
