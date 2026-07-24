@@ -245,15 +245,60 @@ class GroundlightApiClient(ApiClient):
 
     def request_with_unauthorized_recovery(self, method: str, url: str, **kwargs) -> requests.Response:
         """Send a raw request and retry once with refreshed credentials after a 401."""
-        response = requests.request(method, url, **kwargs)
+        files_snapshot = self._snapshot_multipart_files(kwargs.get("files"))
+        request_kwargs = dict(kwargs)
+        if files_snapshot is not None:
+            request_kwargs["files"] = self._files_from_snapshot(files_snapshot)
+
+        response = requests.request(method, url, **request_kwargs)
         if response.status_code != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
             return response
         detail = (response.text or "").strip() or None
         self._unauthorized_handler(detail)
-        headers = dict(kwargs.get("headers", {}))
+        headers = dict(request_kwargs.get("headers", {}))
         headers["x-api-token"] = self.configuration.api_key["ApiToken"]
-        kwargs["headers"] = headers
-        return requests.request(method, url, **kwargs)
+        request_kwargs["headers"] = headers
+        if files_snapshot is not None:
+            request_kwargs["files"] = self._files_from_snapshot(files_snapshot)
+        return requests.request(method, url, **request_kwargs)
+
+    @staticmethod
+    def _read_multipart_file_bytes(fileobj) -> bytes:
+        """Read bytes from a multipart file value without assuming it is seekable."""
+        if isinstance(fileobj, (bytes, bytearray)):
+            return bytes(fileobj)
+        if isinstance(fileobj, io.IOBase):
+            data = fileobj.read()
+            if isinstance(data, str):
+                return data.encode("utf-8")
+            return data
+        raise TypeError(f"Unsupported multipart file type: {type(fileobj)!r}")
+
+    @classmethod
+    def _snapshot_multipart_files(cls, files) -> Optional[dict]:
+        """Copy multipart file payloads so a 401 retry can resend them."""
+        if files is None:
+            return None
+        snapshot = {}
+        for field, value in files.items():
+            if isinstance(value, tuple):
+                filename, fileobj, *rest = value
+                snapshot[field] = (filename, cls._read_multipart_file_bytes(fileobj), *rest)
+            else:
+                snapshot[field] = cls._read_multipart_file_bytes(value)
+        return snapshot
+
+    @staticmethod
+    def _files_from_snapshot(snapshot: dict) -> dict:
+        """Rebuild a requests-compatible files dict from a bytes snapshot."""
+        files = {}
+        for field, value in snapshot.items():
+            if isinstance(value, tuple):
+                filename, data, *rest = value
+                files[field] = (filename, io.BytesIO(data), *rest)
+            else:
+                files[field] = io.BytesIO(value)
+        return files
 
     #
     # The methods below will eventually go away when we move to properly model

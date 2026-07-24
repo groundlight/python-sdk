@@ -17,12 +17,13 @@ from groundlight.token_manager import (
 from groundlight_openapi_client import Configuration
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException, UnauthorizedException
 
-BOOTSTRAP_TOKEN = "api_bootstrap_token_value_long_enough"
+CONFIGURED_TOKEN = "api_configured_token_value_long"
 NOW = datetime(2026, 7, 9, 12, 0, tzinfo=timezone.utc)
 TOKEN_TTL = timedelta(days=30)
 REFRESH_INTERVAL = TOKEN_TTL * REFRESH_INTERVAL_FRACTION
 TOKEN_CACHE_MODE = 0o600
 TOKEN_DIR_MODE = 0o700
+_UNSET = object()
 
 
 def _expiring_metadata(name: str, raw_key: str) -> SimpleNamespace:
@@ -35,13 +36,22 @@ def _never_expire_metadata(name: str, raw_key: str) -> SimpleNamespace:
     return SimpleNamespace(name=name, raw_key_snippet=raw_key[:20], expires_at=None)
 
 
-def _created_token(name: str, raw_key: str, now: datetime, *, expires_at=...) -> SimpleNamespace:
+def _created_token(
+    name: str,
+    raw_key: str,
+    now: datetime,
+    *,
+    expires_at=_UNSET,
+    created_at: datetime = None,
+) -> SimpleNamespace:
     """Build a token creation response. Pass expires_at=None for a never-expire child."""
-    resolved_expires_at = now + TOKEN_TTL if expires_at is ... else expires_at
+    resolved_created_at = now if created_at is None else created_at
+    resolved_expires_at = now + TOKEN_TTL if expires_at is _UNSET else expires_at
     return SimpleNamespace(
         name=name,
         raw_key=raw_key,
         raw_key_snippet=raw_key[:20],
+        created_at=resolved_created_at,
         expires_at=resolved_expires_at,
     )
 
@@ -51,9 +61,9 @@ def _manager(mocker, tmp_path, api, now=NOW) -> TokenManager:
     mocker.patch.object(token_manager, "ApiTokensApi", return_value=api)
     mocker.patch.object(token_manager, "_utc_now", return_value=now)
     configuration = Configuration(host="https://example.com/device-api")
-    configuration.api_key["ApiToken"] = BOOTSTRAP_TOKEN
+    configuration.api_key["ApiToken"] = CONFIGURED_TOKEN
     return TokenManager(
-        bootstrap_token=BOOTSTRAP_TOKEN,
+        configured_token=CONFIGURED_TOKEN,
         configuration=configuration,
         request_timeout=1,
         token_dir=tmp_path,
@@ -63,7 +73,7 @@ def _manager(mocker, tmp_path, api, now=NOW) -> TokenManager:
 def test_initialization_mints_and_privately_caches_token(mocker, tmp_path):
     """An expiring configured token mints a child and stores it with mode 0600."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
 
     manager = _manager(mocker, tmp_path, api)
@@ -76,6 +86,7 @@ def test_initialization_mints_and_privately_caches_token(mocker, tmp_path):
     cached = json.loads(manager._slot_path.read_text())
     assert cached["base_name"] == "Device token"
     assert cached["current"]["raw_key"] == "api_working_token_one"
+    assert cached["current"]["ttl_seconds"] == TOKEN_TTL.total_seconds()
     assert cached["previous"]["name"] == "Device token"
     api.delete_api_token.assert_not_called()
 
@@ -83,7 +94,7 @@ def test_initialization_mints_and_privately_caches_token(mocker, tmp_path):
 def test_initialization_parks_configured_token_as_previous(mocker, tmp_path):
     """After minting the first working token, the configured token is parked as previous."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
 
     manager = _manager(mocker, tmp_path, api)
@@ -97,12 +108,12 @@ def test_initialization_parks_configured_token_as_previous(mocker, tmp_path):
 def test_initialization_uses_never_expire_configured_token_as_is(mocker, tmp_path):
     """A never-expire configured token is used directly with no mint or refresh thread."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _never_expire_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _never_expire_metadata("Device token", CONFIGURED_TOKEN)
 
     manager = _manager(mocker, tmp_path, api)
     manager.start()
 
-    assert manager._configuration.api_key["ApiToken"] == BOOTSTRAP_TOKEN
+    assert manager._configuration.api_key["ApiToken"] == CONFIGURED_TOKEN
     assert manager._current is None
     assert manager._thread is None
     assert not manager._slot_path.exists()
@@ -112,7 +123,7 @@ def test_initialization_uses_never_expire_configured_token_as_is(mocker, tmp_pat
 def test_initialization_mint_with_null_expires_at_does_not_start_refresh(mocker, tmp_path):
     """A minted child with null expires_at is activated but does not start a refresh thread."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token(
         "Device token abc123", "api_working_token_one", NOW, expires_at=None
     )
@@ -126,20 +137,21 @@ def test_initialization_mint_with_null_expires_at_does_not_start_refresh(mocker,
     assert manager._thread is None
     cached = json.loads(manager._slot_path.read_text())
     assert cached["current"]["expires_at"] is None
+    assert cached["current"]["ttl_seconds"] is None
 
 
 def test_initialization_reuses_valid_cached_token(mocker, tmp_path):
     """A valid slot is reused without making token API calls."""
     first_api = Mock()
-    first_api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    first_api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     first_api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     first = _manager(mocker, tmp_path, first_api)
 
     second_api = Mock()
     mocker.patch.object(token_manager, "ApiTokensApi", return_value=second_api)
     configuration = Configuration(host="https://example.com/device-api")
-    configuration.api_key["ApiToken"] = BOOTSTRAP_TOKEN
-    second = TokenManager(BOOTSTRAP_TOKEN, configuration, request_timeout=1, token_dir=tmp_path)
+    configuration.api_key["ApiToken"] = CONFIGURED_TOKEN
+    second = TokenManager(CONFIGURED_TOKEN, configuration, request_timeout=1, token_dir=tmp_path)
 
     second_api.get_api_token_by_snippet.assert_not_called()
     second_api.create_api_token.assert_not_called()
@@ -150,27 +162,27 @@ def test_initialization_uses_configured_token_when_token_api_is_unavailable(mock
     """A server without token management remains usable with the configured token."""
     api = Mock()
     api.get_api_token_by_snippet.side_effect = NotFoundException()
-    api.create_api_token.side_effect = NotFoundException()
 
     manager = _manager(mocker, tmp_path, api)
     manager.start()
 
-    assert manager._configuration.api_key["ApiToken"] == BOOTSTRAP_TOKEN
+    assert manager._configuration.api_key["ApiToken"] == CONFIGURED_TOKEN
     assert manager._thread is None
-    api.create_api_token.assert_called_once()
+    assert manager._available is False
+    api.create_api_token.assert_not_called()
 
 
 def test_name_lookup_uses_snippet_endpoint_and_enforces_length(mocker, tmp_path):
-    """Token naming uses the by-snippet endpoint (no pagination) and stays within 64 characters."""
+    """Token naming uses the by-snippet endpoint and stays within 64 characters."""
     api = Mock()
     long_name = "x" * 64
-    api.get_api_token_by_snippet.return_value = _expiring_metadata(long_name, BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata(long_name, CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token(f"{'x' * 57} abc123", "api_working_token_one", NOW)
     mocker.patch.object(token_manager.secrets, "token_hex", return_value="abc123")
 
     _manager(mocker, tmp_path, api)
 
-    api.get_api_token_by_snippet.assert_called_once_with(BOOTSTRAP_TOKEN[:20], _request_timeout=1)
+    api.get_api_token_by_snippet.assert_called_once_with(CONFIGURED_TOKEN[:20], _request_timeout=1)
     request = api.create_api_token.call_args.args[0]
     assert request.name == f"{'x' * 57} abc123"
     assert len(request.name) == TOKEN_NAME_MAX_LENGTH
@@ -179,10 +191,10 @@ def test_name_lookup_uses_snippet_endpoint_and_enforces_length(mocker, tmp_path)
 def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
     """When refresh is due, revoke previous, demote current, and mint a replacement."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
-    api.reset_mock()  # clear calls from init (lookup + mint)
+    api.reset_mock()
     old_slot = json.loads(manager._slot_path.read_text())
     old_slot["previous"] = {
         "name": "older token",
@@ -204,9 +216,9 @@ def test_refresh_rotates_and_cleans_up_previous_token(mocker, tmp_path):
 
 
 def test_refresh_interval_is_observed_ttl_over_thirty(mocker, tmp_path):
-    """Refresh becomes due after one-thirtieth of the working token's observed lifetime."""
+    """Refresh becomes due after one-thirtieth of the working token's server lifetime."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
     api.reset_mock()
@@ -226,7 +238,7 @@ def test_refresh_interval_is_observed_ttl_over_thirty(mocker, tmp_path):
 def test_refresh_continues_rotation_when_previous_delete_fails(mocker, tmp_path):
     """A failed previous revoke does not block minting the next working token."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
     slot = json.loads(manager._slot_path.read_text())
@@ -254,7 +266,7 @@ def test_refresh_continues_rotation_when_previous_delete_fails(mocker, tmp_path)
 def test_refresh_thread_backs_off_after_failed_cycle(mocker, tmp_path):
     """A failed refresh waits a short backoff instead of immediately retrying."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
     mocker.patch.object(token_manager, "_utc_now", return_value=NOW + REFRESH_INTERVAL + timedelta(seconds=1))
@@ -272,7 +284,7 @@ def test_refresh_thread_backs_off_after_failed_cycle(mocker, tmp_path):
 def test_close_waits_for_refresh_thread_before_closing_client(mocker, tmp_path):
     """Closing waits for in-flight refresh work before closing its HTTP client."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
     thread = Mock()
@@ -288,7 +300,7 @@ def test_close_waits_for_refresh_thread_before_closing_client(mocker, tmp_path):
 def test_unauthorized_recovery_uses_newer_token_from_disk(mocker, tmp_path):
     """A 401 reloads a token another process already wrote instead of minting again."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
     api.reset_mock()
@@ -323,7 +335,7 @@ def test_initialization_surfaces_unauthorized_detail(mocker, tmp_path):
 def test_unauthorized_recovery_raises_when_no_fresher_token_available(mocker, tmp_path):
     """A rejected cached token raises loudly when no fresher token is on disk."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
 
@@ -345,12 +357,12 @@ def test_new_token_name_appends_suffix_and_truncates(mocker):
 def test_resolve_base_name_strips_existing_suffix(mocker, tmp_path):
     """The base_name established from an existing token has any prior hex suffix stripped."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token abc123", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token abc123", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_one", NOW)
 
     _manager(mocker, tmp_path, api)
 
-    cached = json.loads((tmp_path / f"{BOOTSTRAP_TOKEN[:20]}.json").read_text())
+    cached = json.loads((tmp_path / f"{CONFIGURED_TOKEN[:20]}.json").read_text())
     assert cached["base_name"] == "Device token"
 
 
@@ -360,7 +372,7 @@ def test_existing_token_dir_permissions_are_tightened(mocker, tmp_path):
     loose_dir.mkdir()
     loose_dir.chmod(0o777)  # noqa: S103  # intentionally over-permissive to prove it gets tightened
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
 
     _manager(mocker, loose_dir, api)
@@ -368,10 +380,10 @@ def test_existing_token_dir_permissions_are_tightened(mocker, tmp_path):
     assert stat.S_IMODE(loose_dir.stat().st_mode) == TOKEN_DIR_MODE
 
 
-def test_unauthorized_recovery_restores_previous_token_when_remint_fails(mocker, tmp_path):
+def test_unauthorized_recovery_leaves_active_token_unchanged_when_no_fresher(mocker, tmp_path):
     """A failed 401 recovery raises loudly and leaves the active token unchanged."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
     manager = _manager(mocker, tmp_path, api)
 
@@ -381,7 +393,7 @@ def test_unauthorized_recovery_restores_previous_token_when_remint_fails(mocker,
     assert manager._configuration.api_key["ApiToken"] == "api_working_token_one"
 
 
-def test_invalid_bootstrap_token_cannot_escape_cache_directory(tmp_path):
+def test_invalid_configured_token_cannot_escape_cache_directory(tmp_path):
     """Invalid token snippets are rejected before cache paths are created."""
     configuration = Configuration(host="https://example.com/device-api")
 
@@ -389,26 +401,28 @@ def test_invalid_bootstrap_token_cannot_escape_cache_directory(tmp_path):
         TokenManager("../../outside-token", configuration, request_timeout=1, token_dir=tmp_path)
 
 
-def test_refresh_falls_back_to_snippet_endpoint_for_old_format_slot(mocker, tmp_path):
-    """A slot written before the base_name field existed triggers a snippet lookup on the next refresh."""
+def test_refresh_interval_uses_server_ttl_and_clamps_non_positive(mocker, tmp_path):
+    """Refresh cadence uses server created_at/expires_at and avoids a zero/negative spin."""
     api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", BOOTSTRAP_TOKEN)
-    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
+    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
+    api.create_api_token.return_value = _created_token(
+        "Device token abc123",
+        "api_working_token_one",
+        NOW,
+        created_at=NOW + timedelta(minutes=10),
+        expires_at=NOW + timedelta(minutes=3),
+    )
     manager = _manager(mocker, tmp_path, api)
-    api.reset_mock()
 
-    slot_data = json.loads(manager._slot_path.read_text())
-    del slot_data["base_name"]
-    manager._slot_path.write_text(json.dumps(slot_data))
+    assert manager._current is not None
+    assert manager._refresh_interval(manager._current) == timedelta(seconds=REFRESH_RETRY_BACKOFF_SECONDS)
 
-    later = NOW + REFRESH_INTERVAL + timedelta(seconds=1)
-    mocker.patch.object(token_manager, "_utc_now", return_value=later)
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token abc123", "api_working_token_one")
-    api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_two", later)
+    stop_event = Mock()
+    stop_event.is_set.return_value = False
+    stop_event.wait.side_effect = [True]
+    manager._stop_event = stop_event
+    mocker.patch.object(manager, "refresh")
+    manager._run()
 
-    manager.refresh()
-
-    api.get_api_token_by_snippet.assert_called_once()
-    cached = json.loads(manager._slot_path.read_text())
-    assert cached["base_name"] == "Device token"
-    assert cached["current"]["raw_key"] == "api_working_token_two"
+    assert stop_event.wait.call_args_list[0] == call(float(REFRESH_RETRY_BACKOFF_SECONDS))
+    manager.refresh.assert_not_called()

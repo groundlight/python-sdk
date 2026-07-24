@@ -25,8 +25,8 @@ from groundlight.internalapi import GroundlightApiClient, api_exception_detail
 logger = logging.getLogger("groundlight.sdk")
 
 TOKEN_SNIPPET_LENGTH = 20
-# Refresh fires after this fraction of the working token's observed lifetime
-# (expires_at - minted_at). Example: 30-day TTL => refresh every 1 day.
+# Refresh fires after this fraction of the server-reported token lifetime
+# (expires_at - created_at). Example: 30-day TTL => refresh every 1 day.
 REFRESH_INTERVAL_FRACTION = 1 / 30
 TOKEN_NAME_MAX_LENGTH = 64
 TOKEN_NAME_SUFFIX_LENGTH = 7
@@ -34,11 +34,8 @@ LOCK_TIMEOUT_SECONDS = 60
 # After a failed background refresh the current token is still valid for the rest of its
 # TTL, so retry on a short cadence to recover quickly from a transient outage rather than
 # waiting a full refresh interval (which would also spin when the token is already overdue).
+# Also used as the floor when server lifetime is non-positive (clock skew).
 REFRESH_RETRY_BACKOFF_SECONDS = 5 * 60
-# Previous-token grace equals one refresh interval by construction: we only rotate when
-# current is at least one refresh interval old, and previous was demoted at that mint time.
-# Matches the trailing " xxxxxx" hex suffix this class appends, so repeated rotations
-# reuse a stable base name instead of accreting a new suffix each cycle.
 TOKEN_NAME_SUFFIX_PATTERN = re.compile(r" [0-9a-f]{6}$")
 
 
@@ -73,27 +70,35 @@ def _normalize_datetime(value: datetime) -> datetime:
 
 @dataclass(frozen=True)
 class CurrentToken:
-    """Store the working token data needed for authentication and rotation."""
+    """Store the working token data needed for authentication and rotation.
+
+    expires_at comes from the server. minted_at is the local observation time used to
+    schedule refresh. ttl is the server-side lifetime (expires_at - created_at) used to
+    compute the refresh cadence without mixing server and client clocks.
+    """
 
     raw_key: str
     snippet: str
     name: str
     expires_at: Optional[datetime]
     minted_at: datetime
+    ttl: Optional[timedelta]
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CurrentToken":
         """Build a current token from its on-disk representation."""
         expires_raw = data.get("expires_at")
+        ttl_seconds = data["ttl_seconds"]
         return cls(
             raw_key=data["raw_key"],
             snippet=data["snippet"],
             name=data["name"],
             expires_at=_parse_datetime(expires_raw) if expires_raw is not None else None,
             minted_at=_parse_datetime(data["minted_at"]),
+            ttl=timedelta(seconds=ttl_seconds) if ttl_seconds is not None else None,
         )
 
-    def to_dict(self) -> Dict[str, Optional[str]]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert the current token to its JSON-compatible representation."""
         return {
             "raw_key": self.raw_key,
@@ -101,6 +106,7 @@ class CurrentToken:
             "name": self.name,
             "expires_at": _format_datetime(self.expires_at) if self.expires_at is not None else None,
             "minted_at": _format_datetime(self.minted_at),
+            "ttl_seconds": self.ttl.total_seconds() if self.ttl is not None else None,
         }
 
 
@@ -126,9 +132,7 @@ class TokenSlot:
     """Represent the current and previous tokens stored in one cache slot.
 
     base_name is the configured token's human-readable name with any auto-generated suffix
-    stripped. It is established once at first mint and reused for all future rotations,
-    so a token chain always looks like "My Sensor ab12cd", "My Sensor ef34gh", ... rather
-    than accumulating nested suffixes.
+    stripped. It is established once at first mint and reused for all future rotations.
     """
 
     base_name: str
@@ -140,9 +144,7 @@ class TokenSlot:
         """Build a token slot from its on-disk representation."""
         previous_data = data.get("previous")
         return cls(
-            # Empty string for slots written before this field existed; callers fall back
-            # to a live lookup when base_name is empty.
-            base_name=data.get("base_name", ""),
+            base_name=data["base_name"],
             current=CurrentToken.from_dict(data["current"]),
             previous=PreviousToken.from_dict(previous_data) if previous_data else None,
         )
@@ -161,16 +163,16 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
     def __init__(
         self,
-        bootstrap_token: str,
+        configured_token: str,
         configuration: Configuration,
         request_timeout: float,
         token_dir: Optional[Path] = None,
     ):
         """Initialize the cache slot and select or mint a working API token."""
-        self._bootstrap_token = bootstrap_token
-        self._bootstrap_snippet = bootstrap_token[:TOKEN_SNIPPET_LENGTH]
-        if len(self._bootstrap_snippet) != TOKEN_SNIPPET_LENGTH or not re.fullmatch(
-            r"[A-Za-z0-9_]+", self._bootstrap_snippet
+        self._configured_token = configured_token
+        self._configured_snippet = configured_token[:TOKEN_SNIPPET_LENGTH]
+        if len(self._configured_snippet) != TOKEN_SNIPPET_LENGTH or not re.fullmatch(
+            r"[A-Za-z0-9_]+", self._configured_snippet
         ):
             raise TokenManagerError(
                 "The configured API token has an invalid format. Check that GROUNDLIGHT_API_TOKEN is set correctly."
@@ -178,8 +180,8 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._configuration = configuration
         self._request_timeout = request_timeout
         self._token_dir = token_dir or self._default_token_dir()
-        self._slot_path = self._token_dir / f"{self._bootstrap_snippet}.json"
-        self._lock_path = self._token_dir / f"{self._bootstrap_snippet}.lock"
+        self._slot_path = self._token_dir / f"{self._configured_snippet}.json"
+        self._lock_path = self._token_dir / f"{self._configured_snippet}.lock"
         self._lock = FileLock(str(self._lock_path), timeout=LOCK_TIMEOUT_SECONDS, mode=0o600)
         self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
@@ -223,18 +225,15 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     self._activate(slot.current)
                     return
 
-                self._set_api_token(self._bootstrap_token)
+                self._set_api_token(self._configured_token)
                 try:
-                    configured_meta = self._get_token_by_snippet(self._bootstrap_snippet)
+                    configured_meta = self._get_token_by_snippet(self._configured_snippet)
                 except NotFoundException:
-                    # by-snippet missing (old server) or unknown token: try minting with a
-                    # generic base name; a subsequent 404 disables rotation.
-                    self._mint_replacement(
-                        base_name="sdk-auto",
-                        slot=slot,
-                        record_replaced_current=False,
-                        previous=None,
+                    # Token management API unavailable: keep the configured token as-is.
+                    logger.warning(
+                        "Automatic API token refresh is unavailable because this server does not support token management"
                     )
+                    self._available = False
                     return
 
                 if configured_meta.expires_at is None:
@@ -244,8 +243,6 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", configured_meta.name)
                 self._mint_replacement(
                     base_name=base_name,
-                    slot=slot,
-                    record_replaced_current=False,
                     previous=PreviousToken(name=configured_meta.name, minted_at=_utc_now()),
                 )
         except FileLockTimeout as exc:
@@ -255,7 +252,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                 "Automatic API token refresh is unavailable because this server does not support token management"
             )
             self._available = False
-            self._set_api_token(self._bootstrap_token)
+            self._set_api_token(self._configured_token)
         except UnauthorizedException as exc:
             detail = api_exception_detail(exc) or "API token was rejected"
             raise TokenManagerError(detail) from exc
@@ -275,14 +272,14 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         return token.expires_at > _utc_now()
 
     def start(self) -> None:
-        """Start background refresh when the working token is set to expire."""
+        """Start background refresh when the working token has a finite lifetime."""
         if not self._available or self._thread is not None:
             return
-        if self._current is None or self._current.expires_at is None:
+        if self._current is None or self._current.ttl is None:
             return
         self._thread = threading.Thread(
             target=self._run,
-            name=f"gl-token-refresh-{self._bootstrap_snippet[:8]}",
+            name=f"gl-token-refresh-{self._configured_snippet[:8]}",
             daemon=True,
         )
         self._thread.start()
@@ -335,14 +332,15 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     )
 
                 self._activate(slot.current)
-                if slot.current.expires_at is None:
+                if slot.current.expires_at is None or slot.current.ttl is None:
                     return True
                 if _utc_now() - slot.current.minted_at < self._refresh_interval(slot.current):
                     return True
-                # Due for rotation: previous has been demoted for at least one refresh interval.
                 self._revoke_previous(slot.previous)
-                base_name = slot.base_name or self._resolve_base_name(slot.current.snippet)
-                self._mint_replacement(base_name=base_name, slot=slot)
+                self._mint_replacement(
+                    base_name=slot.base_name,
+                    previous=PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at),
+                )
                 return True
         except TokenManagerError:
             raise
@@ -364,7 +362,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Refresh tokens on schedule until the client is closed."""
         while not self._stop_event.is_set():
             current = self._current
-            if current is None or current.expires_at is None:
+            if current is None or current.expires_at is None or current.ttl is None:
                 return
             refresh_at = current.minted_at + self._refresh_interval(current)
             wait_seconds = max(0.0, (refresh_at - _utc_now()).total_seconds())
@@ -380,10 +378,17 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
     @staticmethod
     def _refresh_interval(token: CurrentToken) -> timedelta:
-        """Return how long to keep a working token before rotating."""
-        if token.expires_at is None:
+        """Return how long to keep a working token before rotating.
+
+        Uses the server-reported lifetime so client clock skew cannot invent a negative
+        interval. Non-positive lifetimes fall back to the retry backoff to avoid a spin.
+        """
+        if token.ttl is None:
             raise TokenManagerError("Cannot compute a refresh interval for a never-expiring token")
-        return (token.expires_at - token.minted_at) * REFRESH_INTERVAL_FRACTION
+        interval = token.ttl * REFRESH_INTERVAL_FRACTION
+        if interval <= timedelta(0):
+            return timedelta(seconds=REFRESH_RETRY_BACKOFF_SECONDS)
+        return interval
 
     def _load_slot(self) -> Optional[TokenSlot]:
         """Load the cache slot, returning None when it does not exist."""
@@ -419,14 +424,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             if temporary_path and os.path.exists(temporary_path):
                 os.unlink(temporary_path)
 
-    def _mint_replacement(
-        self,
-        base_name: str,
-        slot: Optional[TokenSlot],
-        *,
-        record_replaced_current: bool = True,
-        previous: Optional[PreviousToken] = None,
-    ) -> CurrentToken:
+    def _mint_replacement(self, base_name: str, previous: Optional[PreviousToken]) -> CurrentToken:
         """Mint a new token, persist the updated slot, and activate the new credential."""
         new_name = self._new_token_name(base_name)
         minted_at = _utc_now()
@@ -436,28 +434,9 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             _request_timeout=self._request_timeout,
         )
         current = self._current_from_response(response, minted_at)
-        next_previous: Optional[PreviousToken]
-        if previous is not None:
-            next_previous = previous
-        elif slot and record_replaced_current:
-            next_previous = PreviousToken(name=slot.current.name, minted_at=slot.current.minted_at)
-        else:
-            next_previous = slot.previous if slot else None
-        self._write_slot(TokenSlot(base_name=base_name, current=current, previous=next_previous))
+        self._write_slot(TokenSlot(base_name=base_name, current=current, previous=previous))
         self._activate(current)
         return current
-
-    def _resolve_base_name(self, snippet: str) -> str:
-        """Look up a token by snippet and return its name with any auto-generated suffix stripped.
-
-        Used when reading an old-format slot file that predates the base_name field.
-        Falls back to 'sdk-auto' when no matching token is found.
-        """
-        try:
-            token = self._get_token_by_snippet(snippet)
-            return TOKEN_NAME_SUFFIX_PATTERN.sub("", token.name)
-        except NotFoundException:
-            return "sdk-auto"
 
     def _get_token_by_snippet(self, snippet: str) -> ApiToken:
         """Retrieve token metadata by snippet via the dedicated API endpoint."""
@@ -488,17 +467,24 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def _current_from_response(response: ApiTokenCreateResponse, minted_at: datetime) -> CurrentToken:
         """Convert a token creation response into cached current-token data."""
-        expires_at: Optional[datetime]
         if response.expires_at is None:
-            expires_at = None
-        else:
-            expires_at = _normalize_datetime(response.expires_at)
+            return CurrentToken(
+                raw_key=response.raw_key,
+                snippet=response.raw_key_snippet,
+                name=response.name,
+                expires_at=None,
+                minted_at=minted_at,
+                ttl=None,
+            )
+        expires_at = _normalize_datetime(response.expires_at)
+        created_at = _normalize_datetime(response.created_at)
         return CurrentToken(
             raw_key=response.raw_key,
             snippet=response.raw_key_snippet,
             name=response.name,
             expires_at=expires_at,
             minted_at=minted_at,
+            ttl=expires_at - created_at,
         )
 
     def _activate(self, token: CurrentToken) -> None:

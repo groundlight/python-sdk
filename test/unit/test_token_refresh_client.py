@@ -11,9 +11,8 @@ from groundlight_openapi_client.api_client import ApiClient, ApiException
 EXPECTED_CALL_COUNT = 2
 
 
-def test_groundlight_starts_and_closes_token_manager(mocker, monkeypatch):
+def test_groundlight_starts_and_closes_token_manager(mocker):
     """Groundlight owns the token manager lifecycle and supports context management."""
-    monkeypatch.delenv("GROUNDLIGHT_DISABLE_TOKEN_REFRESH", raising=False)
     manager = Mock()
     token_manager_class = mocker.patch("groundlight.client.TokenManager", return_value=manager)
     mocker.patch.object(Groundlight, "_verify_connectivity")
@@ -91,6 +90,35 @@ def test_raw_request_recovers_and_retries_once_after_unauthorized(mocker):
     assert response is success
     assert request.call_count == EXPECTED_CALL_COUNT
     assert request.call_args_list[1].kwargs["headers"]["x-api-token"] == "new-token"
+
+
+def test_raw_request_replays_multipart_files_after_unauthorized(mocker):
+    """A 401 retry resends multipart file bytes even after the first attempt consumed the stream."""
+    configuration = Configuration(host="https://example.com/device-api")
+    configuration.api_key["ApiToken"] = "old-token"
+    client = GroundlightApiClient(configuration)
+    client.set_unauthorized_handler(Mock())
+
+    image_payloads = []
+
+    def fake_request(_method, _url, **kwargs):
+        """Consume the multipart file stream like requests does when building the body."""
+        fileobj = kwargs["files"]["image"][1]
+        image_payloads.append(fileobj.read())
+        if len(image_payloads) == 1:
+            return Mock(status_code=HTTPStatus.UNAUTHORIZED, text="expired")
+        return Mock(status_code=HTTPStatus.OK, text="")
+
+    mocker.patch("groundlight.internalapi.requests.request", side_effect=fake_request)
+
+    response = client.request_with_unauthorized_recovery(
+        "POST",
+        "https://example.com/device-api/v1/notes",
+        files={"image": ("image.jpg", BytesIO(b"image bytes"), "image/jpeg")},
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert image_payloads == [b"image bytes", b"image bytes"]
 
 
 def test_create_note_uses_raw_request_token_recovery():

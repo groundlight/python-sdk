@@ -1,16 +1,16 @@
-import os
 from datetime import datetime
 from typing import Callable, Iterator
 from uuid import uuid4
 
 import pytest
 from groundlight import ExperimentalApi, Groundlight
-from groundlight.config import DISABLE_TOKEN_REFRESH_VARIABLE_NAME
+from groundlight.token_manager import TokenManager
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
 
-# Keep background token refresh off for the test suite. Short testing TTL/refresh intervals
-# otherwise race with tests that mock urllib3/requests and assert exact call counts.
-os.environ[DISABLE_TOKEN_REFRESH_VARIABLE_NAME] = "1"
+# Keep background token refresh off for the test suite so it cannot race with tests that
+# mock urllib3/requests and assert exact call counts. Production clients have no such knob;
+# rotate-vs-not is determined solely by token expires_at / ttl.
+TokenManager.start = lambda self: None  # type: ignore[method-assign]
 
 
 def _generate_unique_detector_name(prefix: str = "Test") -> str:

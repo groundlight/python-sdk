@@ -45,7 +45,6 @@ from groundlight.config import (
     API_TOKEN_MISSING_HELP_MESSAGE,
     API_TOKEN_VARIABLE_NAME,
     DISABLE_TLS_VARIABLE_NAME,
-    DISABLE_TOKEN_REFRESH_VARIABLE_NAME,
 )
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
@@ -201,7 +200,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.api_client = GroundlightApiClient(self.configuration)
         try:
             self._token_manager = TokenManager(
-                bootstrap_token=api_token,
+                configured_token=api_token,
                 configuration=self.configuration,
                 request_timeout=DEFAULT_REQUEST_TIMEOUT,
             )
@@ -217,15 +216,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        # Tests set GROUNDLIGHT_DISABLE_TOKEN_REFRESH so background refresh does not race with
-        # suites that mock the HTTP transport and assert exact call counts.
-        disable_refresh = os.environ.get(DISABLE_TOKEN_REFRESH_VARIABLE_NAME, "").lower() in {
-            "1",
-            "true",
-            "yes",
-        }
-        if not disable_refresh:
-            self._token_manager.start()
+        # No-op when the working token never expires (ttl is null).
+        self._token_manager.start()
 
     def __repr__(self) -> str:
         """Return a concise description of the connected client."""
