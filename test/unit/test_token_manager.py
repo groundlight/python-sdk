@@ -3,6 +3,7 @@ import json
 import stat
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
+from typing import Optional
 from unittest.mock import Mock, call
 
 import pytest
@@ -42,7 +43,7 @@ def _created_token(
     now: datetime,
     *,
     expires_at=_UNSET,
-    created_at: datetime = None,
+    created_at: Optional[datetime] = None,
 ) -> SimpleNamespace:
     """Build a token creation response. Pass expires_at=None for a never-expire child."""
     resolved_created_at = now if created_at is None else created_at

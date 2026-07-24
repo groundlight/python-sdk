@@ -8,7 +8,7 @@ import uuid
 from enum import Enum
 from functools import wraps
 from http import HTTPStatus
-from typing import Callable, Optional, Tuple
+from typing import Callable, Dict, Optional, Tuple, Union
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
@@ -275,11 +275,11 @@ class GroundlightApiClient(ApiClient):
         raise TypeError(f"Unsupported multipart file type: {type(fileobj)!r}")
 
     @classmethod
-    def _snapshot_multipart_files(cls, files) -> Optional[dict]:
+    def _snapshot_multipart_files(cls, files) -> Optional[Dict[str, Union[bytes, Tuple]]]:
         """Copy multipart file payloads so a 401 retry can resend them."""
         if files is None:
             return None
-        snapshot = {}
+        snapshot: Dict[str, Union[bytes, Tuple]] = {}
         for field, value in files.items():
             if isinstance(value, tuple):
                 filename, fileobj, *rest = value
@@ -289,9 +289,9 @@ class GroundlightApiClient(ApiClient):
         return snapshot
 
     @staticmethod
-    def _files_from_snapshot(snapshot: dict) -> dict:
+    def _files_from_snapshot(snapshot: Dict[str, Union[bytes, Tuple]]) -> Dict[str, Union[io.BytesIO, Tuple]]:
         """Rebuild a requests-compatible files dict from a bytes snapshot."""
-        files = {}
+        files: Dict[str, Union[io.BytesIO, Tuple]] = {}
         for field, value in snapshot.items():
             if isinstance(value, tuple):
                 filename, data, *rest = value
