@@ -215,7 +215,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self._token_manager.start()
 
     def __repr__(self) -> str:
-        """Return a concise description of the connected client."""
         # Don't call the API here because that can get us stuck in a loop rendering exception strings
         return f"Logged in as {self.logged_in_user} to Groundlight at {self.endpoint}"
 
