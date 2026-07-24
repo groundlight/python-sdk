@@ -202,7 +202,6 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             )
         except TokenManagerError as exc:
             raise ApiTokenError(str(exc)) from exc
-        self.api_client.set_unauthorized_handler(self._token_manager.recover_from_unauthorized)
         self.detectors_api = DetectorsApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)

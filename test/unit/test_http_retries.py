@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterator
+from typing import Any, Callable
 from unittest import mock
 
 import pytest
@@ -14,13 +14,10 @@ IMAGE_FILE = "test/assets/dog.jpeg"
 
 
 @pytest.fixture(name="gl")
-def groundlight_fixture() -> Iterator[Groundlight]:
-    """Create a Groundlight client for HTTP retry tests."""
+def groundlight_fixture() -> Groundlight:
+    "Creates a Groundlight client"
     gl = Groundlight()
-    try:
-        yield gl
-    finally:
-        gl.close()
+    return gl
 
 
 @pytest.fixture(name="detector")

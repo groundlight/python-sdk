@@ -298,25 +298,6 @@ def test_close_waits_for_refresh_thread_before_closing_client(mocker, tmp_path):
     rotation_client_close.assert_called_once_with()
 
 
-def test_unauthorized_recovery_uses_newer_token_from_disk(mocker, tmp_path):
-    """A 401 reloads a token another process already wrote instead of minting again."""
-    api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
-    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
-    manager = _manager(mocker, tmp_path, api)
-    api.reset_mock()
-
-    slot = json.loads(manager._slot_path.read_text())
-    slot["current"]["raw_key"] = "api_newer_process_token"
-    slot["current"]["snippet"] = "api_newer_process_to"
-    manager._slot_path.write_text(json.dumps(slot))
-
-    manager.recover_from_unauthorized()
-
-    assert manager._configuration.api_key["ApiToken"] == "api_newer_process_token"
-    api.create_api_token.assert_not_called()
-
-
 def test_initialization_surfaces_unauthorized_detail(mocker, tmp_path):
     """A 401 during configured-token lookup raises with the server's response body."""
     api = Mock()
@@ -331,19 +312,6 @@ def test_initialization_surfaces_unauthorized_detail(mocker, tmp_path):
 
     with pytest.raises(TokenManagerError, match="The API token has expired"):
         _manager(mocker, tmp_path, api)
-
-
-def test_unauthorized_recovery_raises_when_no_fresher_token_available(mocker, tmp_path):
-    """A rejected cached token raises loudly when no fresher token is on disk."""
-    api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
-    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
-    manager = _manager(mocker, tmp_path, api)
-
-    with pytest.raises(TokenManagerError, match="API identity has been revoked"):
-        manager.recover_from_unauthorized("API identity has been revoked")
-
-    api.create_api_token.assert_called_once()  # only during init, not during recovery
 
 
 def test_new_token_name_appends_suffix_and_truncates(mocker):
@@ -379,19 +347,6 @@ def test_existing_token_dir_permissions_are_tightened(mocker, tmp_path):
     _manager(mocker, loose_dir, api)
 
     assert stat.S_IMODE(loose_dir.stat().st_mode) == TOKEN_DIR_MODE
-
-
-def test_unauthorized_recovery_leaves_active_token_unchanged_when_no_fresher(mocker, tmp_path):
-    """A failed 401 recovery raises loudly and leaves the active token unchanged."""
-    api = Mock()
-    api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
-    api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
-    manager = _manager(mocker, tmp_path, api)
-
-    with pytest.raises(TokenManagerError, match="API token was rejected"):
-        manager.recover_from_unauthorized()
-
-    assert manager._configuration.api_key["ApiToken"] == "api_working_token_one"
 
 
 def test_invalid_configured_token_cannot_escape_cache_directory(tmp_path):

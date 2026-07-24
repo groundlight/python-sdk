@@ -1,4 +1,3 @@
-import io
 import logging
 import os
 import platform
@@ -7,8 +6,7 @@ import time
 import uuid
 from enum import Enum
 from functools import wraps
-from http import HTTPStatus
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Callable, Optional
 from urllib.parse import urlsplit, urlunsplit
 
 import requests
@@ -19,7 +17,6 @@ from groundlight.status_codes import is_ok
 from groundlight.version import get_version
 
 logger = logging.getLogger("groundlight.sdk")
-REQUEST_BODY_ARG_INDEX = 5
 
 
 class NotFoundError(Exception):
@@ -180,45 +177,14 @@ class GroundlightApiClient(ApiClient):
     """
 
     def __init__(self, *args, **kwargs):
-        """Initialize the generated API client with SDK-specific behavior."""
         super().__init__(*args, **kwargs)
         self.user_agent = f"Groundlight-Python-SDK/{get_version()}/{platform.platform()}/{platform.python_version()}"
-        self._unauthorized_handler: Optional[Callable[[Optional[str]], None]] = None
 
     REQUEST_ID_HEADER = "X-Request-Id"
 
-    def set_unauthorized_handler(self, handler: Callable[[Optional[str]], None]) -> None:
-        """Set the callback used to recover and retry after a 401 response."""
-        self._unauthorized_handler = handler
-
-    @staticmethod
-    def _prepare_replayable_request_body(args: tuple, kwargs: dict) -> Tuple[tuple, dict, Optional[bytes], bool]:
-        """Copy a stream body so each request attempt receives a fresh stream."""
-        body_is_keyword = "body" in kwargs
-        body = (
-            kwargs.get("body")
-            if body_is_keyword
-            else (args[REQUEST_BODY_ARG_INDEX] if len(args) > REQUEST_BODY_ARG_INDEX else None)
-        )
-        if not isinstance(body, io.IOBase):
-            return args, kwargs, None, body_is_keyword
-        try:
-            body_bytes = body.read()
-        finally:
-            body.close()
-        if body_is_keyword:
-            kwargs = dict(kwargs)
-            kwargs["body"] = io.BytesIO(body_bytes)
-        else:
-            replayable_args = list(args)
-            replayable_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(body_bytes)
-            args = tuple(replayable_args)
-        return args, kwargs, body_bytes, body_is_keyword
-
     @RequestsRetryDecorator()
     def call_api(self, *args, **kwargs):
-        """Add a request ID and retry once after token recovery from a 401."""
-        args, kwargs, replayable_body, body_is_keyword = self._prepare_replayable_request_body(args, kwargs)
+        """Adds a request-id header to each API call."""
         # Note we don't look for header_param in kwargs here, because this method is only called in one place
         # in the generated code, so we can afford to make this brittle.
         header_param = args[4]  # that's the number in the list
@@ -228,77 +194,7 @@ class GroundlightApiClient(ApiClient):
         elif not header_param.get(self.REQUEST_ID_HEADER, None):
             header_param[self.REQUEST_ID_HEADER] = _generate_request_id()
             # Note that we have updated the actual dict in args, so we don't have to put it back in
-        try:
-            return super().call_api(*args, **kwargs)
-        except ApiException as exc:
-            if exc.status != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
-                raise
-            self._unauthorized_handler(api_exception_detail(exc))
-            retry_args = list(args)
-            retry_kwargs = dict(kwargs)
-            if replayable_body is not None:
-                if body_is_keyword:
-                    retry_kwargs["body"] = io.BytesIO(replayable_body)
-                else:
-                    retry_args[REQUEST_BODY_ARG_INDEX] = io.BytesIO(replayable_body)
-            return super().call_api(*retry_args, **retry_kwargs)
-
-    def request_with_unauthorized_recovery(self, method: str, url: str, **kwargs) -> requests.Response:
-        """Send a raw request and retry once with refreshed credentials after a 401."""
-        files_snapshot = self._snapshot_multipart_files(kwargs.get("files"))
-        request_kwargs = dict(kwargs)
-        if files_snapshot is not None:
-            request_kwargs["files"] = self._files_from_snapshot(files_snapshot)
-
-        response = requests.request(method, url, **request_kwargs)
-        if response.status_code != HTTPStatus.UNAUTHORIZED or self._unauthorized_handler is None:
-            return response
-        detail = (response.text or "").strip() or None
-        self._unauthorized_handler(detail)
-        headers = dict(request_kwargs.get("headers", {}))
-        headers["x-api-token"] = self.configuration.api_key["ApiToken"]
-        request_kwargs["headers"] = headers
-        if files_snapshot is not None:
-            request_kwargs["files"] = self._files_from_snapshot(files_snapshot)
-        return requests.request(method, url, **request_kwargs)
-
-    @staticmethod
-    def _read_multipart_file_bytes(fileobj) -> bytes:
-        """Read bytes from a multipart file value without assuming it is seekable."""
-        if isinstance(fileobj, (bytes, bytearray)):
-            return bytes(fileobj)
-        if isinstance(fileobj, io.IOBase):
-            data = fileobj.read()
-            if isinstance(data, str):
-                return data.encode("utf-8")
-            return data
-        raise TypeError(f"Unsupported multipart file type: {type(fileobj)!r}")
-
-    @classmethod
-    def _snapshot_multipart_files(cls, files) -> Optional[Dict[str, Union[bytes, Tuple]]]:
-        """Copy multipart file payloads so a 401 retry can resend them."""
-        if files is None:
-            return None
-        snapshot: Dict[str, Union[bytes, Tuple]] = {}
-        for field, value in files.items():
-            if isinstance(value, tuple):
-                filename, fileobj, *rest = value
-                snapshot[field] = (filename, cls._read_multipart_file_bytes(fileobj), *rest)
-            else:
-                snapshot[field] = cls._read_multipart_file_bytes(value)
-        return snapshot
-
-    @staticmethod
-    def _files_from_snapshot(snapshot: Dict[str, Union[bytes, Tuple]]) -> Dict[str, Union[io.BytesIO, Tuple]]:
-        """Rebuild a requests-compatible files dict from a bytes snapshot."""
-        files: Dict[str, Union[io.BytesIO, Tuple]] = {}
-        for field, value in snapshot.items():
-            if isinstance(value, tuple):
-                filename, data, *rest = value
-                files[field] = (filename, io.BytesIO(data), *rest)
-            else:
-                files[field] = io.BytesIO(value)
-        return files
+        return super().call_api(*args, **kwargs)
 
     #
     # The methods below will eventually go away when we move to properly model
@@ -330,9 +226,7 @@ class GroundlightApiClient(ApiClient):
         headers = self._headers()
 
         logger.info(f"Posting label={label} to image_query {image_query_id} ...")
-        response = self.request_with_unauthorized_recovery(
-            "POST", url, json=data, headers=headers, verify=self.configuration.verify_ssl
-        )
+        response = requests.request("POST", url, json=data, headers=headers, verify=self.configuration.verify_ssl)
         elapsed = 1000 * (time.time() - start_time)
         logger.debug(f"Call to ImageQuery.add_label took {elapsed:.1f}ms response={response.text}")
 
@@ -353,9 +247,7 @@ class GroundlightApiClient(ApiClient):
         """
         url = f"{self.configuration.host}/v1/detectors?name={name}"
         headers = self._headers()
-        response = self.request_with_unauthorized_recovery(
-            "GET", url, headers=headers, verify=self.configuration.verify_ssl
-        )
+        response = requests.request("GET", url, headers=headers, verify=self.configuration.verify_ssl)
 
         if not is_ok(response.status_code):
             raise InternalApiError(status=response.status_code, http_resp=response)

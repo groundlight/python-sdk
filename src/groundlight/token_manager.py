@@ -292,30 +292,6 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             self._thread.join()
         self._rotation_client.close()
 
-    def recover_from_unauthorized(self, detail: Optional[str] = None) -> None:
-        """Recover from a 401 by loading a fresher cached token written by another process.
-
-        Does not remint from the configured token. If no fresher token is available on disk,
-        raise using the server's 401 detail when provided.
-        """
-        if not self._available:
-            raise TokenManagerError("Automatic token recovery is unavailable on this server")
-        failed_token = self._configuration.api_key["ApiToken"]
-        rejection = (detail or "").strip() or "API token was rejected"
-        try:
-            with self._lock:
-                slot = self._load_slot()
-                if slot and slot.current.raw_key != failed_token and self._is_usable_cached_token(slot.current):
-                    self._activate(slot.current)
-                    return
-                raise TokenManagerError(rejection)
-        except FileLockTimeout as exc:
-            raise TokenManagerError("Timed out waiting to recover from an unauthorized API response") from exc
-        except TokenManagerError:
-            raise
-        except Exception as exc:  # pylint: disable=broad-exception-caught
-            raise TokenManagerError("The cached token was rejected and could not be replaced") from exc
-
     def refresh(self) -> bool:
         """Use the cached token if it is still fresh; otherwise rotate under the file lock.
 
