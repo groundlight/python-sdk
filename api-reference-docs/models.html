@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDK Client &mdash; Groundlight Python SDK 0.30.0 documentation</title>
+  <title>SDK Client &mdash; Groundlight Python SDK 0.31.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=a7ea5d77"></script>
+        <script src="_static/documentation_options.js?v=d63f172e"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.30.0
+                0.31.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -54,6 +54,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.ask_async"><code class="docutils literal notranslate"><span class="pre">Groundlight.ask_async()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.ask_confident"><code class="docutils literal notranslate"><span class="pre">Groundlight.ask_confident()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.ask_ml"><code class="docutils literal notranslate"><span class="pre">Groundlight.ask_ml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.close"><code class="docutils literal notranslate"><span class="pre">Groundlight.close()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_binary_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_binary_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_bounding_box_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_bounding_box_detector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.create_counting_detector"><code class="docutils literal notranslate"><span class="pre">Groundlight.create_counting_detector()</span></code></a></li>
@@ -82,6 +83,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.ExperimentalApi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.ask_vlm_verify"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.ask_vlm_verify()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_note"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_note()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_priming_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_priming_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_text_recognition_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_text_recognition_detector()</span></code></a></li>
@@ -564,6 +566,17 @@ For answers above a configured confidence_threshold, use <a class="reference int
 <p><a class="reference internal" href="#groundlight.Groundlight.ask_confident" title="groundlight.Groundlight.ask_confident"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ask_confident()</span></code></a> for waiting until a high-confidence prediction is available
 <a class="reference internal" href="#groundlight.Groundlight.ask_async" title="groundlight.Groundlight.ask_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ask_async()</span></code></a> for submitting queries asynchronously</p>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.Groundlight.close" title="Link to this definition"></a></dt>
+<dd><p>Stop the token refresh thread and close the HTTP client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1666,6 +1679,75 @@ self-signed certificates. For security, always keep verification enabled when us
 Groundlight cloud service.</p>
 </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.ask_vlm_verify">
+<span class="sig-name descname"><span class="pre">ask_vlm_verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">media</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnavailableModule</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">UnavailableModule</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">VlmVerification</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.ask_vlm_verify" title="Link to this definition"></a></dt>
+<dd><p>Verify one or more images against a natural-language query using a cloud VLM.</p>
+<p>Calls the Groundlight <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/vlm-verifications</span></code> endpoint. The VLM runs in the
+Groundlight cloud (AWS Bedrock) — no local inference. This is intended for alert
+verification (a structured <code class="docutils literal notranslate"><span class="pre">YES</span></code> / <code class="docutils literal notranslate"><span class="pre">NO</span></code> / <code class="docutils literal notranslate"><span class="pre">UNSURE</span></code> verdict), and each call is
+relatively expensive, so use it deliberately rather than as a general-purpose VLM.</p>
+<p>The server makes no assumptions about what the images are — your <code class="docutils literal notranslate"><span class="pre">query</span></code> should
+describe them. Images are presented to the model labeled <code class="docutils literal notranslate"><span class="pre">Image</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">Image</span> <span class="pre">2</span></code>,
+… in the order given, so the query can refer to them.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="c1"># Single image</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_vlm_verify</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Is there a fire in this image?&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;YES&quot;</span><span class="p">:</span>
+    <span class="n">emit_alert</span><span class="p">()</span>
+
+<span class="c1"># Full frame + cropped ROI — describe each in the query</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">ask_vlm_verify</span><span class="p">(</span>
+    <span class="n">media</span><span class="o">=</span><span class="p">[</span><span class="n">full_frame</span><span class="p">,</span> <span class="n">roi_crop</span><span class="p">],</span>
+    <span class="n">query</span><span class="o">=</span><span class="s2">&quot;Image 1 is the full camera frame; image 2 is the cropped region &quot;</span>
+          <span class="s2">&quot;a detector flagged. Is there really a fire?&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">reasoning</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>media</strong> (<em>UnavailableModule</em><em> | </em><em>str</em><em> | </em><em>bytes</em><em> | </em><em>Image</em><em> | </em><em>BytesIO</em><em> | </em><em>BufferedReader</em><em> | </em><em>List</em><em>[</em><em>UnavailableModule</em><em> | </em><em>str</em><em> | </em><em>bytes</em><em> | </em><em>Image</em><em> | </em><em>BytesIO</em><em> | </em><em>BufferedReader</em><em>]</em>) – <p>One image or a list of up to 8 images. Accepted formats per image:</p>
+<ul>
+<li><p>filename (string) of a JPEG or PNG file (<code class="docutils literal notranslate"><span class="pre">&quot;.jpg&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;.jpeg&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;.png&quot;</span></code>)</p></li>
+<li><p>raw bytes, BytesIO, or BufferedReader — sent as-is; the server decodes and
+normalises to JPEG regardless of the declared content type, so PNG/WEBP bytes
+all work</p></li>
+<li><p>numpy array (H, W, 3) in BGR order (OpenCV convention) — converted to JPEG
+before sending</p></li>
+<li><p>PIL Image — converted to JPEG before sending</p></li>
+</ul>
+</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – Natural-language prompt describing the media and what to verify,
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Is</span> <span class="pre">there</span> <span class="pre">a</span> <span class="pre">fire</span> <span class="pre">visible</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">image?</span> <span class="pre">Reason</span> <span class="pre">step</span> <span class="pre">by</span> <span class="pre">step.&quot;</span></code></p></li>
+<li><p><strong>model_id</strong> (<em>str</em><em> | </em><em>None</em>) – Friendly alias of the VLM to use (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;gpt-5.4&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;claude-sonnet-4.5&quot;</span></code>). The server is the source of truth for the supported
+aliases and the default; passing an unrecognised alias returns HTTP 400. Omit
+to use the server-configured default.</p></li>
+<li><p><strong>timeout</strong> (<em>float</em>) – Request timeout in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">VlmVerification</span></code> with nested <code class="docutils literal notranslate"><span class="pre">result</span></code> (<code class="docutils literal notranslate"><span class="pre">verdict</span></code> —
+<code class="docutils literal notranslate"><span class="pre">&quot;YES&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;NO&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;UNSURE&quot;</span></code> — <code class="docutils literal notranslate"><span class="pre">confidence</span></code>, <code class="docutils literal notranslate"><span class="pre">reasoning</span></code>) and <code class="docutils literal notranslate"><span class="pre">cost</span></code>
+(<code class="docutils literal notranslate"><span class="pre">input_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">output_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">total_cost_usd</span></code>).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If zero or more than <code class="docutils literal notranslate"><span class="pre">MAX_VLM_MEDIA_ITEMS</span></code> (8) images are supplied.</p></li>
+<li><p><strong>groundlight_openapi_client.exceptions.ApiException</strong> – On non-2xx response (400 for
+an invalid model alias or undecodable image bytes; 502 if the upstream VLM is unavailable).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>VlmVerification</em></p>
 </dd>
 </dl>
 </dd></dl>
