@@ -144,6 +144,102 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/api-tokens:
+    get:
+      operationId: List API tokens
+      description: List all API tokens for the authenticated user. Returns metadata
+        only; raw keys are never retrievable after creation.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - api-tokens
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApiTokenList'
+          description: ''
+    post:
+      operationId: Create API token
+      description: Create a new API token, returning the raw_key exactly once in the
+        response.
+      tags:
+      - api-tokens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiTokenRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ApiTokenRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ApiTokenRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiTokenCreateResponse'
+          description: ''
+  /v1/api-tokens/{name}:
+    delete:
+      operationId: Delete API token
+      description: Delete (revoke) an API token by name. The token must belong to
+        the authenticated user.
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      tags:
+      - api-tokens
+      security:
+      - ApiToken: []
+      responses:
+        '204':
+          description: No response body
+  /v1/api-tokens/by-snippet/{snippet}:
+    get:
+      operationId: Get API token by snippet
+      description: Retrieve a single API token by its raw_key_snippet. Returns metadata
+        only; the raw key is never retrievable after creation.
+      parameters:
+      - in: path
+        name: snippet
+        schema:
+          type: string
+        required: true
+      tags:
+      - api-tokens
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiToken'
+          description: ''
   /v1/detector-groups:
     get:
       operationId: Get Detector Groups
@@ -1066,6 +1162,113 @@ components:
       required:
       - CUSTOMER
       - GL
+    ApiToken:
+      type: object
+      properties:
+        name:
+          type: string
+          description: An nickname for the API token. This name must be unique for
+            this user.
+          maxLength: 64
+        raw_key_snippet:
+          type: string
+          readOnly: true
+          description: Since we're storing hashed keys, it can be useful to see the
+            raw prefix snippet of the token.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When was this token created?
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+          description: The most recent time this API token was used. (Helpful for
+            detecting suspicious activity). Null if the token has never been used.
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When does this token expire? If Null, the token never expires.
+        token_ttl:
+          type: integer
+          nullable: true
+          readOnly: true
+          description: Identity token lifetime policy in whole seconds. Null means
+            tokens minted under this identity never expire (no rotation).
+      required:
+      - created_at
+      - last_used_at
+      - name
+      - raw_key_snippet
+    ApiTokenCreateResponse:
+      type: object
+      description: |-
+        Response shape for token creation. Adds the raw_key, which is only ever returned once,
+        at creation time.
+      properties:
+        name:
+          type: string
+          description: An nickname for the API token. This name must be unique for
+            this user.
+          maxLength: 64
+        raw_key_snippet:
+          type: string
+          readOnly: true
+          description: Since we're storing hashed keys, it can be useful to see the
+            raw prefix snippet of the token.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When was this token created?
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+          description: The most recent time this API token was used. (Helpful for
+            detecting suspicious activity). Null if the token has never been used.
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When does this token expire? If Null, the token never expires.
+        token_ttl:
+          type: integer
+          nullable: true
+          readOnly: true
+          description: Identity token lifetime policy in whole seconds. Null means
+            tokens minted under this identity never expire (no rotation).
+        raw_key:
+          type: string
+          readOnly: true
+          description: The full API token secret. Returned only once, when the token
+            is created.
+      required:
+      - created_at
+      - last_used_at
+      - name
+      - raw_key
+      - raw_key_snippet
+    ApiTokenRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: An nickname for the API token. This name must be unique for
+            this user.
+          maxLength: 64
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When does this token expire? If Null, the token never expires.
+      required:
+      - name
     BBoxGeometry:
       type: object
       description: Mixin for serializers to handle data in the StrictBaseModel format
@@ -1666,6 +1869,29 @@ components:
     NullEnum:
       enum:
       - null
+    PaginatedApiTokenList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiToken'
     PaginatedDetectorList:
       type: object
       required:

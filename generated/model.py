@@ -28,6 +28,63 @@ class AccountMonthToDateInfo(BaseModel):
     )
 
 
+class ApiToken(BaseModel):
+    name: constr(max_length=64) = Field(
+        ..., description="An nickname for the API token. This name must be unique for this user."
+    )
+    raw_key_snippet: str = Field(
+        ..., description="Since we're storing hashed keys, it can be useful to see the raw prefix snippet of the token."
+    )
+    created_at: datetime = Field(..., description="When was this token created?")
+    last_used_at: Optional[datetime] = Field(
+        ...,
+        description="The most recent time this API token was used. (Helpful for detecting suspicious activity). Null if the token has never been used.",
+    )
+    expires_at: Optional[datetime] = Field(
+        None, description="When does this token expire? If Null, the token never expires."
+    )
+    token_ttl: Optional[int] = Field(
+        None,
+        description="Identity token lifetime policy in whole seconds. Null means tokens minted under this identity never expire (no rotation).",
+    )
+
+
+class ApiTokenCreateResponse(BaseModel):
+    """
+    Response shape for token creation. Adds the raw_key, which is only ever returned once,
+    at creation time.
+    """
+
+    name: constr(max_length=64) = Field(
+        ..., description="An nickname for the API token. This name must be unique for this user."
+    )
+    raw_key_snippet: str = Field(
+        ..., description="Since we're storing hashed keys, it can be useful to see the raw prefix snippet of the token."
+    )
+    created_at: datetime = Field(..., description="When was this token created?")
+    last_used_at: Optional[datetime] = Field(
+        ...,
+        description="The most recent time this API token was used. (Helpful for detecting suspicious activity). Null if the token has never been used.",
+    )
+    expires_at: Optional[datetime] = Field(
+        None, description="When does this token expire? If Null, the token never expires."
+    )
+    token_ttl: Optional[int] = Field(
+        None,
+        description="Identity token lifetime policy in whole seconds. Null means tokens minted under this identity never expire (no rotation).",
+    )
+    raw_key: str = Field(..., description="The full API token secret. Returned only once, when the token is created.")
+
+
+class ApiTokenRequest(BaseModel):
+    name: constr(min_length=1, max_length=64) = Field(
+        ..., description="An nickname for the API token. This name must be unique for this user."
+    )
+    expires_at: Optional[datetime] = Field(
+        None, description="When does this token expire? If Null, the token never expires."
+    )
+
+
 class BBoxGeometry(BaseModel):
     """
     Mixin for serializers to handle data in the StrictBaseModel format
@@ -176,6 +233,13 @@ class NoteRequest(BaseModel):
 
 class NullEnum(Enum):
     NoneType_None = None
+
+
+class PaginatedApiTokenList(BaseModel):
+    count: int = Field(..., examples=[123])
+    next: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=4"])
+    previous: Optional[AnyUrl] = Field(None, examples=["http://api.example.org/accounts/?page=2"])
+    results: List[ApiToken]
 
 
 class PaginatedMLPipelineList(BaseModel):

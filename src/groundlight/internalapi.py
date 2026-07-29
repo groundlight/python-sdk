@@ -23,6 +23,19 @@ class NotFoundError(Exception):
     pass
 
 
+def api_exception_detail(exc: ApiException) -> Optional[str]:
+    """Return a stripped response body from an API exception, if present."""
+    body = exc.body
+    if body is None:
+        return None
+    if isinstance(body, bytes):
+        text = body.decode("utf-8", errors="replace")
+    else:
+        text = str(body)
+    text = text.strip()
+    return text or None
+
+
 def sanitize_endpoint_url(endpoint: Optional[str] = None) -> str:
     """Takes a URL for an endpoint, and returns a "sanitized" version of it.
     Currently the production API path must be exactly "/device-api".

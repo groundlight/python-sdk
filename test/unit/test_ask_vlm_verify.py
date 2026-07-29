@@ -5,6 +5,7 @@ the real request assembly (multipart parts, URL, auth) and response parsing with
 server — the same layer the rest of the SDK's request plumbing runs through.
 """
 
+from typing import Iterator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -16,6 +17,8 @@ from model import VlmVerification
 
 # Minimal valid-looking JPEG bytes for tests that don't exercise image encoding.
 _FAKE_JPEG = b"\xff\xd8\xff\xe0" + b"\x00" * 16
+# Long enough for TokenManager's snippet validation (>= 20 chars).
+_FAKE_API_TOKEN = "api_fake_test_token_xx"
 
 _RESPONSE_JSON = (
     b'{"id":"vlmv_test123","type":"vlm_verification","created_at":"2025-06-17T00:00:00Z",'
@@ -26,10 +29,14 @@ _RESPONSE_JSON = (
 
 
 @pytest.fixture(name="gl")
-def experimental_fixture(monkeypatch) -> ExperimentalApi:
-    monkeypatch.setenv("GROUNDLIGHT_API_TOKEN", "api_fake_test_token")
-    with patch.object(ExperimentalApi, "_verify_connectivity", return_value=None):
-        return ExperimentalApi(endpoint="http://test-server/device-api/")
+def experimental_fixture(monkeypatch) -> Iterator[ExperimentalApi]:
+    """Build an ExperimentalApi without live connectivity or token-rotation network calls."""
+    monkeypatch.setenv("GROUNDLIGHT_API_TOKEN", _FAKE_API_TOKEN)
+    with (
+        patch("groundlight.client.TokenManager", return_value=MagicMock()),
+        patch.object(ExperimentalApi, "_verify_connectivity", return_value=None),
+    ):
+        yield ExperimentalApi(endpoint="http://test-server/device-api/")
 
 
 def _capturing_transport(captured: dict, data: bytes = _RESPONSE_JSON):

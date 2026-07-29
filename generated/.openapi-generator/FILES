@@ -6,6 +6,10 @@ docs/ActionList.md
 docs/ActionsApi.md
 docs/AllNotes.md
 docs/AnnotationsRequestedEnum.md
+docs/ApiToken.md
+docs/ApiTokenCreateResponse.md
+docs/ApiTokenRequest.md
+docs/ApiTokensApi.md
 docs/BBoxGeometry.md
 docs/BBoxGeometryRequest.md
 docs/BinaryClassificationResult.md
@@ -52,6 +56,7 @@ docs/Note.md
 docs/NoteRequest.md
 docs/NotesApi.md
 docs/NullEnum.md
+docs/PaginatedApiTokenList.md
 docs/PaginatedDetectorList.md
 docs/PaginatedImageQueryList.md
 docs/PaginatedMLPipelineList.md
@@ -87,6 +92,7 @@ git_push.sh
 groundlight_openapi_client/__init__.py
 groundlight_openapi_client/api/__init__.py
 groundlight_openapi_client/api/actions_api.py
+groundlight_openapi_client/api/api_tokens_api.py
 groundlight_openapi_client/api/detector_groups_api.py
 groundlight_openapi_client/api/detector_reset_api.py
 groundlight_openapi_client/api/detectors_api.py
@@ -108,6 +114,9 @@ groundlight_openapi_client/model/action.py
 groundlight_openapi_client/model/action_list.py
 groundlight_openapi_client/model/all_notes.py
 groundlight_openapi_client/model/annotations_requested_enum.py
+groundlight_openapi_client/model/api_token.py
+groundlight_openapi_client/model/api_token_create_response.py
+groundlight_openapi_client/model/api_token_request.py
 groundlight_openapi_client/model/b_box_geometry.py
 groundlight_openapi_client/model/b_box_geometry_request.py
 groundlight_openapi_client/model/binary_classification_result.py
@@ -146,6 +155,7 @@ groundlight_openapi_client/model/multi_classification_result.py
 groundlight_openapi_client/model/note.py
 groundlight_openapi_client/model/note_request.py
 groundlight_openapi_client/model/null_enum.py
+groundlight_openapi_client/model/paginated_api_token_list.py
 groundlight_openapi_client/model/paginated_detector_list.py
 groundlight_openapi_client/model/paginated_image_query_list.py
 groundlight_openapi_client/model/paginated_ml_pipeline_list.py

@@ -1,10 +1,16 @@
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Iterator
 from uuid import uuid4
 
 import pytest
 from groundlight import ExperimentalApi, Groundlight
+from groundlight.token_manager import TokenManager
 from model import Detector, ImageQuery, ImageQueryTypeEnum, ResultTypeEnum
+
+# Keep background token refresh off for the test suite so it cannot race with tests that
+# mock urllib3/requests and assert exact call counts. Production clients have no such knob;
+# rotate-vs-not is determined solely by identity token_ttl.
+TokenManager.start = lambda self: None  # type: ignore[method-assign]
 
 
 def _generate_unique_detector_name(prefix: str = "Test") -> str:
@@ -21,18 +27,24 @@ def fixture_detector_name() -> Callable[..., str]:
 def pytest_configure(config):  # pylint: disable=unused-argument
     # Run environment check before tests
     gl = Groundlight()
-    if gl._user_is_privileged():  # pylint: disable=protected-access
-        raise RuntimeError(
-            "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
-        )
+    try:
+        if gl._user_is_privileged():  # pylint: disable=protected-access
+            raise RuntimeError(
+                "ERROR: You are running tests with a privileged user. Please run tests with a non-privileged user."
+            )
+    finally:
+        gl.close()
 
 
 @pytest.fixture(name="gl")
-def fixture_gl() -> Groundlight:
+def fixture_gl() -> Iterator[Groundlight]:
     """Creates a Groundlight client object for testing."""
     _gl = Groundlight()
     _gl.DEFAULT_WAIT = 10
-    return _gl
+    try:
+        yield _gl
+    finally:
+        _gl.close()
 
 
 @pytest.fixture(name="detector")
@@ -82,10 +94,14 @@ def fixture_image_query_zero(gl_experimental: Groundlight, count_detector: Detec
 
 
 @pytest.fixture(name="gl_experimental")
-def fixture_gl_experimental() -> ExperimentalApi:
+def fixture_gl_experimental() -> Iterator[ExperimentalApi]:
+    """Creates an ExperimentalApi client object for testing."""
     _gl = ExperimentalApi()
     _gl.DEFAULT_WAIT = 10
-    return _gl
+    try:
+        yield _gl
+    finally:
+        _gl.close()
 
 
 @pytest.fixture(name="initial_iq")

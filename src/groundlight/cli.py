@@ -168,6 +168,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
 # Methods that should not be exposed as CLI commands. Add a method here if its signature
 # cannot be cleanly represented as CLI arguments or if it is not useful as a shell command.
 _CLI_EXCLUDED_METHODS = {
+    "close",  # lifecycle method; not useful as a standalone command
     "create_roi",  # returns an ROI object that must be passed to another API call; not useful standalone
     "get_raw_headers",  # returns the API token in plaintext
     "make_generic_api_request",

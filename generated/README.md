@@ -120,6 +120,10 @@ Class | Method | HTTP request | Description
 *ActionsApi* | [**get_rule**](docs/ActionsApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
 *ActionsApi* | [**list_detector_rules**](docs/ActionsApi.md#list_detector_rules) | **GET** /v1/actions/detector/{detector_id}/rules | 
 *ActionsApi* | [**list_rules**](docs/ActionsApi.md#list_rules) | **GET** /v1/actions/rules | 
+*ApiTokensApi* | [**create_api_token**](docs/ApiTokensApi.md#create_api_token) | **POST** /v1/api-tokens | 
+*ApiTokensApi* | [**delete_api_token**](docs/ApiTokensApi.md#delete_api_token) | **DELETE** /v1/api-tokens/{name} | 
+*ApiTokensApi* | [**get_api_token_by_snippet**](docs/ApiTokensApi.md#get_api_token_by_snippet) | **GET** /v1/api-tokens/by-snippet/{snippet} | 
+*ApiTokensApi* | [**list_api_tokens**](docs/ApiTokensApi.md#list_api_tokens) | **GET** /v1/api-tokens | 
 *DetectorGroupsApi* | [**create_detector_group**](docs/DetectorGroupsApi.md#create_detector_group) | **POST** /v1/detector-groups | 
 *DetectorGroupsApi* | [**get_detector_groups**](docs/DetectorGroupsApi.md#get_detector_groups) | **GET** /v1/detector-groups | 
 *DetectorResetApi* | [**reset_detector**](docs/DetectorResetApi.md#reset_detector) | **DELETE** /v1/detector-reset/{id} | 
@@ -156,6 +160,9 @@ Class | Method | HTTP request | Description
  - [ActionList](docs/ActionList.md)
  - [AllNotes](docs/AllNotes.md)
  - [AnnotationsRequestedEnum](docs/AnnotationsRequestedEnum.md)
+ - [ApiToken](docs/ApiToken.md)
+ - [ApiTokenCreateResponse](docs/ApiTokenCreateResponse.md)
+ - [ApiTokenRequest](docs/ApiTokenRequest.md)
  - [BBoxGeometry](docs/BBoxGeometry.md)
  - [BBoxGeometryRequest](docs/BBoxGeometryRequest.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
@@ -194,6 +201,7 @@ Class | Method | HTTP request | Description
  - [Note](docs/Note.md)
  - [NoteRequest](docs/NoteRequest.md)
  - [NullEnum](docs/NullEnum.md)
+ - [PaginatedApiTokenList](docs/PaginatedApiTokenList.md)
  - [PaginatedDetectorList](docs/PaginatedDetectorList.md)
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedMLPipelineList](docs/PaginatedMLPipelineList.md)
