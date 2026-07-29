@@ -62,7 +62,7 @@ def _created_token(
     )
 
 
-def _manager(mocker, tmp_path, api, now=NOW, *, enable_token_rotation: bool = True) -> TokenManager:
+def _manager(mocker, tmp_path, api, now=NOW) -> TokenManager:
     """Create a token manager with deterministic API and time dependencies."""
     mocker.patch.object(token_manager, "ApiTokensApi", return_value=api)
     mocker.patch.object(token_manager, "_utc_now", return_value=now)
@@ -73,7 +73,6 @@ def _manager(mocker, tmp_path, api, now=NOW, *, enable_token_rotation: bool = Tr
         configuration=configuration,
         request_timeout=1,
         token_dir=tmp_path,
-        enable_token_rotation=enable_token_rotation,
     )
 
 
@@ -125,31 +124,6 @@ def test_initialization_uses_never_expire_configured_token_as_is(mocker, tmp_pat
     assert manager._thread is None
     assert not manager._slot_path.exists()
     api.create_api_token.assert_not_called()
-
-
-def test_initialization_skips_rotation_when_disabled(mocker, tmp_path):
-    """Disabling rotation uses the configured token with no token API, cache, or refresh thread."""
-    api_tokens_cls = mocker.patch.object(token_manager, "ApiTokensApi")
-    mocker.patch.object(token_manager, "_utc_now", return_value=NOW)
-    configuration = Configuration(host="https://example.com/device-api")
-    configuration.api_key["ApiToken"] = CONFIGURED_TOKEN
-
-    manager = TokenManager(
-        configured_token=CONFIGURED_TOKEN,
-        configuration=configuration,
-        request_timeout=1,
-        token_dir=tmp_path,
-        enable_token_rotation=False,
-    )
-    manager.start()
-    manager.close()
-
-    assert manager._configuration.api_key["ApiToken"] == CONFIGURED_TOKEN
-    assert manager._current is None
-    assert manager._thread is None
-    assert manager._rotation_client is None
-    assert list(tmp_path.iterdir()) == []
-    api_tokens_cls.assert_not_called()
 
 
 def test_initialization_hard_deadline_without_token_ttl_does_not_rotate(mocker, tmp_path):

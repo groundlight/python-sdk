@@ -199,15 +199,16 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.configuration.api_key["ApiToken"] = api_token
 
         self.api_client = GroundlightApiClient(self.configuration)
-        try:
-            self._token_manager = TokenManager(
-                configured_token=api_token,
-                configuration=self.configuration,
-                request_timeout=DEFAULT_REQUEST_TIMEOUT,
-                enable_token_rotation=enable_token_rotation,
-            )
-        except TokenManagerError as exc:
-            raise ApiTokenError(str(exc)) from exc
+        self._token_manager: Optional[TokenManager] = None
+        if enable_token_rotation:
+            try:
+                self._token_manager = TokenManager(
+                    configured_token=api_token,
+                    configuration=self.configuration,
+                    request_timeout=DEFAULT_REQUEST_TIMEOUT,
+                )
+            except TokenManagerError as exc:
+                raise ApiTokenError(str(exc)) from exc
         self.detectors_api = DetectorsApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
@@ -217,8 +218,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        # No-op when rotation is disabled or the working token has no identity Token TTL.
-        self._token_manager.start()
+        # No-op when the working token has no identity Token TTL.
+        if self._token_manager is not None:
+            self._token_manager.start()
 
     def __repr__(self) -> str:
         # Don't call the API here because that can get us stuck in a loop rendering exception strings
@@ -234,7 +236,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
     def close(self) -> None:
         """Stop the token refresh thread and close the HTTP client."""
-        self._token_manager.close()
+        if self._token_manager is not None:
+            self._token_manager.close()
         self.api_client.close()
 
     def _verify_connectivity(self) -> None:

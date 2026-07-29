@@ -161,19 +161,14 @@ class TokenSlot:
 class TokenManager:  # pylint: disable=too-many-instance-attributes
     """Manage cached API tokens and coordinate their automatic rotation."""
 
-    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         configured_token: str,
         configuration: Configuration,
         request_timeout: float,
         token_dir: Optional[Path] = None,
-        enable_token_rotation: bool = True,
     ):
-        """Initialize the cache slot and select or mint a working API token.
-
-        When enable_token_rotation is False, use the configured token as-is with no by-snippet
-        lookup, on-disk cache, or background refresh.
-        """
+        """Initialize the cache slot and select or mint a working API token."""
         self._configured_token = configured_token
         self._configured_snippet = configured_token[:TOKEN_SNIPPET_LENGTH]
         if len(self._configured_snippet) != TOKEN_SNIPPET_LENGTH or not re.fullmatch(
@@ -184,22 +179,15 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             )
         self._configuration = configuration
         self._request_timeout = request_timeout
-        self._rotation_enabled = enable_token_rotation
-        self._stop_event = threading.Event()
-        self._thread: Optional[threading.Thread] = None
-        self._current: Optional[CurrentToken] = None
-        self._available = True
-        self._rotation_client: Optional[GroundlightApiClient] = None
-        self._api_tokens: Optional[ApiTokensApi] = None
-
-        if not self._rotation_enabled:
-            self._set_api_token(self._configured_token)
-            return
-
         self._token_dir = token_dir or self._default_token_dir()
         self._slot_path = self._token_dir / f"{self._configured_snippet}.json"
         self._lock_path = self._token_dir / f"{self._configured_snippet}.lock"
         self._lock = FileLock(str(self._lock_path), timeout=LOCK_TIMEOUT_SECONDS, mode=0o600)
+        self._stop_event = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+        self._current: Optional[CurrentToken] = None
+        self._available = True
+
         self._ensure_token_dir()
         self._rotation_client = GroundlightApiClient(configuration)
         self._api_tokens = ApiTokensApi(self._rotation_client)
@@ -286,7 +274,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
     def start(self) -> None:
         """Start background refresh when the working token has a finite Token TTL."""
-        if not self._rotation_enabled or not self._available or self._thread is not None:
+        if not self._available or self._thread is not None:
             return
         if self._current is None or self._current.token_ttl is None:
             return
@@ -302,8 +290,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._stop_event.set()
         if self._thread is not None:
             self._thread.join()
-        if self._rotation_client is not None:
-            self._rotation_client.close()
+        self._rotation_client.close()
 
     def refresh(self) -> bool:
         """Use the cached token if it is still fresh; otherwise rotate under the file lock.
@@ -417,7 +404,6 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
     def _mint_replacement(self, base_name: str, previous: Optional[PreviousToken]) -> CurrentToken:
         """Mint a new token, persist the updated slot, and activate the new credential."""
-        assert self._api_tokens is not None  # only called when rotation is enabled
         new_name = self._new_token_name(base_name)
         minted_at = _utc_now()
         # Omit expires_at so the server applies the identity's token lifetime policy.
@@ -432,14 +418,12 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
 
     def _get_token_by_snippet(self, snippet: str) -> ApiToken:
         """Retrieve token metadata by snippet via the dedicated API endpoint."""
-        assert self._api_tokens is not None  # only called when rotation is enabled
         return self._api_tokens.get_api_token_by_snippet(snippet, _request_timeout=self._request_timeout)
 
     def _revoke_previous(self, previous: Optional[PreviousToken]) -> None:
         """Best-effort revoke of the demoted previous token before it is replaced in the slot."""
         if previous is None:
             return
-        assert self._api_tokens is not None  # only called when rotation is enabled
         try:
             self._api_tokens.delete_api_token(previous.name, _request_timeout=self._request_timeout)
         except NotFoundException:
