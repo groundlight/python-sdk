@@ -125,6 +125,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using
             self-signed certificates. For security, always keep verification enabled when using the
             Groundlight cloud service.
+    :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
+            non-null Token TTL. Set False for proxies that forward a caller's token without owning
+            rotation (for example, Groundlight Edge Endpoint request handling).
 
     :return: Groundlight client instance
     """
@@ -141,6 +144,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         api_token: Optional[str] = None,
         disable_tls_verification: Optional[bool] = None,
         http_transport_retries: Optional[Union[int, Retry]] = None,
+        enable_token_rotation: bool = True,
     ):
         """
         Initialize a new Groundlight client instance.
@@ -156,6 +160,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             certificates. For security, always keep verification enabled when using the Groundlight cloud service.
         :param http_transport_retries: Overrides urllib3 `PoolManager` retry policy for HTTP/HTTPS (forwarded to
             `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
+        :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
+            non-null Token TTL. Set False when forwarding a caller's token without owning its rotation chain.
 
         :return: Groundlight client
         """
@@ -199,6 +205,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                 configured_token=api_token,
                 configuration=self.configuration,
                 request_timeout=DEFAULT_REQUEST_TIMEOUT,
+                enable_token_rotation=enable_token_rotation,
             )
         except TokenManagerError as exc:
             raise ApiTokenError(str(exc)) from exc
@@ -211,7 +218,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.month_to_date_api = MonthToDateAccountInfoApi(self.api_client)
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
-        # No-op when the working token has no identity Token TTL.
+        # No-op when rotation is disabled or the working token has no identity Token TTL.
         self._token_manager.start()
 
     def __repr__(self) -> str:
