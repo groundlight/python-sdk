@@ -52,6 +52,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         endpoint: Union[str, None] = None,
         api_token: Union[str, None] = None,
         disable_tls_verification: Optional[bool] = None,
+        enable_token_rotation: bool = True,
     ):
         """
         Constructs an experimental Groundlight client.
@@ -83,8 +84,15 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
                 Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using
                 self-signed certificates. For security, always keep verification enabled when using the
                 Groundlight cloud service.
+        :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
+                non-null Token TTL.
         """
-        super().__init__(endpoint=endpoint, api_token=api_token, disable_tls_verification=disable_tls_verification)
+        super().__init__(
+            endpoint=endpoint,
+            api_token=api_token,
+            disable_tls_verification=disable_tls_verification,
+            enable_token_rotation=enable_token_rotation,
+        )
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.detector_reset_api = DetectorResetApi(self.api_client)

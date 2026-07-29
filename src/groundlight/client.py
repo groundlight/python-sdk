@@ -125,6 +125,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using
             self-signed certificates. For security, always keep verification enabled when using the
             Groundlight cloud service.
+    :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
+            non-null Token TTL.
 
     :return: Groundlight client instance
     """
@@ -135,12 +137,13 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(
+    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,
         disable_tls_verification: Optional[bool] = None,
         http_transport_retries: Optional[Union[int, Retry]] = None,
+        enable_token_rotation: bool = True,
     ):
         """
         Initialize a new Groundlight client instance.
@@ -156,6 +159,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             certificates. For security, always keep verification enabled when using the Groundlight cloud service.
         :param http_transport_retries: Overrides urllib3 `PoolManager` retry policy for HTTP/HTTPS (forwarded to
             `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
+        :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
+            non-null Token TTL.
 
         :return: Groundlight client
         """
@@ -194,14 +199,16 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.configuration.api_key["ApiToken"] = api_token
 
         self.api_client = GroundlightApiClient(self.configuration)
-        try:
-            self._token_manager = TokenManager(
-                configured_token=api_token,
-                configuration=self.configuration,
-                request_timeout=DEFAULT_REQUEST_TIMEOUT,
-            )
-        except TokenManagerError as exc:
-            raise ApiTokenError(str(exc)) from exc
+        self._token_manager: Optional[TokenManager] = None
+        if enable_token_rotation:
+            try:
+                self._token_manager = TokenManager(
+                    configured_token=api_token,
+                    configuration=self.configuration,
+                    request_timeout=DEFAULT_REQUEST_TIMEOUT,
+                )
+            except TokenManagerError as exc:
+                raise ApiTokenError(str(exc)) from exc
         self.detectors_api = DetectorsApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)
         self.images_api = ImageQueriesApi(self.api_client)
@@ -212,7 +219,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         self.logged_in_user = "(not-logged-in)"
         self._verify_connectivity()
         # No-op when the working token has no identity Token TTL.
-        self._token_manager.start()
+        if self._token_manager is not None:
+            self._token_manager.start()
 
     def __repr__(self) -> str:
         # Don't call the API here because that can get us stuck in a loop rendering exception strings
@@ -228,7 +236,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
     def close(self) -> None:
         """Stop the token refresh thread and close the HTTP client."""
-        self._token_manager.close()
+        if self._token_manager is not None:
+            self._token_manager.close()
         self.api_client.close()
 
     def _verify_connectivity(self) -> None:
