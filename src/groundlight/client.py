@@ -126,8 +126,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             self-signed certificates. For security, always keep verification enabled when using the
             Groundlight cloud service.
     :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
-            non-null Token TTL. Set False for proxies that forward a caller's token without owning
-            rotation (for example, Groundlight Edge Endpoint request handling).
+            non-null Token TTL.
 
     :return: Groundlight client instance
     """
@@ -161,7 +160,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :param http_transport_retries: Overrides urllib3 `PoolManager` retry policy for HTTP/HTTPS (forwarded to
             `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
         :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
-            non-null Token TTL. Set False when forwarding a caller's token without owning its rotation chain.
+            non-null Token TTL.
 
         :return: Groundlight client
         """

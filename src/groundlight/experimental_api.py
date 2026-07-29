@@ -85,7 +85,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
                 self-signed certificates. For security, always keep verification enabled when using the
                 Groundlight cloud service.
         :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
-                non-null Token TTL. Set False when forwarding a caller's token without owning its rotation chain.
+                non-null Token TTL.
         """
         super().__init__(
             endpoint=endpoint,

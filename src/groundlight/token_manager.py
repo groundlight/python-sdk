@@ -172,8 +172,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         """Initialize the cache slot and select or mint a working API token.
 
         When enable_token_rotation is False, use the configured token as-is with no by-snippet
-        lookup, on-disk cache, or background refresh. Intended for proxies (e.g. Edge Endpoint)
-        that forward a caller's token without owning its rotation chain.
+        lookup, on-disk cache, or background refresh.
         """
         self._configured_token = configured_token
         self._configured_snippet = configured_token[:TOKEN_SNIPPET_LENGTH]
