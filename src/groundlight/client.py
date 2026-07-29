@@ -138,7 +138,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
     POLLING_EXPONENTIAL_BACKOFF = 1.3  # This still has the nice backoff property that the max number of requests
     # is O(log(time)), but with 1.3 the guarantee is that the call will return no more than 30% late
 
-    def __init__(
+    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         endpoint: Optional[str] = None,
         api_token: Optional[str] = None,

@@ -142,13 +142,13 @@ def test_initialization_skips_rotation_when_disabled(mocker, tmp_path):
         enable_token_rotation=False,
     )
     manager.start()
-    assert manager.refresh() is True
+    manager.close()
 
     assert manager._configuration.api_key["ApiToken"] == CONFIGURED_TOKEN
     assert manager._current is None
     assert manager._thread is None
     assert manager._rotation_client is None
-    assert not manager._slot_path.exists()
+    assert list(tmp_path.iterdir()) == []
     api_tokens_cls.assert_not_called()
 
 

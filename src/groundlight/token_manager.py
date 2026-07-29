@@ -161,7 +161,7 @@ class TokenSlot:
 class TokenManager:  # pylint: disable=too-many-instance-attributes
     """Manage cached API tokens and coordinate their automatic rotation."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         configured_token: str,
         configuration: Configuration,
@@ -192,16 +192,15 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         self._available = True
         self._rotation_client: Optional[GroundlightApiClient] = None
         self._api_tokens: Optional[ApiTokensApi] = None
+
+        if not self._rotation_enabled:
+            self._set_api_token(self._configured_token)
+            return
+
         self._token_dir = token_dir or self._default_token_dir()
         self._slot_path = self._token_dir / f"{self._configured_snippet}.json"
         self._lock_path = self._token_dir / f"{self._configured_snippet}.lock"
         self._lock = FileLock(str(self._lock_path), timeout=LOCK_TIMEOUT_SECONDS, mode=0o600)
-
-        if not self._rotation_enabled:
-            self._available = False
-            self._set_api_token(self._configured_token)
-            return
-
         self._ensure_token_dir()
         self._rotation_client = GroundlightApiClient(configuration)
         self._api_tokens = ApiTokensApi(self._rotation_client)
@@ -314,8 +313,6 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         current to previous, and mint a new current. Returns False only when rotation could
         not run (lock timeout, mint failure, or token API unavailable).
         """
-        if not self._rotation_enabled:
-            return True
         try:
             with self._lock:
                 slot = self._load_slot()

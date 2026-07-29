@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 from groundlight.client import Groundlight
+from groundlight.experimental_api import ExperimentalApi
 
 
 def test_groundlight_starts_and_closes_token_manager(mocker):
@@ -28,6 +29,18 @@ def test_groundlight_forwards_enable_token_rotation(mocker):
     mocker.patch.object(Groundlight, "_verify_connectivity")
 
     client = Groundlight(api_token="api_bootstrap_token_value_long_enough", enable_token_rotation=False)
+    client.close()
+
+    assert token_manager_class.call_args.kwargs["enable_token_rotation"] is False
+
+
+def test_experimental_api_forwards_enable_token_rotation(mocker):
+    """ExperimentalApi passes enable_token_rotation through to TokenManager."""
+    manager = Mock()
+    token_manager_class = mocker.patch("groundlight.client.TokenManager", return_value=manager)
+    mocker.patch.object(Groundlight, "_verify_connectivity")
+
+    client = ExperimentalApi(api_token="api_bootstrap_token_value_long_enough", enable_token_rotation=False)
     client.close()
 
     assert token_manager_class.call_args.kwargs["enable_token_rotation"] is False
