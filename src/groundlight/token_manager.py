@@ -217,7 +217,11 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
             raise TokenManagerError(f"Groundlight token directory '{self._token_dir}' is not writable")
 
     def _initialize_token(self) -> None:
-        """Load a valid cached token, use a never-expire configured token, or mint a child."""
+        """Load a valid cached token, use a never-expire configured token, or mint a child.
+
+        When minting the first working token, the configured bootstrap token is left out of the
+        cache slot (previous=None) and is never revoked by later refreshes.
+        """
         try:
             with self._lock:
                 slot = self._load_slot()
@@ -241,11 +245,13 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
                     # No identity Token TTL: behave like pre-rotation Groundlight.
                     return
 
+                # Mint a working child without recording the configured (bootstrap) token as
+                # previous. Bootstrap tokens are never written into the cache slot and never
+                # revoked by this manager, so other processes that share the same configured
+                # token can keep using it (or mint their own independent child chains) until
+                # the bootstrap token expires on its own.
                 base_name = TOKEN_NAME_SUFFIX_PATTERN.sub("", configured_meta.name)
-                self._mint_replacement(
-                    base_name=base_name,
-                    previous=PreviousToken(name=configured_meta.name, minted_at=_utc_now()),
-                )
+                self._mint_replacement(base_name=base_name, previous=None)
         except FileLockTimeout as exc:
             raise TokenManagerError(f"Timed out waiting for token cache lock '{self._lock_path}'") from exc
         except NotFoundException:

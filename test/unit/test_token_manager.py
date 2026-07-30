@@ -93,22 +93,34 @@ def test_initialization_mints_and_privately_caches_token(mocker, tmp_path):
     assert cached["base_name"] == "Device token"
     assert cached["current"]["raw_key"] == "api_working_token_one"
     assert cached["current"]["token_ttl_seconds"] == TOKEN_TTL.total_seconds()
-    assert cached["previous"]["name"] == "Device token"
+    assert cached["previous"] is None
     api.delete_api_token.assert_not_called()
 
 
-def test_initialization_parks_configured_token_as_previous(mocker, tmp_path):
-    """After minting the first working token, the configured token is parked as previous."""
+def test_initialization_does_not_park_or_revoke_bootstrap_token(mocker, tmp_path):
+    """The configured bootstrap token is omitted from the slot and never deleted on first refresh."""
     api = Mock()
     api.get_api_token_by_snippet.return_value = _expiring_metadata("Device token", CONFIGURED_TOKEN)
     api.create_api_token.return_value = _created_token("Device token abc123", "api_working_token_one", NOW)
 
     manager = _manager(mocker, tmp_path, api)
 
+    cached = json.loads(manager._slot_path.read_text())
+    assert cached["previous"] is None
+    api.delete_api_token.assert_not_called()
+
+    later = NOW + REFRESH_INTERVAL + timedelta(seconds=1)
+    mocker.patch.object(token_manager, "_utc_now", return_value=later)
+    api.reset_mock()
+    api.create_api_token.return_value = _created_token("Device token def456", "api_working_token_two", later)
+
+    manager.refresh()
+
+    # Only manager-minted tokens enter the revoke cycle; the bootstrap name is never deleted.
     api.delete_api_token.assert_not_called()
     cached = json.loads(manager._slot_path.read_text())
-    assert cached["previous"]["name"] == "Device token"
-    assert cached["previous"]["minted_at"] == NOW.isoformat().replace("+00:00", "Z")
+    assert cached["current"]["raw_key"] == "api_working_token_two"
+    assert cached["previous"]["name"] == "Device token abc123"
 
 
 def test_initialization_uses_never_expire_configured_token_as_is(mocker, tmp_path):
