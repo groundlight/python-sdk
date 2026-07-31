@@ -13,8 +13,8 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.group import Group
-globals()['Group'] = Group
+from groundlight_openapi_client.model.customer_group import CustomerGroup
+globals()['CustomerGroup'] = CustomerGroup
 from groundlight_openapi_client.model.me import Me
 
 
