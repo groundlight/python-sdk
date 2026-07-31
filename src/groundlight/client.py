@@ -33,6 +33,7 @@ from model import (
     Detector,
     DetectorGroup,
     ImageQuery,
+    Me,
     ModeEnum,
     PaginatedDetectorList,
     PaginatedImageQueryList,
@@ -43,7 +44,6 @@ from urllib3.util.retry import Retry
 from groundlight.binary_labels import Label, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
-from groundlight.identity import Me
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
     GroundlightApiClient,

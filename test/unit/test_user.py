@@ -1,5 +1,4 @@
-from groundlight import Groundlight, Me
-from groundlight.identity import Group
+from groundlight import CustomerGroup, Groundlight, Me
 
 
 def test_whoami(gl: Groundlight):
@@ -17,6 +16,6 @@ def test_me(gl: Groundlight):
     assert me.username
     assert isinstance(me.groups, list)
     assert len(me.groups) >= 1
-    assert all(isinstance(group, Group) for group in me.groups)
+    assert all(isinstance(group, CustomerGroup) for group in me.groups)
     assert all(group.id and group.name for group in me.groups)
     assert gl.whoami() == me.email

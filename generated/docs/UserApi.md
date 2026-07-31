@@ -8,11 +8,11 @@ Method | HTTP request | Description
 
 
 # **who_am_i**
-> InlineResponse2002 who_am_i()
+> Me who_am_i()
 
 
 
-Retrieve the current user.
+Retrieve the authenticated user's id, email, username, and customer groups.
 
 ### Example
 
@@ -22,7 +22,7 @@ Retrieve the current user.
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import user_api
-from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
+from groundlight_openapi_client.model.me import Me
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -60,7 +60,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**InlineResponse2002**](InlineResponse2002.md)
+[**Me**](Me.md)
 
 ### Authorization
 
