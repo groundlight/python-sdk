@@ -5,7 +5,7 @@ from typing import List
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class Group(BaseModel):
+class Group(BaseModel):  # pylint: disable=too-few-public-methods
     """A Groundlight customer group (tenant) the authenticated user belongs to."""
 
     model_config = ConfigDict(extra="ignore")
@@ -14,7 +14,7 @@ class Group(BaseModel):
     name: str = Field(..., description="Name of the customer group.")
 
 
-class Me(BaseModel):
+class Me(BaseModel):  # pylint: disable=too-few-public-methods
     """Identity information for the authenticated API token from GET /v1/me."""
 
     model_config = ConfigDict(extra="ignore")
