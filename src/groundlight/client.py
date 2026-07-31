@@ -283,10 +283,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
     def me(self) -> Me:
         """
-        Return identity information for the current API token.
-
-        Calls GET /v1/me and returns the authenticated user's id, email, username, and
-        customer groups. Extra fields from the server response are ignored.
+        Return user identity information for the current API token.
 
         **Example usage**::
 
