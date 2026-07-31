@@ -18,11 +18,11 @@ docs/BoundingBoxLabelEnum.md
 docs/BoundingBoxModeConfiguration.md
 docs/BoundingBoxResult.md
 docs/ChannelEnum.md
+docs/CustomerGroup.md
 docs/Condition.md
 docs/ConditionRequest.md
 docs/CountModeConfiguration.md
 docs/CountingResult.md
-docs/CustomerGroup.md
 docs/Detector.md
 docs/DetectorCreationInputRequest.md
 docs/DetectorGroup.md
