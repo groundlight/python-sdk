@@ -1,4 +1,5 @@
-from groundlight import CustomerGroup, Groundlight, Me
+from groundlight import Groundlight
+from model import CustomerGroup, Me
 
 
 def test_whoami(gl: Groundlight):
