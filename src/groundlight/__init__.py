@@ -10,7 +10,7 @@ from .client import Groundlight
 from .client import GroundlightClientError, ApiTokenError, EdgeNotAvailableError, NotFoundError
 from .experimental_api import ExperimentalApi
 from .binary_labels import Label
-from .identity import Group, Me
+from .identity import Me
 from .version import get_version
 
 __version__ = get_version()
