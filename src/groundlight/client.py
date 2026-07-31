@@ -43,6 +43,7 @@ from urllib3.util.retry import Retry
 from groundlight.binary_labels import Label, convert_internal_label_to_display
 from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
 from groundlight.encodings import url_encode_dict
+from groundlight.identity import Me
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
     GroundlightApiClient,
@@ -280,6 +281,26 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
+    def me(self) -> Me:
+        """
+        Return identity information for the current API token.
+
+        Calls GET /v1/me and returns the authenticated user's id, email, username, and
+        customer groups. Extra fields from the server response are ignored.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            me = gl.me()
+            print(f"Authenticated as {me.email} in {[g.name for g in me.groups]}")
+
+        :return: Me object for the authenticated user
+        :raises ApiTokenError: If the API token is invalid
+        :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
+        """
+        obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Me.model_validate(obj.to_dict())
+
     def whoami(self) -> str:
         """
         Return the username (email address) associated with the current API token.
@@ -297,8 +318,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :raises ApiTokenError: If the API token is invalid
         :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
-        obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return obj["email"]
+        return self.me().email
 
     def _user_is_privileged(self) -> bool:
         """
