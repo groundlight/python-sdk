@@ -140,6 +140,7 @@ class CustomerGroup(BaseModel):
     id: int = Field(..., description="Numeric id of the customer group.")
     name: str = Field(..., description="Name of the customer group.")
 
+
 class Me(BaseModel):
     """
     Authenticated user identity from GET /v1/me (id, email, username, groups).
@@ -149,6 +150,7 @@ class Me(BaseModel):
     email: str = Field(..., description="Email address of the authenticated user.")
     username: str = Field(..., description="Username of the authenticated user.")
     groups: List[CustomerGroup] = Field(..., description="Customer groups the authenticated user belongs to.")
+
 
 class DetectorModeEnum(str, Enum):
     """
