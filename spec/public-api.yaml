@@ -865,7 +865,8 @@ paths:
   /v1/me:
     get:
       operationId: Who am I
-      description: Retrieve the authenticated user's email, username, and group.
+      description: Retrieve the authenticated user's email, username, group, and superuser
+        flag.
       tags:
       - user
       security:
@@ -1839,7 +1840,8 @@ components:
       x-internal: true
     Me:
       type: object
-      description: Authenticated user identity from GET /v1/me (email, username, group).
+      description: Authenticated user identity from GET /v1/me (email, username, group,
+        is_superuser).
       properties:
         email:
           type: string
@@ -1851,9 +1853,13 @@ components:
           allOf:
           - $ref: '#/components/schemas/Group'
           description: Group (tenant) the authenticated user belongs to.
+        is_superuser:
+          type: boolean
+          description: Whether the authenticated user has elevated (superuser) permissions.
       required:
       - email
       - group
+      - is_superuser
       - username
     ModeEnum:
       type: string

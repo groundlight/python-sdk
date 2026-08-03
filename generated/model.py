@@ -143,12 +143,15 @@ class Group(BaseModel):
 
 class Me(BaseModel):
     """
-    Authenticated user identity from GET /v1/me (email, username, group).
+    Authenticated user identity from GET /v1/me (email, username, group, is_superuser).
     """
 
     email: str = Field(..., description="Email address of the authenticated user.")
     username: str = Field(..., description="Username of the authenticated user.")
     group: Group = Field(..., description="Group (tenant) the authenticated user belongs to.")
+    is_superuser: bool = Field(
+        ..., description="Whether the authenticated user has elevated (superuser) permissions."
+    )
 
 
 class DetectorModeEnum(str, Enum):

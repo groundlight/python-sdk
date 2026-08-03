@@ -17,4 +17,5 @@ def test_me(gl: Groundlight):
     assert isinstance(me.group, Group)
     assert me.group.id
     assert me.group.name
+    assert isinstance(me.is_superuser, bool)
     assert gl.whoami() == me.email
