@@ -204,9 +204,7 @@ def test_generated_client_matches_openapi_generator(scratch_dir: Path) -> None:
     reason = _openapi_generator_unavailable_reason()
     if reason:
         if os.environ.get(REQUIRE_GENERATOR_ENV_VAR):
-            pytest.fail(
-                f"{REQUIRE_GENERATOR_ENV_VAR} is set, so this check is not allowed to skip here, but {reason}."
-            )
+            pytest.fail(f"{REQUIRE_GENERATOR_ENV_VAR} is set, so this check is not allowed to skip here, but {reason}.")
         pytest.skip(f"{reason}. (Set {REQUIRE_GENERATOR_ENV_VAR}=1 to make this a failure instead of a skip.)")
 
     # Regenerate over a *copy* of the committed tree rather than into an empty directory:
