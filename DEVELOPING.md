@@ -67,6 +67,18 @@ Then you can generate the code by running:
 make generate
 ```
 
+Never hand-edit anything under `generated/` — always change the spec (or the generator
+invocation) and re-run `make generate`. `make test` enforces this with the checks in
+[test_codegen/](test_codegen), which re-run the generators and diff the result against what is
+committed; you can run just those checks, without an API token, with:
+
+```shell
+make test-codegen
+```
+
+The openapi-generator half of that check needs node and java, so it skips (with a reason) if you
+have not run `make install-generator`. It always runs in CI, in the `test-codegen` job.
+
 ### Linters
 
 Linters help us find issues before runtime. We're currently using:
