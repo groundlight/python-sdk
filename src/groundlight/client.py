@@ -289,7 +289,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
             gl = Groundlight()
             me = gl.me()
-            print(f"Authenticated as {me.email} in {[g.name for g in me.groups]}")
+            print(f"Authenticated as {me.email} in {me.group.name}")
 
         :return: Me object for the authenticated user
         :raises ApiTokenError: If the API token is invalid

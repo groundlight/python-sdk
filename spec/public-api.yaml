@@ -865,7 +865,7 @@ paths:
   /v1/me:
     get:
       operationId: Who am I
-      description: Retrieve the authenticated user's email, username, and groups.
+      description: Retrieve the authenticated user's email, username, and group.
       tags:
       - user
       security:
@@ -1839,7 +1839,7 @@ components:
       x-internal: true
     Me:
       type: object
-      description: Authenticated user identity from GET /v1/me (email, username, groups).
+      description: Authenticated user identity from GET /v1/me (email, username, group).
       properties:
         email:
           type: string
@@ -1847,14 +1847,13 @@ components:
         username:
           type: string
           description: Username of the authenticated user.
-        groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/Group'
-          description: Groups the authenticated user belongs to.
+        group:
+          allOf:
+          - $ref: '#/components/schemas/Group'
+          description: Group (tenant) the authenticated user belongs to.
       required:
       - email
-      - groups
+      - group
       - username
     ModeEnum:
       type: string

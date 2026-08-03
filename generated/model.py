@@ -143,12 +143,12 @@ class Group(BaseModel):
 
 class Me(BaseModel):
     """
-    Authenticated user identity from GET /v1/me (email, username, groups).
+    Authenticated user identity from GET /v1/me (email, username, group).
     """
 
     email: str = Field(..., description="Email address of the authenticated user.")
     username: str = Field(..., description="Username of the authenticated user.")
-    groups: List[Group] = Field(..., description="Groups the authenticated user belongs to.")
+    group: Group = Field(..., description="Group (tenant) the authenticated user belongs to.")
 
 
 class DetectorModeEnum(str, Enum):
