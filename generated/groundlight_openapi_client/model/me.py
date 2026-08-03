@@ -31,8 +31,8 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 
 def lazy_import():
-    from groundlight_openapi_client.model.customer_group import CustomerGroup
-    globals()['CustomerGroup'] = CustomerGroup
+    from groundlight_openapi_client.model.group import Group
+    globals()['Group'] = Group
 
 
 class Me(ModelNormal):
@@ -91,7 +91,7 @@ class Me(ModelNormal):
             'id': (int,),  # noqa: E501
             'email': (str,),  # noqa: E501
             'username': (str,),  # noqa: E501
-            'groups': ([CustomerGroup],),  # noqa: E501
+            'groups': ([Group],),  # noqa: E501
         }
 
     @cached_property
@@ -120,7 +120,7 @@ class Me(ModelNormal):
             id (int): Numeric id of the authenticated user.
             email (str): Email address of the authenticated user.
             username (str): Username of the authenticated user.
-            groups ([CustomerGroup]): Customer groups the authenticated user belongs to.
+            groups ([Group]): Customer groups the authenticated user belongs to.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types
@@ -211,7 +211,7 @@ class Me(ModelNormal):
             id (int): Numeric id of the authenticated user.
             email (str): Email address of the authenticated user.
             username (str): Username of the authenticated user.
-            groups ([CustomerGroup]): Customer groups the authenticated user belongs to.
+            groups ([Group]): Customer groups the authenticated user belongs to.
 
         Keyword Args:
             _check_type (bool): if True, values for parameters in openapi_types

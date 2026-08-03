@@ -13,11 +13,11 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.customer_group import CustomerGroup
+from groundlight_openapi_client.model.group import Group
 
 
-class TestCustomerGroup(unittest.TestCase):
-    """CustomerGroup unit test stubs"""
+class TestGroup(unittest.TestCase):
+    """Group unit test stubs"""
 
     def setUp(self):
         pass
@@ -25,10 +25,10 @@ class TestCustomerGroup(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testCustomerGroup(self):
-        """Test CustomerGroup"""
+    def testGroup(self):
+        """Test Group"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = CustomerGroup()  # noqa: E501
+        # model = Group()  # noqa: E501
         pass
 
 

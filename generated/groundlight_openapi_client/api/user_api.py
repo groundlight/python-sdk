@@ -63,7 +63,7 @@ class UserApi(object):
     def who_am_i(self, **kwargs):
         """who_am_i  # noqa: E501
 
-        Retrieve the authenticated user's id, email, username, and customer groups.  # noqa: E501
+        Retrieve the authenticated user's email, username, and groups.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 

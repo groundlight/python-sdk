@@ -188,7 +188,7 @@ Class | Method | HTTP request | Description
  - [InlineResponse200](docs/InlineResponse200.md)
  - [InlineResponse2001](docs/InlineResponse2001.md)
  - [InlineResponse2001EvaluationResults](docs/InlineResponse2001EvaluationResults.md)
- - [CustomerGroup](docs/CustomerGroup.md)
+ - [Group](docs/Group.md)
  - [Me](docs/Me.md)
  - [InlineResponse200Summary](docs/InlineResponse200Summary.md)
  - [InlineResponse200SummaryClassCounts](docs/InlineResponse200SummaryClassCounts.md)

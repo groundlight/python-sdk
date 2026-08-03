@@ -865,8 +865,7 @@ paths:
   /v1/me:
     get:
       operationId: Who am I
-      description: Retrieve the authenticated user's id, email, username, and customer
-        groups.
+      description: Retrieve the authenticated user's email, username, and groups.
       tags:
       - user
       security:
@@ -1062,12 +1061,24 @@ paths:
 
         Submit one or more images for VLM-based alert verification.
 
-        Send as `multipart/form-data`: one to eight `media` image parts, a `query`
-        field, and an optional `model_id` field. Video is not yet supported. For example:
+        Send everything as `multipart/form-data`: one to eight `media` parts, plus a
+        `query` field and an optional `model_id` field.
+
+        The `query` describes what each image is and what to look for — the server makes
+        no assumptions about the images' meaning. Images are presented to the model
+        labeled `Image 1`, `Image 2`, ... in upload order, so the query can reference
+        them (e.g. "Image 1 is the full frame; image 2 is the cropped ROI ...").
+
+        (Video parts are planned but not yet supported and are rejected.)
+
+        Requires `ENABLE_BEDROCK_VLM_ACCESS` (enabled for Standard_Internal and SciDuck accounts) and accepted terms of service.
+
         ```bash
-        $ curl https://api.groundlight.ai/device-api/v1/vlm-verifications \
-            -F "media=@image.jpg;type=image/jpeg" \
-            -F "query=Is there a fire?"
+        curl https://api.groundlight.ai/device-api/v1/vlm-verifications \
+            -F "media=@full_frame.jpg;type=image/jpeg" \
+            -F "media=@roi.jpg;type=image/jpeg" \
+            -F "query=Image 1 is the full camera frame; image 2 is the cropped region a detector flagged. Is there really a fire?" \
+            -F "model_id=gpt-5.4"
         ```
       tags:
       - vlm-verifications
@@ -1180,10 +1191,10 @@ components:
         last_used_at:
           type: string
           format: date-time
-          nullable: true
           readOnly: true
-          description: The most recent time this API token was used. (Helpful for
-            detecting suspicious activity). Null if the token has never been used.
+          nullable: true
+          description: The most recent time this API token was used for authentication.
+            Null until first use.
         expires_at:
           type: string
           format: date-time
@@ -1194,7 +1205,8 @@ components:
           nullable: true
           readOnly: true
           description: Identity token lifetime policy in whole seconds. Null means
-            tokens minted under this identity never expire (no rotation).
+            tokens minted under this identity never expire. Omitted only by older
+            servers that do not yet expose this field.
       required:
       - created_at
       - last_used_at
@@ -1224,10 +1236,10 @@ components:
         last_used_at:
           type: string
           format: date-time
-          nullable: true
           readOnly: true
-          description: The most recent time this API token was used. (Helpful for
-            detecting suspicious activity). Null if the token has never been used.
+          nullable: true
+          description: The most recent time this API token was used for authentication.
+            Null until first use.
         expires_at:
           type: string
           format: date-time
@@ -1238,7 +1250,8 @@ components:
           nullable: true
           readOnly: true
           description: Identity token lifetime policy in whole seconds. Null means
-            tokens minted under this identity never expire (no rotation).
+            tokens minted under this identity never expire. Omitted only by older
+            servers that do not yet expose this field.
         raw_key:
           type: string
           readOnly: true
@@ -1343,17 +1356,16 @@ components:
       required:
       - parameters
       - verb
-    CustomerGroup:
+    Group:
       type: object
-      description: A Groundlight customer group (tenant) the authenticated user belongs
-        to.
+      description: A group (tenant) the authenticated user belongs to.
       properties:
         id:
           type: integer
-          description: Numeric id of the customer group.
+          description: Numeric id of the group.
         name:
           type: string
-          description: Name of the customer group.
+          description: Name of the group.
       required:
       - id
       - name
@@ -1841,12 +1853,8 @@ components:
       x-internal: true
     Me:
       type: object
-      description: Authenticated user identity from GET /v1/me (id, email, username,
-        groups).
+      description: Authenticated user identity from GET /v1/me (email, username, groups).
       properties:
-        id:
-          type: integer
-          description: Numeric id of the authenticated user.
         email:
           type: string
           description: Email address of the authenticated user.
@@ -1856,12 +1864,11 @@ components:
         groups:
           type: array
           items:
-            $ref: '#/components/schemas/CustomerGroup'
-          description: Customer groups the authenticated user belongs to.
+            $ref: '#/components/schemas/Group'
+          description: Groups the authenticated user belongs to.
       required:
       - email
       - groups
-      - id
       - username
     ModeEnum:
       type: string
@@ -2366,6 +2373,79 @@ components:
       description: |-
         * `ON` - ON
         * `OFF` - OFF
+    VerdictEnum:
+      enum:
+      - 'YES'
+      - 'NO'
+      - UNSURE
+      type: string
+      description: |-
+        * `YES` - YES
+        * `NO` - NO
+        * `UNSURE` - UNSURE
+    VlmVerification:
+      type: object
+      description: Response shape for POST /v1/vlm-verifications.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        type:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        query:
+          type: string
+        model_id:
+          type: string
+        result:
+          $ref: '#/components/schemas/VlmVerificationResult'
+        cost:
+          $ref: '#/components/schemas/VlmVerificationCost'
+      required:
+      - cost
+      - created_at
+      - id
+      - model_id
+      - query
+      - result
+      - type
+    VlmVerificationCost:
+      type: object
+      properties:
+        input_tokens:
+          type: integer
+          nullable: true
+        output_tokens:
+          type: integer
+          nullable: true
+        total_cost_usd:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - input_tokens
+      - output_tokens
+      - total_cost_usd
+    VlmVerificationResult:
+      type: object
+      properties:
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        confidence:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        reasoning:
+          type: string
+      required:
+      - confidence
+      - reasoning
+      - verdict
     WebhookAction:
       type: object
       properties:
@@ -2650,79 +2730,6 @@ components:
       - 'YES'
       - 'NO'
       - UNCLEAR
-    VerdictEnum:
-      enum:
-      - 'YES'
-      - 'NO'
-      - UNSURE
-      type: string
-      description: |-
-        * `YES` - YES
-        * `NO` - NO
-        * `UNSURE` - UNSURE
-    VlmVerification:
-      type: object
-      description: Response shape for POST /v1/vlm-verifications.
-      properties:
-        id:
-          type: string
-          readOnly: true
-        type:
-          type: string
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        query:
-          type: string
-        model_id:
-          type: string
-        result:
-          $ref: '#/components/schemas/VlmVerificationResult'
-        cost:
-          $ref: '#/components/schemas/VlmVerificationCost'
-      required:
-      - cost
-      - created_at
-      - id
-      - model_id
-      - query
-      - result
-      - type
-    VlmVerificationCost:
-      type: object
-      properties:
-        input_tokens:
-          type: integer
-          nullable: true
-        output_tokens:
-          type: integer
-          nullable: true
-        total_cost_usd:
-          type: number
-          format: double
-          nullable: true
-      required:
-      - input_tokens
-      - output_tokens
-      - total_cost_usd
-    VlmVerificationResult:
-      type: object
-      properties:
-        verdict:
-          $ref: '#/components/schemas/VerdictEnum'
-        confidence:
-          type: number
-          format: double
-          maximum: 1.0
-          minimum: 0.0
-        reasoning:
-          type: string
-      required:
-      - confidence
-      - reasoning
-      - verdict
   securitySchemes:
     ApiToken:
       name: x-api-token

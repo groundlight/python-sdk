@@ -29,7 +29,7 @@ from groundlight_openapi_client.model.condition import Condition
 from groundlight_openapi_client.model.condition_request import ConditionRequest
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.counting_result import CountingResult
-from groundlight_openapi_client.model.customer_group import CustomerGroup
+from groundlight_openapi_client.model.group import Group
 from groundlight_openapi_client.model.detector import Detector
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.detector_group import DetectorGroup

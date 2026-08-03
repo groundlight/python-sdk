@@ -132,24 +132,23 @@ class DetectorGroupRequest(BaseModel):
     name: constr(min_length=1, max_length=100)
 
 
-class CustomerGroup(BaseModel):
+class Group(BaseModel):
     """
-    A Groundlight customer group (tenant) the authenticated user belongs to.
+    A group (tenant) the authenticated user belongs to.
     """
 
-    id: int = Field(..., description="Numeric id of the customer group.")
-    name: str = Field(..., description="Name of the customer group.")
+    id: int = Field(..., description="Numeric id of the group.")
+    name: str = Field(..., description="Name of the group.")
 
 
 class Me(BaseModel):
     """
-    Authenticated user identity from GET /v1/me (id, email, username, groups).
+    Authenticated user identity from GET /v1/me (email, username, groups).
     """
 
-    id: int = Field(..., description="Numeric id of the authenticated user.")
     email: str = Field(..., description="Email address of the authenticated user.")
     username: str = Field(..., description="Username of the authenticated user.")
-    groups: List[CustomerGroup] = Field(..., description="Customer groups the authenticated user belongs to.")
+    groups: List[Group] = Field(..., description="Groups the authenticated user belongs to.")
 
 
 class DetectorModeEnum(str, Enum):
