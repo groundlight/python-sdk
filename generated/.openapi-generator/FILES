@@ -18,7 +18,6 @@ docs/BoundingBoxLabelEnum.md
 docs/BoundingBoxModeConfiguration.md
 docs/BoundingBoxResult.md
 docs/ChannelEnum.md
-docs/CustomerGroup.md
 docs/Condition.md
 docs/ConditionRequest.md
 docs/CountModeConfiguration.md
@@ -41,6 +40,7 @@ docs/ImageQueryTypeEnum.md
 docs/InlineResponse200.md
 docs/InlineResponse2001.md
 docs/InlineResponse2001EvaluationResults.md
+docs/InlineResponse2002.md
 docs/InlineResponse200Summary.md
 docs/InlineResponse200SummaryClassCounts.md
 docs/Label.md
@@ -48,7 +48,6 @@ docs/LabelValue.md
 docs/LabelValueRequest.md
 docs/LabelsApi.md
 docs/MLPipeline.md
-docs/Me.md
 docs/ModeEnum.md
 docs/MonthToDateAccountInfoApi.md
 docs/MultiClassModeConfiguration.md
@@ -130,7 +129,6 @@ groundlight_openapi_client/model/condition.py
 groundlight_openapi_client/model/condition_request.py
 groundlight_openapi_client/model/count_mode_configuration.py
 groundlight_openapi_client/model/counting_result.py
-groundlight_openapi_client/model/customer_group.py
 groundlight_openapi_client/model/detector.py
 groundlight_openapi_client/model/detector_creation_input_request.py
 groundlight_openapi_client/model/detector_group.py
@@ -144,12 +142,12 @@ groundlight_openapi_client/model/image_query_type_enum.py
 groundlight_openapi_client/model/inline_response200.py
 groundlight_openapi_client/model/inline_response2001.py
 groundlight_openapi_client/model/inline_response2001_evaluation_results.py
+groundlight_openapi_client/model/inline_response2002.py
 groundlight_openapi_client/model/inline_response200_summary.py
 groundlight_openapi_client/model/inline_response200_summary_class_counts.py
 groundlight_openapi_client/model/label.py
 groundlight_openapi_client/model/label_value.py
 groundlight_openapi_client/model/label_value_request.py
-groundlight_openapi_client/model/me.py
 groundlight_openapi_client/model/ml_pipeline.py
 groundlight_openapi_client/model/mode_enum.py
 groundlight_openapi_client/model/multi_class_mode_configuration.py

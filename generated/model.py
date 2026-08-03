@@ -134,11 +134,11 @@ class DetectorGroupRequest(BaseModel):
 
 class Group(BaseModel):
     """
-    A group (tenant) the authenticated user belongs to.
+    A group (tenant), e.g. one the authenticated user belongs to.
     """
 
-    id: int = Field(..., description="Numeric id of the group.")
-    name: str = Field(..., description="Name of the group.")
+    id: int
+    name: constr(max_length=150)
 
 
 class Me(BaseModel):
