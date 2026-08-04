@@ -65,6 +65,44 @@ jobs:
           # This is associated with the "sdk-test-prod" user, credentials on 1password
           GROUNDLIGHT_API_TOKEN: ${{ secrets.GROUNDLIGHT_API_TOKEN_PROD }}
 
+  # Check that the committed `generated/` tree is what `make generate` produces. This gets its own
+  # job because it is the only test that needs node and java (for openapi-generator-cli) and the
+  # only one that needs no API token. REQUIRE_OPENAPI_GENERATOR makes the openapi-generator half
+  # fail rather than skip, so a missing toolchain here can't quietly turn the check into a no-op --
+  # this is the one place it reliably runs.
+  test-codegen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+      - name: Setup npm
+        uses: actions/setup-node@v3
+        with:
+          # Not 21 like the docs jobs: openapi-generator-cli 2.x require()s proxy-agent, which is
+          # ESM-only, so it dies with ERR_REQUIRE_ESM on any node without require(esm) support.
+          # Verified 2026-08-04: 18.19.1 and 21.7.3 fail, 20.19.0 and 22.14.0 work.
+          node-version: 22
+          cache: npm
+      - name: install java (openapi-generator-cli runs a jar)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: install dependencies and the SDK generator
+        run: make install-generator
+      - name: check generated/ is up to date
+        env:
+          REQUIRE_OPENAPI_GENERATOR: "1"
+        run: make test-codegen
+
   # Check that the docs build. (No broken links, etc.)
   test-docs:
     runs-on: ubuntu-latest

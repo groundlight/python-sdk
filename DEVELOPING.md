@@ -55,7 +55,9 @@ it will run them, add the changes, and then ask you to try committing again with
 The auto-generated SDK code is in the [generated/](generated) directory. Most of the time, you won't
 need to generate code. But if the API specification changes, you may need to generate SDK code. To
 re-generate the client code, you'll need to [install npm](https://github.com/nvm-sh/nvm#intro)
-first. Then you can install the code generator by running:
+first, plus a Java runtime (openapi-generator-cli runs a jar). Use node 20.19+ or 22+ — the
+generator CLI fails with `ERR_REQUIRE_ESM` on older node, and on node 21. Then you can install the
+code generator by running:
 
 ```shell
 make install-generator
@@ -66,6 +68,18 @@ Then you can generate the code by running:
 ```shell
 make generate
 ```
+
+Never hand-edit anything under `generated/` — always change the spec (or the generator
+invocation) and re-run `make generate`. `make test` enforces this with the checks in
+[test_codegen/](test_codegen), which re-run the generators and diff the result against what is
+committed; you can run just those checks, without an API token, with:
+
+```shell
+make test-codegen
+```
+
+The openapi-generator half of that check needs node and java, so it skips (with a reason) if you
+have not run `make install-generator`. It always runs in CI, in the `test-codegen` job.
 
 ### Linters
 
