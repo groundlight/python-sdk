@@ -55,7 +55,9 @@ it will run them, add the changes, and then ask you to try committing again with
 The auto-generated SDK code is in the [generated/](generated) directory. Most of the time, you won't
 need to generate code. But if the API specification changes, you may need to generate SDK code. To
 re-generate the client code, you'll need to [install npm](https://github.com/nvm-sh/nvm#intro)
-first. Then you can install the code generator by running:
+first, plus a Java runtime (openapi-generator-cli runs a jar). Use node 20.19+ or 22+ — the
+generator CLI fails with `ERR_REQUIRE_ESM` on older node, and on node 21. Then you can install the
+code generator by running:
 
 ```shell
 make install-generator

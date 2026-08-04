@@ -86,7 +86,10 @@ jobs:
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
-          node-version: 21
+          # Not 21 like the docs jobs: openapi-generator-cli 2.x require()s proxy-agent, which is
+          # ESM-only, so it dies with ERR_REQUIRE_ESM on any node without require(esm) support.
+          # Verified 2026-08-04: 18.19.1 and 21.7.3 fail, 20.19.0 and 22.14.0 work.
+          node-version: 22
           cache: npm
       - name: install java (openapi-generator-cli runs a jar)
         uses: actions/setup-java@v4
