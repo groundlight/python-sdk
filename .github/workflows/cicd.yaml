@@ -19,10 +19,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
       - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
@@ -44,10 +49,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
       - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
@@ -94,10 +104,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
       - name: Install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
@@ -156,10 +171,15 @@ jobs:
         with:
           # We use this python to install poetry -- we choose a modern version
           python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
       - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: install python for python-sdk venv
         uses: actions/setup-python@v4
         with:
@@ -204,10 +224,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
       - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
@@ -231,8 +256,9 @@ jobs:
           git commit -am "Automatically reformatting code"
           git push
 
-  # Build and deploy the docs on all pushes to the `main` branch. Note that we don't require a code
+  # Build the docs on all pushes to the `main` branch. Note that we don't require a code
   # release -- we don't want to couple documentation updates with code releases.
+  # The actual deploy is currently a no-op; see the TODO(migration) on that step.
   # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
   # we are on the `main` branch and docs/** has changes.
   deploy-docs:
@@ -254,10 +280,19 @@ jobs:
           sudo apt-get install libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev \
           libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk \
           libharfbuzz-dev libfribidi-dev libxcb1-dev
-      - name: Install poetry
-        uses: snok/install-poetry@v1
+      - name: install python
+        uses: actions/setup-python@v4
         with:
-          version: ${{ env.POETRY_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
+      - name: Install poetry
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Setup npm
         uses: actions/setup-node@v3
         with:
@@ -273,21 +308,19 @@ jobs:
         run: |
           cd ..
           make docs-comprehensive
-      - name: Deploy website (if on main branch)
-        # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build
-          # Someday we might want to set the destination to a staging dir for PR's
-          #destination_dir: staging
-          # The following lines assign commit authorship to the official
-          # GH-Actions bot for deploys to `gh-pages` branch:
-          # https://github.com/actions/checkout/issues/13#issuecomment-724415212
-          # The GH actions bot is used by default if you didn't specify the two fields.
-          # You can swap them out with your own user credentials.
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+      # No-op for now. peaceiris/actions-gh-pages is blocked by the GHEC allowlist, and
+      # publishing to this repo's gh-pages would be the wrong destination anyway --
+      # customer-facing docs live on public groundlight/python-sdk. We still build above
+      # so docs breakage fails CI; we just don't publish.
+      # TODO(migration): replace this no-op with a push to public groundlight/python-sdk
+      # gh-pages via the Mirror App.
+      - name: Deploy website to gh-pages (no-op)
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          PUBLISH_DIR=docs/build
+          test -d "$PUBLISH_DIR"
+          echo "Docs built at ${PUBLISH_DIR}; skipping publish (see TODO(migration) above)."
 
   # When a release is created on github (and comprehensive tests passed), publish the groundlight
   # package to public pypi.
@@ -297,8 +330,6 @@ jobs:
     needs:
       - test-comprehensive
       - lint
-    env:
-      POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
     steps:
       - name: get code
         uses: actions/checkout@v4
@@ -312,14 +343,22 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
       - name: install poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: show python version ${{ env.PYTHON_VERSION }}
         run: |
           poetry run python --version
       - name: build package
         run: poetry build
       - name: configure poetry and publish
+        env:
+          # Only expose the PyPI token to the publish step (not the whole job).
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_PUBLISH_TOKEN }}
         run: poetry publish

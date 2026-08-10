@@ -12,9 +12,13 @@ jobs:
     if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      name: checkout code
-    - uses: uesteibar/reviewer-lottery@v3
-      name: randomly assign reviewer
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      # uesteibar/reviewer-lottery is a third-party Action blocked by the GHEC allowlist.
+      # Same approach as axon-groundlight/zuuul (.github/workflows/auto-assign.yaml).
+      - name: randomly assign reviewer
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REVIEWERS=$(yq '.groups[0].usernames[]' .github/reviewer-lottery.yml)
+          REVIEWER=$(echo "$REVIEWERS" | shuf -n 1)
+          gh pr edit "${{ github.event.pull_request.number }}" --add-reviewer "$REVIEWER"
