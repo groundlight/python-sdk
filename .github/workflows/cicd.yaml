@@ -256,9 +256,8 @@ jobs:
           git commit -am "Automatically reformatting code"
           git push
 
-  # Build the docs on all pushes to the `main` branch. Note that we don't require a code
-  # release -- we don't want to couple documentation updates with code releases.
-  # The actual deploy is currently a no-op; see the TODO(migration) on that step.
+  # Build docs in GHEC CI, then publish to public groundlight/python-sdk gh-pages
+  # (https://code.groundlight.ai/python-sdk/). Same Mirror App auth as mirror-to-public.
   # TODO: We'd like to build on pushes on any branch when docs/** changes. But then only deploy if
   # we are on the `main` branch and docs/** has changes.
   deploy-docs:
@@ -267,13 +266,31 @@ jobs:
       - test-comprehensive
       - test-api-reference-docs
     runs-on: ubuntu-latest
+    # Writes use the App token; GITHUB_TOKEN only needs checkout/read.
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: docs/
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        # Pin to commit SHA so the mutable v1 tag cannot be silently retargeted.
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
+        with:
+          app-id: ${{ secrets.MIRROR_APP_ID }}
+          private-key: ${{ secrets.MIRROR_APP_PRIVATE_KEY }}
+          owner: groundlight
+          repositories: python-sdk
+
       - name: Get code
         uses: actions/checkout@v4
-        # Pillow may need these to function
+        with:
+          # Avoid GITHUB_TOKEN http.extraheader overriding the App token when
+          # pushing to the public repo's gh-pages.
+          persist-credentials: false
+
+      # Pillow may need these to function
       - name: install potential system dependencies
         run: |
           sudo apt-get update
@@ -308,19 +325,44 @@ jobs:
         run: |
           cd ..
           make docs-comprehensive
-      # No-op for now. peaceiris/actions-gh-pages is blocked by the GHEC allowlist, and
-      # publishing to this repo's gh-pages would be the wrong destination anyway --
-      # customer-facing docs live on public groundlight/python-sdk. We still build above
-      # so docs breakage fails CI; we just don't publish.
-      # TODO(migration): replace this no-op with a push to public groundlight/python-sdk
-      # gh-pages via the Mirror App.
-      - name: Deploy website to gh-pages (no-op)
+
+      # Customer-facing Pages stay on public groundlight/python-sdk (no DNS change).
+      - name: Deploy website to public gh-pages
         working-directory: ${{ github.workspace }}
+        env:
+          MIRROR_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
+          echo "::add-mask::${MIRROR_TOKEN}"
           PUBLISH_DIR=docs/build
           test -d "$PUBLISH_DIR"
-          echo "Docs built at ${PUBLISH_DIR}; skipping publish (see TODO(migration) above)."
+
+          # github-actions[bot] noreply address (user id 41898282).
+          # https://github.com/actions/checkout/issues/13#issuecomment-724415212
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git remote add public \
+            "https://github.com/groundlight/python-sdk.git"
+          git config --local credential.helper \
+            "!f() { echo username=x-access-token; echo password=\${MIRROR_TOKEN}; }; f"
+
+          git fetch public gh-pages:refs/remotes/public/gh-pages --no-tags
+          git worktree add gh-pages-deploy public/gh-pages
+
+          # Replace published content; keep branch history via a new commit.
+          find gh-pages-deploy -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp -a "$PUBLISH_DIR"/. gh-pages-deploy/
+          touch gh-pages-deploy/.nojekyll
+
+          cd gh-pages-deploy
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "Deploy docs $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          git push public HEAD:refs/heads/gh-pages
 
   # When a release is created on github (and comprehensive tests passed), publish the groundlight
   # package to public pypi.

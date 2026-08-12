@@ -1,0 +1,70 @@
+name: mirror-to-public
+# Push main + tags from private GHEC (axon-groundlight) to the public
+# groundlight/python-sdk mirror so customers can keep browsing source and
+# release tags. Auth is a GitHub App installed on the public org (EMU users
+# cannot push there with a normal PAT).
+#
+# Docs (code.groundlight.ai/python-sdk) are published separately by cicd
+# deploy-docs, which also uses this App to push public gh-pages.
+on:
+  push:
+    branches: [main]
+    tags: ["*"]
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-to-public
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    # Writes use the App token; GITHUB_TOKEN only needs checkout/read.
+    permissions:
+      contents: read
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        # Pin to commit SHA so the mutable v1 tag cannot be silently retargeted.
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
+        with:
+          app-id: ${{ secrets.MIRROR_APP_ID }}
+          private-key: ${{ secrets.MIRROR_APP_PRIVATE_KEY }}
+          owner: groundlight
+          repositories: python-sdk
+
+      - name: Checkout GHEC source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # checkout otherwise leaves an http.https://github.com/.extraheader
+          # credential for GITHUB_TOKEN, which wins over the App token and gets
+          # rejected as github-actions[bot].
+          persist-credentials: false
+
+      - name: Mirror main + tags to public
+        env:
+          MIRROR_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${MIRROR_TOKEN}"
+
+          # Keep the token out of the remote URL so it does not appear in git
+          # error / debug output; credential helper supplies it out-of-band.
+          git remote add public \
+            "https://github.com/groundlight/python-sdk.git"
+          git config --local credential.helper \
+            "!f() { echo username=x-access-token; echo password=\${MIRROR_TOKEN}; }; f"
+
+          # --force-with-lease needs refs/remotes/public/main; fetch only main
+          # to avoid pulling every stale public branch.
+          git fetch public main:refs/remotes/public/main --no-tags
+
+          # Always push GHEC main — never HEAD. On tag triggers checkout is in
+          # detached-HEAD at the tagged commit; pushing that to public main
+          # would silently regress it.
+          git push public "refs/remotes/origin/main:refs/heads/main" --force-with-lease
+
+          # Publish any tags present on this ref (release / pre-release, etc.).
+          # Non-force so we don't rewrite published tags on the public repo.
+          git push public --tags
