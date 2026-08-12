@@ -190,6 +190,7 @@ _GROUP_ORDER = [
 _COMMAND_GROUPS: dict[str, str] = {
     # Account
     "whoami": "Account",
+    "me": "Account",
     "get_month_to_date_usage": "Account",
     # Detectors
     "get_detector": "Detectors",

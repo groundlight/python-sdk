@@ -33,6 +33,7 @@ from model import (
     Detector,
     DetectorGroup,
     ImageQuery,
+    Me,
     ModeEnum,
     PaginatedDetectorList,
     PaginatedImageQueryList,
@@ -280,6 +281,23 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             iq.result.label = convert_internal_label_to_display(iq, iq.result.label)
         return iq
 
+    def me(self) -> Me:
+        """
+        Return user identity information for the current API token.
+
+        **Example usage**::
+
+            gl = Groundlight()
+            me = gl.me()
+            print(f"Authenticated as {me.email} in {me.group.name}")
+
+        :return: Me object for the authenticated user
+        :raises ApiTokenError: If the API token is invalid
+        :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
+        """
+        obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
+        return Me.model_validate(obj.to_dict())
+
     def whoami(self) -> str:
         """
         Return the username (email address) associated with the current API token.
@@ -297,8 +315,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         :raises ApiTokenError: If the API token is invalid
         :raises GroundlightClientError: If there are connectivity issues with the Groundlight service
         """
-        obj = self.user_api.who_am_i(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
-        return obj["email"]
+        return self.me().email
 
     def _user_is_privileged(self) -> bool:
         """

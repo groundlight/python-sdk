@@ -865,7 +865,8 @@ paths:
   /v1/me:
     get:
       operationId: Who am I
-      description: Retrieve the current user.
+      description: Retrieve the authenticated user's email, username, group, and superuser
+        flag.
       tags:
       - user
       security:
@@ -875,11 +876,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                    description: The user's username
+                $ref: '#/components/schemas/Me'
           description: ''
   /v1/month-to-date-account-info:
     get:
@@ -1568,6 +1565,19 @@ components:
         minimal_compatible:
           type: boolean
           default: false
+    Group:
+      type: object
+      description: The group the authenticated user belongs to.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+      required:
+      - id
+      - name
     ImageQuery:
       type: object
       description: ImageQuery objects are the answers to natural language questions
@@ -1828,6 +1838,29 @@ components:
       - training_in_progress
       - type
       x-internal: true
+    Me:
+      type: object
+      description: Authenticated user identity from GET /v1/me (email, username, group,
+        is_superuser).
+      properties:
+        email:
+          type: string
+          description: Email address of the authenticated user.
+        username:
+          type: string
+          description: Username of the authenticated user.
+        group:
+          allOf:
+          - $ref: '#/components/schemas/Group'
+          description: The group the authenticated user belongs to.
+        is_superuser:
+          type: boolean
+          description: Whether the authenticated user has elevated (superuser) permissions.
+      required:
+      - email
+      - group
+      - is_superuser
+      - username
     ModeEnum:
       type: string
       enum:
