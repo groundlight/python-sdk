@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDK Client &mdash; Groundlight Python SDK 0.31.0 documentation</title>
+  <title>SDK Client &mdash; Groundlight Python SDK 0.32.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=d63f172e"></script>
+        <script src="_static/documentation_options.js?v=4440c9c5"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Groundlight Python SDK
           </a>
               <div class="version">
-                0.31.0
+                0.32.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.list_detector_groups"><code class="docutils literal notranslate"><span class="pre">Groundlight.list_detector_groups()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.list_detectors"><code class="docutils literal notranslate"><span class="pre">Groundlight.list_detectors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.list_image_queries"><code class="docutils literal notranslate"><span class="pre">Groundlight.list_image_queries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.me"><code class="docutils literal notranslate"><span class="pre">Groundlight.me()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.submit_image_query"><code class="docutils literal notranslate"><span class="pre">Groundlight.submit_image_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.update_detector_confidence_threshold"><code class="docutils literal notranslate"><span class="pre">Groundlight.update_detector_confidence_threshold()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.Groundlight.update_detector_escalation_type"><code class="docutils literal notranslate"><span class="pre">Groundlight.update_detector_escalation_type()</span></code></a></li>
@@ -1284,6 +1285,32 @@ like total count and links to next/previous pages.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#model.PaginatedImageQueryList" title="model.PaginatedImageQueryList"><em>PaginatedImageQueryList</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.Groundlight.me">
+<span class="sig-name descname"><span class="pre">me</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Me</span></span></span><a class="headerlink" href="#groundlight.Groundlight.me" title="Link to this definition"></a></dt>
+<dd><p>Return user identity information for the current API token.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">()</span>
+<span class="n">me</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">me</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authenticated as </span><span class="si">{</span><span class="n">me</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">me</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Me object for the authenticated user</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ApiTokenError</strong> – If the API token is invalid</p></li>
+<li><p><strong>GroundlightClientError</strong> – If there are connectivity issues with the Groundlight service</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Me</em></p>
 </dd>
 </dl>
 </dd></dl>
