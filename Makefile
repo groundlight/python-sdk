@@ -1,4 +1,4 @@
-.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-integ test-local help
+.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-codegen test-integ test-local help
 
 help:  ## Print all targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {if (NF == 1) {printf "\033[36m%-30s\033[0m %s\n", $$1, ""} else {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}}'
@@ -46,7 +46,14 @@ PROFILING_ARGS = \
 	--durations 25 \
 	--durations-min 0.1
 
-test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
+# Checks that `generated/` is what `make generate` would produce. Kept out of `test/` (and given
+# its own target) because everything under `test/` needs a GROUNDLIGHT_API_TOKEN to even collect,
+# and this needs no API access. TEST_ARGS is deliberately not passed through: a filter meant for
+# the real suite would match nothing here and fail the run.
+test-codegen: install  ## Check that generated/ matches what `make generate` produces (no API token needed)
+	${PYTEST} test_codegen
+
+test: install test-codegen  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${CLOUD_FILTERS} test
 
 test-4edge: install  ## Run tests against the prod API via the edge-endpoint (needs GROUNDLIGHT_API_TOKEN)
@@ -68,7 +75,7 @@ test-docs-integ: install-extras  ## Run the example code and tests in our docs a
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
 # Adjust which paths we lint
-LINT_PATHS="src test bin samples"
+LINT_PATHS="src test test_codegen bin samples"
 
 lint: install-lint  ## Run linter to check formatting and style
 	./code-quality/lint ${LINT_PATHS}

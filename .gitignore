@@ -162,6 +162,11 @@ cython_debug/
 
 node_modules/
 
+# Scratch trees written by test_codegen/ while re-running the SDK generators. They live inside
+# the repo because datamodel-codegen and black find our black settings by walking up from the
+# files they write; the tests clean them up unless a run is killed part-way.
+codegen-scratch-*/
+
 *.swp
 **/.python-version
 

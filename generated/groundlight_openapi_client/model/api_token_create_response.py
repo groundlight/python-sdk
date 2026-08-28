@@ -145,7 +145,7 @@ class ApiTokenCreateResponse(ModelNormal):
             name (str): An nickname for the API token. This name must be unique for this user.
             raw_key_snippet (str): Since we're storing hashed keys, it can be useful to see the raw prefix snippet of the token.
             created_at (datetime): When was this token created?
-            last_used_at (datetime): The most recent time this API token was used. (Helpful for detecting suspicious activity).
+            last_used_at (datetime, none_type): The most recent time this API token was used. (Helpful for detecting suspicious activity). Null if the token has never been used.
             raw_key (str): The full API token secret. Returned only once, when the token is created.
 
         Keyword Args:
@@ -180,6 +180,7 @@ class ApiTokenCreateResponse(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             expires_at (datetime, none_type): When does this token expire? If Null, the token never expires.. [optional]  # noqa: E501
+            token_ttl (int, none_type): Identity token lifetime policy in whole seconds. Null means tokens minted under this identity never expire (no rotation).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -272,6 +273,7 @@ class ApiTokenCreateResponse(ModelNormal):
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
             expires_at (datetime, none_type): When does this token expire? If Null, the token never expires.. [optional]  # noqa: E501
+            token_ttl (int, none_type): Identity token lifetime policy in whole seconds. Null means tokens minted under this identity never expire (no rotation).. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
