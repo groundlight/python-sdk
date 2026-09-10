@@ -251,7 +251,7 @@ class DetectorCreationInputRequest(ModelNormal):
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
-            priming_group_id (str, none_type): ID of an existing PrimingGroup to associate with this detector (optional).. [optional]  # noqa: E501
+            priming_group_id (str, none_type): ID of an existing PrimingGroup to associate with this detector (optional). Must be a priming group your account owns or a global one; any other ID is reported as not found.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -350,7 +350,7 @@ class DetectorCreationInputRequest(ModelNormal):
             metadata (str): Base64-encoded metadata for the detector. This should be a JSON object with string keys. The size after encoding should not exceed 1362 bytes, corresponding to 1KiB before encoding.. [optional]  # noqa: E501
             mode (bool, date, datetime, dict, float, int, list, str, none_type): Mode in which this detector will work.  * `BINARY` - BINARY * `COUNT` - COUNT * `MULTI_CLASS` - MULTI_CLASS * `TEXT` - TEXT * `BOUNDING_BOX` - BOUNDING_BOX. [optional]  # noqa: E501
             mode_configuration (bool, date, datetime, dict, float, int, list, str, none_type): [optional]  # noqa: E501
-            priming_group_id (str, none_type): ID of an existing PrimingGroup to associate with this detector (optional).. [optional]  # noqa: E501
+            priming_group_id (str, none_type): ID of an existing PrimingGroup to associate with this detector (optional). Must be a priming group your account owns or a global one; any other ID is reported as not found.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

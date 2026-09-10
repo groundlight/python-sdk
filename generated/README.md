@@ -136,7 +136,12 @@ Class | Method | HTTP request | Description
 *DetectorsApi* | [**list_detectors**](docs/DetectorsApi.md#list_detectors) | **GET** /v1/detectors | 
 *DetectorsApi* | [**update_detector**](docs/DetectorsApi.md#update_detector) | **PATCH** /v1/detectors/{id} | 
 *EdgeApi* | [**edge_report_metrics_create**](docs/EdgeApi.md#edge_report_metrics_create) | **POST** /v1/edge/report-metrics | 
+*EdgeApi* | [**get_gll_model_info**](docs/EdgeApi.md#get_gll_model_info) | **GET** /v1/edge/model-info/{detector_id}/ | 
+*EdgeApi* | [**get_gll_pipeline**](docs/EdgeApi.md#get_gll_pipeline) | **GET** /v1/edge/gll-pipeline/{detector_id}/ | 
+*EdgeApi* | [**get_gll_tensor_rt_engine_build**](docs/EdgeApi.md#get_gll_tensor_rt_engine_build) | **GET** /v1/edge/gll-engine/{detector_id}/ | 
 *EdgeApi* | [**get_model_urls**](docs/EdgeApi.md#get_model_urls) | **GET** /v1/edge/fetch-model-urls/{detector_id}/ | 
+*EdgeApi* | [**initiate_gll_pipeline_build**](docs/EdgeApi.md#initiate_gll_pipeline_build) | **POST** /v1/edge/gll-pipeline/{detector_id}/ | 
+*EdgeApi* | [**initiate_gll_tensor_rt_engine_build**](docs/EdgeApi.md#initiate_gll_tensor_rt_engine_build) | **POST** /v1/edge/gll-engine/{detector_id}/ | 
 *ImageQueriesApi* | [**get_image**](docs/ImageQueriesApi.md#get_image) | **GET** /v1/image-queries/{id}/image | 
 *ImageQueriesApi* | [**get_image_query**](docs/ImageQueriesApi.md#get_image_query) | **GET** /v1/image-queries/{id} | 
 *ImageQueriesApi* | [**list_image_queries**](docs/ImageQueriesApi.md#list_image_queries) | **GET** /v1/image-queries | 
@@ -162,7 +167,7 @@ Class | Method | HTTP request | Description
  - [AnnotationsRequestedEnum](docs/AnnotationsRequestedEnum.md)
  - [ApiToken](docs/ApiToken.md)
  - [ApiTokenCreateResponse](docs/ApiTokenCreateResponse.md)
- - [ApiTokenRequest](docs/ApiTokenRequest.md)
+ - [ApiTokenCreationInputRequest](docs/ApiTokenCreationInputRequest.md)
  - [BBoxGeometry](docs/BBoxGeometry.md)
  - [BBoxGeometryRequest](docs/BBoxGeometryRequest.md)
  - [BinaryClassificationResult](docs/BinaryClassificationResult.md)
@@ -180,21 +185,27 @@ Class | Method | HTTP request | Description
  - [DetectorGroup](docs/DetectorGroup.md)
  - [DetectorGroupRequest](docs/DetectorGroupRequest.md)
  - [DetectorModeEnum](docs/DetectorModeEnum.md)
+ - [DetectorStatusEnum](docs/DetectorStatusEnum.md)
  - [DetectorTypeEnum](docs/DetectorTypeEnum.md)
  - [EdgeModelInfo](docs/EdgeModelInfo.md)
  - [EscalationTypeEnum](docs/EscalationTypeEnum.md)
+ - [GLLEngineInfo](docs/GLLEngineInfo.md)
+ - [GLLEngineInfoRequest](docs/GLLEngineInfoRequest.md)
+ - [GLLModelInfo](docs/GLLModelInfo.md)
+ - [GLLPipelineInfo](docs/GLLPipelineInfo.md)
+ - [Group](docs/Group.md)
  - [ImageQuery](docs/ImageQuery.md)
  - [ImageQueryTypeEnum](docs/ImageQueryTypeEnum.md)
  - [InlineResponse200](docs/InlineResponse200.md)
  - [InlineResponse2001](docs/InlineResponse2001.md)
  - [InlineResponse2001EvaluationResults](docs/InlineResponse2001EvaluationResults.md)
- - [InlineResponse2002](docs/InlineResponse2002.md)
  - [InlineResponse200Summary](docs/InlineResponse200Summary.md)
  - [InlineResponse200SummaryClassCounts](docs/InlineResponse200SummaryClassCounts.md)
  - [Label](docs/Label.md)
  - [LabelValue](docs/LabelValue.md)
  - [LabelValueRequest](docs/LabelValueRequest.md)
  - [MLPipeline](docs/MLPipeline.md)
+ - [Me](docs/Me.md)
  - [ModeEnum](docs/ModeEnum.md)
  - [MultiClassModeConfiguration](docs/MultiClassModeConfiguration.md)
  - [MultiClassificationResult](docs/MultiClassificationResult.md)
@@ -220,7 +231,8 @@ Class | Method | HTTP request | Description
  - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
  - [Source](docs/Source.md)
  - [SourceEnum](docs/SourceEnum.md)
- - [StatusEnum](docs/StatusEnum.md)
+ - [StaleFromStatusEnum](docs/StaleFromStatusEnum.md)
+ - [Status638Enum](docs/Status638Enum.md)
  - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
  - [VerbEnum](docs/VerbEnum.md)

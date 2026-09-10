@@ -183,13 +183,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApiTokenRequest'
+              $ref: '#/components/schemas/ApiTokenCreationInputRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ApiTokenRequest'
+              $ref: '#/components/schemas/ApiTokenCreationInputRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ApiTokenRequest'
+              $ref: '#/components/schemas/ApiTokenCreationInputRequest'
         required: true
       security:
       - ApiToken: []
@@ -638,6 +638,172 @@ paths:
               schema:
                 $ref: '#/components/schemas/EdgeModelInfo'
           description: ''
+  /v1/edge/gll-engine/{detector_id}/:
+    get:
+      operationId: Get GLL TensorRT Engine Build
+      description: |-
+        Get pre-signed URL + sidecar for a TensorRT engine.
+
+        Query params:
+            cc: Compute capability (e.g., "8.9" for Ada/L4, "7.5" for Turing/T4)
+            precision: Precision mode (default: "fp16")
+            batch_size: Batch size (default: 1)
+            trt_version: TensorRT version major.minor[.patch...] (default: server's installed TRT version)
+
+        Returns:
+            200: Engine URL + sidecar metadata
+            400: Invalid params
+            403: Edge model download not enabled
+            404: Detector or matching engine not found
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLEngineInfo'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLEngineInfo'
+          description: ''
+    post:
+      operationId: Initiate GLL TensorRT Engine Build
+      description: |-
+        Request TensorRT engine build.
+
+        Query params or body:
+            compute_capability: Compute capability (default: configured builder GPU)
+            precision: Precision mode (default: "fp16")
+            batch_size: Batch size (default: 1)
+            trt_version: TensorRT version (default: server's installed TRT version)
+
+        Returns:
+            200: Already built
+            202: Build requested
+            400: Invalid parameters
+            403: Not authorized
+            409: Requested TRT version doesn't match build worker
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GLLEngineInfoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GLLEngineInfoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GLLEngineInfoRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLEngineInfo'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLEngineInfo'
+          description: ''
+  /v1/edge/gll-pipeline/{detector_id}/:
+    get:
+      operationId: Get GLL Pipeline
+      description: Look up current build state without dispatching work.
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLPipelineInfo'
+          description: ''
+    post:
+      operationId: Initiate GLL Pipeline Build
+      description: Initiate or deduplicate an ONNX export.
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLPipelineInfo'
+          description: ''
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLPipelineInfo'
+          description: ''
+  /v1/edge/model-info/{detector_id}/:
+    get:
+      operationId: Get GLL Model Info
+      description: |-
+        Lightweight model-info pointer for `Pipeline.has_update_available()`.
+
+        Returns the current `model_binary_id`, `oodd_model_binary_id`, `mode`, and
+        `updated_at` for a GLL-compatible detector. NO S3 calls, NO pre-signed
+        URLs - one DB read per request, with a short client-side Cache-Control
+        so polling clients can't hammer janzu.
+      parameters:
+      - in: path
+        name: detector_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - edge
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GLLModelInfo'
+          description: ''
   /v1/edge/report-metrics:
     post:
       operationId: edge_report_metrics_create
@@ -1062,12 +1228,24 @@ paths:
 
         Submit one or more images for VLM-based alert verification.
 
-        Send as `multipart/form-data`: one to eight `media` image parts, a `query`
-        field, and an optional `model_id` field. Video is not yet supported. For example:
+        Send everything as `multipart/form-data`: one to eight `media` parts, plus a
+        `query` field and an optional `model_id` field.
+
+        The `query` describes what each image is and what to look for — the server makes
+        no assumptions about the images' meaning. Images are presented to the model
+        labeled `Image 1`, `Image 2`, ... in upload order, so the query can reference
+        them (e.g. "Image 1 is the full frame; image 2 is the cropped ROI ...").
+
+        (Video parts are planned but not yet supported and are rejected.)
+
+        Requires `ENABLE_BEDROCK_VLM_ACCESS` (enabled for Standard_Internal and SciDuck accounts) and accepted terms of service.
+
         ```bash
-        $ curl https://api.groundlight.ai/device-api/v1/vlm-verifications \
-            -F "media=@image.jpg;type=image/jpeg" \
-            -F "query=Is there a fire?"
+        curl https://api.groundlight.ai/device-api/v1/vlm-verifications \
+            -F "media=@full_frame.jpg;type=image/jpeg" \
+            -F "media=@roi.jpg;type=image/jpeg" \
+            -F "query=Image 1 is the full camera frame; image 2 is the cropped region a detector flagged. Is there really a fire?" \
+            -F "model_id=gpt-5.4"
         ```
       tags:
       - vlm-verifications
@@ -1180,10 +1358,10 @@ components:
         last_used_at:
           type: string
           format: date-time
-          nullable: true
           readOnly: true
-          description: The most recent time this API token was used. (Helpful for
-            detecting suspicious activity). Null if the token has never been used.
+          nullable: true
+          description: The most recent time this API token was used for authentication.
+            Null until first use.
         expires_at:
           type: string
           format: date-time
@@ -1194,7 +1372,8 @@ components:
           nullable: true
           readOnly: true
           description: Identity token lifetime policy in whole seconds. Null means
-            tokens minted under this identity never expire (no rotation).
+            tokens minted under this identity never expire. Omitted only by older
+            servers that do not yet expose this field.
       required:
       - created_at
       - last_used_at
@@ -1224,10 +1403,10 @@ components:
         last_used_at:
           type: string
           format: date-time
-          nullable: true
           readOnly: true
-          description: The most recent time this API token was used. (Helpful for
-            detecting suspicious activity). Null if the token has never been used.
+          nullable: true
+          description: The most recent time this API token was used for authentication.
+            Null until first use.
         expires_at:
           type: string
           format: date-time
@@ -1238,7 +1417,8 @@ components:
           nullable: true
           readOnly: true
           description: Identity token lifetime policy in whole seconds. Null means
-            tokens minted under this identity never expire (no rotation).
+            tokens minted under this identity never expire. Omitted only by older
+            servers that do not yet expose this field.
         raw_key:
           type: string
           readOnly: true
@@ -1250,8 +1430,9 @@ components:
       - name
       - raw_key
       - raw_key_snippet
-    ApiTokenRequest:
+    ApiTokenCreationInputRequest:
       type: object
+      description: Public create-token body (name only).
       properties:
         name:
           type: string
@@ -1259,11 +1440,6 @@ components:
           description: An nickname for the API token. This name must be unique for
             this user.
           maxLength: 64
-        expires_at:
-          type: string
-          format: date-time
-          nullable: true
-          description: When does this token expire? If Null, the token never expires.
       required:
       - name
     BBoxGeometry:
@@ -1409,7 +1585,7 @@ components:
           readOnly: true
         status:
           oneOf:
-          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/DetectorStatusEnum'
           - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
           type: string
@@ -1501,7 +1677,8 @@ components:
           nullable: true
           minLength: 1
           description: ID of an existing PrimingGroup to associate with this detector
-            (optional).
+            (optional). Must be a priming group your account owns or a global one;
+            any other ID is reported as not found.
           maxLength: 44
       required:
       - name
@@ -1542,6 +1719,14 @@ components:
         * `MULTI_CLASS` - MULTI_CLASS
         * `TEXT` - TEXT
         * `BOUNDING_BOX` - BOUNDING_BOX
+    DetectorStatusEnum:
+      enum:
+      - 'ON'
+      - 'OFF'
+      type: string
+      description: |-
+        * `ON` - ON
+        * `OFF` - OFF
     DetectorTypeEnum:
       enum:
       - detector
@@ -1565,6 +1750,235 @@ components:
         minimal_compatible:
           type: boolean
           default: false
+    GLLEngineInfo:
+      type: object
+      description: Durable TensorRT build status and generation-scoped artifacts.
+      properties:
+        build_key:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status638Enum'
+        stale_from_status:
+          $ref: '#/components/schemas/StaleFromStatusEnum'
+        generation:
+          type: integer
+          nullable: true
+        task_id:
+          type: string
+          nullable: true
+        attempt_count:
+          type: integer
+        engine_url:
+          type: string
+          nullable: true
+        engine_s3_key:
+          type: string
+          nullable: true
+        metadata:
+          nullable: true
+        metadata_s3_key:
+          type: string
+          nullable: true
+        model_binary_id:
+          type: string
+        compute_capability:
+          type: string
+        precision:
+          type: string
+        batch_size:
+          type: integer
+        trt_version:
+          type: string
+        workspace_bytes:
+          type: integer
+        engine_contract_version:
+          type: string
+        metadata_format_version:
+          type: string
+        error_code:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - attempt_count
+      - batch_size
+      - build_key
+      - compute_capability
+      - engine_contract_version
+      - metadata_format_version
+      - model_binary_id
+      - precision
+      - status
+      - trt_version
+      - workspace_bytes
+    GLLEngineInfoRequest:
+      type: object
+      description: Durable TensorRT build status and generation-scoped artifacts.
+      properties:
+        build_key:
+          type: string
+          minLength: 1
+        status:
+          $ref: '#/components/schemas/Status638Enum'
+        stale_from_status:
+          $ref: '#/components/schemas/StaleFromStatusEnum'
+        generation:
+          type: integer
+          nullable: true
+        task_id:
+          type: string
+          nullable: true
+          minLength: 1
+        attempt_count:
+          type: integer
+        engine_url:
+          type: string
+          nullable: true
+          minLength: 1
+        engine_s3_key:
+          type: string
+          nullable: true
+          minLength: 1
+        metadata:
+          nullable: true
+        metadata_s3_key:
+          type: string
+          nullable: true
+          minLength: 1
+        model_binary_id:
+          type: string
+          minLength: 1
+        compute_capability:
+          type: string
+          minLength: 1
+        precision:
+          type: string
+          minLength: 1
+        batch_size:
+          type: integer
+        trt_version:
+          type: string
+          minLength: 1
+        workspace_bytes:
+          type: integer
+        engine_contract_version:
+          type: string
+          minLength: 1
+        metadata_format_version:
+          type: string
+          minLength: 1
+        error_code:
+          type: string
+          nullable: true
+          minLength: 1
+        error_message:
+          type: string
+          nullable: true
+          minLength: 1
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - attempt_count
+      - batch_size
+      - build_key
+      - compute_capability
+      - engine_contract_version
+      - metadata_format_version
+      - model_binary_id
+      - precision
+      - status
+      - trt_version
+      - workspace_bytes
+    GLLModelInfo:
+      type: object
+      description: |-
+        Lightweight pointer used by GLL clients to detect when the server has a
+        newer model binary than the one they have cached locally. No S3 calls,
+        no pre-signed URLs - one DB read.
+      properties:
+        model_binary_id:
+          type: string
+        oodd_model_binary_id:
+          type: string
+          nullable: true
+        mode:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - mode
+      - model_binary_id
+    GLLPipelineInfo:
+      type: object
+      description: Durable build status and, once ready, ONNX model URLs.
+      properties:
+        build_key:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status638Enum'
+        stale_from_status:
+          $ref: '#/components/schemas/StaleFromStatusEnum'
+        generation:
+          type: integer
+          nullable: true
+        task_id:
+          type: string
+          nullable: true
+        attempt_count:
+          type: integer
+        model_binary_id:
+          type: string
+        model_url:
+          type: string
+          nullable: true
+        oodd_model_binary_id:
+          type: string
+          nullable: true
+        oodd_model_url:
+          type: string
+          nullable: true
+        manifest_url:
+          type: string
+          nullable: true
+        pipeline_type:
+          type: string
+        detector_mode:
+          type: string
+        error_code:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - attempt_count
+      - build_key
+      - detector_mode
+      - model_binary_id
+      - oodd_model_binary_id
+      - oodd_model_url
+      - pipeline_type
+      - status
     Group:
       type: object
       description: The group the authenticated user belongs to.
@@ -2071,7 +2485,7 @@ components:
           description: How long Groundlight will attempt to generate a confident prediction
         status:
           oneOf:
-          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/DetectorStatusEnum'
           - $ref: '#/components/schemas/BlankEnum'
         escalation_type:
           type: string
@@ -2356,14 +2770,103 @@ components:
         * `HOURS` - HOURS
         * `MINUTES` - MINUTES
         * `SECONDS` - SECONDS
-    StatusEnum:
+    StaleFromStatusEnum:
       enum:
-      - 'ON'
-      - 'OFF'
+      - queued
+      - running
       type: string
       description: |-
-        * `ON` - ON
-        * `OFF` - OFF
+        * `queued` - queued
+        * `running` - running
+    Status638Enum:
+      enum:
+      - not_requested
+      - queued
+      - running
+      - stale
+      - failed
+      - succeeded
+      type: string
+      description: |-
+        * `not_requested` - not_requested
+        * `queued` - queued
+        * `running` - running
+        * `stale` - stale
+        * `failed` - failed
+        * `succeeded` - succeeded
+    VerdictEnum:
+      enum:
+      - 'YES'
+      - 'NO'
+      - UNSURE
+      type: string
+      description: |-
+        * `YES` - YES
+        * `NO` - NO
+        * `UNSURE` - UNSURE
+    VlmVerification:
+      type: object
+      description: Response shape for POST /v1/vlm-verifications.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        type:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        query:
+          type: string
+        model_id:
+          type: string
+        result:
+          $ref: '#/components/schemas/VlmVerificationResult'
+        cost:
+          $ref: '#/components/schemas/VlmVerificationCost'
+      required:
+      - cost
+      - created_at
+      - id
+      - model_id
+      - query
+      - result
+      - type
+    VlmVerificationCost:
+      type: object
+      properties:
+        input_tokens:
+          type: integer
+          nullable: true
+        output_tokens:
+          type: integer
+          nullable: true
+        total_cost_usd:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - input_tokens
+      - output_tokens
+      - total_cost_usd
+    VlmVerificationResult:
+      type: object
+      properties:
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        confidence:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        reasoning:
+          type: string
+      required:
+      - confidence
+      - reasoning
+      - verdict
     WebhookAction:
       type: object
       properties:
@@ -2648,79 +3151,6 @@ components:
       - 'YES'
       - 'NO'
       - UNCLEAR
-    VerdictEnum:
-      enum:
-      - 'YES'
-      - 'NO'
-      - UNSURE
-      type: string
-      description: |-
-        * `YES` - YES
-        * `NO` - NO
-        * `UNSURE` - UNSURE
-    VlmVerification:
-      type: object
-      description: Response shape for POST /v1/vlm-verifications.
-      properties:
-        id:
-          type: string
-          readOnly: true
-        type:
-          type: string
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        query:
-          type: string
-        model_id:
-          type: string
-        result:
-          $ref: '#/components/schemas/VlmVerificationResult'
-        cost:
-          $ref: '#/components/schemas/VlmVerificationCost'
-      required:
-      - cost
-      - created_at
-      - id
-      - model_id
-      - query
-      - result
-      - type
-    VlmVerificationCost:
-      type: object
-      properties:
-        input_tokens:
-          type: integer
-          nullable: true
-        output_tokens:
-          type: integer
-          nullable: true
-        total_cost_usd:
-          type: number
-          format: double
-          nullable: true
-      required:
-      - input_tokens
-      - output_tokens
-      - total_cost_usd
-    VlmVerificationResult:
-      type: object
-      properties:
-        verdict:
-          $ref: '#/components/schemas/VerdictEnum'
-        confidence:
-          type: number
-          format: double
-          maximum: 1.0
-          minimum: 0.0
-        reasoning:
-          type: string
-      required:
-      - confidence
-      - reasoning
-      - verdict
   securitySchemes:
     ApiToken:
       name: x-api-token

@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 
 # **create_api_token**
-> ApiTokenCreateResponse create_api_token(api_token_request)
+> ApiTokenCreateResponse create_api_token(api_token_creation_input_request)
 
 
 
@@ -25,8 +25,8 @@ Create a new API token, returning the raw_key exactly once in the response.
 import time
 import groundlight_openapi_client
 from groundlight_openapi_client.api import api_tokens_api
-from groundlight_openapi_client.model.api_token_request import ApiTokenRequest
 from groundlight_openapi_client.model.api_token_create_response import ApiTokenCreateResponse
+from groundlight_openapi_client.model.api_token_creation_input_request import ApiTokenCreationInputRequest
 from pprint import pprint
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
@@ -49,14 +49,13 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = api_tokens_api.ApiTokensApi(api_client)
-    api_token_request = ApiTokenRequest(
+    api_token_creation_input_request = ApiTokenCreationInputRequest(
         name="name_example",
-        expires_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
-    ) # ApiTokenRequest | 
+    ) # ApiTokenCreationInputRequest | 
 
     # example passing only required values which don't have defaults set
     try:
-        api_response = api_instance.create_api_token(api_token_request)
+        api_response = api_instance.create_api_token(api_token_creation_input_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
         print("Exception when calling ApiTokensApi->create_api_token: %s\n" % e)
@@ -67,7 +66,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **api_token_request** | [**ApiTokenRequest**](ApiTokenRequest.md)|  |
+ **api_token_creation_input_request** | [**ApiTokenCreationInputRequest**](ApiTokenCreationInputRequest.md)|  |
 
 ### Return type
 

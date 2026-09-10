@@ -31,10 +31,10 @@ from groundlight_openapi_client.exceptions import ApiAttributeError
 
 def lazy_import():
     from groundlight_openapi_client.model.blank_enum import BlankEnum
-    from groundlight_openapi_client.model.status_enum import StatusEnum
+    from groundlight_openapi_client.model.detector_status_enum import DetectorStatusEnum
 
     globals()["BlankEnum"] = BlankEnum
-    globals()["StatusEnum"] = StatusEnum
+    globals()["DetectorStatusEnum"] = DetectorStatusEnum
 
 
 class PatchedDetectorRequest(ModelNormal):

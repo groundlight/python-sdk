@@ -23,7 +23,7 @@ from groundlight_openapi_client.model_utils import (  # noqa: F401
 )
 from groundlight_openapi_client.model.api_token import ApiToken
 from groundlight_openapi_client.model.api_token_create_response import ApiTokenCreateResponse
-from groundlight_openapi_client.model.api_token_request import ApiTokenRequest
+from groundlight_openapi_client.model.api_token_creation_input_request import ApiTokenCreationInputRequest
 from groundlight_openapi_client.model.paginated_api_token_list import PaginatedApiTokenList
 
 
@@ -49,10 +49,10 @@ class ApiTokensApi(object):
             },
             params_map={
                 "all": [
-                    "api_token_request",
+                    "api_token_creation_input_request",
                 ],
                 "required": [
-                    "api_token_request",
+                    "api_token_creation_input_request",
                 ],
                 "nullable": [],
                 "enum": [],
@@ -62,11 +62,11 @@ class ApiTokensApi(object):
                 "validations": {},
                 "allowed_values": {},
                 "openapi_types": {
-                    "api_token_request": (ApiTokenRequest,),
+                    "api_token_creation_input_request": (ApiTokenCreationInputRequest,),
                 },
                 "attribute_map": {},
                 "location_map": {
-                    "api_token_request": "body",
+                    "api_token_creation_input_request": "body",
                 },
                 "collection_format_map": {},
             },
@@ -199,18 +199,18 @@ class ApiTokensApi(object):
             api_client=api_client,
         )
 
-    def create_api_token(self, api_token_request, **kwargs):
+    def create_api_token(self, api_token_creation_input_request, **kwargs):
         """create_api_token  # noqa: E501
 
         Create a new API token, returning the raw_key exactly once in the response.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
-        >>> thread = api.create_api_token(api_token_request, async_req=True)
+        >>> thread = api.create_api_token(api_token_creation_input_request, async_req=True)
         >>> result = thread.get()
 
         Args:
-            api_token_request (ApiTokenRequest):
+            api_token_creation_input_request (ApiTokenCreationInputRequest):
 
         Keyword Args:
             _return_http_data_only (bool): response data without head status
@@ -254,7 +254,7 @@ class ApiTokensApi(object):
         kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
         kwargs["_content_type"] = kwargs.get("_content_type")
         kwargs["_host_index"] = kwargs.get("_host_index")
-        kwargs["api_token_request"] = api_token_request
+        kwargs["api_token_creation_input_request"] = api_token_creation_input_request
         return self.create_api_token_endpoint.call_with_http_info(**kwargs)
 
     def delete_api_token(self, name, **kwargs):
