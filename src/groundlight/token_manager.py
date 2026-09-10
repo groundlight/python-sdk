@@ -17,7 +17,7 @@ from groundlight_openapi_client.api.api_tokens_api import ApiTokensApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException, UnauthorizedException
 from groundlight_openapi_client.model.api_token import ApiToken
 from groundlight_openapi_client.model.api_token_create_response import ApiTokenCreateResponse
-from groundlight_openapi_client.model.api_token_request import ApiTokenRequest
+from groundlight_openapi_client.model.api_token_creation_input_request import ApiTokenCreationInputRequest
 from platformdirs import user_data_path
 
 from groundlight.internalapi import GroundlightApiClient, api_exception_detail
@@ -408,7 +408,7 @@ class TokenManager:  # pylint: disable=too-many-instance-attributes
         minted_at = _utc_now()
         # Omit expires_at so the server applies the identity's token lifetime policy.
         response = self._api_tokens.create_api_token(
-            ApiTokenRequest(name=new_name),
+            ApiTokenCreationInputRequest(name=new_name),
             _request_timeout=self._request_timeout,
         )
         current = self._current_from_response(response, minted_at)

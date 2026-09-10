@@ -22,6 +22,10 @@ from groundlight_openapi_client.model_utils import (  # noqa: F401
     validate_and_convert_types,
 )
 from groundlight_openapi_client.model.edge_model_info import EdgeModelInfo
+from groundlight_openapi_client.model.gll_engine_info import GLLEngineInfo
+from groundlight_openapi_client.model.gll_engine_info_request import GLLEngineInfoRequest
+from groundlight_openapi_client.model.gll_model_info import GLLModelInfo
+from groundlight_openapi_client.model.gll_pipeline_info import GLLPipelineInfo
 
 
 class EdgeApi(object):
@@ -55,6 +59,126 @@ class EdgeApi(object):
             },
             headers_map={
                 "accept": [],
+                "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.get_gll_model_info_endpoint = _Endpoint(
+            settings={
+                "response_type": (GLLModelInfo,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/edge/model-info/{detector_id}/",
+                "operation_id": "get_gll_model_info",
+                "http_method": "GET",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "detector_id",
+                ],
+                "required": [
+                    "detector_id",
+                ],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                },
+                "attribute_map": {
+                    "detector_id": "detector_id",
+                },
+                "location_map": {
+                    "detector_id": "path",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.get_gll_pipeline_endpoint = _Endpoint(
+            settings={
+                "response_type": (GLLPipelineInfo,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/edge/gll-pipeline/{detector_id}/",
+                "operation_id": "get_gll_pipeline",
+                "http_method": "GET",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "detector_id",
+                ],
+                "required": [
+                    "detector_id",
+                ],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                },
+                "attribute_map": {
+                    "detector_id": "detector_id",
+                },
+                "location_map": {
+                    "detector_id": "path",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.get_gll_tensor_rt_engine_build_endpoint = _Endpoint(
+            settings={
+                "response_type": (GLLEngineInfo,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/edge/gll-engine/{detector_id}/",
+                "operation_id": "get_gll_tensor_rt_engine_build",
+                "http_method": "GET",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "detector_id",
+                ],
+                "required": [
+                    "detector_id",
+                ],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                },
+                "attribute_map": {
+                    "detector_id": "detector_id",
+                },
+                "location_map": {
+                    "detector_id": "path",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
                 "content_type": [],
             },
             api_client=api_client,
@@ -96,6 +220,90 @@ class EdgeApi(object):
             headers_map={
                 "accept": ["application/json"],
                 "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.initiate_gll_pipeline_build_endpoint = _Endpoint(
+            settings={
+                "response_type": (GLLPipelineInfo,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/edge/gll-pipeline/{detector_id}/",
+                "operation_id": "initiate_gll_pipeline_build",
+                "http_method": "POST",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "detector_id",
+                ],
+                "required": [
+                    "detector_id",
+                ],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                },
+                "attribute_map": {
+                    "detector_id": "detector_id",
+                },
+                "location_map": {
+                    "detector_id": "path",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": [],
+            },
+            api_client=api_client,
+        )
+        self.initiate_gll_tensor_rt_engine_build_endpoint = _Endpoint(
+            settings={
+                "response_type": (GLLEngineInfo,),
+                "auth": ["ApiToken"],
+                "endpoint_path": "/v1/edge/gll-engine/{detector_id}/",
+                "operation_id": "initiate_gll_tensor_rt_engine_build",
+                "http_method": "POST",
+                "servers": None,
+            },
+            params_map={
+                "all": [
+                    "detector_id",
+                    "gll_engine_info_request",
+                ],
+                "required": [
+                    "detector_id",
+                    "gll_engine_info_request",
+                ],
+                "nullable": [],
+                "enum": [],
+                "validation": [],
+            },
+            root_map={
+                "validations": {},
+                "allowed_values": {},
+                "openapi_types": {
+                    "detector_id": (str,),
+                    "gll_engine_info_request": (GLLEngineInfoRequest,),
+                },
+                "attribute_map": {
+                    "detector_id": "detector_id",
+                },
+                "location_map": {
+                    "detector_id": "path",
+                    "gll_engine_info_request": "body",
+                },
+                "collection_format_map": {},
+            },
+            headers_map={
+                "accept": ["application/json"],
+                "content_type": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data"],
             },
             api_client=api_client,
         )
@@ -155,6 +363,180 @@ class EdgeApi(object):
         kwargs["_host_index"] = kwargs.get("_host_index")
         return self.edge_report_metrics_create_endpoint.call_with_http_info(**kwargs)
 
+    def get_gll_model_info(self, detector_id, **kwargs):
+        """get_gll_model_info  # noqa: E501
+
+        Lightweight model-info pointer for `Pipeline.has_update_available()`.  Returns the current `model_binary_id`, `oodd_model_binary_id`, `mode`, and `updated_at` for a GLL-compatible detector. NO S3 calls, NO pre-signed URLs - one DB read per request, with a short client-side Cache-Control so polling clients can't hammer janzu.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_gll_model_info(detector_id, async_req=True)
+        >>> result = thread.get()
+
+        Args:
+            detector_id (str):
+
+        Keyword Args:
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            GLLModelInfo
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
+        return self.get_gll_model_info_endpoint.call_with_http_info(**kwargs)
+
+    def get_gll_pipeline(self, detector_id, **kwargs):
+        """get_gll_pipeline  # noqa: E501
+
+        Look up current build state without dispatching work.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_gll_pipeline(detector_id, async_req=True)
+        >>> result = thread.get()
+
+        Args:
+            detector_id (str):
+
+        Keyword Args:
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            GLLPipelineInfo
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
+        return self.get_gll_pipeline_endpoint.call_with_http_info(**kwargs)
+
+    def get_gll_tensor_rt_engine_build(self, detector_id, **kwargs):
+        """get_gll_tensor_rt_engine_build  # noqa: E501
+
+        Get pre-signed URL + sidecar for a TensorRT engine.  Query params:     cc: Compute capability (e.g., \"8.9\" for Ada/L4, \"7.5\" for Turing/T4)     precision: Precision mode (default: \"fp16\")     batch_size: Batch size (default: 1)     trt_version: TensorRT version major.minor[.patch...] (default: server's installed TRT version)  Returns:     200: Engine URL + sidecar metadata     400: Invalid params     403: Edge model download not enabled     404: Detector or matching engine not found  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.get_gll_tensor_rt_engine_build(detector_id, async_req=True)
+        >>> result = thread.get()
+
+        Args:
+            detector_id (str):
+
+        Keyword Args:
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            GLLEngineInfo
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
+        return self.get_gll_tensor_rt_engine_build_endpoint.call_with_http_info(**kwargs)
+
     def get_model_urls(self, detector_id, **kwargs):
         """get_model_urls  # noqa: E501
 
@@ -212,3 +594,121 @@ class EdgeApi(object):
         kwargs["_host_index"] = kwargs.get("_host_index")
         kwargs["detector_id"] = detector_id
         return self.get_model_urls_endpoint.call_with_http_info(**kwargs)
+
+    def initiate_gll_pipeline_build(self, detector_id, **kwargs):
+        """initiate_gll_pipeline_build  # noqa: E501
+
+        Initiate or deduplicate an ONNX export.  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.initiate_gll_pipeline_build(detector_id, async_req=True)
+        >>> result = thread.get()
+
+        Args:
+            detector_id (str):
+
+        Keyword Args:
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            GLLPipelineInfo
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
+        return self.initiate_gll_pipeline_build_endpoint.call_with_http_info(**kwargs)
+
+    def initiate_gll_tensor_rt_engine_build(self, detector_id, gll_engine_info_request, **kwargs):
+        """initiate_gll_tensor_rt_engine_build  # noqa: E501
+
+        Request TensorRT engine build.  Query params or body:     compute_capability: Compute capability (default: configured builder GPU)     precision: Precision mode (default: \"fp16\")     batch_size: Batch size (default: 1)     trt_version: TensorRT version (default: server's installed TRT version)  Returns:     200: Already built     202: Build requested     400: Invalid parameters     403: Not authorized     409: Requested TRT version doesn't match build worker  # noqa: E501
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+
+        >>> thread = api.initiate_gll_tensor_rt_engine_build(detector_id, gll_engine_info_request, async_req=True)
+        >>> result = thread.get()
+
+        Args:
+            detector_id (str):
+            gll_engine_info_request (GLLEngineInfoRequest):
+
+        Keyword Args:
+            _return_http_data_only (bool): response data without head status
+                code and headers. Default is True.
+            _preload_content (bool): if False, the urllib3.HTTPResponse object
+                will be returned without reading/decoding response data.
+                Default is True.
+            _request_timeout (int/float/tuple): timeout setting for this request. If
+                one number provided, it will be total request timeout. It can also
+                be a pair (tuple) of (connection, read) timeouts.
+                Default is None.
+            _check_input_type (bool): specifies if type checking
+                should be done one the data sent to the server.
+                Default is True.
+            _check_return_type (bool): specifies if type checking
+                should be done one the data received from the server.
+                Default is True.
+            _spec_property_naming (bool): True if the variable names in the input data
+                are serialized names, as specified in the OpenAPI document.
+                False if the variable names in the input data
+                are pythonic names, e.g. snake case (default)
+            _content_type (str/None): force body content-type.
+                Default is None and content-type will be predicted by allowed
+                content-types and body.
+            _host_index (int/None): specifies the index of the server
+                that we want to use.
+                Default is read from the configuration.
+            async_req (bool): execute request asynchronously
+
+        Returns:
+            GLLEngineInfo
+                If the method is called asynchronously, returns the request
+                thread.
+        """
+        kwargs["async_req"] = kwargs.get("async_req", False)
+        kwargs["_return_http_data_only"] = kwargs.get("_return_http_data_only", True)
+        kwargs["_preload_content"] = kwargs.get("_preload_content", True)
+        kwargs["_request_timeout"] = kwargs.get("_request_timeout", None)
+        kwargs["_check_input_type"] = kwargs.get("_check_input_type", True)
+        kwargs["_check_return_type"] = kwargs.get("_check_return_type", True)
+        kwargs["_spec_property_naming"] = kwargs.get("_spec_property_naming", False)
+        kwargs["_content_type"] = kwargs.get("_content_type")
+        kwargs["_host_index"] = kwargs.get("_host_index")
+        kwargs["detector_id"] = detector_id
+        kwargs["gll_engine_info_request"] = gll_engine_info_request
+        return self.initiate_gll_tensor_rt_engine_build_endpoint.call_with_http_info(**kwargs)

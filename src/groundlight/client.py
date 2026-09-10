@@ -20,11 +20,11 @@ from groundlight_openapi_client.model.bounding_box_mode_configuration import Bou
 from groundlight_openapi_client.model.count_mode_configuration import CountModeConfiguration
 from groundlight_openapi_client.model.detector_creation_input_request import DetectorCreationInputRequest
 from groundlight_openapi_client.model.detector_group_request import DetectorGroupRequest
+from groundlight_openapi_client.model.detector_status_enum import DetectorStatusEnum
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.multi_class_mode_configuration import MultiClassModeConfiguration
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
-from groundlight_openapi_client.model.status_enum import StatusEnum
 from model import (
     ROI,
     AccountMonthToDateInfo,
@@ -1516,7 +1516,9 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             detector = detector.id
         self.detectors_api.update_detector(
             detector,
-            patched_detector_request=PatchedDetectorRequest(status=StatusEnum("ON") if enabled else StatusEnum("OFF")),
+            patched_detector_request=PatchedDetectorRequest(
+                status=DetectorStatusEnum("ON") if enabled else DetectorStatusEnum("OFF")
+            ),
         )
 
     def update_detector_escalation_type(self, detector: Union[str, Detector], escalation_type: str) -> None:
