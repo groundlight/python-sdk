@@ -1055,6 +1055,70 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/synthetic-images:
+    post:
+      operationId: Generate synthetic image
+      description: |2
+
+        Submit an image for synthetic augmentation and get the edited image back with
+        ground-truth annotations, in one call.
+
+        Send the raw image bytes as the entire request body with a `Content-Type` of
+        `image/jpeg` or `image/png`; `lens_type` and `lens_config` go in the query string.
+        The lens selects what kind of event to synthesize.
+
+        Top-level `label` is the lens-level binary event label (`YES`/`NO`) for the generated
+        image, and can be forwarded to `POST /v1/labels` alongside `rois` without translation.
+        `rois` lists every detected object, including ones already present in the frame;
+        `added_roi_index` points at the one this request inserted.
+
+        Nothing is persisted: the generated image is returned inline and never stored.
+
+        Requires `ENABLE_SYNTHETIC_IMAGE_ACCESS` and accepted terms of service.
+
+        ```bash
+        curl "https://api.groundlight.ai/device-api/v1/synthetic-images?lens_type=fence_climbing" \
+            -H "Content-Type: image/jpeg" \
+            --data-binary @camera_frame.jpg
+        ```
+      parameters:
+      - in: query
+        name: lens_config
+        schema:
+          type: string
+        description: Lens-specific settings as a base64 url-safe encoded JSON object
+          (up to 1KiB).
+      - in: query
+        name: lens_type
+        schema:
+          type: string
+        description: Which lens to generate the image for, e.g. `fence_climbing`.
+        required: true
+      tags:
+      - synthetic-images
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/jpg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyntheticImage'
+          description: ''
   /v1/vlm-verifications:
     post:
       operationId: Submit VLM verification
@@ -2648,6 +2712,47 @@ components:
       - 'YES'
       - 'NO'
       - UNCLEAR
+    SyntheticImage:
+      type: object
+      description: |-
+        Response shape for POST /v1/synthetic-images.
+
+        A passthrough of the synthetic image service's generation result with a correlation
+        `id` added.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        image:
+          type: string
+          format: byte
+          description: Base64-encoded generated PNG.
+        width:
+          type: integer
+        height:
+          type: integer
+        label:
+          type: string
+          description: 'Lens-level binary event label: "YES" or "NO".'
+        rois:
+          type: array
+          items:
+            $ref: '#/components/schemas/ROI'
+        added_roi_index:
+          type: integer
+          description: Index into `rois` of the object this request inserted. Every
+            other entry was already in the frame.
+        metadata:
+          description: Generation details reported by the generation service.
+      required:
+      - added_roi_index
+      - height
+      - id
+      - image
+      - label
+      - metadata
+      - rois
+      - width
     VerdictEnum:
       enum:
       - 'YES'
