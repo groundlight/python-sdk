@@ -47,12 +47,13 @@ MAX_VLM_MEDIA_ITEMS = 8
 
 
 class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,too-many-instance-attributes
-    def __init__(
+    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         endpoint: Union[str, None] = None,
         api_token: Union[str, None] = None,
         disable_tls_verification: Optional[bool] = None,
         enable_token_rotation: bool = True,
+        token_dir: Optional[Union[str, Path]] = None,
     ):
         """
         Constructs an experimental Groundlight client.
@@ -86,12 +87,15 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
                 Groundlight cloud service.
         :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
                 non-null Token TTL.
+        :param token_dir: Optional directory for the rotating-token cache. If not provided, uses the
+                "GROUNDLIGHT_TOKEN_DIR" environment variable when set, otherwise a platform default.
         """
         super().__init__(
             endpoint=endpoint,
             api_token=api_token,
             disable_tls_verification=disable_tls_verification,
             enable_token_rotation=enable_token_rotation,
+            token_dir=token_dir,
         )
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)

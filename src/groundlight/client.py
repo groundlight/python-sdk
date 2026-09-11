@@ -5,6 +5,7 @@ import time
 import warnings
 from functools import partial
 from io import BufferedReader, BytesIO
+from pathlib import Path
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 from groundlight_openapi_client import Configuration
@@ -128,6 +129,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             Groundlight cloud service.
     :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
             non-null Token TTL.
+    :param token_dir: Optional directory for the rotating-token cache. If not provided, uses the
+            "GROUNDLIGHT_TOKEN_DIR" environment variable when set, otherwise a platform default.
 
     :return: Groundlight client instance
     """
@@ -145,6 +148,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         disable_tls_verification: Optional[bool] = None,
         http_transport_retries: Optional[Union[int, Retry]] = None,
         enable_token_rotation: bool = True,
+        token_dir: Optional[Union[str, Path]] = None,
     ):
         """
         Initialize a new Groundlight client instance.
@@ -162,6 +166,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
         :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
             non-null Token TTL.
+        :param token_dir: Optional directory for the rotating-token cache. If not provided, uses the
+            "GROUNDLIGHT_TOKEN_DIR" environment variable when set, otherwise a platform default.
 
         :return: Groundlight client
         """
@@ -207,6 +213,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
                     configured_token=api_token,
                     configuration=self.configuration,
                     request_timeout=DEFAULT_REQUEST_TIMEOUT,
+                    token_dir=Path(token_dir).expanduser() if token_dir is not None else None,
                 )
             except TokenManagerError as exc:
                 raise ApiTokenError(str(exc)) from exc

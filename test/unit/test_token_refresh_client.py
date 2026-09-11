@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import Mock
 
 from groundlight.client import Groundlight
@@ -33,3 +34,16 @@ def test_groundlight_skips_token_manager_when_rotation_disabled(mocker):
     assert client._token_manager is None
     assert client.configuration.api_key["ApiToken"] == "api_bootstrap_token_value_long_enough"
     api_client_close.assert_called_once()
+
+
+def test_groundlight_forwards_token_dir_to_token_manager(mocker, tmp_path):
+    """Constructor token_dir is expanded and passed through to TokenManager."""
+    manager = Mock()
+    token_manager_class = mocker.patch("groundlight.client.TokenManager", return_value=manager)
+    mocker.patch.object(Groundlight, "_verify_connectivity")
+
+    token_dir = tmp_path / "custom-tokens"
+    client = Groundlight(api_token="api_bootstrap_token_value_long_enough", token_dir=str(token_dir))
+    client.close()
+
+    assert token_manager_class.call_args.kwargs["token_dir"] == Path(token_dir)
