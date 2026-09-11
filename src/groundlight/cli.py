@@ -181,6 +181,7 @@ _GROUP_ORDER = [
     "Image Queries",
     "ML Pipelines & Priming",
     "Notes",
+    "Synthetic Images",
     "VLM Verification",
     "Utilities",
 ]
@@ -235,6 +236,10 @@ _COMMAND_GROUPS: dict[str, str] = {
     "create_priming_group": "ML Pipelines & Priming",
     "get_priming_group": "ML Pipelines & Priming",
     "delete_priming_group": "ML Pipelines & Priming",
+    # Synthetic Images
+    # NOTE: via the CLI the image must be a filepath — the `image` Union collapses to `str` —
+    # and `lens_config` arrives as a JSON (or pre-encoded) string rather than a dict.
+    "generate_synthetic_image": "Synthetic Images",
     # VLM Verification
     # NOTE: via the CLI only a single image (a filepath) is supported for now — the `media`
     # Union collapses to `str`. The Python API (ExperimentalApi.ask_vlm_verify) accepts up to 8.

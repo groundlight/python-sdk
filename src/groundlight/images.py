@@ -16,6 +16,10 @@ MAX_BYTES_IMAGE_SIZE = 256_000
 MAX_IMAGE_RESOLUTION_LONGSIDE = 1024
 SHRINK_JPEG_QUALITY = 85
 
+# Leading bytes that identify the image formats we can declare a Content-Type for.
+JPEG_MAGIC = b"\xff\xd8"
+PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
 
 class ByteStreamWrapper(IOBase):
     """This class acts as a thin wrapper around bytes in order to
@@ -137,4 +141,27 @@ def parse_supported_image_types(
     raise TypeError(
         "Unsupported type for image. Must be PIL, numpy (H,W,3) BGR, or a JPEG as a filename (str), bytes,"
         " BytesIO, or BufferedReader.",
+    )
+
+
+def detect_image_content_type(data: bytes) -> str:
+    """Determine the MIME type of encoded image bytes from their magic number.
+
+    Needed for endpoints that take the raw image as the request body, where the
+    Content-Type header is the only thing telling the server how to decode it.
+    Callers that go through :func:`parse_supported_image_types` only reach a
+    non-JPEG answer via the bytes/BytesIO/BufferedReader passthrough, since every
+    other input type is re-encoded to JPEG.
+
+    :param data: The encoded image bytes.
+
+    :return: Either ``"image/jpeg"`` or ``"image/png"``.
+    :raises ValueError: If the bytes are neither JPEG nor PNG.
+    """
+    if data.startswith(JPEG_MAGIC):
+        return "image/jpeg"
+    if data.startswith(PNG_MAGIC):
+        return "image/png"
+    raise ValueError(
+        "Could not identify the image format from its leading bytes. Only JPEG and PNG are supported here.",
     )
