@@ -12,11 +12,14 @@ import sys
 import unittest
 
 import groundlight_openapi_client
-from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
+from groundlight_openapi_client.model.group import Group
+
+globals()["Group"] = Group
+from groundlight_openapi_client.model.me import Me
 
 
-class TestInlineResponse2002(unittest.TestCase):
-    """InlineResponse2002 unit test stubs"""
+class TestMe(unittest.TestCase):
+    """Me unit test stubs"""
 
     def setUp(self):
         pass
@@ -24,10 +27,10 @@ class TestInlineResponse2002(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testInlineResponse2002(self):
-        """Test InlineResponse2002"""
+    def testMe(self):
+        """Test Me"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = InlineResponse2002()  # noqa: E501
+        # model = Me()  # noqa: E501
         pass
 
 

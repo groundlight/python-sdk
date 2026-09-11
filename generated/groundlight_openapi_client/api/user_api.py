@@ -21,7 +21,7 @@ from groundlight_openapi_client.model_utils import (  # noqa: F401
     none_type,
     validate_and_convert_types,
 )
-from groundlight_openapi_client.model.inline_response2002 import InlineResponse2002
+from groundlight_openapi_client.model.me import Me
 
 
 class UserApi(object):
@@ -37,7 +37,7 @@ class UserApi(object):
         self.api_client = api_client
         self.who_am_i_endpoint = _Endpoint(
             settings={
-                "response_type": (InlineResponse2002,),
+                "response_type": (Me,),
                 "auth": ["ApiToken"],
                 "endpoint_path": "/v1/me",
                 "operation_id": "who_am_i",
@@ -63,7 +63,7 @@ class UserApi(object):
     def who_am_i(self, **kwargs):
         """who_am_i  # noqa: E501
 
-        Retrieve the current user.  # noqa: E501
+        Retrieve the authenticated user's email, username, group, and superuser flag.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 
@@ -100,7 +100,7 @@ class UserApi(object):
             async_req (bool): execute request asynchronously
 
         Returns:
-            InlineResponse2002
+            Me
                 If the method is called asynchronously, returns the request
                 thread.
         """
