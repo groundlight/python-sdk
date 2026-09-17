@@ -76,6 +76,7 @@ from groundlight_openapi_client.model.snooze_time_unit_enum import SnoozeTimeUni
 from groundlight_openapi_client.model.source import Source
 from groundlight_openapi_client.model.source_enum import SourceEnum
 from groundlight_openapi_client.model.status_enum import StatusEnum
+from groundlight_openapi_client.model.synthetic_image import SyntheticImage
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from groundlight_openapi_client.model.text_recognition_result import TextRecognitionResult
 from groundlight_openapi_client.model.verb_enum import VerbEnum

@@ -6,6 +6,7 @@ from decimal import Decimal
 from enum import Enum
 from functools import wraps
 from importlib.metadata import version as importlib_version
+from pathlib import Path
 from typing import Any, Optional, Union
 from uuid import UUID
 
@@ -170,9 +171,39 @@ def class_func_to_cli(method, is_experimental: bool = False):
 _CLI_EXCLUDED_METHODS = {
     "close",  # lifecycle method; not useful as a standalone command
     "create_roi",  # returns an ROI object that must be passed to another API call; not useful standalone
+    "generate_synthetic_image",  # registered by hand below, so its image result can be saved to a file
     "get_raw_headers",  # returns the API token in plaintext
     "make_generic_api_request",
 }
+
+
+@experimental_app.command("generate-synthetic-image", rich_help_panel="Synthetic Images")
+def _generate_synthetic_image_command(
+    image: str,
+    lens_type: str,
+    lens_config: Optional[str] = None,
+    output: Path = typer.Option(..., "--output", "-o", help="File path to write the generated PNG to."),
+    timeout: Optional[float] = typer.Option(None, help="Seconds to wait for the generated image."),
+) -> None:
+    """Generate a synthetic training image and save it to --output.
+
+    Unlike other experimental commands, the result here is not printed as JSON by default:
+    the generated image is a PNG of a few hundred KB, which is unusable dumped as base64 in a
+    terminal. --output is required, and the rest of the result (label, rois, metadata, ...)
+    prints as JSON alongside the path it was saved to.
+    """
+    print(
+        "Warning: 'generate_synthetic_image' is an experimental command and may change without notice.",
+        file=sys.stderr,
+    )
+    gl = ExperimentalApi()
+    kwargs = {} if timeout is None else {"timeout": timeout}
+    result = gl.generate_synthetic_image(image, lens_type, lens_config=lens_config, **kwargs)
+    output.write_bytes(result.image)
+    summary = result.model_dump(mode="json", exclude={"image"})
+    summary["image_path"] = str(output)
+    print(json.dumps(summary, indent=2, default=_json_default))
+
 
 # Desired display order of command groups in the CLI help output.
 _GROUP_ORDER = [

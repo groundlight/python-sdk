@@ -149,6 +149,7 @@ Class | Method | HTTP request | Description
 *PrimingGroupsApi* | [**delete_priming_group**](docs/PrimingGroupsApi.md#delete_priming_group) | **DELETE** /v1/priming-groups/{id} | 
 *PrimingGroupsApi* | [**get_priming_group**](docs/PrimingGroupsApi.md#get_priming_group) | **GET** /v1/priming-groups/{id} | 
 *PrimingGroupsApi* | [**list_priming_groups**](docs/PrimingGroupsApi.md#list_priming_groups) | **GET** /v1/priming-groups | 
+*SyntheticImagesApi* | [**generate_synthetic_image**](docs/SyntheticImagesApi.md#generate_synthetic_image) | **POST** /v1/synthetic-images | 
 *UserApi* | [**who_am_i**](docs/UserApi.md#who_am_i) | **GET** /v1/me | 
 *VlmVerificationsApi* | [**submit_vlm_verification**](docs/VlmVerificationsApi.md#submit_vlm_verification) | **POST** /v1/vlm-verifications | 
 
@@ -222,6 +223,7 @@ Class | Method | HTTP request | Description
  - [Source](docs/Source.md)
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
+ - [SyntheticImage](docs/SyntheticImage.md)
  - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
  - [VerbEnum](docs/VerbEnum.md)

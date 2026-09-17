@@ -78,6 +78,8 @@ docs/SnoozeTimeUnitEnum.md
 docs/Source.md
 docs/SourceEnum.md
 docs/StatusEnum.md
+docs/SyntheticImage.md
+docs/SyntheticImagesApi.md
 docs/TextModeConfiguration.md
 docs/TextRecognitionResult.md
 docs/UserApi.md
@@ -103,6 +105,7 @@ groundlight_openapi_client/api/labels_api.py
 groundlight_openapi_client/api/month_to_date_account_info_api.py
 groundlight_openapi_client/api/notes_api.py
 groundlight_openapi_client/api/priming_groups_api.py
+groundlight_openapi_client/api/synthetic_images_api.py
 groundlight_openapi_client/api/user_api.py
 groundlight_openapi_client/api/vlm_verifications_api.py
 groundlight_openapi_client/api_client.py
@@ -177,6 +180,7 @@ groundlight_openapi_client/model/snooze_time_unit_enum.py
 groundlight_openapi_client/model/source.py
 groundlight_openapi_client/model/source_enum.py
 groundlight_openapi_client/model/status_enum.py
+groundlight_openapi_client/model/synthetic_image.py
 groundlight_openapi_client/model/text_mode_configuration.py
 groundlight_openapi_client/model/text_recognition_result.py
 groundlight_openapi_client/model/verb_enum.py
@@ -194,6 +198,6 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_group.py
-test/test_me.py
+test/test_synthetic_image.py
+test/test_synthetic_images_api.py
 tox.ini

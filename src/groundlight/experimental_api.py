@@ -19,6 +19,7 @@ from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
 from groundlight_openapi_client.api.notes_api import NotesApi
 from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
+from groundlight_openapi_client.api.synthetic_images_api import SyntheticImagesApi
 from groundlight_openapi_client.api.vlm_verifications_api import VlmVerificationsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
@@ -36,9 +37,16 @@ from model import (
 from urllib3.response import HTTPResponse
 
 from groundlight.edge.api import EdgeEndpointApi
-from groundlight.images import parse_supported_image_types
+from groundlight.encodings import url_encode_dict
+from groundlight.images import detect_image_content_type, parse_supported_image_types
 from groundlight.internalapi import NotFoundError, _generate_request_id
 from groundlight.optional_imports import Image, np
+from groundlight.synthetic_images import (
+    DEFAULT_SYNTHETIC_IMAGE_CONNECT_TIMEOUT,
+    DEFAULT_SYNTHETIC_IMAGE_READ_TIMEOUT,
+    MAX_SYNTHETIC_IMAGE_BYTES,
+    SyntheticImageResult,
+)
 
 from .client import DEFAULT_REQUEST_TIMEOUT, Groundlight, GroundlightClientError
 
@@ -102,6 +110,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         self.detector_reset_api = DetectorResetApi(self.api_client)
         self.priming_groups_api = PrimingGroupsApi(self.api_client)
         self.vlm_verifications_api = VlmVerificationsApi(self.api_client)
+        self.synthetic_images_api = SyntheticImagesApi(self.api_client)
 
         # API client for fetching Edge models
         self._edge_model_download_api = EdgeApi(self.api_client)
@@ -276,6 +285,130 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         # multipart upload, auth, and base URL, then we validate into the pydantic model.
         raw = self.vlm_verifications_api.submit_vlm_verification(media_files, query, **kwargs)
         return VlmVerification.model_validate(raw.to_dict())
+
+    def generate_synthetic_image(
+        self,
+        image: Union[np.ndarray, str, bytes, Image.Image, BytesIO, BufferedReader],
+        lens_type: str,
+        lens_config: Union[Dict, str, None] = None,
+        timeout: float = DEFAULT_SYNTHETIC_IMAGE_READ_TIMEOUT,
+    ) -> SyntheticImageResult:
+        """Generate a synthetic training image from a real frame, with ground-truth annotations.
+
+        Calls the Groundlight ``POST /v1/synthetic-images`` endpoint. The image is edited in the
+        Groundlight cloud to synthesize an event into it, and comes back with annotations
+        describing what was added — so you can build training data for a rare event without
+        waiting for it to happen.
+
+        ``lens_type`` selects which kind of event to synthesize. The returned ``label`` is the
+        lens-level binary verdict (``"YES"`` / ``"NO"``) for the generated image, and ``rois``
+        describes every detected object, including ones already present in the original frame.
+        ``added_roi_index`` points at the one this call inserted.
+
+        Nothing is persisted server-side — the generated image is returned inline and never
+        stored, so save it yourself if you want to keep it.
+
+        Generation is slow and holds the connection open while it runs. An HTTP 503 means the
+        generation service is at capacity rather than broken, so the call is worth retrying.
+
+        Source images larger than 10MiB are rejected, and are rejected locally before being
+        uploaded. Note this differs from :meth:`submit_image_query`, which silently downscales
+        a large image: here the image is the source material for generation, so it is sent at
+        full resolution and an oversized one is an error rather than something to shrink.
+
+        Requires synthetic image generation to be enabled on your account.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+
+            result = gl.generate_synthetic_image("camera_frame.jpg", lens_type="fence_climbing")
+            print(result.label, result.width, result.height)
+
+            # result.image is decoded PNG bytes, ready to write out
+            with open("synthetic.png", "wb") as f:
+                f.write(result.image)
+
+            # Train a binary detector on the generated frame, keeping the generation details
+            # alongside the image query.
+            iq = gl.submit_image_query(
+                binary_detector, result.image, wait=0, metadata=result.metadata
+            )
+            gl.add_label(iq, label=result.label)
+
+            # The ROIs describe where the objects are, which suits a bounding box detector.
+            # That is a separate image query, and the binary label above does not apply to it.
+            bbox_iq = gl.submit_image_query(
+                bbox_detector, result.image, wait=0, metadata=result.metadata
+            )
+            gl.add_label(bbox_iq, label="BOUNDING_BOX", rois=result.rois)
+
+        :param image: The source frame. Accepted formats:
+
+            - filename (string) of a JPEG or PNG file (``".jpg"``, ``".jpeg"``, ``".png"``) —
+              PNG files are re-encoded to JPEG before sending
+            - raw bytes, BytesIO, or BufferedReader — sent as-is, with the ``Content-Type``
+              taken from the leading bytes. Only JPEG and PNG are accepted here; unlike
+              :meth:`ask_vlm_verify`, other formats are rejected locally rather than being
+              normalised by the server.
+            - numpy array (H, W, 3) in BGR order (OpenCV convention) — converted to JPEG
+            - PIL Image — converted to JPEG
+
+        :param lens_type: Which lens to generate the image for, e.g. ``"fence_climbing"``. The
+            server owns the lens vocabulary and is the source of truth for what is supported;
+            an unrecognised value returns HTTP 400.
+        :param lens_config: A dictionary or JSON string of lens-specific settings. Which
+            settings are meaningful depends on the lens.
+        :param timeout: How long to wait for the generated image, in seconds. This is the time
+            spent waiting for a response, and does not include uploading the source image, so a
+            large frame on a slow connection does not eat into it. Raise it if generation is
+            slower than the default allows.
+
+        :return: A ``SyntheticImageResult`` with the generated image as decoded PNG ``bytes`` in
+            ``image``, plus ``id`` — the correlation id for this generation, worth quoting in a
+            support request about a bad result — and ``width``, ``height``, ``label``, ``rois``,
+            ``added_roi_index``, and ``metadata``.
+        :raises ValueError: If the source image is empty, larger than 10MiB, is neither JPEG nor
+            PNG, or is a filename whose extension is unsupported; or if ``lens_config`` is too
+            large to encode. Also raised, as a :class:`pydantic.ValidationError`, if the server
+            returns a response that does not match the documented shape — including an image
+            that is empty or not decodable.
+        :raises TypeError: If ``image`` is not one of the supported types, or if ``lens_config`` is
+            neither a dictionary nor a JSON string.
+        :raises groundlight_openapi_client.exceptions.ApiException: On non-2xx response (400 for an
+            unknown ``lens_type`` or an image the server cannot decode, 403 if your account does not
+            have synthetic image access, 503 if the generation service is at capacity).
+        """
+        stream = parse_supported_image_types(image)
+        image_bytes = stream.getvalue()
+        if not image_bytes:
+            raise ValueError("generate_synthetic_image requires a non-empty image.")
+        if len(image_bytes) > MAX_SYNTHETIC_IMAGE_BYTES:
+            # Checked before sending so an oversized frame fails immediately instead of
+            # uploading in full against the generation timeout only to be rejected. Not
+            # shrunk the way submit_image_query shrinks its input: this image is the source
+            # material for generation, so downscaling it would quietly degrade the result.
+            raise ValueError(
+                f"generate_synthetic_image requires an image of at most {MAX_SYNTHETIC_IMAGE_BYTES} bytes,"
+                f" but got {len(image_bytes)} bytes.",
+            )
+
+        kwargs: Dict[str, Any] = {
+            "body": stream,
+            # The image is the whole request body, so Content-Type is the only signal the
+            # server has for decoding it. Without this the generated client declares
+            # image/jpeg for every request, mislabeling PNG bytes.
+            "_content_type": detect_image_content_type(image_bytes),
+            # A (connect, read) pair rather than a scalar: the generated client turns a scalar
+            # into a total budget, which would charge uploading the source frame against the
+            # time allowed for generation.
+            "_request_timeout": (DEFAULT_SYNTHETIC_IMAGE_CONNECT_TIMEOUT, timeout),
+        }
+        if lens_config is not None:
+            kwargs["lens_config"] = url_encode_dict(lens_config, name="lens_config", size_limit_bytes=1024)
+
+        raw = self.synthetic_images_api.generate_synthetic_image(lens_type, **kwargs)
+        return SyntheticImageResult.model_validate(raw.to_dict())
 
     def reset_detector(self, detector: Union[str, Detector]) -> None:
         """

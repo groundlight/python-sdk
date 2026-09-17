@@ -10,6 +10,10 @@ from .client import Groundlight
 from .client import GroundlightClientError, ApiTokenError, EdgeNotAvailableError, NotFoundError
 from .experimental_api import ExperimentalApi
 from .binary_labels import Label
+
+# Exported so the return type of generate_synthetic_image is reachable here, rather than only
+# the wire model of the same shape whose `image` is a base64 str.
+from .synthetic_images import SyntheticImageResult
 from .version import get_version
 
 __version__ = get_version()
