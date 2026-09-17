@@ -91,6 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.delete_priming_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.delete_priming_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.download_mlbinary"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.download_mlbinary()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.edge_base_url"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.edge_base_url()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.generate_synthetic_image"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.generate_synthetic_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_detector_evaluation"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_detector_evaluation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_detector_metrics"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_detector_metrics()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.get_notes"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.get_notes()</span></code></a></li>
@@ -1973,6 +1974,104 @@ it only removes the priming group itself. Detectors already created remain unaff
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.generate_synthetic_image">
+<span class="sig-name descname"><span class="pre">generate_synthetic_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnavailableModule</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BytesIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BufferedReader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">90.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SyntheticImageResult</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.generate_synthetic_image" title="Link to this definition"></a></dt>
+<dd><p>Generate a synthetic training image from a real frame, with ground-truth annotations.</p>
+<p>Calls the Groundlight <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/synthetic-images</span></code> endpoint. The image is edited in the
+Groundlight cloud to synthesize an event into it, and comes back with annotations
+describing what was added — so you can build training data for a rare event without
+waiting for it to happen.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lens_type</span></code> selects which kind of event to synthesize. The returned <code class="docutils literal notranslate"><span class="pre">label</span></code> is the
+lens-level binary verdict (<code class="docutils literal notranslate"><span class="pre">&quot;YES&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">&quot;NO&quot;</span></code>) for the generated image, and <code class="docutils literal notranslate"><span class="pre">rois</span></code>
+describes every detected object, including ones already present in the original frame.
+<code class="docutils literal notranslate"><span class="pre">added_roi_index</span></code> points at the one this call inserted.</p>
+<p>Nothing is persisted server-side — the generated image is returned inline and never
+stored, so save it yourself if you want to keep it.</p>
+<p>Generation is slow and holds the connection open while it runs. An HTTP 503 means the
+generation service is at capacity rather than broken, so the call is worth retrying.</p>
+<p>Source images larger than 10MiB are rejected, and are rejected locally before being
+uploaded. Note this differs from <code class="xref py py-meth docutils literal notranslate"><span class="pre">submit_image_query()</span></code>, which silently downscales
+a large image: here the image is the source material for generation, so it is sent at
+full resolution and an oversized one is an error rather than something to shrink.</p>
+<p>Requires synthetic image generation to be enabled on your account.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">generate_synthetic_image</span><span class="p">(</span><span class="s2">"camera_frame.jpg"</span><span class="p">,</span> <span class="n">lens_type</span><span class="o">=</span><span class="s2">"fence_climbing"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+
+<span class="c1"># result.image is decoded PNG bytes, ready to write out</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"synthetic.png"</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+
+<span class="c1"># Train a binary detector on the generated frame, keeping the generation details</span>
+<span class="c1"># alongside the image query.</span>
+<span class="n">iq</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">submit_image_query</span><span class="p">(</span>
+    <span class="n">binary_detector</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">metadata</span>
+<span class="p">)</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="n">iq</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+
+<span class="c1"># The ROIs describe where the objects are, which suits a bounding box detector.</span>
+<span class="c1"># That is a separate image query, and the binary label above does not apply to it.</span>
+<span class="n">bbox_iq</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">submit_image_query</span><span class="p">(</span>
+    <span class="n">bbox_detector</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">metadata</span>
+<span class="p">)</span>
+<span class="n">gl</span><span class="o">.</span><span class="n">add_label</span><span class="p">(</span><span class="n">bbox_iq</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"BOUNDING_BOX"</span><span class="p">,</span> <span class="n">rois</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">rois</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>UnavailableModule</em><em> | </em><em>str</em><em> | </em><em>bytes</em><em> | </em><em>Image</em><em> | </em><em>BytesIO</em><em> | </em><em>BufferedReader</em>) – <p>The source frame. Accepted formats:</p>
+<ul>
+<li><p>filename (string) of a JPEG or PNG file (<code class="docutils literal notranslate"><span class="pre">&quot;.jpg&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;.jpeg&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;.png&quot;</span></code>) —
+PNG files are re-encoded to JPEG before sending</p></li>
+<li><p>raw bytes, BytesIO, or BufferedReader — sent as-is, with the <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code>
+taken from the leading bytes. Only JPEG and PNG are accepted here; unlike
+<a class="reference internal" href="#groundlight.ExperimentalApi.ask_vlm_verify" title="groundlight.ExperimentalApi.ask_vlm_verify"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ask_vlm_verify()</span></code></a>, other formats are rejected locally rather than being
+normalised by the server.</p></li>
+<li><p>numpy array (H, W, 3) in BGR order (OpenCV convention) — converted to JPEG</p></li>
+<li><p>PIL Image — converted to JPEG</p></li>
+</ul>
+</p></li>
+<li><p><strong>lens_type</strong> (<em>str</em>) – Which lens to generate the image for, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;fence_climbing&quot;</span></code>. The
+server owns the lens vocabulary and is the source of truth for what is supported;
+an unrecognised value returns HTTP 400.</p></li>
+<li><p><strong>lens_config</strong> (<em>Dict</em><em> | </em><em>str</em><em> | </em><em>None</em>) – A dictionary or JSON string of lens-specific settings. Which
+settings are meaningful depends on the lens.</p></li>
+<li><p><strong>timeout</strong> (<em>float</em>) – How long to wait for the generated image, in seconds. This is the time
+spent waiting for a response, and does not include uploading the source image, so a
+large frame on a slow connection does not eat into it. Raise it if generation is
+slower than the default allows.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">SyntheticImageResult</span></code> with the generated image as decoded PNG <code class="docutils literal notranslate"><span class="pre">bytes</span></code> in
+<code class="docutils literal notranslate"><span class="pre">image</span></code>, plus <code class="docutils literal notranslate"><span class="pre">id</span></code> — the correlation id for this generation, worth quoting in a
+support request about a bad result — and <code class="docutils literal notranslate"><span class="pre">width</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">label</span></code>, <code class="docutils literal notranslate"><span class="pre">rois</span></code>,
+<code class="docutils literal notranslate"><span class="pre">added_roi_index</span></code>, and <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the source image is empty, larger than 10MiB, is neither JPEG nor
+PNG, or is a filename whose extension is unsupported; or if <code class="docutils literal notranslate"><span class="pre">lens_config</span></code> is too
+large to encode. Also raised, as a <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.ValidationError</span></code>, if the server
+returns a response that does not match the documented shape — including an image
+that is empty or not decodable.</p></li>
+<li><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">image</span></code> is not one of the supported types, or if <code class="docutils literal notranslate"><span class="pre">lens_config</span></code> is
+neither a dictionary nor a JSON string.</p></li>
+<li><p><strong>groundlight_openapi_client.exceptions.ApiException</strong> – On non-2xx response (400 for an
+unknown <code class="docutils literal notranslate"><span class="pre">lens_type</span></code> or an image the server cannot decode, 403 if your account does not
+have synthetic image access, 503 if the generation service is at capacity).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>SyntheticImageResult</em></p>
 </dd>
 </dl>
 </dd></dl>
