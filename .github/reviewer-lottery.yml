@@ -3,13 +3,12 @@ groups:
   - name: dependabot-reviewers
     reviewers: 1
     usernames:
-      - robotrapta
-      - tyler-romero
-      - sunildkumar
-      - tomfaulhaber
-      - roxanne-o
-      - timmarkhuff
-      - brandon-groundlight
-      - f-wright
-      - CoreyEWood
-      - honeytung
+      - ldirac_axoncorp
+      - tfaulhaber_axoncorp
+      - roglesby_axoncorp
+      - thuff_axoncorp
+      - bwada_axoncorp
+      - fwright_axoncorp
+      - cowood_axoncorp
+      - htung_axoncorp
+      - mvincent_axoncorp
