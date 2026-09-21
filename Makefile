@@ -1,4 +1,4 @@
-.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-integ test-local help
+.PHONY: apidocs docs-comprehensive generate html install install-dev install-extras install-generator install-lint install-pre-commit test test-4edge test-codegen test-integ test-local help
 
 help:  ## Print all targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {if (NF == 1) {printf "\033[36m%-30s\033[0m %s\n", $$1, ""} else {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}}'
@@ -46,8 +46,16 @@ PROFILING_ARGS = \
 	--durations 25 \
 	--durations-min 0.1
 
+# Checks that `generated/` is what `make generate` produces. Kept out of `test/` because
+# test/conftest.py builds a Groundlight client in pytest_configure, so nothing under test/ collects
+# without GROUNDLIGHT_API_TOKEN -- and these checks need no API access.
+CODEGEN_TEST_PATH=codegen_test
+
 test: install  ## Run tests against the prod API (needs GROUNDLIGHT_API_TOKEN)
-	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${CLOUD_FILTERS} test
+	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${CLOUD_FILTERS} test ${CODEGEN_TEST_PATH}
+
+test-codegen: install  ## Check that generated/ matches `make generate` (no API token needed)
+	${PYTEST} ${TEST_ARGS} ${CODEGEN_TEST_PATH}
 
 test-4edge: install  ## Run tests against the prod API via the edge-endpoint (needs GROUNDLIGHT_API_TOKEN)
 	${PYTEST} ${PROFILING_ARGS} ${TEST_ARGS} ${EDGE_FILTERS} test
@@ -67,8 +75,9 @@ test-docs: install-extras  ## Run the example code and tests in our docs against
 test-docs-integ: install-extras  ## Run the example code and tests in our docs against the integ API (needs GROUNDLIGHT_API_TOKEN)
 	GROUNDLIGHT_ENDPOINT="https://api.integ.groundlight.ai/" ${PYTEST} --markdown-docs ${TEST_ARGS} docs README.md
 
-# Adjust which paths we lint
-LINT_PATHS="src test bin samples"
+# Adjust which paths we lint. Note that `generated/` is deliberately absent: see codegen_test/ for
+# how we check that tree instead.
+LINT_PATHS="src test bin samples codegen_test"
 
 lint: install-lint  ## Run linter to check formatting and style
 	./code-quality/lint ${LINT_PATHS}

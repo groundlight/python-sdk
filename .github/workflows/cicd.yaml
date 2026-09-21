@@ -38,6 +38,42 @@ jobs:
         run: |
           make lint
 
+  # Check that the checked-in `generated/` tree is what `make generate` produces. This job exists
+  # because it is the only place the openapi-generator half of the check reliably runs: it needs
+  # node, which contributors don't necessarily have, so locally it skips. Needs no API token.
+  test-codegen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # snok/install-poetry is a third-party Action blocked by the GHEC allowlist.
+      # Install Poetry from PyPI via pipx instead (package hashes verified by pip).
+      - name: install poetry
+        run: |
+          set -euo pipefail
+          # --python pins Poetry to the interpreter selected above; otherwise pipx
+          # installs it on the runner default and Poetry builds the venv with that.
+          pipx install --python "$(which python)" "poetry==${{ env.POETRY_VERSION }}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: setup npm
+        uses: actions/setup-node@v3
+        with:
+          # openapi-generator-cli 2.34 pulls in an ESM-only proxy-agent, so it needs node >= 22.
+          node-version: 22
+          cache: npm
+      - name: install the code generator
+        run: make install-generator
+      - name: check generated/ is what the generator produces
+        env:
+          # Turns "the generator isn't installed" from a skip into a failure. Locally the check may
+          # skip; here it must actually run, or it isn't coverage.
+          CODEGEN_CHECK_REQUIRE_GENERATOR: "1"
+        run: make test-codegen
+
   # Run integration tests against the API. For efficiency, we only run one version of python on
   # non-main branches.
   test-simple:

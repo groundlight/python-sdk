@@ -67,6 +67,29 @@ Then you can generate the code by running:
 make generate
 ```
 
+Note that `openapi-generator-cli` needs node 22 or newer (on older versions it fails with
+`ERR_REQUIRE_ESM`) and a JRE.
+
+### Checking that `generated/` is really generated
+
+`generated/` is excluded from linting, so nothing used to notice when someone edited generated code
+by hand instead of regenerating it. The person who paid for that was the next one to run
+`make generate` — they got a large unexplained diff mixed into their own PR.
+
+`codegen_test/` closes that hole. It regenerates the SDK into a scratch directory and diffs it
+against the committed tree:
+
+```shell
+# Needs no API token. Run `make install-generator` first to include the openapi-generator half.
+make test-codegen
+```
+
+`make test` runs it too. The `datamodel-codegen` half always runs; the `openapi-generator-cli` half
+skips when node isn't available, so CI sets `CODEGEN_CHECK_REQUIRE_GENERATOR=1` to turn that skip
+into a failure and guarantee it actually runs somewhere.
+
+If it fails, the fix is `make generate` — not editing the checked-in file to match.
+
 ### Linters
 
 Linters help us find issues before runtime. We're currently using:

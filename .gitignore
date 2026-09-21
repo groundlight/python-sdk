@@ -166,3 +166,7 @@ node_modules/
 **/.python-version
 
 .DS_Store
+
+# Scratch trees written by codegen_test/ when it regenerates the SDK to compare against
+# generated/. Cleaned up automatically; ignored here so a killed test run can't dirty the tree.
+codegen-check-tmp-*/
