@@ -538,11 +538,10 @@ def test_submit_image_query_with_metadata_too_large(gl: Groundlight, detector: D
 
 
 @pytest.mark.run_only_for_edge_endpoint
-def test_submit_image_query_with_metadata_returns_user_error(gl: Groundlight, detector: Detector, image: str):
-    """On the edge-endpoint, we raise an exception if the user passes metadata."""
-    with pytest.raises(ApiException) as exc_info:
-        gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata={"a": 1})
-    assert is_user_error(exc_info.value.status)
+def test_submit_image_query_with_metadata_on_edge(gl: Groundlight, detector: Detector, image: str):
+    """The edge-endpoint returns user metadata alongside its own metadata keys."""
+    iq = gl.submit_image_query(detector=detector.id, image=image, human_review="NEVER", metadata={"a": 1})
+    assert iq.metadata["a"] == 1
 
 
 @retry_on_failure()
