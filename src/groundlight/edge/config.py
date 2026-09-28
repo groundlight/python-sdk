@@ -36,9 +36,6 @@ class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
     enabled: bool = Field(
         default=True, description="Whether the edge endpoint should accept image queries for this detector."
     )
-    api_token: Optional[str] = Field(
-        default=None, description="API token used to fetch the inference model for this detector."
-    )
     always_return_edge_prediction: bool = Field(
         default=False,
         description=(
