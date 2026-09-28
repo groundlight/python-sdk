@@ -5,6 +5,9 @@ from model import Detector
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self
 
+# Seconds to wait between cloud escalations when a config does not set its own interval.
+DEFAULT_MIN_TIME_BETWEEN_ESCALATIONS_SEC = 30.0
+
 
 class GlobalConfig(BaseModel):  # pylint: disable=too-few-public-methods
     """Global runtime settings for edge-endpoint behavior."""
@@ -52,7 +55,7 @@ class InferenceConfig(BaseModel):  # pylint: disable=too-few-public-methods
         ),
     )
     min_time_between_escalations: float = Field(
-        default=2.0,
+        default=DEFAULT_MIN_TIME_BETWEEN_ESCALATIONS_SEC,
         gt=0,
         description=(
             "The minimum time (in seconds) to wait between cloud escalations for a given detector. "
@@ -203,7 +206,7 @@ DEFAULT = InferenceConfig(name="default")
 EDGE_ANSWERS_WITH_ESCALATION = InferenceConfig(
     name="edge_answers_with_escalation",
     always_return_edge_prediction=True,
-    min_time_between_escalations=2.0,
+    min_time_between_escalations=DEFAULT_MIN_TIME_BETWEEN_ESCALATIONS_SEC,
 )
 NO_CLOUD = InferenceConfig(
     name="no_cloud",
