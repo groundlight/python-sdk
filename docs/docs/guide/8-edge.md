@@ -78,6 +78,13 @@ for det in config.detectors:
     print(f"  {det.detector_id} -> {det.edge_inference_config}")
 ```
 
+To see which Groundlight cloud the Edge Endpoint forwards requests to (for example, to confirm your API token belongs to the same cloud):
+
+```python notest
+# See which Groundlight cloud this Edge Endpoint forwards to
+print(gl.edge.get_upstream_endpoint())  # e.g. https://api.groundlight.ai
+```
+
 ## Edge Endpoint performance
 
 We have benchmarked the `edge-endpoint` handling 500 requests/sec at a latency of less than 50ms on an off-the-shelf [Katana 15 B13VGK-1007US](https://us.msi.com/Laptop/Katana-15-B13VX/Specification) laptop (Intel® Core™ i9-13900H CPU, NVIDIA® GeForce RTX™ 4070 Laptop GPU, 32GB DDR5 5200MHz RAM) running Ubuntu 20.04.

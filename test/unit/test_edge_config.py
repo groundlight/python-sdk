@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 import pytest
-from groundlight import ExperimentalApi
+import requests
+from groundlight import EdgeNotAvailableError, ExperimentalApi
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -391,3 +392,54 @@ def test_edge_get_detector_readiness():
         readiness = gl.edge.get_detector_readiness()
 
     assert readiness == {DET_1: True, DET_2: False}
+
+
+def test_edge_get_upstream_endpoint():
+    """gl.edge.get_upstream_endpoint() returns the upstream origin from the edge's /edge-info route."""
+    upstream = "https://api.groundlight.dev.axon.com"
+    mock_response = Mock()
+    mock_response.json.return_value = {"upstream_endpoint": upstream}
+    mock_response.raise_for_status = Mock()
+
+    gl = ExperimentalApi()
+    with patch("requests.request", return_value=mock_response) as mock_request:
+        result = gl.edge.get_upstream_endpoint()
+
+    assert result == upstream
+    mock_request.assert_called_once()
+    assert mock_request.call_args.args[:2] == ("GET", f"{gl.edge_base_url()}/edge-info")
+
+
+def test_edge_get_upstream_endpoint_not_available():
+    """gl.edge.get_upstream_endpoint() raises EdgeNotAvailableError when the route returns 404."""
+    mock_response = Mock()
+    mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(response=Mock(status_code=404))
+
+    gl = ExperimentalApi()
+    with patch("requests.request", return_value=mock_response):
+        with pytest.raises(EdgeNotAvailableError):
+            gl.edge.get_upstream_endpoint()
+
+
+@pytest.mark.parametrize(
+    "json_result",
+    [
+        {"unexpected": "shape"},
+        ["not", "an", "object"],
+        ValueError("Expecting value: line 1 column 1 (char 0)"),
+    ],
+    ids=["missing_key", "not_an_object", "not_json"],
+)
+def test_edge_get_upstream_endpoint_unexpected_response(json_result):
+    """gl.edge.get_upstream_endpoint() raises EdgeNotAvailableError when a 200 response has an unexpected body."""
+    mock_response = Mock()
+    mock_response.raise_for_status = Mock()
+    if isinstance(json_result, Exception):
+        mock_response.json.side_effect = json_result
+    else:
+        mock_response.json.return_value = json_result
+
+    gl = ExperimentalApi()
+    with patch("requests.request", return_value=mock_response):
+        with pytest.raises(EdgeNotAvailableError):
+            gl.edge.get_upstream_endpoint()

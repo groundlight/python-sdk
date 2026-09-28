@@ -63,6 +63,19 @@ class EdgeEndpointApi:
         response = self._request("GET", "/edge-detector-readiness")
         return {det_id: info["ready"] for det_id, info in response.json().items()}
 
+    def get_upstream_endpoint(self) -> str:
+        """Return the origin of the Groundlight cloud this Edge Endpoint forwards to, e.g. ``https://api.groundlight.ai``.
+
+        :raises EdgeNotAvailableError: If the client is not pointed at an Edge Endpoint that supports this.
+        """
+        response = self._request("GET", "/edge-info")
+        try:
+            return response.json()["upstream_endpoint"]
+        except (ValueError, KeyError, TypeError) as e:
+            raise EdgeNotAvailableError(
+                f"Unexpected response from {self._base_url()}/edge-info. {_EDGE_METHOD_UNAVAILABLE_HINT}"
+            ) from e
+
     def set_config(
         self,
         config: EdgeEndpointConfig,
