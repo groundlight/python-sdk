@@ -110,6 +110,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.edge.api.EdgeEndpointApi"><code class="docutils literal notranslate"><span class="pre">EdgeEndpointApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.edge.api.EdgeEndpointApi.get_config"><code class="docutils literal notranslate"><span class="pre">EdgeEndpointApi.get_config()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.edge.api.EdgeEndpointApi.get_detector_readiness"><code class="docutils literal notranslate"><span class="pre">EdgeEndpointApi.get_detector_readiness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.edge.api.EdgeEndpointApi.get_upstream_endpoint"><code class="docutils literal notranslate"><span class="pre">EdgeEndpointApi.get_upstream_endpoint()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.edge.api.EdgeEndpointApi.set_config"><code class="docutils literal notranslate"><span class="pre">EdgeEndpointApi.set_config()</span></code></a></li>
 </ul>
 </li>
@@ -2366,6 +2367,20 @@ such as setting and getting the EdgeEndpoint configuration.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict[str, bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.edge.api.EdgeEndpointApi.get_upstream_endpoint">
+<span class="sig-name descname"><span class="pre">get_upstream_endpoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#groundlight.edge.api.EdgeEndpointApi.get_upstream_endpoint" title="Link to this definition"></a></dt>
+<dd><p>Return the origin of the Groundlight cloud this Edge Endpoint forwards to, e.g. <code class="docutils literal notranslate"><span class="pre">https://api.groundlight.ai</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>EdgeNotAvailableError</strong> – If the client is not pointed at an Edge Endpoint that supports this.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
