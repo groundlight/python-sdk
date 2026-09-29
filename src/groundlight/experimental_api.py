@@ -35,6 +35,7 @@ from model import (
     VlmVerification,
 )
 from urllib3.response import HTTPResponse
+from urllib3.util.retry import Retry
 
 from groundlight.edge.api import EdgeEndpointApi
 from groundlight.encodings import url_encode_dict
@@ -60,8 +61,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         endpoint: Union[str, None] = None,
         api_token: Union[str, None] = None,
         disable_tls_verification: Optional[bool] = None,
+        http_transport_retries: Optional[Union[int, Retry]] = None,
         enable_token_rotation: bool = True,
         token_dir: Optional[Union[str, Path]] = None,
+        shrink_oversized_images: Optional[bool] = None,
     ):
         """
         Constructs an experimental Groundlight client.
@@ -93,17 +96,25 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
                 Warning: Only disable verification when connecting to a Groundlight Edge Endpoint using
                 self-signed certificates. For security, always keep verification enabled when using the
                 Groundlight cloud service.
+        :param http_transport_retries: Overrides urllib3 `PoolManager` retry policy for HTTP/HTTPS (forwarded to
+                `Configuration.retries`). Not the same as SDK 5xx retries handled by `RequestsRetryDecorator`.
         :param enable_token_rotation: If True (default), automatically rotate tokens whose identity has a
                 non-null Token TTL.
         :param token_dir: Optional directory for the rotating-token cache. If not provided, uses the
                 "GROUNDLIGHT_TOKEN_DIR" environment variable when set, otherwise a platform default.
+        :param shrink_oversized_images: If True, downscale and re-encode an image whose
+                encoded size is over the upload limit before sending it. If False, send the image unchanged.
+                When not specified, checks the "GROUNDLIGHT_SHRINK_OVERSIZED_IMAGES" environment variable
+                (1=shrink, 0=send unchanged). An explicit True or False overrides the environment variable.
         """
         super().__init__(
             endpoint=endpoint,
             api_token=api_token,
             disable_tls_verification=disable_tls_verification,
+            http_transport_retries=http_transport_retries,
             enable_token_rotation=enable_token_rotation,
             token_dir=token_dir,
+            shrink_oversized_images=shrink_oversized_images,
         )
         self.notes_api = NotesApi(self.api_client)
         self.detector_group_api = DetectorGroupsApi(self.api_client)

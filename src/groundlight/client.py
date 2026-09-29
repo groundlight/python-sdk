@@ -43,7 +43,13 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3.util.retry import Retry
 
 from groundlight.binary_labels import Label, convert_internal_label_to_display
-from groundlight.config import API_TOKEN_MISSING_HELP_MESSAGE, API_TOKEN_VARIABLE_NAME, DISABLE_TLS_VARIABLE_NAME
+from groundlight.config import (
+    API_TOKEN_MISSING_HELP_MESSAGE,
+    API_TOKEN_VARIABLE_NAME,
+    DISABLE_TLS_VARIABLE_NAME,
+    SHRINK_OVERSIZED_IMAGES_VARIABLE_NAME,
+    read_env_flag,
+)
 from groundlight.encodings import url_encode_dict
 from groundlight.images import ByteStreamWrapper, parse_supported_image_types, shrink_image_if_needed
 from groundlight.internalapi import (
@@ -131,6 +137,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             non-null Token TTL.
     :param token_dir: Optional directory for the rotating-token cache. If not provided, uses the
             "GROUNDLIGHT_TOKEN_DIR" environment variable when set, otherwise a platform default.
+    :param shrink_oversized_images: If True, downscale and re-encode an image whose
+            encoded size is over the upload limit before sending it. If False, send the image unchanged.
+            When not specified, checks the "GROUNDLIGHT_SHRINK_OVERSIZED_IMAGES" environment variable
+            (1=shrink, 0=send unchanged). An explicit True or False overrides the environment variable.
 
     :return: Groundlight client instance
     """
@@ -149,6 +159,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         http_transport_retries: Optional[Union[int, Retry]] = None,
         enable_token_rotation: bool = True,
         token_dir: Optional[Union[str, Path]] = None,
+        shrink_oversized_images: Optional[bool] = None,
     ):
         """
         Initialize a new Groundlight client instance.
@@ -168,6 +179,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             non-null Token TTL.
         :param token_dir: Optional directory for the rotating-token cache. If not provided, uses the
             "GROUNDLIGHT_TOKEN_DIR" environment variable when set, otherwise a platform default.
+        :param shrink_oversized_images: If True, downscale and re-encode an image whose
+            encoded size is over the upload limit before sending it. If False, send the image unchanged.
+            When not specified, checks the "GROUNDLIGHT_SHRINK_OVERSIZED_IMAGES" environment variable
+            (1=shrink, 0=send unchanged). An explicit True or False overrides the environment variable.
 
         :return: Groundlight client
         """
@@ -191,7 +206,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         should_disable_tls_verification = disable_tls_verification
 
         if should_disable_tls_verification is None:
-            should_disable_tls_verification = bool(int(os.environ.get(DISABLE_TLS_VARIABLE_NAME, 0)))
+            should_disable_tls_verification = read_env_flag(DISABLE_TLS_VARIABLE_NAME, default=False)
 
         if should_disable_tls_verification:
             logger.warning(
@@ -204,6 +219,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             self.configuration.assert_hostname = False
 
         self.configuration.api_key["ApiToken"] = api_token
+
+        if shrink_oversized_images is None:
+            shrink_oversized_images = read_env_flag(SHRINK_OVERSIZED_IMAGES_VARIABLE_NAME, default=True)
+        self.shrink_oversized_images = shrink_oversized_images
 
         self.api_client = GroundlightApiClient(self.configuration)
         self._token_manager: Optional[TokenManager] = None
@@ -745,7 +764,8 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
         obj = self.month_to_date_api.month_to_date_account_info(_request_timeout=DEFAULT_REQUEST_TIMEOUT)
         return AccountMonthToDateInfo.model_validate(obj.to_dict())
 
-    def submit_image_query(  # noqa: PLR0913 # pylint: disable=too-many-arguments, too-many-locals
+    # pylint: disable-next=too-many-branches
+    def submit_image_query(  # noqa: PLR0912, PLR0913 # pylint: disable=too-many-arguments, too-many-locals
         self,
         detector: Union[Detector, str],
         image: Union[str, bytes, Image.Image, BytesIO, BufferedReader, np.ndarray],
@@ -856,10 +876,10 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
 
         image_bytesio: ByteStreamWrapper = parse_supported_image_types(image)
 
-        # Match the Groundlight cloud service's ingest pipeline locally. Saves bandwidth
-        # and ensures Edge Endpoints, which do not run this step, see the same input
-        # distribution cloud-trained models were trained on.
-        image_bytesio = ByteStreamWrapper(data=shrink_image_if_needed(image_bytesio.read()))
+        # Same shrink the cloud service applies on ingest. Keeps the upload small.
+        # Edge Endpoints do not run this step.
+        if self.shrink_oversized_images:
+            image_bytesio = ByteStreamWrapper(data=shrink_image_if_needed(image_bytesio.read()))
 
         params = {
             "detector_id": detector_id,
