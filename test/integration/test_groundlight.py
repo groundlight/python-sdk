@@ -807,13 +807,15 @@ def test_binary_detector(gl: Groundlight, detector_name: Callable):
 @retry_on_failure()
 def test_counting_detector(gl: Groundlight, detector_name: Callable):
     """
-    verify that we can create and submit to a counting detector
+    Verify that we can create and submit to a counting detector.
+
+    A new detector has not been trained, so the answer may have no count.
     """
     name = detector_name()
     created_detector = gl.create_counting_detector(name, "How many dogs", "dog", confidence_threshold=0.0)
     assert created_detector is not None
     count_iq = gl.submit_image_query(created_detector, "test/assets/dog.jpeg")
-    assert count_iq.result.count is not None
+    assert count_iq.result is not None
 
 
 @retry_on_failure()

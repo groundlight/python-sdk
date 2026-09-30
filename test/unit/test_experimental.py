@@ -109,7 +109,9 @@ def test_text_recognition_detector(gl_experimental: ExperimentalApi, detector_na
 @retry_on_failure()
 def test_bounding_box_detector(gl_experimental: ExperimentalApi, detector_name: Callable):
     """
-    Verify that we can create and submit to a bounding box detector
+    Verify that we can create and submit to a bounding box detector.
+
+    A new detector has not been trained, so the answer may have no boxes.
     """
     name = detector_name()
     created_detector = gl_experimental.create_bounding_box_detector(
@@ -117,8 +119,8 @@ def test_bounding_box_detector(gl_experimental: ExperimentalApi, detector_name: 
     )
     assert created_detector is not None
     bbox_iq = gl_experimental.submit_image_query(created_detector, "test/assets/dog.jpeg")
+    assert bbox_iq.result is not None
     assert bbox_iq.result.label is not None
-    assert bbox_iq.rois is not None
 
 
 @retry_on_failure()
