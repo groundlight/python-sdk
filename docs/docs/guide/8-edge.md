@@ -67,7 +67,16 @@ config = gl.edge.set_config(config)
 print(f"Applied config with {len(config.detectors)} detector(s)")
 ```
 
-`set_config` replaces the current configuration and blocks until all detectors have inference pods ready to serve requests (or until the timeout expires).
+`set_config` replaces the current configuration and blocks until all detectors have inference pods ready to serve requests (or until the timeout expires). A timeout of `0` or less uses a 10-minute default.
+
+If you must apply the document without waiting (for example, to serialize writes to one edge config without serializing model pulls), use `apply_config` then `wait_detectors`:
+
+```python notest
+gl.edge.apply_config(config)
+gl.edge.wait_detectors([d.detector_id for d in config.detectors])
+```
+
+`apply_config` returns as soon as the PUT succeeds. `wait_detectors` polls readiness only and does not change the configuration. `set_config` is still apply-then-wait. On wait timeout, `EdgeDetectorsNotReadyError` (a `TimeoutError`) is raised; after `apply_config` or `set_config`, the configuration is already on the edge endpoint (the `set_config` error message states that explicitly).
 
 You can also inspect the current configuration:
 

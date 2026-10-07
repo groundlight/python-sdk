@@ -82,6 +82,13 @@ class EdgeNotAvailableError(GroundlightClientError):
     """Raised when an edge-only method is called against a non-edge endpoint."""
 
 
+class EdgeDetectorsNotReadyError(TimeoutError):
+    """Raised when a wait for edge detectors times out before they are all serving.
+
+    Subclasses TimeoutError. A timeout from set_config means the configuration has already been applied.
+    """
+
+
 class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-public-methods
     """
     Client for accessing the Groundlight cloud service. Provides methods to create visual detectors,

@@ -3,13 +3,15 @@ from http import HTTPStatus
 
 import requests
 
-from groundlight.client import EdgeNotAvailableError
+from groundlight.client import EdgeDetectorsNotReadyError, EdgeNotAvailableError
 from groundlight.edge.config import EdgeEndpointConfig
 
 _EDGE_METHOD_UNAVAILABLE_HINT = (
     "Make sure the client is pointed at a running Edge Endpoint "
     "(via GROUNDLIGHT_ENDPOINT env var or the endpoint= constructor arg)."
 )
+
+DEFAULT_EDGE_READY_TIMEOUT_SEC = 600.0
 
 
 class EdgeEndpointApi:
@@ -76,31 +78,69 @@ class EdgeEndpointApi:
                 f"Unexpected response from {self._base_url()}/edge-info. {_EDGE_METHOD_UNAVAILABLE_HINT}"
             ) from e
 
+    def apply_config(self, config: EdgeEndpointConfig) -> None:
+        """Replace the edge endpoint configuration and return without waiting for detectors to serve.
+
+        Call wait_detectors to wait until specific detectors are serving. set_config does both.
+        """
+        if config is None:
+            raise TypeError("apply_config requires an EdgeEndpointConfig")
+        self._request("PUT", "/edge-config", json=config.to_payload())
+
+    def wait_detectors(
+        self,
+        detector_ids: list[str],
+        timeout_sec: float = DEFAULT_EDGE_READY_TIMEOUT_SEC,
+    ) -> None:
+        """Wait until every given detector is serving.
+
+        Does not change the configuration. An empty list returns immediately. A timeout of 0 or less waits 10 minutes.
+
+        :raises EdgeDetectorsNotReadyError: If some detectors are still down when the timeout elapses.
+        """
+        wanted = list(detector_ids)
+        if not wanted:
+            return
+        timeout_sec = self._resolved_ready_timeout(timeout_sec)
+        deadline = time.time() + timeout_sec
+        pending: list[str] = wanted
+        while time.time() < deadline:
+            readiness = self.get_detector_readiness()
+            pending = [did for did in wanted if not readiness.get(did, False)]
+            if not pending:
+                return
+            remaining = deadline - time.time()
+            if remaining <= 0:
+                break
+            time.sleep(min(1.0, remaining))
+        raise EdgeDetectorsNotReadyError(
+            f"Edge detectors were not all ready within {timeout_sec}s: {pending} still down."
+        )
+
     def set_config(
         self,
         config: EdgeEndpointConfig,
-        timeout_sec: float = 600,
+        timeout_sec: float = DEFAULT_EDGE_READY_TIMEOUT_SEC,
     ) -> EdgeEndpointConfig:
         """Replace the edge endpoint configuration and wait until all detectors are ready.
 
-        :param config: The new configuration to apply.
-        :param timeout_sec: Max seconds to wait for all detectors to become ready.
-        :return: The applied configuration as reported by the edge endpoint.
+        This calls apply_config, then wait_detectors for the detectors in the config, then get_config.
+        A config with no detectors skips the wait. If the wait times out, the configuration has still been applied.
+        A timeout of 0 or less waits 10 minutes.
+
+        :return: The configuration reported by the edge endpoint.
         """
-        self._request("PUT", "/edge-config", json=config.to_payload())
+        self.apply_config(config)
+        try:
+            self.wait_detectors([d.detector_id for d in config.detectors], timeout_sec=timeout_sec)
+        except EdgeDetectorsNotReadyError as e:
+            raise EdgeDetectorsNotReadyError(
+                f"{e} The configuration has been applied; the edge endpoint may still be converging."
+            ) from e
+        return self.get_config()
 
-        desired_ids = {d.detector_id for d in config.detectors}
-        if not desired_ids:
-            return self.get_config()
-
-        deadline = time.time() + timeout_sec
-        while time.time() < deadline:
-            readiness = self.get_detector_readiness()
-            if all(readiness.get(did, False) for did in desired_ids):
-                return self.get_config()
-            time.sleep(1)
-
-        raise TimeoutError(
-            f"Edge detectors were not all ready within {timeout_sec}s. "
-            "The edge endpoint may still be converging, or may have encountered an error."
-        )
+    @staticmethod
+    def _resolved_ready_timeout(timeout_sec: float) -> float:
+        if timeout_sec <= 0:
+            return DEFAULT_EDGE_READY_TIMEOUT_SEC
+        return timeout_sec

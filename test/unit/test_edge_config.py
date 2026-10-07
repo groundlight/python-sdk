@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 import requests
-from groundlight import EdgeNotAvailableError, ExperimentalApi
+from groundlight import EdgeDetectorsNotReadyError, EdgeNotAvailableError, ExperimentalApi
 from groundlight.edge import (
     DEFAULT,
     DISABLED,
@@ -14,8 +14,19 @@ from groundlight.edge import (
     GlobalConfig,
     InferenceConfig,
 )
+from groundlight.edge.api import DEFAULT_EDGE_READY_TIMEOUT_SEC
 from model import Detector, DetectorTypeEnum
 from pydantic import ValidationError
+
+
+def _edge_api() -> ExperimentalApi:
+    """Build an ExperimentalApi that never hits the network or token cache."""
+    with patch.object(ExperimentalApi, "_verify_connectivity"):
+        return ExperimentalApi(
+            api_token="api_bootstrap_token_value_long_enough",
+            enable_token_rotation=False,
+        )
+
 
 CUSTOM_REFRESH_RATE = 10.0
 CUSTOM_AUDIT_RATE = 0.0
@@ -336,7 +347,7 @@ def test_edge_get_config_parses_response():
     mock_response.json.return_value = payload
     mock_response.raise_for_status = Mock()
 
-    gl = ExperimentalApi()
+    gl = _edge_api()
     with patch("requests.request", return_value=mock_response) as mock_request:
         config = gl.edge.get_config()
 
@@ -370,12 +381,152 @@ def test_edge_set_config_sends_payload_and_polls():
             return readiness_response
         return get_response
 
-    gl = ExperimentalApi()
-    with patch("requests.request", side_effect=route_request):
+    gl = _edge_api()
+    with patch("requests.request", side_effect=route_request) as mock_request:
         result = gl.edge.set_config(config)
+
+    assert _http_methods(mock_request) == ["PUT", "GET", "GET"]
+    assert _http_paths(mock_request)[0].endswith("/edge-config")
+    assert _http_paths(mock_request)[1].endswith("/edge-detector-readiness")
+    assert _http_paths(mock_request)[2].endswith("/edge-config")
 
     assert isinstance(result, EdgeEndpointConfig)
     assert [d.detector_id for d in result.detectors] == [DET_1]
+
+
+def _http_methods(mock_request) -> list[str]:
+    return [call.args[0] for call in mock_request.call_args_list]
+
+
+def _http_paths(mock_request) -> list[str]:
+    return [call.args[1] for call in mock_request.call_args_list]
+
+
+def test_edge_apply_config_puts_without_polling_readiness():
+    """gl.edge.apply_config() PUTs the document and does not poll readiness."""
+    config = EdgeEndpointConfig()
+    config.add_detector(DET_1, DEFAULT)
+
+    put_response = Mock()
+    put_response.raise_for_status = Mock()
+
+    gl = _edge_api()
+    with patch("requests.request", return_value=put_response) as mock_request:
+        assert gl.edge.apply_config(config) is None
+
+    assert _http_methods(mock_request) == ["PUT"]
+    assert mock_request.call_args.args[1].endswith("/edge-config")
+    assert mock_request.call_args.kwargs["json"]["detectors"][0]["detector_id"] == DET_1
+
+
+def test_edge_apply_config_rejects_none():
+    """gl.edge.apply_config(None) fails without a request."""
+    gl = _edge_api()
+    with patch("requests.request") as mock_request:
+        with pytest.raises(TypeError, match="apply_config requires"):
+            gl.edge.apply_config(None)  # type: ignore[arg-type]
+    mock_request.assert_not_called()
+
+
+def test_edge_wait_detectors_does_not_put_config():
+    """gl.edge.wait_detectors() polls readiness and never PUTs /edge-config."""
+    not_ready = Mock()
+    not_ready.json.return_value = {DET_1: {"ready": False}}
+    not_ready.raise_for_status = Mock()
+    ready = Mock()
+    ready.json.return_value = {DET_1: {"ready": True}}
+    ready.raise_for_status = Mock()
+
+    gl = _edge_api()
+    with (
+        patch("groundlight.edge.api.time.sleep"),
+        patch("requests.request", side_effect=[not_ready, ready]) as mock_request,
+    ):
+        gl.edge.wait_detectors([DET_1], timeout_sec=30)
+
+    assert all(path.endswith("/edge-detector-readiness") for path in _http_paths(mock_request))
+    assert "PUT" not in _http_methods(mock_request)
+
+
+def test_edge_wait_detectors_empty_list_is_noop():
+    """An empty detector list returns immediately with no HTTP."""
+    gl = _edge_api()
+    with patch("requests.request") as mock_request:
+        gl.edge.wait_detectors([])
+        gl.edge.wait_detectors([], timeout_sec=0.001)
+    mock_request.assert_not_called()
+
+
+def test_edge_wait_detectors_times_out_when_detectors_stay_down():
+    """Timeout names only the detectors that never became ready."""
+    readiness = Mock()
+    readiness.json.return_value = {DET_1: {"ready": True}, DET_2: {"ready": False}}
+    readiness.raise_for_status = Mock()
+
+    times = iter([100.0, 100.0, 101.0])
+    gl = _edge_api()
+    with (
+        patch("groundlight.edge.api.time.sleep"),
+        patch("groundlight.edge.api.time.time", side_effect=lambda: next(times)),
+        patch("requests.request", return_value=readiness),
+    ):
+        with pytest.raises(EdgeDetectorsNotReadyError, match=DET_2) as exc_info:
+            gl.edge.wait_detectors([DET_1, DET_2], timeout_sec=0.5)
+
+    assert DET_1 not in str(exc_info.value)
+    assert "configuration" not in str(exc_info.value).lower()
+    assert isinstance(exc_info.value, TimeoutError)
+
+
+def test_edge_wait_detectors_nonpositive_timeout_uses_default_budget():
+    """timeout_sec <= 0 means DEFAULT_EDGE_READY_TIMEOUT_SEC, not skip-the-wait."""
+    readiness = Mock()
+    readiness.json.return_value = {DET_1: {"ready": False}}
+    readiness.raise_for_status = Mock()
+
+    clock = {"t": 0.0}
+
+    def fake_time():
+        return clock["t"]
+
+    def fake_sleep(seconds):
+        clock["t"] += seconds
+
+    gl = _edge_api()
+    with (
+        patch("groundlight.edge.api.time.sleep", side_effect=fake_sleep),
+        patch("groundlight.edge.api.time.time", side_effect=fake_time),
+        patch("requests.request", return_value=readiness),
+    ):
+        with pytest.raises(EdgeDetectorsNotReadyError):
+            gl.edge.wait_detectors([DET_1], timeout_sec=0)
+
+    # One poll per second over the default 600s budget (sleep min(1, remaining)).
+    assert clock["t"] == pytest.approx(DEFAULT_EDGE_READY_TIMEOUT_SEC)
+
+
+def test_edge_set_config_empty_detectors_skips_readiness():
+    """A config with no detectors PUTs then GETs, without polling readiness."""
+    config = EdgeEndpointConfig()
+    put_response = Mock()
+    put_response.raise_for_status = Mock()
+    get_response = Mock()
+    get_response.json.return_value = config.to_payload()
+    get_response.raise_for_status = Mock()
+
+    def route_request(method, url, **kwargs):
+        if method == "PUT":
+            return put_response
+        if method == "GET" and url.endswith("/edge-config"):
+            return get_response
+        raise AssertionError(f"unexpected {method} {url}")
+
+    gl = _edge_api()
+    with patch("requests.request", side_effect=route_request) as mock_request:
+        result = gl.edge.set_config(config)
+
+    assert _http_methods(mock_request) == ["PUT", "GET"]
+    assert [d.detector_id for d in result.detectors] == []
 
 
 def test_edge_get_detector_readiness():
@@ -387,7 +538,7 @@ def test_edge_get_detector_readiness():
     }
     mock_response.raise_for_status = Mock()
 
-    gl = ExperimentalApi()
+    gl = _edge_api()
     with patch("requests.request", return_value=mock_response):
         readiness = gl.edge.get_detector_readiness()
 
@@ -443,3 +594,98 @@ def test_edge_get_upstream_endpoint_unexpected_response(json_result):
     with patch("requests.request", return_value=mock_response):
         with pytest.raises(EdgeNotAvailableError):
             gl.edge.get_upstream_endpoint()
+
+
+def test_edge_wait_detectors_missing_id_is_not_ready():
+    """A detector absent from the readiness map is treated as not ready."""
+    readiness = Mock()
+    readiness.json.return_value = {DET_1: {"ready": True}}
+    readiness.raise_for_status = Mock()
+
+    times = iter([100.0, 100.0, 101.0])
+    gl = _edge_api()
+    with (
+        patch("groundlight.edge.api.time.sleep"),
+        patch("groundlight.edge.api.time.time", side_effect=lambda: next(times)),
+        patch("requests.request", return_value=readiness),
+    ):
+        with pytest.raises(EdgeDetectorsNotReadyError, match=DET_2):
+            gl.edge.wait_detectors([DET_1, DET_2], timeout_sec=0.5)
+
+
+def test_edge_apply_config_propagates_http_error():
+    """apply_config does not swallow a failed PUT."""
+    config = EdgeEndpointConfig()
+    config.add_detector(DET_1, DEFAULT)
+
+    failed = Mock()
+    failed.status_code = 500
+    failed.raise_for_status.side_effect = requests.HTTPError(response=failed)
+
+    gl = _edge_api()
+    with patch("requests.request", return_value=failed):
+        with pytest.raises(requests.HTTPError):
+            gl.edge.apply_config(config)
+
+
+def test_edge_set_config_timeout_still_puts():
+    """When wait times out, set_config has already PUTed the document."""
+    config = EdgeEndpointConfig()
+    config.add_detector(DET_1, DEFAULT)
+
+    put_response = Mock()
+    put_response.raise_for_status = Mock()
+    readiness = Mock()
+    readiness.json.return_value = {DET_1: {"ready": False}}
+    readiness.raise_for_status = Mock()
+
+    methods: list[str] = []
+
+    def route_request(method, url, **kwargs):
+        methods.append(method)
+        if method == "PUT":
+            return put_response
+        if "/edge-detector-readiness" in url:
+            return readiness
+        raise AssertionError(f"unexpected {method} {url}")
+
+    times = iter([100.0, 100.0, 101.0])
+    gl = _edge_api()
+    with (
+        patch("groundlight.edge.api.time.sleep"),
+        patch("groundlight.edge.api.time.time", side_effect=lambda: next(times)),
+        patch("requests.request", side_effect=route_request),
+    ):
+        with pytest.raises(EdgeDetectorsNotReadyError, match="configuration has been applied") as exc_info:
+            gl.edge.set_config(config, timeout_sec=0.5)
+
+    assert methods[0] == "PUT"
+    assert "GET" in methods
+    assert "configuration has been applied" in str(exc_info.value).lower()
+
+
+def test_edge_wait_detectors_positive_timeout_does_not_stretch_to_default():
+    """A positive timeout_sec is the budget, not DEFAULT_EDGE_READY_TIMEOUT_SEC."""
+    readiness = Mock()
+    readiness.json.return_value = {DET_1: {"ready": False}}
+    readiness.raise_for_status = Mock()
+
+    clock = {"t": 0.0}
+
+    def fake_time():
+        return clock["t"]
+
+    def fake_sleep(seconds):
+        clock["t"] += seconds
+
+    gl = _edge_api()
+    with (
+        patch("groundlight.edge.api.time.sleep", side_effect=fake_sleep),
+        patch("groundlight.edge.api.time.time", side_effect=fake_time),
+        patch("requests.request", return_value=readiness),
+    ):
+        with pytest.raises(EdgeDetectorsNotReadyError):
+            gl.edge.wait_detectors([DET_1], timeout_sec=2.0)
+
+    assert clock["t"] == pytest.approx(2.0)
+    assert clock["t"] < DEFAULT_EDGE_READY_TIMEOUT_SEC
