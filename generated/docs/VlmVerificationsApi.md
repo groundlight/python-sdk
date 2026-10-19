@@ -49,7 +49,7 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
         open('/path/to/file', 'rb'),
     ] # [file_type] | One or more images (common formats: JPEG, PNG, WEBP). Video is not yet supported.
     query = "query_example" # str | Natural-language prompt describing the media and what to verify.
-    model_id = "model_id_example" # str | Friendly model alias (e.g. 'gpt-5.4', 'claude-sonnet-4.5'). Defaults to the server default. (optional)
+    model_id = "model_id_example" # str | Friendly model alias. Currently only 'gpt-5.4' is supported (the default). (optional)
 
     # example passing only required values which don't have defaults set
     try:
@@ -74,7 +74,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **media** | **[file_type]**| One or more images (common formats: JPEG, PNG, WEBP). Video is not yet supported. |
  **query** | **str**| Natural-language prompt describing the media and what to verify. |
- **model_id** | **str**| Friendly model alias (e.g. &#39;gpt-5.4&#39;, &#39;claude-sonnet-4.5&#39;). Defaults to the server default. | [optional]
+ **model_id** | **str**| Friendly model alias. Currently only &#39;gpt-5.4&#39; is supported (the default). | [optional]
 
 ### Return type
 

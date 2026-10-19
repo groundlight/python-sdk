@@ -106,7 +106,7 @@ class VlmVerificationsApi(object):
             query (str): Natural-language prompt describing the media and what to verify.
 
         Keyword Args:
-            model_id (str): Friendly model alias (e.g. 'gpt-5.4', 'claude-sonnet-4.5'). Defaults to the server default.. [optional]
+            model_id (str): Friendly model alias. Currently only 'gpt-5.4' is supported (the default).. [optional]
             _return_http_data_only (bool): response data without head status
                 code and headers. Default is True.
             _preload_content (bool): if False, the urllib3.HTTPResponse object

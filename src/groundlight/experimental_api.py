@@ -257,10 +257,10 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
 
         :param query: Natural-language prompt describing the media and what to verify,
             e.g. ``"Is there a fire visible in the image? Reason step by step."``
-        :param model_id: Friendly alias of the VLM to use (e.g. ``"gpt-5.4"``,
-            ``"claude-sonnet-4.5"``). The server is the source of truth for the supported
-            aliases and the default; passing an unrecognised alias returns HTTP 400. Omit
-            to use the server-configured default.
+        :param model_id: Friendly alias of the VLM to use. Currently only ``"gpt-5.4"`` is
+            supported, which is also the default. The server is the source of truth for the
+            supported aliases; passing an unrecognised alias returns HTTP 400. Omit to use
+            the server default.
         :param timeout: Request timeout in seconds.
 
         :return: A :class:`VlmVerification` with nested ``result`` (``verdict`` —

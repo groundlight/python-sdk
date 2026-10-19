@@ -93,13 +93,13 @@ def test_query_and_model_id_sent_as_form_fields(gl: ExperimentalApi):
     """query and model_id go in the multipart body, not the URL, so the prompt can't leak into logs."""
     captured: dict = {}
     with patch.object(RESTClientObject, "request", _capturing_transport(captured)):
-        gl.ask_vlm_verify(media=_FAKE_JPEG, query="Is there a fire?", model_id="nova-pro")
+        gl.ask_vlm_verify(media=_FAKE_JPEG, query="Is there a fire?", model_id="gpt-5.4")
 
     fields = {p[0]: p[1] for p in captured["post_params"]}
     assert fields["query"] == "Is there a fire?"
-    assert fields["model_id"] == "nova-pro"
+    assert fields["model_id"] == "gpt-5.4"
     assert "query" not in captured["url"]
-    assert "nova-pro" not in captured["url"]
+    assert "gpt-5.4" not in captured["url"]
 
 
 def test_multiple_images_sent_as_separate_media_parts(gl: ExperimentalApi):

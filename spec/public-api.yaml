@@ -1158,8 +1158,8 @@ paths:
                     to verify.
                 model_id:
                   type: string
-                  description: Friendly model alias (e.g. 'gpt-5.4', 'claude-sonnet-4.5').
-                    Defaults to the server default.
+                  description: Friendly model alias. Currently only 'gpt-5.4' is supported
+                    (the default).
               required:
               - media
               - query
