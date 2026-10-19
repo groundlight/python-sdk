@@ -1788,10 +1788,10 @@ before sending</p></li>
 </p></li>
 <li><p><strong>query</strong> (<em>str</em>) – Natural-language prompt describing the media and what to verify,
 e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Is</span> <span class="pre">there</span> <span class="pre">a</span> <span class="pre">fire</span> <span class="pre">visible</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">image?</span> <span class="pre">Reason</span> <span class="pre">step</span> <span class="pre">by</span> <span class="pre">step.&quot;</span></code></p></li>
-<li><p><strong>model_id</strong> (<em>str</em><em> | </em><em>None</em>) – Friendly alias of the VLM to use (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;gpt-5.4&quot;</span></code>,
-<code class="docutils literal notranslate"><span class="pre">&quot;claude-sonnet-4.5&quot;</span></code>). The server is the source of truth for the supported
-aliases and the default; passing an unrecognised alias returns HTTP 400. Omit
-to use the server-configured default.</p></li>
+<li><p><strong>model_id</strong> (<em>str</em><em> | </em><em>None</em>) – Friendly alias of the VLM to use. Currently only <code class="docutils literal notranslate"><span class="pre">&quot;gpt-5.4&quot;</span></code> is
+supported, which is also the default. The server is the source of truth for the
+supported aliases; passing an unrecognised alias returns HTTP 400. Omit to use
+the server default.</p></li>
 <li><p><strong>timeout</strong> (<em>float</em>) – Request timeout in seconds.</p></li>
 </ul>
 </dd>
