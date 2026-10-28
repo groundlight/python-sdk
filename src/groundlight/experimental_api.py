@@ -220,8 +220,8 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         """Verify one or more images against a natural-language query using a cloud VLM.
 
         Calls the Groundlight ``POST /v1/vlm-verifications`` endpoint. The VLM runs in the
-        Groundlight cloud (AWS Bedrock) — no local inference. This is intended for alert
-        verification (a structured ``YES`` / ``NO`` / ``UNSURE`` verdict), and each call is
+        Groundlight cloud (AWS Bedrock) — no local inference. This is intended for verifying
+        detections (a structured ``YES`` / ``NO`` / ``UNSURE`` verdict), and each call is
         relatively expensive, so use it deliberately rather than as a general-purpose VLM.
 
         The server makes no assumptions about what the images are — your ``query`` should
@@ -235,7 +235,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             # Single image
             result = gl.ask_vlm_verify(frame, query="Is there a fire in this image?")
             if result.result.verdict == "YES":
-                emit_alert()
+                handle_fire()
 
             # Full frame + cropped ROI — describe each in the query
             result = gl.ask_vlm_verify(

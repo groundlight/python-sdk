@@ -10,7 +10,6 @@ On the following pages, we'll guide you through the process of building applicat
 - **[Handling errors](6-handling-errors.md)**: Understand how to handle and troubleshoot HTTP errors (`ApiException`) that may occur while using Groundlight.
 - **[Asynchronous queries](7-async-queries.md)**: Groundlight makes it easy to submit asynchronous queries. Learn how to submit queries asynchronously and retrieve the results later.
 - **[Using Groundlight on the edge](8-edge.md)**: Discover how to deploy Groundlight in edge computing environments for improved performance and reduced latency.
-- **[Alerts](9-alerts.md)**: Learn how to set up alerts to notify you via text (SMS) or email when specific conditions are met in your visual applications.
 
 
 By exploring these resources and sample applications, you'll be well on your way to building powerful visual applications using Groundlight's computer vision and natural language capabilities.

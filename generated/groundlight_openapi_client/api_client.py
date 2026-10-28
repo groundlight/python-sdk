@@ -767,11 +767,11 @@ class Endpoint(object):
         """This method is invoked when endpoints are called
         Example:
 
-        api_instance = ActionsApi()
-        api_instance.create_rule  # this is an instance of the class Endpoint
-        api_instance.create_rule()  # this invokes api_instance.create_rule.__call__()
+        api_instance = ApiTokensApi()
+        api_instance.create_api_token  # this is an instance of the class Endpoint
+        api_instance.create_api_token()  # this invokes api_instance.create_api_token.__call__()
         which then invokes the callable functions stored in that endpoint at
-        api_instance.create_rule.callable or self.callable in this class
+        api_instance.create_api_token.callable or self.callable in this class
 
         """
         return self.callable(self, *args, **kwargs)

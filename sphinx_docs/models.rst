@@ -29,9 +29,3 @@ API Response Objects
 
 .. autopydantic_model:: model.PaginatedImageQueryList
     :model-show-json: True
-
-.. autopydantic_model:: model.Rule
-    :model-show-json: True
-
-.. autopydantic_model:: model.PaginatedRuleList
-    :model-show-json: True

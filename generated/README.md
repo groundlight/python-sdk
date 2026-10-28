@@ -49,10 +49,11 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import time
 import groundlight_openapi_client
 from pprint import pprint
-from groundlight_openapi_client.api import actions_api
-from groundlight_openapi_client.model.paginated_rule_list import PaginatedRuleList
-from groundlight_openapi_client.model.rule import Rule
-from groundlight_openapi_client.model.rule_request import RuleRequest
+from groundlight_openapi_client.api import api_tokens_api
+from groundlight_openapi_client.model.api_token import ApiToken
+from groundlight_openapi_client.model.api_token_create_response import ApiTokenCreateResponse
+from groundlight_openapi_client.model.api_token_request import ApiTokenRequest
+from groundlight_openapi_client.model.paginated_api_token_list import PaginatedApiTokenList
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -74,39 +75,17 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = actions_api.ActionsApi(api_client)
-    detector_id = "detector_id_example" # str | 
-rule_request = RuleRequest(
+    api_instance = api_tokens_api.ApiTokensApi(api_client)
+    api_token_request = ApiTokenRequest(
         name="name_example",
-        enabled=True,
-        snooze_time_enabled=False,
-        snooze_time_value=0,
-        snooze_time_unit=None,
-        human_review_required=False,
-        condition=ConditionRequest(
-            verb="verb_example",
-            parameters={
-                "key": None,
-            },
-        ),
-        action=None,
-        webhook_action=[
-            WebhookActionRequest(
-                url="url_example",
-                include_image=True,
-                payload_template=None,
-                last_message_failed=True,
-                last_failure_error="last_failure_error_example",
-                last_failed_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
-            ),
-        ],
-    ) # RuleRequest | 
+        expires_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
+    ) # ApiTokenRequest | 
 
     try:
-        api_response = api_instance.create_rule(detector_id, rule_request)
+        api_response = api_instance.create_api_token(api_token_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling ActionsApi->create_rule: %s\n" % e)
+        print("Exception when calling ApiTokensApi->create_api_token: %s\n" % e)
 ```
 
 ## Documentation for API Endpoints
@@ -115,11 +94,6 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ActionsApi* | [**create_rule**](docs/ActionsApi.md#create_rule) | **POST** /v1/actions/detector/{detector_id}/rules | 
-*ActionsApi* | [**delete_rule**](docs/ActionsApi.md#delete_rule) | **DELETE** /v1/actions/rules/{id} | 
-*ActionsApi* | [**get_rule**](docs/ActionsApi.md#get_rule) | **GET** /v1/actions/rules/{id} | 
-*ActionsApi* | [**list_detector_rules**](docs/ActionsApi.md#list_detector_rules) | **GET** /v1/actions/detector/{detector_id}/rules | 
-*ActionsApi* | [**list_rules**](docs/ActionsApi.md#list_rules) | **GET** /v1/actions/rules | 
 *ApiTokensApi* | [**create_api_token**](docs/ApiTokensApi.md#create_api_token) | **POST** /v1/api-tokens | 
 *ApiTokensApi* | [**delete_api_token**](docs/ApiTokensApi.md#delete_api_token) | **DELETE** /v1/api-tokens/{name} | 
 *ApiTokensApi* | [**get_api_token_by_snippet**](docs/ApiTokensApi.md#get_api_token_by_snippet) | **GET** /v1/api-tokens/by-snippet/{snippet} | 
@@ -157,8 +131,6 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [AccountMonthToDateInfo](docs/AccountMonthToDateInfo.md)
- - [Action](docs/Action.md)
- - [ActionList](docs/ActionList.md)
  - [AllNotes](docs/AllNotes.md)
  - [AnnotationsRequestedEnum](docs/AnnotationsRequestedEnum.md)
  - [ApiToken](docs/ApiToken.md)
@@ -171,9 +143,6 @@ Class | Method | HTTP request | Description
  - [BoundingBoxLabelEnum](docs/BoundingBoxLabelEnum.md)
  - [BoundingBoxModeConfiguration](docs/BoundingBoxModeConfiguration.md)
  - [BoundingBoxResult](docs/BoundingBoxResult.md)
- - [ChannelEnum](docs/ChannelEnum.md)
- - [Condition](docs/Condition.md)
- - [ConditionRequest](docs/ConditionRequest.md)
  - [CountModeConfiguration](docs/CountModeConfiguration.md)
  - [CountingResult](docs/CountingResult.md)
  - [Detector](docs/Detector.md)
@@ -208,31 +177,22 @@ Class | Method | HTTP request | Description
  - [PaginatedImageQueryList](docs/PaginatedImageQueryList.md)
  - [PaginatedMLPipelineList](docs/PaginatedMLPipelineList.md)
  - [PaginatedPrimingGroupList](docs/PaginatedPrimingGroupList.md)
- - [PaginatedRuleList](docs/PaginatedRuleList.md)
  - [PatchedDetectorRequest](docs/PatchedDetectorRequest.md)
- - [PayloadTemplate](docs/PayloadTemplate.md)
- - [PayloadTemplateRequest](docs/PayloadTemplateRequest.md)
  - [PrimingGroup](docs/PrimingGroup.md)
  - [PrimingGroupCreationInputRequest](docs/PrimingGroupCreationInputRequest.md)
  - [ROI](docs/ROI.md)
  - [ROIRequest](docs/ROIRequest.md)
  - [ResultTypeEnum](docs/ResultTypeEnum.md)
- - [Rule](docs/Rule.md)
- - [RuleRequest](docs/RuleRequest.md)
- - [SnoozeTimeUnitEnum](docs/SnoozeTimeUnitEnum.md)
  - [Source](docs/Source.md)
  - [SourceEnum](docs/SourceEnum.md)
  - [StatusEnum](docs/StatusEnum.md)
  - [SyntheticImage](docs/SyntheticImage.md)
  - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
- - [VerbEnum](docs/VerbEnum.md)
  - [VerdictEnum](docs/VerdictEnum.md)
  - [VlmVerification](docs/VlmVerification.md)
  - [VlmVerificationCost](docs/VlmVerificationCost.md)
  - [VlmVerificationResult](docs/VlmVerificationResult.md)
- - [WebhookAction](docs/WebhookAction.md)
- - [WebhookActionRequest](docs/WebhookActionRequest.md)
 
 
 ## Documentation For Authorization

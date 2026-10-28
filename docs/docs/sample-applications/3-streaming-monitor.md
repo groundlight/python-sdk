@@ -2,7 +2,7 @@
 
 A quick example to help you get started with monitoring live streams using the [groundlight/stream](../other-ways-to-use/1-stream-processor.md) container.
 
-In this example, we will set up a monitor on a live stream of a bird feeder and configure Groundlight to alert us when a bird is present at the feeder.
+In this example, we will set up a monitor on a live stream of a bird feeder and have Groundlight continuously answer whether a bird is present at the feeder.
 
 ## Requirements
 
@@ -59,18 +59,7 @@ docker run --detach groundlight/stream \
     -m          # enable motion detection to only process frames when movement occurs
 ```
 
-4. Finally, let's set up an Alert to notify you when a bird visits the feeder. In the Groundlight dashboard:
-
-   1. Navigate to [the Alerts tab](https://dashboard.groundlight.ai/reef/alerts) and click "Create New Alert"
-   2. Enter a descriptive name like for the alert, such as "Bird at feeder"
-   3. Select your bird detector by name
-   4. Set the alert condition to `Gives answer 'Yes' For 1 Consecutive answer(s)`
-   5. Choose "Text" as the Alert Type and enter your phone number
-   6. Enable "Include image in message" to receive a photo of the bird with each alert (optional)
-   7. Enable a 5-minute snooze period to prevent alert fatigue (optional)
-   8. Click "Create" to activate your alert
-
-5. Now, sit back and relax! The container will begin submitting frames from the live stream to Groundlight. You will receive alerts when a bird is detected at the feeder.
+4. Now, sit back and relax! The container will begin submitting frames from the live stream to Groundlight. You can watch the answers arrive on the [Groundlight dashboard](https://dashboard.groundlight.ai), or retrieve them with the Python SDK (see [asynchronous queries](../guide/7-async-queries.md)).
 
 ## Additional Options
 

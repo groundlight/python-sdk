@@ -106,9 +106,9 @@ Looking for an easy way to tinker with computer vision AI at home? From observin
 
 <br />
 
-### Alert if a bird is at the feeder
-[![Hummingbird Feeder](https://cdn.prod.website-files.com/664b7cc2ac49aeb2da6ef0f4/68546a80c7ecb3b44169180e_detect_hummingbird_computer_vision_project.jpg)](https://code.groundlight.ai/python-sdk/docs/sample-applications/streaming-with-alerts)  
-[**Create a monitor for birds at your feeder →**](https://code.groundlight.ai/python-sdk/docs/sample-applications/streaming-with-alerts)
+### Monitor a bird feeder
+[![Hummingbird Feeder](https://cdn.prod.website-files.com/664b7cc2ac49aeb2da6ef0f4/68546a80c7ecb3b44169180e_detect_hummingbird_computer_vision_project.jpg)](https://code.groundlight.ai/python-sdk/docs/sample-applications/streaming-monitor)  
+[**Create a monitor for birds at your feeder →**](https://code.groundlight.ai/python-sdk/docs/sample-applications/streaming-monitor)
 
 
 

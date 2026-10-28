@@ -223,6 +223,10 @@ const config = {
       {
         redirects: [
           {
+            to: "/docs/sample-applications/streaming-monitor",
+            from: "/docs/sample-applications/streaming-with-alerts", // renamed when the alerts feature was removed
+          },
+          {
             to: "https://www.groundlight.ai/blog/reducing-data-labeling-costs-with-uncertainty-sampling", // new marketing site route
             from: "/blog/active-learning", // old blog route
           },
