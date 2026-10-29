@@ -456,7 +456,7 @@ class Groundlight:  # pylint: disable=too-many-instance-attributes,too-many-publ
             detector_creation_input.group_name = group_name
         if metadata is not None:
             detector_creation_input.metadata = str(url_encode_dict(metadata, name="metadata", size_limit_bytes=1024))
-        if confidence_threshold:
+        if confidence_threshold is not None:
             detector_creation_input.confidence_threshold = confidence_threshold
         if isinstance(patience_time, int):
             patience_time = float(patience_time)
