@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **source** | **str** |  | [optional] 
 **result_type** | **str** |  | [optional]  if omitted the server will use the default value of "counting"
 **from_edge** | **bool** |  | [optional] 
+**model_binary_id** | **str, none_type** |  | [optional] 
 **greater_than_max** | **bool** |  | [optional] 
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 

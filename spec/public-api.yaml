@@ -2143,6 +2143,9 @@ components:
           - binary_classification
         from_edge:
           type: boolean
+        model_binary_id:
+          type: string
+          nullable: true
         label:
           type: string
       required:
@@ -2163,6 +2166,9 @@ components:
           - counting
         from_edge:
           type: boolean
+        model_binary_id:
+          type: string
+          nullable: true
         count:
           type: integer
           minimum: 0
@@ -2187,6 +2193,9 @@ components:
           - multi_classification
         from_edge:
           type: boolean
+        model_binary_id:
+          type: string
+          nullable: true
         label:
           type: string
           nullable: false
@@ -2208,6 +2217,9 @@ components:
           - text_recognition
         from_edge:
           type: boolean
+        model_binary_id:
+          type: string
+          nullable: true
         text:
           type: string
           nullable: true
@@ -2232,6 +2244,9 @@ components:
           - bounding_box
         from_edge:
           type: boolean
+        model_binary_id:
+          type: string
+          nullable: true
         label:
           type: string
       required:

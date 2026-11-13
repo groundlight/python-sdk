@@ -111,6 +111,10 @@ class CountingResult(ModelNormal):
             "source": (str,),  # noqa: E501
             "result_type": (str,),  # noqa: E501
             "from_edge": (bool,),  # noqa: E501
+            "model_binary_id": (
+                str,
+                none_type,
+            ),  # noqa: E501
             "greater_than_max": (bool,),  # noqa: E501
         }
 
@@ -124,6 +128,7 @@ class CountingResult(ModelNormal):
         "source": "source",  # noqa: E501
         "result_type": "result_type",  # noqa: E501
         "from_edge": "from_edge",  # noqa: E501
+        "model_binary_id": "model_binary_id",  # noqa: E501
         "greater_than_max": "greater_than_max",  # noqa: E501
     }
 
@@ -174,6 +179,7 @@ class CountingResult(ModelNormal):
             source (str): [optional]  # noqa: E501
             result_type (str): [optional] if omitted the server will use the default value of "counting"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
+            model_binary_id (str, none_type): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
 
@@ -267,6 +273,7 @@ class CountingResult(ModelNormal):
             source (str): [optional]  # noqa: E501
             result_type (str): [optional] if omitted the server will use the default value of "counting"  # noqa: E501
             from_edge (bool): [optional]  # noqa: E501
+            model_binary_id (str, none_type): [optional]  # noqa: E501
             greater_than_max (bool): [optional]  # noqa: E501
         """
 
