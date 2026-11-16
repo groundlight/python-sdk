@@ -16,7 +16,7 @@
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css" integrity="sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM" crossorigin="anonymous"><link rel="stylesheet" href="/python-sdk/assets/css/styles.29fd459b.css">
-<script src="/python-sdk/assets/js/runtime~main.b80576f7.js" defer="defer"></script>
+<script src="/python-sdk/assets/js/runtime~main.8f4bb1f8.js" defer="defer"></script>
 <script src="/python-sdk/assets/js/main.2d4b9370.js" defer="defer"></script>
 </head>
 <body>
@@ -27,13 +27,13 @@
 <p>Here is a whimsical example of how you could use Groundlight in your home to keep your dog off the couch.  This document will guide you through creating a complete application. If the dog is detected on the couch, the application will play a pre-recorded sound over the computer&#x27;s speakers, instructing the dog to get off the couch.  Be sure to record your own voice so that your dog pays attention to you.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="requirements">Requirements<a href="#requirements" class="hash-link" aria-label="Direct link to Requirements" title="Direct link to Requirements" translate="no">​</a></h2>
 <ul>
-<li class=""><a class="" href="/python-sdk/docs/installation">Groundlight SDK</a> with Python 3.9 or higher</li>
+<li class=""><a class="" href="/python-sdk/docs/installation">Groundlight SDK</a> with Python 3.10 or higher</li>
 <li class="">A supported USB or network-connected camera</li>
 <li class="">A pre-recorded sound file (e.g., <code>get_off_couch.mp3</code>)</li>
 <li class="">A couch and a dog are recommended for proper end-to-end testing.</li>
 </ul>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="installation">Installation<a href="#installation" class="hash-link" aria-label="Direct link to Installation" title="Direct link to Installation" translate="no">​</a></h2>
-<p>Ensure you have Python 3.9 or higher installed, and then install the Groundlight SDK, OpenCV library, and other required libraries:</p>
+<p>Ensure you have Python 3.10 or higher installed, and then install the Groundlight SDK, OpenCV library, and other required libraries:</p>
 <div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#1E1E1E"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#1E1E1E"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#9CDCFE"><span class="token plain">pip install groundlight opencv-python pillow pyaudio</span><br></div></code></pre></div></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="creating-the-application">Creating the Application<a href="#creating-the-application" class="hash-link" aria-label="Direct link to Creating the Application" title="Direct link to Creating the Application" translate="no">​</a></h2>
 <ol>
