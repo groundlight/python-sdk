@@ -4,14 +4,14 @@ Here is a whimsical example of how you could use Groundlight in your home to kee
 
 ## Requirements
 
-- [Groundlight SDK](/docs/installation/) with Python 3.9 or higher
+- [Groundlight SDK](/docs/installation/) with Python 3.10 or higher
 - A supported USB or network-connected camera
 - A pre-recorded sound file (e.g., `get_off_couch.mp3`)
 - A couch and a dog are recommended for proper end-to-end testing.
 
 ## Installation
 
-Ensure you have Python 3.9 or higher installed, and then install the Groundlight SDK, OpenCV library, and other required libraries:
+Ensure you have Python 3.10 or higher installed, and then install the Groundlight SDK, OpenCV library, and other required libraries:
 
 ```bash
 pip install groundlight opencv-python pillow pyaudio

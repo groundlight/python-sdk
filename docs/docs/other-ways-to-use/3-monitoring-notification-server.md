@@ -74,7 +74,7 @@ For a minimal Kubernetes setup, we recommend using [k3s](https://k3s.io/).
 
 ## Building from Source
 
-1. Install [Node.js](https://nodejs.org/en/download/) and [Python 3.9+](https://www.python.org/downloads/).
+1. Install [Node.js](https://nodejs.org/en/download/) and [Python 3.10+](https://www.python.org/downloads/).
 
 ```bash
 git clone https://github.com/groundlight/monitoring-notification-server

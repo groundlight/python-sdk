@@ -14,7 +14,7 @@ you can install the package dependencies by running:
 make install
 ```
 
-Note: We support Python 3.9+ for clients of the SDK, but we recommend developing with Python 3.10+.
+Note: We support Python 3.10+ for clients of the SDK.
 
 ### Run tests
 

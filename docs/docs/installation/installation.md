@@ -1,6 +1,6 @@
 # Installation Guide for Groundlight Python SDK
 
-The Groundlight Python SDK requires Python 3.9 or higher and can be installed on all major platforms. Follow the installation guide for your specific operating system or device below.
+The Groundlight Python SDK requires Python 3.10 or higher and can be installed on all major platforms. Follow the installation guide for your specific operating system or device below.
 
 ## Operating System Installation Guides
 

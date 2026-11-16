@@ -1,17 +1,17 @@
 # Installing on Linux
 
-This guide will help you install the Groundlight SDK on Linux. The Groundlight SDK requires Python 3.9 or higher.
+This guide will help you install the Groundlight SDK on Linux. The Groundlight SDK requires Python 3.10 or higher.
 
 ## Prerequisites
 
 Ensure that you have the following installed on your system:
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - pip (Python package installer)
 
 ## Basic Installation
 
-Assuming you have Python 3.9 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
+Assuming you have Python 3.10 or higher installed on your system, you can proceed with the following steps to install or upgrade the Groundlight SDK:
 
 ### Installing Groundlight SDK
 
@@ -67,7 +67,7 @@ To check your installed Python version, open a terminal and run:
 python --version
 ```
 
-If you see a version number starting with "3.9" or higher (e.g., "3.9.5" or "3.9.0"), you're good to go. If not, you might need to upgrade Python on your system.
+If you see a version number of "3.10" or higher (e.g., "3.10.12" or "3.12.0"), you're good to go. If not, you might need to upgrade Python on your system.
 
 ### Upgrading Python on Linux
 
@@ -80,7 +80,7 @@ Use your distribution's package manager to install the latest Python version:
   sudo apt install python3
   ```
 
-  (For Ubuntu 18.04 see note below.)
+  (For Ubuntu releases before 22.04 see note below.)
 
 - For Fedora-based systems:
 
@@ -96,24 +96,18 @@ Use your distribution's package manager to install the latest Python version:
 
 After upgrading, verify the Python version by running `python --version` or `python3 --version`, as described earlier.
 
-### Special note about Ubuntu 18.04
+### Special note about older Ubuntu releases
 
-Ubuntu 18.04 still uses python 3.6 by default, which is end-of-life. We generally recommend using python 3.10. If you know how to install py3.10, please go ahead. But the easiest version of python 3 to use with Ubuntu 18.04 is python 3.9, which can be installed as follows without adding any extra repositories:
+Ubuntu releases before 22.04 ship a Python version older than 3.10 (for example, 20.04 ships 3.8), and their standard package repositories don't include 3.10 or newer. If you can, upgrade to Ubuntu 22.04 or later. Otherwise, install a newer Python alongside the system one using a tool like [uv](https://docs.astral.sh/uv/) or [pyenv](https://github.com/pyenv/pyenv). Don't replace the system `python3`, since the operating system depends on it. For example, with uv:
 
 ```shell
-# Prepare Ubuntu to install things
-sudo apt-get update
-# Install the basics
-sudo apt-get install -y python3.9 python3.9-distutils curl
-# Configure `python3` to run python3.9 by default
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 10
-# Download and install pip3.9
-curl https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py
-sudo python3.9 /tmp/get-pip.py
-# Configure `pip3` to run pip3.9
-sudo update-alternatives --install /usr/bin/pip3 pip3 $(which pip3.9) 10
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Create a virtual environment with Python 3.12 (uv downloads it if needed)
+uv venv --python 3.12
+source .venv/bin/activate
 # Now we can install Groundlight!
-pip3 install groundlight
+uv pip install groundlight
 ```
 
 ## Ready to go!
