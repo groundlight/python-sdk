@@ -218,6 +218,12 @@ class RESTClientObject(object):
         except urllib3.exceptions.SSLError as e:
             msg = "{0}\n{1}".format(type(e).__name__, str(e))
             raise ApiException(status=0, reason=msg)
+        except urllib3.exceptions.MaxRetryError as e:
+            msg = "{0}\n{1}".format(type(e).__name__, str(e))
+            raise ApiException(status=0, reason=msg)
+        except urllib3.exceptions.ProtocolError as e:
+            msg = "{0}\n{1}".format(type(e).__name__, str(e))
+            raise ApiException(status=0, reason=msg)
 
         if _preload_content:
             r = RESTResponse(r)
