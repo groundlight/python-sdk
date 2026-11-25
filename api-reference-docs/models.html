@@ -84,8 +84,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.ExperimentalApi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.add_alert_verdict"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.add_alert_verdict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.add_edge_label"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.add_edge_label()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.ask_vlm_verify"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.ask_vlm_verify()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_alert"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_alert()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_note"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_note()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_priming_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_priming_group()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_text_recognition_detector"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_text_recognition_detector()</span></code></a></li>
@@ -1724,6 +1726,50 @@ When not specified, checks the “GROUNDLIGHT_SHRINK_OVERSIZED_IMAGES” environ
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.add_alert_verdict">
+<span class="sig-name descname"><span class="pre">add_alert_verdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Alert</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AlertVerdictSourceEnum</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verdict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AlertVerdictEnum</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decided_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rationale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Verdict</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.add_alert_verdict" title="Link to this definition"></a></dt>
+<dd><p>Adds a VLM verdict to an alert. An alert keeps every verdict it gets, so retrying a call that
+may have succeeded adds a duplicate verdict.</p>
+<p>The verdict may be added before the alert itself is created; it is kept, and the alert is
+filled in when <code class="docutils literal notranslate"><span class="pre">create_alert</span></code> is called with the same ID.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+<span class="n">verdict</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">add_alert_verdict</span><span class="p">(</span>
+    <span class="n">alert</span><span class="o">=</span><span class="s2">"0b6f1d2e-4c1a-4f1e-9a43-6a3f9c2d8e71"</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">AlertVerdictSourceEnum</span><span class="o">.</span><span class="n">VLM</span><span class="p">,</span>
+    <span class="n">verdict</span><span class="o">=</span><span class="n">AlertVerdictEnum</span><span class="o">.</span><span class="n">FALSE_ALARM</span><span class="p">,</span>
+    <span class="n">decided_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+    <span class="n">rationale</span><span class="o">=</span><span class="s2">"The person is kneeling to tie a shoe."</span><span class="p">,</span>
+    <span class="n">reviewer</span><span class="o">=</span><span class="s2">"gpt-5.4"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alert</strong> (<em>Alert</em><em> | </em><em>str</em><em> | </em><em>UUID</em>) – The Alert, or your UUID for it.</p></li>
+<li><p><strong>source</strong> (<em>AlertVerdictSourceEnum</em><em> | </em><em>str</em>) – Who decided. Only <code class="docutils literal notranslate"><span class="pre">AlertVerdictSourceEnum.VLM</span></code> is accepted for now; the server
+returns 400 for <code class="docutils literal notranslate"><span class="pre">HUMAN</span></code>.</p></li>
+<li><p><strong>verdict</strong> (<em>AlertVerdictEnum</em><em> | </em><em>str</em>) – The decision: <code class="docutils literal notranslate"><span class="pre">AlertVerdictEnum.FALSE_ALARM</span></code>, <code class="docutils literal notranslate"><span class="pre">CONFIRMED</span></code> or <code class="docutils literal notranslate"><span class="pre">UNSURE</span></code>.</p></li>
+<li><p><strong>decided_at</strong> (<em>datetime</em>) – When the VLM or operator made the decision. Must be timezone-aware.</p></li>
+<li><p><strong>rationale</strong> (<em>str</em><em> | </em><em>None</em>) – Optional explanation of the decision.</p></li>
+<li><p><strong>reviewer</strong> (<em>str</em><em> | </em><em>None</em>) – Optional free-form reviewer, such as a model name or an operator ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created Verdict.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the alert ID is not a UUID, <code class="docutils literal notranslate"><span class="pre">source</span></code> or <code class="docutils literal notranslate"><span class="pre">verdict</span></code> is not a valid
+value, or <code class="docutils literal notranslate"><span class="pre">decided_at</span></code> has no timezone.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Verdict</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="groundlight.ExperimentalApi.add_edge_label">
 <span class="sig-name descname"><span class="pre">add_edge_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Label</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_binary_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.add_edge_label" title="Link to this definition"></a></dt>
 <dd><p>Record the answer an edge model gave for an image query. Unlike <cite>add_label</cite>, this is not ground truth:
@@ -1838,6 +1884,47 @@ an invalid model alias or undecodable image bytes; 502 if the upstream VLM is un
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>VlmVerification</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.create_alert">
+<span class="sig-name descname"><span class="pre">create_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triggered_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_query_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Alert</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.create_alert" title="Link to this definition"></a></dt>
+<dd><p>Creates an alert raised by your system, identified by your own UUID.</p>
+<p>Creating the same alert again with the same fields returns the existing alert, so retries
+are safe. Creating it again with different fields raises an <code class="docutils literal notranslate"><span class="pre">ApiException</span></code> with status 409.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+<span class="n">alert</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">create_alert</span><span class="p">(</span>
+    <span class="n">alert_id</span><span class="o">=</span><span class="s2">"0b6f1d2e-4c1a-4f1e-9a43-6a3f9c2d8e71"</span><span class="p">,</span>
+    <span class="n">triggered_at</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+    <span class="n">image_query_count</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">lens_id</span><span class="o">=</span><span class="s2">"person_down_lens"</span><span class="p">,</span>
+    <span class="n">camera_id</span><span class="o">=</span><span class="s2">"cam-north-entrance"</span><span class="p">,</span>
+    <span class="n">device_id</span><span class="o">=</span><span class="s2">"4a1f3c90b27e"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alert_id</strong> (<em>str</em><em> | </em><em>UUID</em>) – Your own unique ID (a UUID) for the alert. Later calls refer to it by this ID.</p></li>
+<li><p><strong>triggered_at</strong> (<em>datetime</em>) – When your system raised the alert. Must be timezone-aware.</p></li>
+<li><p><strong>image_query_count</strong> (<em>int</em>) – How many image queries you will attach to this alert (1 to 100).</p></li>
+<li><p><strong>lens_id</strong> (<em>str</em>) – The lens that raised the alert.</p></li>
+<li><p><strong>camera_id</strong> (<em>str</em>) – The camera the alert came from.</p></li>
+<li><p><strong>device_id</strong> (<em>str</em>) – The device the alert came from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created (or already existing) Alert.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">alert_id</span></code> is not a UUID or <code class="docutils literal notranslate"><span class="pre">triggered_at</span></code> has no timezone.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Alert</em></p>
 </dd>
 </dl>
 </dd></dl>
