@@ -84,6 +84,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#groundlight.ExperimentalApi"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.__init__"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.add_edge_label"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.add_edge_label()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.ask_vlm_verify"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.ask_vlm_verify()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_note"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_note()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groundlight.ExperimentalApi.create_priming_group"><code class="docutils literal notranslate"><span class="pre">ExperimentalApi.create_priming_group()</span></code></a></li>
@@ -1718,6 +1719,56 @@ encoded size is over the upload limit before sending it. If False, send the imag
 When not specified, checks the “GROUNDLIGHT_SHRINK_OVERSIZED_IMAGES” environment variable
 (1=shrink, 0=send unchanged). An explicit True or False overrides the environment variable.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="groundlight.ExperimentalApi.add_edge_label">
+<span class="sig-name descname"><span class="pre">add_edge_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><span class="pre">ImageQuery</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Label</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_binary_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ROI</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#groundlight.ExperimentalApi.add_edge_label" title="Link to this definition"></a></dt>
+<dd><p>Record the answer an edge model gave for an image query. Unlike <cite>add_label</cite>, this is not ground truth:
+edge labels are never used for training, and any cloud or customer label outranks them. An image query
+can have only one edge label; adding a second raises an <cite>ApiException</cite> with status 409.</p>
+<p>The edge model’s answer comes from an Edge Endpoint, and the label goes on the cloud image query for the
+same image. Pass the cloud image query, not the one the Edge Endpoint returned. This is for callers that
+escalate to the cloud themselves, with the detector’s edge config set to <code class="docutils literal notranslate"><span class="pre">always_return_edge_prediction</span></code>
+and <code class="docutils literal notranslate"><span class="pre">disable_cloud_escalation</span></code>.</p>
+<p><strong>Example usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gl_edge</span> <span class="o">=</span> <span class="n">Groundlight</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">"https://localhost:30143"</span><span class="p">,</span> <span class="n">disable_tls_verification</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gl_cloud</span> <span class="o">=</span> <span class="n">ExperimentalApi</span><span class="p">()</span>
+
+<span class="n">iq_edge</span> <span class="o">=</span> <span class="n">gl_edge</span><span class="o">.</span><span class="n">ask_ml</span><span class="p">(</span><span class="n">detector_id</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">iq_edge</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span> <span class="o">&lt;</span> <span class="n">iq_edge</span><span class="o">.</span><span class="n">confidence_threshold</span><span class="p">:</span>
+    <span class="n">iq_cloud</span> <span class="o">=</span> <span class="n">gl_cloud</span><span class="o">.</span><span class="n">ask_async</span><span class="p">(</span><span class="n">detector_id</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+    <span class="n">gl_cloud</span><span class="o">.</span><span class="n">add_edge_label</span><span class="p">(</span>
+        <span class="n">iq_cloud</span><span class="p">,</span>
+        <span class="n">iq_edge</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">confidence</span><span class="o">=</span><span class="n">iq_edge</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span>
+        <span class="n">model_binary_id</span><span class="o">=</span><span class="n">iq_edge</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">model_binary_id</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="c1"># On a count detector, pass ``iq_edge.result.count`` as the label, along with the edge model's ROIs,</span>
+<span class="c1"># which carry its scores: ``rois=iq_edge.rois or []``. Bounding box detectors also need ROIs. An empty</span>
+<span class="c1"># list means the model found nothing.</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_query</strong> (<a class="reference internal" href="#model.ImageQuery" title="model.ImageQuery"><em>ImageQuery</em></a><em> | </em><em>str</em>) – The cloud ImageQuery, or its ID string starting with <code class="docutils literal notranslate"><span class="pre">iq_</span></code>.</p></li>
+<li><p><strong>label</strong> (<em>Label</em><em> | </em><em>int</em><em> | </em><em>str</em>) – The edge model’s answer, in the same form <cite>add_label</cite> takes.</p></li>
+<li><p><strong>confidence</strong> (<em>float</em>) – The edge model’s confidence in its answer, from 0 to 1.</p></li>
+<li><p><strong>model_binary_id</strong> (<em>str</em>) – ID of the edge model binary that gave the answer. Edge Endpoints return it as
+<code class="docutils literal notranslate"><span class="pre">result.model_binary_id</span></code>.</p></li>
+<li><p><strong>rois</strong> (<em>List</em><em>[</em><em>ROI</em><em>] </em><em>| </em><em>None</em>) – The edge model’s ROIs. Required for bounding box and count detectors, where an empty list
+means nothing was found. Must be None for other detectors; an empty list is rejected.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
