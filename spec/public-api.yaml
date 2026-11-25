@@ -704,6 +704,10 @@ paths:
       description: |-
         Create a new LabelValue and attach it to an image query. This will trigger
         asynchronous fine-tuner model training.
+
+        With `from_edge` set, store the answer an edge model gave instead. An edge label needs `confidence` and
+        `model_binary_id`, is never used for training, and is outranked by every cloud and customer label.
+        An image query can have only one edge label; a second one gets a 409.
       tags:
       - labels
       requestBody:
@@ -1637,11 +1641,35 @@ components:
           type: string
           writeOnly: true
           minLength: 1
+        confidence:
+          type: number
+          format: double
+          maximum: 1
+          minimum: 0
+          writeOnly: true
+          description: Confidence of the edge model's answer. Required on edge labels
+            and not accepted otherwise.
         rois:
           type: array
           items:
             $ref: '#/components/schemas/ROIRequest'
           nullable: true
+          description: On edge labels, required for bounding box and count detectors
+            (an empty list when the model found nothing) and not accepted for other
+            detectors.
+        from_edge:
+          type: boolean
+          writeOnly: true
+          default: false
+          description: Store this label as the answer an edge model gave for the image
+            query.
+        model_binary_id:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: ID of the edge model binary that gave this answer. Required
+            on edge labels and not accepted otherwise.
+          maxLength: 44
       required:
       - image_query_id
       - label
@@ -2106,6 +2134,13 @@ components:
           type: string
           minLength: 1
           description: The label of the bounding box.
+        score:
+          type: number
+          format: double
+          maximum: 1
+          minimum: 0
+          description: The confidence of the bounding box. Required on edge labels
+            and ignored on all other labels.
         geometry:
           $ref: '#/components/schemas/BBoxGeometryRequest'
       required:

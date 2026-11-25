@@ -22,12 +22,17 @@ from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
 from groundlight_openapi_client.api.synthetic_images_api import SyntheticImagesApi
 from groundlight_openapi_client.api.vlm_verifications_api import VlmVerificationsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
+from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
+from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
+from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
 from model import (
+    ROI,
     Detector,
     EdgeModelInfo,
+    ImageQuery,
     ModeEnum,
     PaginatedMLPipelineList,
     PaginatedPrimingGroupList,
@@ -37,6 +42,7 @@ from model import (
 from urllib3.response import HTTPResponse
 from urllib3.util.retry import Retry
 
+from groundlight.binary_labels import Label
 from groundlight.edge.api import EdgeEndpointApi
 from groundlight.encodings import url_encode_dict
 from groundlight.images import detect_image_content_type, parse_supported_image_types
@@ -201,6 +207,81 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
 
         response = requests.post(url, headers=headers, data=data, files=files, params=params)  # type: ignore
         response.raise_for_status()  # Raise an exception for error status codes
+
+    def add_edge_label(  # noqa: PLR0913 # pylint: disable=too-many-arguments
+        self,
+        image_query: Union[ImageQuery, str],
+        label: Union[Label, int, str],
+        confidence: float,
+        model_binary_id: str,
+        rois: Optional[List[ROI]] = None,
+    ) -> None:
+        """
+        Record the answer an edge model gave for an image query. Unlike `add_label`, this is not ground truth:
+        edge labels are never used for training, and any cloud or customer label outranks them. An image query
+        can have only one edge label; adding a second raises an `ApiException` with status 409.
+
+        The edge model's answer comes from an Edge Endpoint, and the label goes on the cloud image query for the
+        same image. Pass the cloud image query, not the one the Edge Endpoint returned. This is for callers that
+        escalate to the cloud themselves, with the detector's edge config set to ``always_return_edge_prediction``
+        and ``disable_cloud_escalation``.
+
+        **Example usage**::
+
+            gl_edge = Groundlight(endpoint="https://localhost:30143", disable_tls_verification=True)
+            gl_cloud = ExperimentalApi()
+
+            iq_edge = gl_edge.ask_ml(detector_id, image)
+            if iq_edge.result.confidence < iq_edge.confidence_threshold:
+                iq_cloud = gl_cloud.ask_async(detector_id, image)
+                gl_cloud.add_edge_label(
+                    iq_cloud,
+                    iq_edge.result.label,
+                    confidence=iq_edge.result.confidence,
+                    model_binary_id=iq_edge.result.model_binary_id,
+                )
+
+            # On a count detector, pass ``iq_edge.result.count`` as the label, along with the edge model's ROIs,
+            # which carry its scores: ``rois=iq_edge.rois or []``. Bounding box detectors also need ROIs. An empty
+            # list means the model found nothing.
+
+        :param image_query: The cloud ImageQuery, or its ID string starting with ``iq_``.
+        :param label: The edge model's answer, in the same form `add_label` takes.
+        :param confidence: The edge model's confidence in its answer, from 0 to 1.
+        :param model_binary_id: ID of the edge model binary that gave the answer. Edge Endpoints return it as
+                                ``result.model_binary_id``.
+        :param rois: The edge model's ROIs. Required for bounding box and count detectors, where an empty list
+                     means nothing was found. Must be None for other detectors; an empty list is rejected.
+
+        :return: None
+        """
+        # NOTE: bool is a subclass of int
+        if type(label) == int:  # noqa: E721 pylint: disable=unidiomatic-typecheck
+            label = str(label)
+        elif not isinstance(label, (str, Label)):
+            raise TypeError("label must be a string or integer")
+
+        image_query_id = image_query.id if isinstance(image_query, ImageQuery) else str(image_query)
+        if not image_query_id.startswith("iq_"):
+            raise ValueError(f"Invalid image query id {image_query_id}")
+
+        roi_requests = (
+            None
+            if rois is None
+            else [
+                ROIRequest(label=roi.label, score=roi.score, geometry=BBoxGeometryRequest(**roi.geometry.dict()))
+                for roi in rois
+            ]
+        )
+        request_params = LabelValueRequest(
+            label=label,
+            image_query_id=image_query_id,
+            from_edge=True,
+            confidence=confidence,
+            model_binary_id=model_binary_id,
+            rois=roi_requests,
+        )
+        self.labels_api.create_label(request_params)
 
     def ask_vlm_verify(  # pylint: disable=too-many-locals
         self,

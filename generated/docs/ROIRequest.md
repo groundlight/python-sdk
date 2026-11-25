@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **label** | **str** | The label of the bounding box. | 
 **geometry** | [**BBoxGeometryRequest**](BBoxGeometryRequest.md) |  | 
+**score** | **float** | The confidence of the bounding box. Required on edge labels and ignored on all other labels. | [optional] 
 **any string name** | **bool, date, datetime, dict, float, int, list, str, none_type** | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

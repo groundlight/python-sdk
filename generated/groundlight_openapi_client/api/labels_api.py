@@ -78,7 +78,7 @@ class LabelsApi(object):
     def create_label(self, label_value_request, **kwargs):
         """create_label  # noqa: E501
 
-        Create a new LabelValue and attach it to an image query. This will trigger asynchronous fine-tuner model training.  # noqa: E501
+        Create a new LabelValue and attach it to an image query. This will trigger asynchronous fine-tuner model training.  With `from_edge` set, store the answer an edge model gave instead. An edge label needs `confidence` and `model_binary_id`, is never used for training, and is outranked by every cloud and customer label. An image query can have only one edge label; a second one gets a 409.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
 

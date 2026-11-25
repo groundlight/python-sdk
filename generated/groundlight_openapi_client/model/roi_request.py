@@ -65,6 +65,10 @@ class ROIRequest(ModelNormal):
         ("label",): {
             "min_length": 1,
         },
+        ("score",): {
+            "inclusive_maximum": 1,
+            "inclusive_minimum": 0,
+        },
     }
 
     @cached_property
@@ -102,6 +106,7 @@ class ROIRequest(ModelNormal):
         return {
             "label": (str,),  # noqa: E501
             "geometry": (BBoxGeometryRequest,),  # noqa: E501
+            "score": (float,),  # noqa: E501
         }
 
     @cached_property
@@ -111,6 +116,7 @@ class ROIRequest(ModelNormal):
     attribute_map = {
         "label": "label",  # noqa: E501
         "geometry": "geometry",  # noqa: E501
+        "score": "score",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -157,6 +163,7 @@ class ROIRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            score (float): The confidence of the bounding box. Required on edge labels and ignored on all other labels.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -247,6 +254,7 @@ class ROIRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
+            score (float): The confidence of the bounding box. Required on edge labels and ignored on all other labels.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

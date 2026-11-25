@@ -65,6 +65,14 @@ class LabelValueRequest(ModelNormal):
         ("image_query_id",): {
             "min_length": 1,
         },
+        ("confidence",): {
+            "inclusive_maximum": 1,
+            "inclusive_minimum": 0,
+        },
+        ("model_binary_id",): {
+            "max_length": 44,
+            "min_length": 1,
+        },
     }
 
     @cached_property
@@ -105,10 +113,13 @@ class LabelValueRequest(ModelNormal):
                 none_type,
             ),  # noqa: E501
             "image_query_id": (str,),  # noqa: E501
+            "confidence": (float,),  # noqa: E501
             "rois": (
                 [ROIRequest],
                 none_type,
             ),  # noqa: E501
+            "from_edge": (bool,),  # noqa: E501
+            "model_binary_id": (str,),  # noqa: E501
         }
 
     @cached_property
@@ -118,7 +129,10 @@ class LabelValueRequest(ModelNormal):
     attribute_map = {
         "label": "label",  # noqa: E501
         "image_query_id": "image_query_id",  # noqa: E501
+        "confidence": "confidence",  # noqa: E501
         "rois": "rois",  # noqa: E501
+        "from_edge": "from_edge",  # noqa: E501
+        "model_binary_id": "model_binary_id",  # noqa: E501
     }
 
     read_only_vars = {}
@@ -165,7 +179,10 @@ class LabelValueRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            rois ([ROIRequest], none_type): [optional]  # noqa: E501
+            confidence (float): Confidence of the edge model's answer. Required on edge labels and not accepted otherwise.. [optional]  # noqa: E501
+            rois ([ROIRequest], none_type): On edge labels, required for bounding box and count detectors (an empty list when the model found nothing) and not accepted for other detectors.. [optional]  # noqa: E501
+            from_edge (bool): Store this label as the answer an edge model gave for the image query.. [optional] if omitted the server will use the default value of False  # noqa: E501
+            model_binary_id (str): ID of the edge model binary that gave this answer. Required on edge labels and not accepted otherwise.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)
@@ -256,7 +273,10 @@ class LabelValueRequest(ModelNormal):
                                 Animal class but this time we won't travel
                                 through its discriminator because we passed in
                                 _visited_composed_classes = (Animal,)
-            rois ([ROIRequest], none_type): [optional]  # noqa: E501
+            confidence (float): Confidence of the edge model's answer. Required on edge labels and not accepted otherwise.. [optional]  # noqa: E501
+            rois ([ROIRequest], none_type): On edge labels, required for bounding box and count detectors (an empty list when the model found nothing) and not accepted for other detectors.. [optional]  # noqa: E501
+            from_edge (bool): Store this label as the answer an edge model gave for the image query.. [optional] if omitted the server will use the default value of False  # noqa: E501
+            model_binary_id (str): ID of the edge model binary that gave this answer. Required on edge labels and not accepted otherwise.. [optional]  # noqa: E501
         """
 
         _check_type = kwargs.pop("_check_type", True)

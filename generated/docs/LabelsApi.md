@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 
 
-Create a new LabelValue and attach it to an image query. This will trigger asynchronous fine-tuner model training.
+Create a new LabelValue and attach it to an image query. This will trigger asynchronous fine-tuner model training.  With `from_edge` set, store the answer an edge model gave instead. An edge label needs `confidence` and `model_binary_id`, is never used for training, and is outranked by every cloud and customer label. An image query can have only one edge label; a second one gets a 409.
 
 ### Example
 
@@ -49,9 +49,11 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
     label_value_request = LabelValueRequest(
         label="label_example",
         image_query_id="image_query_id_example",
+        confidence=0,
         rois=[
             ROIRequest(
                 label="label_example",
+                score=0,
                 geometry=BBoxGeometryRequest(
                     left=3.14,
                     top=3.14,
@@ -60,6 +62,8 @@ with groundlight_openapi_client.ApiClient(configuration) as api_client:
                 ),
             ),
         ],
+        from_edge=False,
+        model_binary_id="model_binary_id_example",
     ) # LabelValueRequest | 
 
     # example passing only required values which don't have defaults set

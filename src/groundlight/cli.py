@@ -169,6 +169,7 @@ def class_func_to_cli(method, is_experimental: bool = False):
 # Methods that should not be exposed as CLI commands. Add a method here if its signature
 # cannot be cleanly represented as CLI arguments or if it is not useful as a shell command.
 _CLI_EXCLUDED_METHODS = {
+    "add_edge_label",  # takes ROI objects, and edge answers are recorded by the edge endpoint, not from a shell
     "close",  # lifecycle method; not useful as a standalone command
     "create_roi",  # returns an ROI object that must be passed to another API call; not useful standalone
     "generate_synthetic_image",  # registered by hand below, so its image result can be saved to a file
