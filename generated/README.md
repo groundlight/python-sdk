@@ -49,11 +49,11 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import time
 import groundlight_openapi_client
 from pprint import pprint
-from groundlight_openapi_client.api import api_tokens_api
-from groundlight_openapi_client.model.api_token import ApiToken
-from groundlight_openapi_client.model.api_token_create_response import ApiTokenCreateResponse
-from groundlight_openapi_client.model.api_token_request import ApiTokenRequest
-from groundlight_openapi_client.model.paginated_api_token_list import PaginatedApiTokenList
+from groundlight_openapi_client.api import alerts_api
+from groundlight_openapi_client.model.alert import Alert
+from groundlight_openapi_client.model.alert_creation_input_request import AlertCreationInputRequest
+from groundlight_openapi_client.model.verdict import Verdict
+from groundlight_openapi_client.model.verdict_creation_input_request import VerdictCreationInputRequest
 # Defining the host is optional and defaults to https://api.groundlight.ai/device-api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = groundlight_openapi_client.Configuration(
@@ -75,17 +75,21 @@ configuration.api_key['ApiToken'] = 'YOUR_API_KEY'
 # Enter a context with an instance of the API client
 with groundlight_openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
-    api_instance = api_tokens_api.ApiTokensApi(api_client)
-    api_token_request = ApiTokenRequest(
-        name="name_example",
-        expires_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
-    ) # ApiTokenRequest | 
+    api_instance = alerts_api.AlertsApi(api_client)
+    alert_creation_input_request = AlertCreationInputRequest(
+        id="id_example",
+        triggered_at=dateutil_parser('1970-01-01T00:00:00.00Z'),
+        image_query_count=1,
+        lens_id="lens_id_example",
+        camera_id="camera_id_example",
+        device_id="device_id_example",
+    ) # AlertCreationInputRequest | 
 
     try:
-        api_response = api_instance.create_api_token(api_token_request)
+        api_response = api_instance.create_alert(alert_creation_input_request)
         pprint(api_response)
     except groundlight_openapi_client.ApiException as e:
-        print("Exception when calling ApiTokensApi->create_api_token: %s\n" % e)
+        print("Exception when calling AlertsApi->create_alert: %s\n" % e)
 ```
 
 ## Documentation for API Endpoints
@@ -94,6 +98,8 @@ All URIs are relative to *https://api.groundlight.ai/device-api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*AlertsApi* | [**create_alert**](docs/AlertsApi.md#create_alert) | **POST** /v1/alerts | 
+*AlertsApi* | [**create_alert_verdict**](docs/AlertsApi.md#create_alert_verdict) | **POST** /v1/alerts/{alert_id}/verdicts | 
 *ApiTokensApi* | [**create_api_token**](docs/ApiTokensApi.md#create_api_token) | **POST** /v1/api-tokens | 
 *ApiTokensApi* | [**delete_api_token**](docs/ApiTokensApi.md#delete_api_token) | **DELETE** /v1/api-tokens/{name} | 
 *ApiTokensApi* | [**get_api_token_by_snippet**](docs/ApiTokensApi.md#get_api_token_by_snippet) | **GET** /v1/api-tokens/by-snippet/{snippet} | 
@@ -131,6 +137,10 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [AccountMonthToDateInfo](docs/AccountMonthToDateInfo.md)
+ - [Alert](docs/Alert.md)
+ - [AlertCreationInputRequest](docs/AlertCreationInputRequest.md)
+ - [AlertVerdictEnum](docs/AlertVerdictEnum.md)
+ - [AlertVerdictSourceEnum](docs/AlertVerdictSourceEnum.md)
  - [AllNotes](docs/AllNotes.md)
  - [AnnotationsRequestedEnum](docs/AnnotationsRequestedEnum.md)
  - [ApiToken](docs/ApiToken.md)
@@ -189,6 +199,8 @@ Class | Method | HTTP request | Description
  - [SyntheticImage](docs/SyntheticImage.md)
  - [TextModeConfiguration](docs/TextModeConfiguration.md)
  - [TextRecognitionResult](docs/TextRecognitionResult.md)
+ - [Verdict](docs/Verdict.md)
+ - [VerdictCreationInputRequest](docs/VerdictCreationInputRequest.md)
  - [VerdictEnum](docs/VerdictEnum.md)
  - [VlmVerification](docs/VlmVerification.md)
  - [VlmVerificationCost](docs/VlmVerificationCost.md)

@@ -9,6 +9,70 @@ info:
     name: support@groundlight.ai
     email: support@groundlight.ai
 paths:
+  /v1/alerts:
+    post:
+      operationId: Create alert
+      description: |-
+        Create an alert, identified by your own unique ID (a UUID).
+
+        Returns 201 when the alert is created. Sending the same ID with the same fields again returns
+        the existing alert with 200, so retries are safe. Sending the same ID with different fields
+        returns 409.
+      tags:
+      - alerts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertCreationInputRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+          description: ''
+  /v1/alerts/{alert_id}/verdicts:
+    post:
+      operationId: Create alert verdict
+      description: |-
+        Add a verdict to the alert with your ID `alert_id`. An alert keeps every verdict it gets.
+
+        The verdict may arrive before the alert itself is created; it is kept, and the alert is
+        filled in when it is created.
+      parameters:
+      - in: path
+        name: alert_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - alerts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerdictCreationInputRequest'
+        required: true
+      security:
+      - ApiToken: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verdict'
+          description: ''
   /v1/api-tokens:
     get:
       operationId: List API tokens
@@ -1077,6 +1141,107 @@ components:
       - iqs
       - iqs_limit
       x-internal: true
+    Alert:
+      type: object
+      description: An alert raised by your system.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Your own unique ID for this alert.
+        triggered_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          description: When the alert was raised.
+        image_query_count:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: How many image queries will be attached to this alert.
+        lens_id:
+          type: string
+          readOnly: true
+          nullable: true
+        camera_id:
+          type: string
+          readOnly: true
+          nullable: true
+        device_id:
+          type: string
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - camera_id
+      - created_at
+      - device_id
+      - id
+      - image_query_count
+      - lens_id
+      - triggered_at
+      x-internal: true
+    AlertCreationInputRequest:
+      type: object
+      description: Input for creating an alert.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Your own unique ID for this alert. Later calls refer to the
+            alert by it.
+        triggered_at:
+          type: string
+          format: date-time
+          description: When your system raised the alert.
+        image_query_count:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: How many image queries you will attach to this alert.
+        lens_id:
+          type: string
+          minLength: 1
+          maxLength: 255
+        camera_id:
+          type: string
+          minLength: 1
+          maxLength: 255
+        device_id:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - camera_id
+      - device_id
+      - id
+      - image_query_count
+      - lens_id
+      - triggered_at
+      x-internal: true
+    AlertVerdictEnum:
+      enum:
+      - FALSE_ALARM
+      - CONFIRMED
+      - UNSURE
+      type: string
+      description: |-
+        * `FALSE_ALARM` - FALSE_ALARM
+        * `CONFIRMED` - CONFIRMED
+        * `UNSURE` - UNSURE
+    AlertVerdictSourceEnum:
+      enum:
+      - VLM
+      - HUMAN
+      type: string
+      description: |-
+        * `VLM` - VLM
+        * `HUMAN` - HUMAN
     AllNotes:
       type: object
       description: |-
@@ -2423,6 +2588,85 @@ components:
       - metadata
       - rois
       - width
+    Verdict:
+      type: object
+      description: A verdict on an alert.
+      properties:
+        alert_id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Your ID for the alert.
+        source:
+          allOf:
+          - $ref: '#/components/schemas/AlertVerdictSourceEnum'
+          readOnly: true
+        verdict:
+          allOf:
+          - $ref: '#/components/schemas/AlertVerdictEnum'
+          readOnly: true
+        rationale:
+          type: string
+          readOnly: true
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the VLM or operator made the decision.
+        reviewer:
+          type: string
+          readOnly: true
+          nullable: true
+          description: Free-form reviewer, such as a model name or the caller's operator
+            ID.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - alert_id
+      - created_at
+      - decided_at
+      - rationale
+      - reviewer
+      - source
+      - verdict
+      x-internal: true
+    VerdictCreationInputRequest:
+      type: object
+      description: Input for adding a verdict to an alert.
+      properties:
+        source:
+          allOf:
+          - $ref: '#/components/schemas/AlertVerdictSourceEnum'
+          description: |-
+            Who decided. Only VLM is accepted on this route for now.
+
+            * `VLM` - VLM
+            * `HUMAN` - HUMAN
+        verdict:
+          $ref: '#/components/schemas/AlertVerdictEnum'
+        rationale:
+          type: string
+          minLength: 1
+          description: Why the reviewer decided this.
+          maxLength: 10000
+        decided_at:
+          type: string
+          format: date-time
+          description: When the reviewer made the decision.
+        reviewer:
+          type: string
+          minLength: 1
+          description: Free-form reviewer, such as a model name or your ID for the
+            operator (an ID, not a name).
+          maxLength: 255
+      required:
+      - decided_at
+      - source
+      - verdict
+      x-internal: true
     VerdictEnum:
       enum:
       - 'YES'

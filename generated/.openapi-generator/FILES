@@ -1,6 +1,11 @@
 .gitignore
 README.md
 docs/AccountMonthToDateInfo.md
+docs/Alert.md
+docs/AlertCreationInputRequest.md
+docs/AlertVerdictEnum.md
+docs/AlertVerdictSourceEnum.md
+docs/AlertsApi.md
 docs/AllNotes.md
 docs/AnnotationsRequestedEnum.md
 docs/ApiToken.md
@@ -71,6 +76,8 @@ docs/SyntheticImagesApi.md
 docs/TextModeConfiguration.md
 docs/TextRecognitionResult.md
 docs/UserApi.md
+docs/Verdict.md
+docs/VerdictCreationInputRequest.md
 docs/VerdictEnum.md
 docs/VlmVerification.md
 docs/VlmVerificationCost.md
@@ -79,6 +86,7 @@ docs/VlmVerificationsApi.md
 git_push.sh
 groundlight_openapi_client/__init__.py
 groundlight_openapi_client/api/__init__.py
+groundlight_openapi_client/api/alerts_api.py
 groundlight_openapi_client/api/api_tokens_api.py
 groundlight_openapi_client/api/detector_groups_api.py
 groundlight_openapi_client/api/detector_reset_api.py
@@ -98,6 +106,10 @@ groundlight_openapi_client/configuration.py
 groundlight_openapi_client/exceptions.py
 groundlight_openapi_client/model/__init__.py
 groundlight_openapi_client/model/account_month_to_date_info.py
+groundlight_openapi_client/model/alert.py
+groundlight_openapi_client/model/alert_creation_input_request.py
+groundlight_openapi_client/model/alert_verdict_enum.py
+groundlight_openapi_client/model/alert_verdict_source_enum.py
 groundlight_openapi_client/model/all_notes.py
 groundlight_openapi_client/model/annotations_requested_enum.py
 groundlight_openapi_client/model/api_token.py
@@ -156,6 +168,8 @@ groundlight_openapi_client/model/status_enum.py
 groundlight_openapi_client/model/synthetic_image.py
 groundlight_openapi_client/model/text_mode_configuration.py
 groundlight_openapi_client/model/text_recognition_result.py
+groundlight_openapi_client/model/verdict.py
+groundlight_openapi_client/model/verdict_creation_input_request.py
 groundlight_openapi_client/model/verdict_enum.py
 groundlight_openapi_client/model/vlm_verification.py
 groundlight_openapi_client/model/vlm_verification_cost.py
@@ -168,4 +182,11 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_alert.py
+test/test_alert_creation_input_request.py
+test/test_alert_verdict_enum.py
+test/test_alert_verdict_source_enum.py
+test/test_alerts_api.py
+test/test_verdict.py
+test/test_verdict_creation_input_request.py
 tox.ini

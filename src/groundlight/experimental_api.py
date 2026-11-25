@@ -7,13 +7,16 @@ your projects, it's important to note that they are considered unstable. This me
 modifications or potentially be removed in future releases, which could lead to breaking changes in your applications.
 """
 
+from datetime import datetime
 from http import HTTPStatus
 from io import BufferedReader, BytesIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlparse, urlunparse
+from uuid import UUID
 
 import requests
+from groundlight_openapi_client.api.alerts_api import AlertsApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
 from groundlight_openapi_client.api.edge_api import EdgeApi
@@ -22,14 +25,20 @@ from groundlight_openapi_client.api.priming_groups_api import PrimingGroupsApi
 from groundlight_openapi_client.api.synthetic_images_api import SyntheticImagesApi
 from groundlight_openapi_client.api.vlm_verifications_api import VlmVerificationsApi
 from groundlight_openapi_client.exceptions import ApiException, NotFoundException
+from groundlight_openapi_client.model.alert_creation_input_request import AlertCreationInputRequest
+from groundlight_openapi_client.model.alert_verdict_enum import AlertVerdictEnum as OpenApiAlertVerdictEnum
 from groundlight_openapi_client.model.b_box_geometry_request import BBoxGeometryRequest
 from groundlight_openapi_client.model.label_value_request import LabelValueRequest
 from groundlight_openapi_client.model.patched_detector_request import PatchedDetectorRequest
 from groundlight_openapi_client.model.priming_group_creation_input_request import PrimingGroupCreationInputRequest
 from groundlight_openapi_client.model.roi_request import ROIRequest
 from groundlight_openapi_client.model.text_mode_configuration import TextModeConfiguration
+from groundlight_openapi_client.model.verdict_creation_input_request import VerdictCreationInputRequest
 from model import (
     ROI,
+    Alert,
+    AlertVerdictEnum,
+    AlertVerdictSourceEnum,
     Detector,
     EdgeModelInfo,
     ImageQuery,
@@ -37,6 +46,7 @@ from model import (
     PaginatedMLPipelineList,
     PaginatedPrimingGroupList,
     PrimingGroup,
+    Verdict,
     VlmVerification,
 )
 from urllib3.response import HTTPResponse
@@ -128,6 +138,7 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
         self.priming_groups_api = PrimingGroupsApi(self.api_client)
         self.vlm_verifications_api = VlmVerificationsApi(self.api_client)
         self.synthetic_images_api = SyntheticImagesApi(self.api_client)
+        self.alerts_api = AlertsApi(self.api_client)
 
         # API client for fetching Edge models
         self._edge_model_download_api = EdgeApi(self.api_client)
@@ -898,3 +909,111 @@ class ExperimentalApi(Groundlight):  # pylint: disable=too-many-public-methods,t
             self.priming_groups_api.delete_priming_group(priming_group_id)
         except NotFoundException as e:
             raise NotFoundError(f"PrimingGroup '{priming_group_id}' not found.") from e
+
+    def create_alert(  # noqa: PLR0913 # pylint: disable=too-many-arguments
+        self,
+        alert_id: Union[str, UUID],
+        triggered_at: datetime,
+        image_query_count: int,
+        lens_id: str,
+        camera_id: str,
+        device_id: str,
+    ) -> Alert:
+        """
+        Creates an alert raised by your system, identified by your own UUID.
+
+        Creating the same alert again with the same fields returns the existing alert, so retries
+        are safe. Creating it again with different fields raises an ``ApiException`` with status 409.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            alert = gl.create_alert(
+                alert_id="0b6f1d2e-4c1a-4f1e-9a43-6a3f9c2d8e71",
+                triggered_at=datetime(2026, 11, 16, 14, 3, 12, tzinfo=timezone.utc),
+                image_query_count=2,
+                lens_id="person_down_lens",
+                camera_id="cam-north-entrance",
+                device_id="4a1f3c90b27e",
+            )
+
+        :param alert_id: Your own unique ID (a UUID) for the alert. Later calls refer to it by this ID.
+        :param triggered_at: When your system raised the alert. Must be timezone-aware.
+        :param image_query_count: How many image queries you will attach to this alert (1 to 100).
+        :param lens_id: The lens that raised the alert.
+        :param camera_id: The camera the alert came from.
+        :param device_id: The device the alert came from.
+        :return: The created (or already existing) Alert.
+        :raises ValueError: If ``alert_id`` is not a UUID or ``triggered_at`` has no timezone.
+        """
+        request = AlertCreationInputRequest(
+            id=str(UUID(str(alert_id))),
+            triggered_at=_require_timezone("triggered_at", triggered_at),
+            image_query_count=image_query_count,
+            lens_id=lens_id,
+            camera_id=camera_id,
+            device_id=device_id,
+        )
+        result = self.alerts_api.create_alert(request)
+        return Alert.model_validate(result.to_dict())
+
+    def add_alert_verdict(  # noqa: PLR0913 # pylint: disable=too-many-arguments
+        self,
+        alert: Union[Alert, str, UUID],
+        source: Union[AlertVerdictSourceEnum, str],
+        verdict: Union[AlertVerdictEnum, str],
+        decided_at: datetime,
+        rationale: Optional[str] = None,
+        reviewer: Optional[str] = None,
+    ) -> Verdict:
+        """
+        Adds a VLM verdict to an alert. An alert keeps every verdict it gets, so retrying a call that
+        may have succeeded adds a duplicate verdict.
+
+        The verdict may be added before the alert itself is created; it is kept, and the alert is
+        filled in when ``create_alert`` is called with the same ID.
+
+        **Example usage**::
+
+            gl = ExperimentalApi()
+            verdict = gl.add_alert_verdict(
+                alert="0b6f1d2e-4c1a-4f1e-9a43-6a3f9c2d8e71",
+                source=AlertVerdictSourceEnum.VLM,
+                verdict=AlertVerdictEnum.FALSE_ALARM,
+                decided_at=datetime(2026, 11, 16, 14, 3, 15, tzinfo=timezone.utc),
+                rationale="The person is kneeling to tie a shoe.",
+                reviewer="gpt-5.4",
+            )
+
+        :param alert: The Alert, or your UUID for it.
+        :param source: Who decided. Only ``AlertVerdictSourceEnum.VLM`` is accepted for now; the server
+                       returns 400 for ``HUMAN``.
+        :param verdict: The decision: ``AlertVerdictEnum.FALSE_ALARM``, ``CONFIRMED`` or ``UNSURE``.
+        :param decided_at: When the VLM or operator made the decision. Must be timezone-aware.
+        :param rationale: Optional explanation of the decision.
+        :param reviewer: Optional free-form reviewer, such as a model name or an operator ID.
+        :return: The created Verdict.
+        :raises ValueError: If the alert ID is not a UUID, ``source`` or ``verdict`` is not a valid
+                            value, or ``decided_at`` has no timezone.
+        """
+        alert_id = alert.id if isinstance(alert, Alert) else UUID(str(alert))
+        kwargs = {}
+        if rationale is not None:
+            kwargs["rationale"] = rationale
+        if reviewer is not None:
+            kwargs["reviewer"] = reviewer
+        request = VerdictCreationInputRequest(
+            source=AlertVerdictSourceEnum(source).value,
+            verdict=OpenApiAlertVerdictEnum(AlertVerdictEnum(verdict).value),
+            decided_at=_require_timezone("decided_at", decided_at),
+            **kwargs,
+        )
+        result = self.alerts_api.create_alert_verdict(str(alert_id), request)
+        return Verdict.model_validate(result.to_dict())
+
+
+def _require_timezone(name: str, value: datetime) -> datetime:
+    """Return ``value`` unchanged, raising ValueError if it is a naive datetime."""
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError(f"{name} must be timezone-aware, e.g. datetime.now(timezone.utc).")
+    return value

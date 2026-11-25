@@ -5,7 +5,7 @@
 # raise a `RecursionError`.
 # In order to avoid this, import only the API that you directly need like:
 #
-#   from .api.api_tokens_api import ApiTokensApi
+#   from .api.alerts_api import AlertsApi
 #
 # or import this package, but before doing it, use:
 #
@@ -13,6 +13,7 @@
 #   sys.setrecursionlimit(n)
 
 # Import APIs into API package:
+from groundlight_openapi_client.api.alerts_api import AlertsApi
 from groundlight_openapi_client.api.api_tokens_api import ApiTokensApi
 from groundlight_openapi_client.api.detector_groups_api import DetectorGroupsApi
 from groundlight_openapi_client.api.detector_reset_api import DetectorResetApi
